@@ -4,11 +4,9 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.29 2002/04/24 08:23:11 eile Exp $
+// $Id: xosview.cc,v 1.30 2003/10/09 03:40:54 bgrayson Exp $
 //
-#include <iostream.h>
 #include <unistd.h>
-#include <string.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include "snprintf.h"
@@ -62,7 +60,7 @@ static const char NAME[] = "xosview@";
 
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.29 2002/04/24 08:23:11 eile Exp $");
+CVSID("$Id: xosview.cc,v 1.30 2003/10/09 03:40:54 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -393,7 +391,7 @@ void XOSView::checkArgs (int argc, char** argv) const
   {
     switch (argv[0][1]) {
       case 'v':
-      		cerr << versionString << endl;
+      		std::cerr << versionString << std::endl;
 		exit(0);
       case 'n': //  Check for -name option that was already parsed
 		//  and acted upon by main().
@@ -416,12 +414,12 @@ void XOSView::checkArgs (int argc, char** argv) const
 #endif
       case '-':  /*  Check for --version argument.  */
               if (!strncasecmp(*argv, "--version", 10)) {
-	        cerr << versionString << endl;
+	        std::cerr << versionString << std::endl;
 		exit(0);
 	      }
 	      /*  Fall through to default/error case.  */
       default:
-      		cerr << "Ignoring unknown option '" << argv[0] << "'.\n";
+      		std::cerr << "Ignoring unknown option '" << argv[0] << "'.\n";
 	  	break;
     }
     argc--;
