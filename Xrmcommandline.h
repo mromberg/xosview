@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.12 1998/02/02 16:35:46 bgrayson Exp $
+// $Id: Xrmcommandline.h,v 1.13 1998/03/27 19:18:45 bgrayson Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.12 1998/02/02 16:35:46 bgrayson Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.13 1998/03/27 19:18:45 bgrayson Exp $"
 
 #include <X11/Xresource.h>
 
@@ -26,6 +26,10 @@ static XrmOptionDescRec options[] = {
 { "+labels", "*labels", XrmoptionNoArg, "True" },
 { "-usedlabels", "*usedlabels", XrmoptionNoArg, "False" },
 { "+usedlabels", "*usedlabels", XrmoptionNoArg, "True" },
+//  This next one is not yet supported.
+#if 0
+{ "-samplesPerSec", "*samplesPerSec", XrmoptionSepArg, (caddr_t) NULL },
+#endif
 //  CPU resources
 { "-cpu", "*cpu", XrmoptionNoArg, "False" },
 { "+cpu", "*cpu", XrmoptionNoArg, "True" },

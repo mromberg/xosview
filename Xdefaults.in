@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.19 1998/01/22 20:25:13 mromberg Exp $
+!  $Id: Xdefaults.in,v 1.20 1998/03/27 19:18:45 bgrayson Exp $
 
 ! General Resources
 
@@ -16,6 +16,7 @@ xosview*font:             7x13bold
 xosview*background:       navy
 xosview*foreground:       wheat
 xosview*enableStipple:	  False !  Change to true to try beta stipple support.
+xosview*samplesPerSec:    10    !  This resource is not yet supported.
 
 
 ! Load Meter Resources
