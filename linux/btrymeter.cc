@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: btrymeter.cc,v 1.2 1997/03/15 21:03:05 mromberg Exp $
+// $Id: btrymeter.cc,v 1.3 1997/12/02 20:03:41 bgrayson Exp $
 //
 #include "btrymeter.h"
 #include "xosview.h"
@@ -27,6 +27,7 @@ void BtryMeter::checkResources( void ){
   setfieldcolor( 1, parent_->getResource( "batteryLeftColor" ) );
 
   priority_ = atoi (parent_->getResource( "batteryPriority" ) );
+  SetUsedFormat(parent_->getResource( "batteryUsedFormat" ) );
 }
 
 void BtryMeter::checkevent( void ){
@@ -52,5 +53,5 @@ void BtryMeter::getpwrinfo( void ){
 
   fields_[1] = total_ - fields_[0];
 
-  absolute( fields_[0] );
+  setUsed (fields_[0], total_);
 }
