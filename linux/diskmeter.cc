@@ -3,7 +3,7 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-// $Id: diskmeter.cc,v 1.15 2003/10/20 01:37:36 romberg Exp $
+// $Id: diskmeter.cc,v 1.16 2004/05/21 22:26:17 romberg Exp $
 //
 
 #include "diskmeter.h"
@@ -65,6 +65,8 @@ void DiskMeter::getdiskinfo( void )
         {
         stats.ignore(MAX_PROCSTAT_LENGTH, '\n');
         stats >> buf;
+        if (stats.eof())
+            break;
         }
 
 	// read values

@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.cc,v 1.13 2003/10/20 01:37:36 romberg Exp $
+// $Id: cpumeter.cc,v 1.14 2004/05/21 22:26:17 romberg Exp $
 //
 #include "cpumeter.h"
 #include "xosview.h"
@@ -60,8 +60,11 @@ void CPUMeter::getcputime( void ){
   }
 
   // read until we are at the right line.
-  for (int i = 0 ; i < _lineNum ; i++)
+  for (int i = 0 ; i < _lineNum ; i++) {
+    if (stats.eof())
+      break;
     getline(stats, tmp);
+  }
 
   stats >>tmp >>cputime_[cpuindex_][0]
 	      >>cputime_[cpuindex_][1]

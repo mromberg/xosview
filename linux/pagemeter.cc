@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 1996 by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
+//  Copyright (c) 1996, 2004 by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: pagemeter.cc,v 1.9 2003/10/20 01:37:36 romberg Exp $
+// $Id: pagemeter.cc,v 1.10 2004/05/21 22:26:17 romberg Exp $
 //
 #include "pagemeter.h"
 #include "xosview.h"
@@ -59,7 +59,7 @@ void PageMeter::getpageinfo( void ){
 
   do {
     stats >>buf;
-  } while (strncasecmp(buf, "swap", 5));
+  } while (!stats.eof() && strncasecmp(buf, "swap", 5));
 
   stats >>pageinfo_[pageindex_][0] >>pageinfo_[pageindex_][1];
 
