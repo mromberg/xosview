@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.9 1997/01/14 17:44:45 bgrayson Exp $
+// $Id: fieldmeter.cc,v 1.10 1998/02/09 11:08:48 bgrayson Exp $
 //
 #include <fstream.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.9 1997/01/14 17:44:45 bgrayson Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.10 1998/02/09 11:08:48 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -75,7 +75,16 @@ void FieldMeter::setUsed (float val, float total)
   if (print_ == FLOAT)
     used_ = val;
   else if (print_ == PERCENT)
-    used_ = val / total * 100.0;
+  {
+    if (total != 0.0)
+      used_ = val / total * 100.0;
+    else
+    {
+      fprintf(stderr, "Warning:  %s meter had a zero total field!  Would have "
+	      "caused a div-by-zero exception.\n", total);
+      used_ = 0.0;
+    }
+  }
   else if (print_ == AUTOSCALE)
     used_ = val;
   else {
