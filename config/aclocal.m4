@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.10 1997/11/17 07:44:26 mromberg Exp $
+dnl $Id: aclocal.m4,v 1.11 1997/11/18 02:54:19 mromberg Exp $
 dnl
 
 AC_DEFUN(AC_XOSV_LINUX, [
@@ -14,7 +14,9 @@ EXTRA_OUT_FILES="$EXTRA_OUT_FILES \
 dnl
 dnl Define GNULIBC for the new GNU libc for linux
 dnl
-if test "$host_os" == "linux-gnulibc2"; then
+dnl Assume "linux-gnu" is GNU libc and linux-gnulibc1 is the old libc
+dnl
+if test "$host_os" == "linux-gnu"; then
 AC_DEFINE(GNULIBC)
 echo "GNULIBC"
 fi

@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.7 1997/11/17 07:44:26 mromberg Exp $
+// $Id: netmeter.cc,v 1.8 1997/11/18 02:54:19 mromberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -34,7 +34,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
-#ifdef GNULIBC
+#if defined(GNULIBC) || defined(__GLIBC__)
 #include <net/if.h>
 #else
 #include <linux/if.h>

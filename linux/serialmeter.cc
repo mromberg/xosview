@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: serialmeter.cc,v 1.5 1997/11/17 07:44:27 mromberg Exp $
+// $Id: serialmeter.cc,v 1.6 1997/11/18 02:54:20 mromberg Exp $
 //
 
 //
@@ -19,7 +19,7 @@
 #include <strstream.h>
 
 #include <unistd.h>
-#ifdef GNULIBC
+#if defined(GNULIBC) || defined(__GLIBC__)
 #include <sys/io.h>
 #include <sys/perm.h>
 #else
