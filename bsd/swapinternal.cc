@@ -6,7 +6,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.16 1998/05/29 21:22:53 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.17 1998/09/18 15:38:56 bgrayson Exp $
 //
 //  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //
@@ -149,15 +149,15 @@ BSDInitSwapInfo()
 		int i;
 		char msgbuf[BUFSIZ];
 
-                strcpy(msgbuf, "xosview: swap: cannot find");
+                strncpy(msgbuf, "xosview: swap: cannot find", BUFSIZ);
                 for (i = 0; syms[i].n_name != NULL; i++) {
                         if (syms[i].n_value == 0) {
-                                strcat(msgbuf, " ");
-                                strcat(msgbuf, syms[i].n_name);
+			  	strncat(msgbuf, " ", BUFSIZ-strlen(msgbuf));
+			  	strncat(msgbuf, syms[i].n_name,
+				    BUFSIZ-strlen(msgbuf));
                         }
                 }
-		strcat(msgbuf,"\n");
-                printf(msgbuf);
+                printf("%s\n", msgbuf);
 #endif
                 return (0);
         }

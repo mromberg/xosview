@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.28 1998/09/18 15:21:05 bgrayson Exp $
+// $Id: kernel.cc,v 1.29 1998/09/18 15:38:56 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -22,6 +22,7 @@
 #include <fcntl.h>
 #include <kvm.h>
 #include <limits.h>		/*  For _POSIX2_LINE_MAX  */
+#include <string.h>		/*  For strncpy().  */
 
 #include <err.h>                /*  For err(), warn(), etc.  BCG  */
 #include <errno.h>
@@ -57,7 +58,7 @@
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.28 1998/09/18 15:21:05 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.29 1998/09/18 15:38:56 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -165,7 +166,7 @@ SetKernelName(const char* const kernelName)
       kernelName);
     exit(1);
   }
-  strcpy(kernelFileName, kernelName);
+  strncpy(kernelFileName, kernelName, _POSIX2_LINE_MAX);
 }
 
 void

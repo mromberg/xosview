@@ -1,5 +1,5 @@
 //  
-// $Id: cpumeter.cc,v 1.2 1998/06/22 15:57:29 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.3 1998/09/18 15:38:56 bgrayson Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "cpumeter.h"
@@ -81,7 +81,7 @@ void CPUMeter::getcputime(void)
 const char *CPUMeter::toUpper(const char *str)
 {
 	static char buffer[256];
-	strcpy(buffer, str);
+	strncpy(buffer, str, 256);
 	for (char *tmp = buffer ; *tmp != '\0' ; tmp++)
 		*tmp = toupper(*tmp);
 

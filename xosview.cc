@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.14 1998/06/22 14:15:43 bgrayson Exp $
+// $Id: xosview.cc,v 1.15 1998/09/18 15:38:55 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -24,7 +24,7 @@ static const char NAME[] = "xosview@";
 
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.14 1998/06/22 14:15:43 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.15 1998/09/18 15:38:55 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -195,9 +195,8 @@ void XOSView::checkOverallResources() {
 const char *XOSView::winname( void ){
   static char name[100];
   char host[100];
-  strcpy( name, NAME );
   gethostname( host, 99 );
-  strcat( name, host );
+  snprintf( name, 100, "%s%s", NAME, host);
   //  Allow overriding of this name through the -title option.
   return getResourceOrUseDefault ("title", name);
 }

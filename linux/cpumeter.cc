@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.cc,v 1.4 1997/12/02 20:03:42 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.5 1998/09/18 15:38:56 bgrayson Exp $
 //
 #include "cpumeter.h"
 #include "xosview.h"
@@ -137,7 +137,7 @@ const char *CPUMeter::cpuStr(int num){
 
 const char *CPUMeter::toUpper(const char *str){
   static char buffer[256];
-  strcpy(buffer, str);
+  strncpy(buffer, str, 256);
   for (char *tmp = buffer ; *tmp != '\0' ; tmp++)
     *tmp = toupper(*tmp);
 
