@@ -3,7 +3,7 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-// $Id: diskmeter.cc,v 1.17 2004/06/01 03:29:40 romberg Exp $
+// $Id: diskmeter.cc,v 1.18 2004/06/01 03:32:08 romberg Exp $
 //
 
 #include "diskmeter.h"
@@ -30,6 +30,7 @@ DiskMeter::DiskMeter( XOSView *parent, float max ) : FieldMeterGraph(
         {
         _vmstat = true;
         _statFileName = "/proc/vmstat";
+        getvmdiskinfo();
         }
     else
         getdiskinfo();
