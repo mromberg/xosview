@@ -12,9 +12,11 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: cpumeter.cc,v 1.19 2002/03/22 03:23:40 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.20 2003/10/09 03:55:39 bgrayson Exp $
 //
+#if defined(XOSVIEW_NETBSD)
 #include <sys/param.h>		// Needed for __NetBSD_Version__
+#endif
 #include <stdlib.h>		//  For use of atoi  BCG
 #include "general.h"
 #include "cpumeter.h"
@@ -27,7 +29,7 @@
 #include <sys/dkstat.h>
 #endif
 
-CVSID("$Id: cpumeter.cc,v 1.19 2002/03/22 03:23:40 bgrayson Exp $");
+CVSID("$Id: cpumeter.cc,v 1.20 2003/10/09 03:55:39 bgrayson Exp $");
 CVSID_DOT_H(CPUMETER_H_CVSID);
 
 CPUMeter::CPUMeter( XOSView *parent )
@@ -123,13 +125,13 @@ void CPUMeter::getcputime( void ){
     static int firstTime = 1;
     if (firstTime) {
       fprintf(stderr,
-"  Warning:  the CPU tick counters are not changing.  This could
-be due to running a kernel besides /netbsd (or the equivalent for FreeBSD).
-  If this is the case, re-run xosview with the -N kernel-name option.
-  If not, then this is a bug.  Please send a message to
-bgrayson@netbsd.org, in addition to any send-pr bug reports
-(or in lieu of -- it ought to get fixed faster if you contact me
-directly).  Thanks!\n");
+" Warning: The CPU tick counters are not changing.  This could"
+" be due to running a kernel besides /netbsd (or the equivalent for FreeBSD)."
+" If this is the case, re-run xosview with the -N kernel-name option."
+" If not, then this is a bug.  Please send a message to"
+" bgrayson@ece.utexas.edu, in addition to any send-pr bug reports"
+" (or in lieu of -- it ought to get fixed faster if you contact me"
+" directly).  Thanks!\n");
       firstTime = 0;
     }
   }
