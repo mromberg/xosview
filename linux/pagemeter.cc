@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: pagemeter.cc,v 1.7 1999/02/24 22:28:18 romberg Exp $
+// $Id: pagemeter.cc,v 1.8 2002/04/08 04:36:47 zedpobre Exp $
 //
 #include "pagemeter.h"
 #include "xosview.h"
@@ -13,6 +13,7 @@
 
 
 static const char STATFILENAME[] = "/proc/stat";
+#define MAX_PROCSTAT_LENGTH 2048
 
 
 PageMeter::PageMeter( XOSView *parent, float max )
@@ -48,7 +49,7 @@ void PageMeter::checkevent( void ){
 
 void PageMeter::getpageinfo( void ){
   total_ = 0;
-  char buf[1024];
+  char buf[MAX_PROCSTAT_LENGTH];
   ifstream stats( STATFILENAME );
 
   if ( !stats ){
