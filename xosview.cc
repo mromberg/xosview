@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.11 1998/02/12 05:04:03 bgrayson Exp $
+// $Id: xosview.cc,v 1.12 1998/03/27 19:18:16 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -22,7 +22,9 @@
 static const char NAME[] = "xosview@";
 #include "version.cc"
 
-CVSID("$Id: xosview.cc,v 1.11 1998/02/12 05:04:03 bgrayson Exp $");
+int MAX_SAMPLES_PER_SECOND = 10;
+
+CVSID("$Id: xosview.cc,v 1.12 1998/03/27 19:18:16 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -35,6 +37,11 @@ XOSView::XOSView( char * instName, int argc, char *argv[] ) : XWin(),
   //  XWinInit looks at the geometry resource for its geometry.  BCG
   xrm.loadAndMergeResources (argc, argv, display_); 
   XWinInit (argc, argv, NULL, &xrm);
+#if 0	//  Don't enable this yet.
+  MAX_SAMPLES_PER_SECOND = atoi(getResource("samplesPerSec"));
+  if (!MAX_SAMPLES_PER_SECOND)
+    MAX_SAMPLES_PER_SECOND = 10;
+#endif
 #ifdef XOSVIEW_NETBSD
   BSDInit();	/*  Needs to be done before processing of -N option.  */
 #endif
