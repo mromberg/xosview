@@ -3,7 +3,7 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-// $Id: diskmeter.cc,v 1.8 1999/02/04 10:44:04 mcnab Exp $
+// $Id: diskmeter.cc,v 1.9 1999/02/04 10:56:39 mcnab Exp $
 //
 
 #include "diskmeter.h"
@@ -86,6 +86,8 @@ void DiskMeter::getdiskinfo( void )
     read_prev_ = read_curr;
     write_prev_ = write_curr;
 
-    setUsed((fields_[0]+fields_[1]) * IntervalTimeInMicrosecs()/1e6, total_);
+    //setUsed((fields_[0]+fields_[1]) * IntervalTimeInMicrosecs()/1e6, total_);
+    // give rate in units per second, not units per interval
+    setUsed((fields_[0]+fields_[1]), total_);
     IntervalTimerStart();
     }
