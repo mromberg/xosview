@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.cc,v 1.7 1997/02/14 07:24:08 bgrayson Exp $
+// $Id: netmeter.cc,v 1.8 1997/07/18 03:38:00 bgrayson Exp $
 //
 #include "general.h"
 #include "netmeter.h"
@@ -22,14 +22,14 @@
 #include <stdlib.h>		//  For atoi().  BCG
 #include <unistd.h>  /*  For gethostname().  BCG */
 
-CVSID("$Id: netmeter.cc,v 1.7 1997/02/14 07:24:08 bgrayson Exp $");
+CVSID("$Id: netmeter.cc,v 1.8 1997/07/18 03:38:00 bgrayson Exp $");
 CVSID_DOT_H(NETMETER_H_CVSID);
 CVSID_DOT_H2(TIMER_H_CVSID);
 CVSID_DOT_H3(TIMEVAL_H_CVSID);
 
 NetMeter::NetMeter( XOSView *parent, float max )
   : FieldMeterDecay( parent, 3, "NET", "IN/OUT/IDLE" ){
-  _timer.start();
+  IntervalTimerStart();
   netBandwidth_ = max;
   total_ = netBandwidth_;
   _lastBytesIn = _lastBytesOut = 0;
@@ -56,7 +56,7 @@ void NetMeter::checkResources( void ){
 }
 
 void NetMeter::checkevent( void ){
-  _timer.stop();
+  IntervalTimerStop();
 
 //  Reset total_ to expected maximum.  If it is too low, it
 //  will be adjusted in adjust().  bgrayson
@@ -69,7 +69,7 @@ void NetMeter::checkevent( void ){
 
 //  The NetBSDGetNetInOut() function is in netbsd.cc    BCG
   NetBSDGetNetInOut (&nowBytesIn, &nowBytesOut);
-  float t = (1e6) / _timer.report();
+  float t = (1e6) / IntervalTimeInMicrosecs();
   fields_[0] = (float)(nowBytesIn - _lastBytesIn) * t;
   _lastBytesIn = nowBytesIn;
   fields_[1] = (float)(nowBytesOut - _lastBytesOut) * t;
@@ -81,7 +81,7 @@ void NetMeter::checkevent( void ){
     /*  The fields_ values have already been scaled into bytes/sec by
      *  the manipulations (* t) above.  */
   setUsed (fields_[0]+fields_[1], total_);
-  _timer.start();
+  IntervalTimerStart();
   drawfields();
 }
 
