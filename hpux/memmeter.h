@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: memmeter.h,v 1.2 1996/08/14 06:20:45 mromberg Exp $
+// $Id: memmeter.h,v 1.3 1997/12/06 01:04:41 mromberg Exp $
 //
 #ifndef _MEMMETER_H_
 #define _MEMMETER_H_
@@ -24,6 +24,7 @@ public:
 
 protected:
   struct pst_status *stats_;
+  int _pageSize;
 
   void getmeminfo( void );
 private:

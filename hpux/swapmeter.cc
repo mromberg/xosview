@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: swapmeter.cc,v 1.5 1997/12/04 23:52:21 mromberg Exp $
+// $Id: swapmeter.cc,v 1.6 1997/12/06 01:04:41 mromberg Exp $
 //
 #include "swapmeter.h"
 #include "xosview.h"
@@ -52,8 +52,8 @@ void SwapMeter::getswapinfo( void ){
       pstat_getswap(&swapinfo, sizeof(swapinfo), 1, i);
       if (swapinfo.pss_idx == (unsigned)i)
           {
-          total_ += swapinfo.pss_nblks;
-          fields_[1] += swapinfo.pss_nfpgs * 4;
+          total_ += (swapinfo.pss_nblksenabled * 1024);
+          fields_[1] += (swapinfo.pss_nfpgs * 4 * 1024);
           }
       }
 
