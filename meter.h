@@ -4,12 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: meter.h,v 1.3 1996/11/19 02:17:21 bgrayson Exp $
+// $Id: meter.h,v 1.4 1997/01/14 18:23:27 bgrayson Exp $
 //
 #ifndef _METER_H_
 #define _METER_H_
 
-#define METER_H_CVSID "$Id: meter.h,v 1.3 1996/11/19 02:17:21 bgrayson Exp $"
+#define METER_H_CVSID "$Id: meter.h,v 1.4 1997/01/14 18:23:27 bgrayson Exp $"
+
+#include "xosview.h"	//  To grab MAX_SAMPLES_PER_SECOND.
 
 class XOSView;
 
@@ -43,6 +45,8 @@ protected:
   int priority_, counter_;
   char *title_, *legend_;
   unsigned long textcolor_;
+  double samplesPerSecond() { return 1.0*MAX_SAMPLES_PER_SECOND/priority_; }
+  double secondsPerSample() { return 1.0/samplesPerSecond(); }
 
 private:
 };
