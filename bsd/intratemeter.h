@@ -7,12 +7,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: intratemeter.h,v 1.2 2002/03/22 03:23:40 bgrayson Exp $
+// $Id: intratemeter.h,v 1.3 2003/10/09 04:20:06 bgrayson Exp $
 //
 #ifndef _IRQRATEMETER_H_
 #define _IRQRATEMETER_H_
 
-#define IRQRATEMETER_H_CVSID "$Id: intratemeter.h,v 1.2 2002/03/22 03:23:40 bgrayson Exp $"
+#define IRQRATEMETER_H_CVSID "$Id: intratemeter.h,v 1.3 2003/10/09 04:20:06 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 #include "kernel.h"
@@ -32,5 +32,6 @@ protected:
 
   void getinfo( void );
   unsigned long oncol_, idlecol_;
+  bool kernelHasStats_;
 };
 #endif

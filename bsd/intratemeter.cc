@@ -7,18 +7,29 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: intratemeter.cc,v 1.2 2002/03/22 03:23:40 bgrayson Exp $
+// $Id: intratemeter.cc,v 1.3 2003/10/09 04:20:06 bgrayson Exp $
 //
+#include <err.h>		//  For warnx.
 #include <stdlib.h>	//  For atoi.
 #include "general.h"
 #include "intratemeter.h"
 #include "xosview.h"
 
-CVSID("$Id: intratemeter.cc,v 1.2 2002/03/22 03:23:40 bgrayson Exp $");
+CVSID("$Id: intratemeter.cc,v 1.3 2003/10/09 04:20:06 bgrayson Exp $");
 CVSID_DOT_H(IRQRATEMETER_H_CVSID);
 
 IrqRateMeter::IrqRateMeter( XOSView *parent )
   : FieldMeterGraph( parent, 2, "IRQs", "IRQs per sec/IDLE", 1, 1, 0 ){
+  kernelHasStats_ = BSDIntrInit();
+
+  if (!kernelHasStats_) {
+  warnx(
+  "!!! The kernel does not seem to have the symbols needed for the IrqRateMeter.");
+  warnx(
+  "!!! The IrqRateMeter has been disabled.");
+
+    disableMeter();
+  }
 }
 
 IrqRateMeter::~IrqRateMeter( void ){
@@ -26,10 +37,12 @@ IrqRateMeter::~IrqRateMeter( void ){
 
 void IrqRateMeter::checkResources( void ){
   FieldMeterGraph::checkResources();
-  oncol_ = parent_->allocColor(parent_->getResource("irqrateUsedColor"));
-  idlecol_ = parent_->allocColor(parent_->getResource("irqrateIdleColor"));
-  setfieldcolor( 0, oncol_ );
-  setfieldcolor( 1, idlecol_);
+  if (kernelHasStats_) {
+    oncol_ = parent_->allocColor(parent_->getResource("irqrateUsedColor"));
+    idlecol_ = parent_->allocColor(parent_->getResource("irqrateIdleColor"));
+    setfieldcolor( 0, oncol_ );
+    setfieldcolor( 1, idlecol_);
+  }
 
   priority_ = atoi (parent_->getResource("irqratePriority"));
   dodecay_ = parent_->isResourceTrue("irqrateDecay");

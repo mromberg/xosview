@@ -12,12 +12,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.h,v 1.11 2002/03/22 03:23:41 bgrayson Exp $
+// $Id: netmeter.h,v 1.12 2003/10/09 04:23:10 bgrayson Exp $
 //
 #ifndef _NETMETER_H_
 #define _NETMETER_H_
 
-#define NETMETER_H_CVSID "$Id: netmeter.h,v 1.11 2002/03/22 03:23:41 bgrayson Exp $"
+#define NETMETER_H_CVSID "$Id: netmeter.h,v 1.12 2003/10/09 04:23:10 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 #include "timer.h"
@@ -40,6 +40,9 @@ private:
   //  NetBSD:  Use long long, so we won't run into problems after 4 GB
   //  has been transferred over the net!
   long long _lastBytesIn, _lastBytesOut;
+
+  //  Did the meter initialize properly?
+  bool kernelHasStats_;
 
   void adjust(void);
 };
