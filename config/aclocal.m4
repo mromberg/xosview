@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.26 1999/11/19 09:46:45 bgrayson Exp $
+dnl $Id: aclocal.m4,v 1.27 2000/04/10 04:25:22 bgrayson Exp $
 dnl
 
 dnl Make an absolute symbol for the top of the configuration.
@@ -181,6 +181,8 @@ dnl  The BSD versions need to link with libkvm, and have the BSD install flags.
 ])
 
 AC_DEFUN(AC_XOSV_NETBSD, [
+dnl  Remember the full version in host_os_full
+	host_os_full=$host_os
 dnl  We need to strip the version numbers off the $host_os string (netbsd1.1)
 dnl  Let's just be lazy -- set host_os to be netbsd.  
 	host_os=netbsd
