@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.31 2003/10/10 05:10:17 bgrayson Exp $
+dnl $Id: aclocal.m4,v 1.32 2004/05/21 23:22:24 romberg Exp $
 dnl
 
 dnl Make an absolute symbol for the top of the configuration.
@@ -139,7 +139,7 @@ yes
 #endif
 ], [USE_MOD_VERSIONS=-DMODVERSIONS] AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 SMP_LINUX
-INSTALL_ARGS='-s -m 4755'
+INSTALL_ARGS='-m 755'
 fi
 ,
 AC_SYS_LINUX_VERS
@@ -165,7 +165,7 @@ else
         echo "disabled the Linux $LVERSION memstat module by default"
 fi
 )
-INSTALL_ARGS='-s -m 4755'
+INSTALL_ARGS='-m 755'
 if test "$smp" = "yes"
 then
 LINUX_SMP="-D__SMP__"
