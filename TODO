@@ -1,4 +1,4 @@
-Revision: $Id: TODO,v 1.5 1998/02/09 12:06:51 bgrayson Exp $
+Revision: $Id: TODO,v 1.6 1998/02/12 04:41:45 bgrayson Exp $
 
 * Do if(dolegends_) fix for loadmeter.cc for all ports.
 * Add a version string, so that xosview -v prints out the version.
@@ -42,4 +42,10 @@ Revision: $Id: TODO,v 1.5 1998/02/09 12:06:51 bgrayson Exp $
   Change the names on all NetBSD* functions to just be BSD*,
     since they are shared across multiple *BSD ports.
 
-  Merge in NetBSD interrupt support.
+* Merge in NetBSD interrupt support.
+
+  Add auto-detect for number of interrupts for NetBSD.
+
+  Add in support and auto-detect for new NetBSD UVM stuff.
+
+  Merge in Tom's Xt stuff.
