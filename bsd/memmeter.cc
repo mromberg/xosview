@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.13 1998/03/30 20:43:05 bgrayson Exp $
+// $Id: memmeter.cc,v 1.14 1998/04/02 21:01:24 bgrayson Exp $
 //
 #include "general.h"
 #include "memmeter.h"
@@ -27,7 +27,7 @@
 #include <sys/vmmeter.h>
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: memmeter.cc,v 1.13 1998/03/30 20:43:05 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.14 1998/04/02 21:01:24 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 
 MemMeter::MemMeter( XOSView *parent )
@@ -40,6 +40,7 @@ MemMeter::MemMeter( XOSView *parent )
 : FieldMeterDecay( parent, 4, "MEM", "ACT/INACT/WIRE/FREE" ){
 #define FREE_INDEX 3
 #endif
+  BSDPageInit();
 }
 
 MemMeter::~MemMeter( void ){ }
