@@ -1,6 +1,6 @@
 '\" t
 .\" @(#)xosview.1	1.8.0 1/99 "
-.TH XOSVIEW 1.8.0 "$Date: 2002/03/24 23:00:32 $"
+.TH XOSVIEW 1.8.0 "$Date: 2002/07/14 03:48:45 $"
 .UC
 .SH NAME
 xosview \- X based system monitor
@@ -126,7 +126,7 @@ an abbreviation for all three of the free BSD operating systems
 
 \fBCPU Usage\fP
    Linux  : user | nice | system | idle
-   *BSD   : user | nice | system | idle
+   *BSD   : user | nice | system | interrupt | idle
    IRIX   : user | system | interrupt | wait | idle
    HPUX   : user | nice | system | interrupt | idle
 
@@ -185,7 +185,7 @@ an abbreviation for all three of the free BSD operating systems
     Linux  : %left | %used
     NetBSD : %left | %used
     FreeBSD: < Not Supported >
-    OpenBSD: < Not Supported >
+    OpenBSD: %left | %used
     HPUX   : < Not Supported >
 
 \fBRAID status\fP
@@ -959,7 +959,7 @@ David W. Talmage (talmage@jefferson.cmf.nrl.navy.mil)
 Added battery-meter support to NetBSD.
 .RE
 
-Oleg Safiullin (form@vs.itam.nsc.ru)
+Oleg Safiullin (form@openbsd.org)
 .RS
 OpenBSD interrupt-meter support.
 .RE

@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.24 2002/03/22 03:23:40 bgrayson Exp $
+// $Id: memmeter.cc,v 1.25 2002/07/14 03:48:45 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
@@ -29,7 +29,7 @@
 # include <sys/vmmeter.h>
 #endif
 
-CVSID("$Id: memmeter.cc,v 1.24 2002/03/22 03:23:40 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.25 2002/07/14 03:48:45 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 
 MemMeter::MemMeter( XOSView *parent )
@@ -90,7 +90,7 @@ void MemMeter::getmeminfo (void) {
   /*  Initialize total_ to 0.0.  FreeBSD will then add some to
    *  this, and later we'll add all the common fields to this.  */
   total_ = 0.0;
-#if defined(UVM) & defined(XOSVIEW_NETBSD)
+#if defined(UVM) && (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_OPENBSD))
   struct uvmexp kvm_uvm_exp;
   BSDGetUVMPageStats(&kvm_uvm_exp);
   int pgsize = kvm_uvm_exp.pagesize;

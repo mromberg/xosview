@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.cc,v 1.20 2002/03/22 03:23:41 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.21 2002/07/14 03:48:45 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #ifndef HAVE_SWAPCTL
@@ -23,7 +23,7 @@
 #include "swapinternal.h"	/*  For *SwapInfo() functions.  */
 #include "kernel.h"		/*  For BSDSwapInit().  */
 
-CVSID("$Id: swapmeter.cc,v 1.20 2002/03/22 03:23:41 bgrayson Exp $");
+CVSID("$Id: swapmeter.cc,v 1.21 2002/07/14 03:48:45 bgrayson Exp $");
 CVSID_DOT_H(SWAPMETER_H_CVSID);
 
 static int doSwap = 1;
@@ -34,7 +34,9 @@ SwapMeter::SwapMeter( XOSView *parent )
   useSwapCtl = 0;
 #endif
   BSDSwapInit();	//  In kernel.cc
+#if !(defined(XOSVIEW_OPENBSD) && defined(HAVE_SWAPCTL))
   if (!BSDInitSwapInfo())
+#endif
   {
 #ifdef HAVE_SWAPCTL
     //  Set up to use new swap code instead.
@@ -78,11 +80,18 @@ void SwapMeter::getswapinfo( void ){
 
   if (doSwap) {
 #ifdef HAVE_SWAPCTL
+    // Allow the option to use either swapctl() or other method.
     if (useSwapCtl)
       BSDGetSwapCtlInfo(&total_int, &free_int);
     else
 #endif
+#if defined(XOSVIEW_OPENBSD) && defined(HAVE_SWAPCTL)
+      // For OpenBSD, _never_ use the older method if HAVE_SWAPCTL
+      // is set.
+      ;
+#else
       BSDGetSwapInfo (&total_int, &free_int);
+#endif
   }
   else {
     total_int = 1;	/*  So the meter looks blank.  */

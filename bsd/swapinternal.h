@@ -3,16 +3,19 @@
 //  NetBSD distribution.
 //  
 //
-// $Id: swapinternal.h,v 1.6 2002/03/22 03:23:41 bgrayson Exp $
+// $Id: swapinternal.h,v 1.7 2002/07/14 03:48:45 bgrayson Exp $
 //
 
 //  Header file for the swap internal/NetBSD-specific code.
 
+#if !(defined(XOSVIEW_OPENBSD) && defined(HAVE_SWAPCTL))
+// For OpenBSD with swapctl, don't provide the old method at all.
 int
 BSDInitSwapInfo();
 
 void
 BSDGetSwapInfo(int* total, int* free);
+#endif
 
 void
 BSDGetSwapCtlInfo(int* total, int* free);
