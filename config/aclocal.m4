@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.16 1998/03/16 18:10:52 mromberg Exp $
+dnl $Id: aclocal.m4,v 1.17 1998/03/26 21:20:01 bgrayson Exp $
 dnl
 
 dnl Make an absolute symbol for the top of the configuration.
@@ -108,10 +108,14 @@ dnl
         INSTALL_ARGS='-s -g kmem -m 02555'
 	AC_DEFINE(XOSVIEW_NETBSD)
 ])
-dnl  For now, make FreeBSD be a superset of NetBSD.
+
 AC_DEFUN(AC_XOSV_FREEBSD, [
-AC_XOSV_NETBSD
-AC_DEFINE(XOSVIEW_FREEBSD)
+dnl
+dnl FreeBSD also needs to link with libkvm
+dnl
+        EXTRALIBS=-lkvm
+        INSTALL_ARGS='-s -g kmem -m 02555'
+	AC_DEFINE(XOSVIEW_FREEBSD)
 ])
 
 
