@@ -6,7 +6,7 @@
 //  Copyright (c) 1995 Brian Grayson(bgrayson@pine.ece.utexas.edu)
 //
 //
-// $Id: kernel.h,v 1.3 1996/11/19 06:26:45 bgrayson Exp $
+// $Id: kernel.h,v 1.4 1996/12/02 05:02:15 bgrayson Exp $
 //
 
 #include <stdio.h>
@@ -34,6 +34,9 @@ NetBSDNetInit();
 
 void
 NetBSDGetNetInOut (long long * inbytes, long long * outbytes);
+
+int
+NetBSDSwapInit();
 
 int
 NetBSDDiskInit();

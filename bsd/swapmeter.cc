@@ -7,13 +7,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: swapmeter.cc,v 1.3 1996/11/24 04:45:07 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.4 1996/12/02 05:02:17 bgrayson Exp $
 //
 #include "general.h"
 #include "swapmeter.h"
 #include "xosview.h"
 
 #include "swapinternal.h"
+#include "netbsd.h"
 #include <stdlib.h>		//  For atoi().  BCG
 
 CVSID("$Id: ");
@@ -21,7 +22,8 @@ CVSID_DOT_H(SWAPMETER_H_CVSID);
 
 SwapMeter::SwapMeter( XOSView *parent )
 : FieldMeterDecay( parent, 2, "SWAP", "USED/FREE" ){
-  NetBSDInitSwapInfo();
+  NetBSDSwapInit();	//  In netbsd.cc
+  NetBSDInitSwapInfo();	//  In swapinternal.cc
 }
 
 SwapMeter::~SwapMeter( void ){
