@@ -3,7 +3,7 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-// $Id: diskmeter.cc,v 1.3 1999/01/31 12:54:30 mcnab Exp $
+// $Id: diskmeter.cc,v 1.4 1999/01/31 18:06:49 mromberg Exp $
 //
 
 #include "diskmeter.h"
@@ -55,31 +55,46 @@ void DiskMeter::getdiskinfo( void )
         exit( 1 );
         }
 
-    // Find the line which starts with "disk"
+    // Find the line with the rblk
     stats >> buf;
-    while (strncmp(buf, "disk", 4))
+    while (strncmp(buf, "disk_rblk", 9))
         {
         stats.ignore(1024, '\n');
         stats >> buf;
         }
 
-    unsigned long one, two, three, four;
-    stats >>one >> two >> three >> four;
+    unsigned long rone, rtwo, rthree, rfour;
+    stats >>rone >> rtwo >> rthree >> rfour;
+
+    // Now get the writes
+    stats >> buf;
+    while (strncmp(buf, "disk_wblk", 9))
+        {
+        stats.ignore(1024, '\n');
+        stats >> buf;
+        }
+
+    unsigned long wone, wtwo, wthree, wfour;
+    stats >>wone >> wtwo >> wthree >> wfour;
+
+    unsigned long one = rone + wone, two = rtwo + wtwo, 
+      three = rthree + wthree, four = rfour + wfour;
+
     // assume each "unit" is 4k.  This could very well be wrong.
     unsigned long int curr = (one + two + three + four) * 4 * 1024;
     if( prev_ )
-    {
-    	fields_[0] = (curr - prev_) / 1.0;
+        {
+    	fields_[0] = ((curr - prev_) * 1e6) / IntervalTimeInMicrosecs();
     	if (fields_[0] > total_)
-        	total_ = fields_[0];
+            total_ = fields_[0];
     	fields_[1] = total_ - fields_[0];
-    }
+        }
     else 
-    {
-		fields_[0] = 0;
-		fields_[1] = 0;
-    }
-
+        {
+        fields_[0] = 0;
+        fields_[1] = 0;
+        }
+    
     prev_ = curr;
 
     setUsed(fields_[0] * IntervalTimeInMicrosecs()/1e6, total_);
