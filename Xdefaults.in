@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.25 1999/01/23 18:34:26 mromberg Exp $
+!  $Id: Xdefaults.in,v 1.26 1999/01/24 00:53:38 mromberg Exp $
 
 ! General Resources
 
@@ -46,7 +46,7 @@ xosview*cpuInterruptColor : red
 xosview*cpuFreeColor:       aquamarine
 xosview*cpuPriority:        1
 xosview*cpuDecay:           True
-xosview*cpuGraph:           True
+xosview*cpuGraph:           False
 xosview*cpuUsedFormat:	    percent
 
 ! Memory Meter Resources
@@ -109,7 +109,7 @@ xosview*netOutColor:      SlateBlue1
 xosview*netBackground:    aquamarine
 xosview*netPriority:      2
 xosview*netDecay:         True
-xosview*netGraph:         True
+xosview*netGraph:         False
 xosview*netUsedFormat:	  autoscale
 
 !!!
