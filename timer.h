@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: timer.h,v 1.3 1996/11/19 02:13:38 bgrayson Exp $
+// $Id: timer.h,v 1.4 1997/07/18 03:32:35 bgrayson Exp $
 //
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
-#define TIMER_H_CVSID "$Id: timer.h,v 1.3 1996/11/19 02:13:38 bgrayson Exp $"
+#define TIMER_H_CVSID "$Id: timer.h,v 1.4 1997/07/18 03:32:35 bgrayson Exp $"
 
 //
 //                 General purpose interval timer class
@@ -29,7 +29,7 @@ public:
   void start( void ) { gettimeofday( &starttime_, NULL ); }
   void stop( void )  { gettimeofday( &stoptime_, NULL );  }
   //  reports time intervall between calls to start and stop in usec
-  long report( void ) const { 
+  long long report( void ) const { 
     return (stoptime_.tv_sec - starttime_.tv_sec) * 1000000
            + stoptime_.tv_usec - starttime_.tv_usec; 
   }
