@@ -1,5 +1,5 @@
 //  
-// $Id: sarmeter.cc,v 1.1 2002/02/20 11:15:04 eile Exp $
+// $Id: sarmeter.cc,v 1.2 2002/02/20 11:33:14 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 
@@ -16,6 +16,9 @@ size_t SarMeter::readLine( int input, char *buf, size_t max )
     for( readBytes = 0 ; readBytes < max-100; )
     {
         ret = read( input, &buf[readBytes], 100);
+        if( ret < 0 )
+            return readBytes;
+
         readBytes += ret;
 
         if( ret < 100 )
