@@ -2,7 +2,7 @@
 # Linux Makefile template
 #
 #
-# $Id: Makefile.linux.in,v 1.8 1997/11/29 20:58:23 bgrayson Exp $
+# $Id: Makefile.linux.in,v 1.9 1999/01/31 08:51:49 mromberg Exp $
 #
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
@@ -19,6 +19,7 @@ intmeter.o \
 serialmeter.o \
 loadmeter.o \
 btrymeter.o \
+diskmeter.o \
 MeterMaker.o
 
 CFILES := $(OBJS:.o=.cc)
