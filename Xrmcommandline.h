@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.7 1996/12/26 20:18:45 mromberg Exp $
+// $Id: Xrmcommandline.h,v 1.8 1996/12/26 22:14:41 mromberg Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.7 1996/12/26 20:18:45 mromberg Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.8 1996/12/26 22:14:41 mromberg Exp $"
 
 #include <X11/Xresource.h>
 
@@ -52,28 +52,6 @@ static XrmOptionDescRec options[] = {
 { "-page", "*page", XrmoptionNoArg, "False" },
 { "+page", "*page", XrmoptionNoArg, "True" },
 { "-pagespeed", "*pageBandWidth", XrmoptionSepArg, (caddr_t) NULL },
-
-//  Serial Meter Options
-{ "+serial0", "*serial0", XrmoptionNoArg, "True" },
-{ "-serial0", "*serial0", XrmoptionNoArg, "False" },
-{ "+serial1", "*serial1", XrmoptionNoArg, "True" },
-{ "-serial1", "*serial1", XrmoptionNoArg, "False" },
-{ "+serial2", "*serial2", XrmoptionNoArg, "True" },
-{ "-serial2", "*serial2", XrmoptionNoArg, "False" },
-{ "+serial3", "*serial3", XrmoptionNoArg, "True" },
-{ "-serial3", "*serial3", XrmoptionNoArg, "False" },
-{ "+serial4", "*serial4", XrmoptionNoArg, "True" },
-{ "-serial4", "*serial4", XrmoptionNoArg, "False" },
-{ "+serial5", "*serial5", XrmoptionNoArg, "True" },
-{ "-serial5", "*serial5", XrmoptionNoArg, "False" },
-{ "+serial6", "*serial6", XrmoptionNoArg, "True" },
-{ "-serial6", "*serial6", XrmoptionNoArg, "False" },
-{ "+serial7", "*serial7", XrmoptionNoArg, "True" },
-{ "-serial7", "*serial7", XrmoptionNoArg, "False" },
-{ "+serial8", "*serial8", XrmoptionNoArg, "True" },
-{ "-serial8", "*serial8", XrmoptionNoArg, "False" },
-{ "+serial9", "*serial9", XrmoptionNoArg, "True" },
-{ "-serial9", "*serial9", XrmoptionNoArg, "False" },
 
 #ifdef XOSVIEW_NETBSD
 //  Disk Meter Options

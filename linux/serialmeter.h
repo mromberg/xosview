@@ -4,36 +4,35 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: serialmeter.h,v 1.3 1996/12/26 20:19:01 mromberg Exp $
+// $Id: serialmeter.h,v 1.4 1996/12/26 22:14:57 mromberg Exp $
 //
 #ifndef _SERIALMETER_H_
 #define _SERIALMETER_H_
 
 #include "bitmeter.h"
 
-
 class SerialMeter : public BitMeter {
 public:
-  //enum Device { S0, S1, S2, S3 };
   enum Device { S0, S1, S2, S3, S4, S5, S6, S7, S8, S9 };
-  SerialMeter( XOSView *parent, Device device,
-	       const char *title = "", const char *legend ="",
-	       int dolegends = 0, int dousedlegends = 0 );
+  static int numDevices(void) { return 10; }
+
+  SerialMeter( XOSView *parent, Device device);
   ~SerialMeter( void );
-  
+
+  static const char *getResourceName(Device dev);
+
   void checkevent( void );
   
   void checkResources( void );
 
-protected:
+private:
   unsigned short int _port;
-  
-  //static const unsigned short int Ports[4];
-  static const int NUMBER_OF_PORTS;
-  static unsigned short int Ports[];
-  
+  Device _device;
+
   void getserial( void );
   bool getport(unsigned short int port);
+  const char *getTitle(Device dev) const;
+  unsigned short int getPortBase(Device dev) const;
 };
 
 #endif
