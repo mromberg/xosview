@@ -4,10 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: timeval.h,v 1.2 1996/08/14 06:20:09 mromberg Exp $
+// $Id: timeval.h,v 1.3 1996/11/19 02:13:41 bgrayson Exp $
 //
 #ifndef _TIMEVAL_H_
 #define _TIMEVAL_H_
+
+#define TIMEVAL_H_CVSID "$Id: timeval.h,v 1.3 1996/11/19 02:13:41 bgrayson Exp $"
 
 #include <sys/time.h>
 #include <iostream.h>

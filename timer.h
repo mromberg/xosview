@@ -4,10 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: timer.h,v 1.2 1996/08/14 06:20:08 mromberg Exp $
+// $Id: timer.h,v 1.3 1996/11/19 02:13:38 bgrayson Exp $
 //
 #ifndef _TIMER_H_
 #define _TIMER_H_
+
+#define TIMER_H_CVSID "$Id: timer.h,v 1.3 1996/11/19 02:13:38 bgrayson Exp $"
 
 //
 //                 General purpose interval timer class

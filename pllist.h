@@ -4,10 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: pllist.h,v 1.2 1996/08/14 06:20:05 mromberg Exp $
+// $Id: pllist.h,v 1.3 1996/11/19 02:13:34 bgrayson Exp $
 //
 #ifndef _pllist_h
 #define _pllist_h
+
+#define PLLIST_H_CVSID "$Id: pllist.h,v 1.3 1996/11/19 02:13:34 bgrayson Exp $"
 
 #include "llist.h"
 

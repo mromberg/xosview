@@ -4,10 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: llist.h,v 1.2 1996/08/14 06:19:57 mromberg Exp $
+// $Id: llist.h,v 1.3 1996/11/19 02:13:30 bgrayson Exp $
 //
 #ifndef __LLIST_H__
 #define __LLIST_H__
+
+#define LLIST_H_CVSID "$Id: llist.h,v 1.3 1996/11/19 02:13:30 bgrayson Exp $"
 
 #include <stdio.h>
 
