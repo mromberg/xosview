@@ -9,7 +9,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.cc,v 1.13 1998/09/18 18:18:11 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.14 1998/10/20 19:12:44 bgrayson Exp $
 //
 #include <err.h>        //  For err() and warn(), etc.  BCG
 #include <stdlib.h>	//  For use of atoi  BCG
@@ -17,7 +17,7 @@
 #include "diskmeter.h"
 #include "kernel.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
 
-CVSID("$Id: diskmeter.cc,v 1.13 1998/09/18 18:18:11 bgrayson Exp $");
+CVSID("$Id: diskmeter.cc,v 1.14 1998/10/20 19:12:44 bgrayson Exp $");
 CVSID_DOT_H(DISKMETER_H_CVSID);
 
 DiskMeter::DiskMeter( XOSView *parent, float max )
@@ -30,7 +30,15 @@ DiskMeter::DiskMeter( XOSView *parent, float max )
   {
     warnx(
   "The kernel does not seem to have the symbols needed for the DiskMeter.\n"
+#if defined(XOSVIEW_NETBSD)
   "  (A 1.2 kernel or above is probably needed)\n"
+#else
+# if defined(XOSVIEW_FREEBSD)
+  "  (You are probably running a kernel newer than 3.0-19980804-SNAP)\n"
+# else
+  "  (You are probably running a newer or older kernel than any yet used with xosview)\n"
+# endif
+#endif
   "The DiskMeter has been disabled.\n");
     disableMeter ();
   }
