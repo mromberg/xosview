@@ -2,7 +2,7 @@
 # Top level Makefile Template for xosview.
 #
 #
-# $Id: Makefile.top.in,v 1.26 1999/02/24 23:36:53 bgrayson Exp $
+# $Id: Makefile.top.in,v 1.27 1999/11/12 05:13:22 romberg Exp $
 #
 include Makefile.config
 
@@ -16,6 +16,7 @@ meter.o \
 fieldmeter.o \
 fieldmeterdecay.o \
 fieldmetergraph.o \
+bitfieldmeter.o \
 bitmeter.o \
 xosview.o \
 snprintf.o \

@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: MeterMaker.cc,v 1.17 1999/05/17 20:41:33 romberg Exp $
+// $Id: MeterMaker.cc,v 1.18 1999/11/12 05:13:22 romberg Exp $
 //
 #include "MeterMaker.h"
 #include "xosview.h"
@@ -19,6 +19,7 @@
 #include "loadmeter.h"
 #include "btrymeter.h"
 #include "diskmeter.h"
+#include "raidmeter.h"
 
 #include <stdlib.h>
 
@@ -70,6 +71,14 @@ void MeterMaker::makeMeters(void){
       push(new IntMeter(_xos, i));
   }
 
+  // check for the battery meter
   if (_xos->isResourceTrue("battery"))
     push(new BtryMeter(_xos));
+
+  // check for the RAID meter
+  if (_xos->isResourceTrue("RAID")){
+    int RAIDCount = atoi(_xos->getResource("RAIDdevicecount"));
+    for (int i = 0 ; i < RAIDCount ; i++)
+      push(new RAIDMeter(_xos, i));
+  }
 }
