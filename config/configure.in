@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.38 1999/01/31 08:35:11 bgrayson Exp $
+dnl $Id: configure.in,v 1.39 1999/02/16 14:14:12 bgrayson Exp $
 dnl
 AC_INIT(xosview.1)
 CF_TOP_SRCDIR
@@ -195,8 +195,11 @@ dnl
 case $host_os in
 netbsd)
   AC_CHECK_FUNCS(swapctl) 
-  BTRYMETER=btrymeter.o
-  AC_DEFINE(HAVE_BATTERY_METER)
+  #  Only enable the battery meter if it appears we support it.
+  if [ -e /dev/apm ]; then
+    BTRYMETER=btrymeter.o
+    AC_DEFINE(HAVE_BATTERY_METER)
+  fi
   ;;
 esac
 
