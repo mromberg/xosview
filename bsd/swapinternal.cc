@@ -6,7 +6,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.14 1998/04/03 17:08:45 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.15 1998/05/17 21:34:06 bgrayson Exp $
 //
 //  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //
@@ -65,7 +65,9 @@
 //		       code has been removed.  BCG  FIXME SOMEDAY
 
 #include <sys/param.h>
-#include <sys/buf.h>
+//---------------------  It appears buf.h is not needed, and
+//			causes breakage on FreeBSD.
+/*#include <sys/buf.h>*/
 #include <sys/conf.h>
 #include <sys/ioctl.h>
 #include <sys/stat.h>
