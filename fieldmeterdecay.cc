@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: fieldmeterdecay.cc,v 1.13 1999/11/19 09:50:20 bgrayson Exp $
+// $Id: fieldmeterdecay.cc,v 1.14 2001/10/10 15:58:22 eile Exp $
 //
 
 // In order to use the FieldMeterDecay class in place of a FieldMeter class in
@@ -33,7 +33,7 @@
 #include "fieldmeterdecay.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeterdecay.cc,v 1.13 1999/11/19 09:50:20 bgrayson Exp $");
+CVSID("$Id: fieldmeterdecay.cc,v 1.14 2001/10/10 15:58:22 eile Exp $");
 CVSID_DOT_H(FIELDMETERDECAY_H_CVSID);
 
 FieldMeterDecay::FieldMeterDecay( XOSView *parent,
@@ -116,9 +116,9 @@ void FieldMeterDecay::drawfields( int manditory ){
     twidth = (int) (0.5 + (width_ * (float) fields_[i]) / total_); 
     decaytwidth = (int) (0.5 + width_ * decay_[i]);
     if (decaytwidth < 0.0) {
-      cerr << "Error:  FieldMeterDecay " << name() << ":  decaytwidth of " <<
-      decaytwidth << ", width of " << width_ << ", decay_[" << i << "]
-      of " << decay_[i] << endl;
+        cerr << "Error:  FieldMeterDecay " << name() << ":  decaytwidth of ";
+        cerr << decaytwidth << ", width of " << width_ << ", decay_[" << i;
+        cerr << "] of " << decay_[i] << endl;
     }
 
     //  However, due to rounding, we may have gone one
