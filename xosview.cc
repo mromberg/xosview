@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.12 1998/03/27 19:18:16 bgrayson Exp $
+// $Id: xosview.cc,v 1.13 1998/05/17 21:22:28 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -15,7 +15,7 @@
 #include "xosview.h"
 #include "meter.h"
 #include "MeterMaker.h"
-#ifdef XOSVIEW_NETBSD
+#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
 #include "kernel.h"
 #endif
 
@@ -24,7 +24,7 @@ static const char NAME[] = "xosview@";
 
 int MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.12 1998/03/27 19:18:16 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.13 1998/05/17 21:22:28 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -42,7 +42,7 @@ XOSView::XOSView( char * instName, int argc, char *argv[] ) : XWin(),
   if (!MAX_SAMPLES_PER_SECOND)
     MAX_SAMPLES_PER_SECOND = 10;
 #endif
-#ifdef XOSVIEW_NETBSD
+#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
   BSDInit();	/*  Needs to be done before processing of -N option.  */
 #endif
 
@@ -308,7 +308,7 @@ void XOSView::checkArgs (int argc, char** argv) const
 		  argc--;
 		}
 		break;
-#ifdef XOSVIEW_NETBSD
+#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
       case 'N': if (strlen(argv[0]) > 2)
       		  SetKernelName(argv[0]+2);
 		else
