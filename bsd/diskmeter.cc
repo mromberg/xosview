@@ -7,7 +7,7 @@
 //    copyright, whichever you choose.
 //
 //
-// $Id: diskmeter.cc,v 1.2 1997/01/06 04:06:13 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.3 1997/01/19 23:16:12 bgrayson Exp $
 //
 #include "general.h"
 #include "diskmeter.h"
@@ -102,9 +102,6 @@ void DiskMeter::getstats( void ){
     /*  For bytes/sec, we need to scale by our priority and the
      *  sampling time.  */
     
-    /*  So, if priority is 2, we take a sample every 2*SAMPLE_MSECS
-     *  milliseconds (with SAMPLE_MSECS=100, this corresponds to samples
-     *  every 200 ms, or 5 per second).  */
-  setUsed ( fields_[0]*1e3/(SAMPLE_MSECS*priority_), total_);
+  setUsed ( fields_[0]*samplesPerSecond(), total_);
   prevBytes = currBytes;
 }
