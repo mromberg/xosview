@@ -1,4 +1,7 @@
-  /*  $Id: CHANGES,v 1.22 1999/02/25 17:16:35 romberg Exp $  */
+  /*  $Id: CHANGES,v 1.23 1999/07/06 04:14:04 bgrayson Exp $  */
+Changes since xosview-1.7.1
+  BSDI support, courtesy of Tomer Klainer.
+
 Changes since xosview-1.7.0
   Optimised scrolling graph to use XCopyArea.
   Fixes to linux diskmeter.

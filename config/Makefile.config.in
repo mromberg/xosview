@@ -4,11 +4,11 @@
 # The configure script should set up this file for most all cases.
 # One can override compile / link options here if needed.
 #
-# $Id: Makefile.config.in,v 1.13 1999/04/01 21:54:20 romberg Exp $
+# $Id: Makefile.config.in,v 1.14 1999/07/06 04:14:05 bgrayson Exp $
 #
 
 # version number for release
-VERS = 1.7.1
+VERS = 1.7.2
 
 TOP = @TOP_SRCDIR@
 
