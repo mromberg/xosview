@@ -4,19 +4,17 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Xrm.h,v 1.5 1999/01/23 22:20:39 mromberg Exp $
+// $Id: Xrm.h,v 1.6 2003/10/09 03:23:58 bgrayson Exp $
 //
 #ifndef _Xrm_h
 #define _Xrm_h
 
 #include "bool.h"
 
-#define XRM_H_CVSID "$Id: Xrm.h,v 1.5 1999/01/23 22:20:39 mromberg Exp $"
+#define XRM_H_CVSID "$Id: Xrm.h,v 1.6 2003/10/09 03:23:58 bgrayson Exp $"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
-
-class ostream;
 
 class Xrm {
 public:
@@ -31,7 +29,7 @@ public:
   const char* getDisplayName (int argc, char** argv);
   void loadAndMergeResources(int& argc, char** argv, Display* display);
 
-  ostream &dump(ostream &os) const;
+  std::ostream &dump(std::ostream &os) const;
 
 private:
   XrmDatabase _db;
@@ -47,7 +45,7 @@ private:
   static bool _initialized;
 };
 
-inline ostream &operator<<(ostream &os, const Xrm &xrm){
+inline std::ostream &operator<<(std::ostream &os, const Xrm &xrm){
   return xrm.dump(os);
 }
 
