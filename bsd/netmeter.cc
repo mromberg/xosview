@@ -12,17 +12,14 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.cc,v 1.11 1998/04/06 03:20:37 bgrayson Exp $
+// $Id: netmeter.cc,v 1.12 1998/05/29 21:22:10 bgrayson Exp $
 //
+#include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
 #include "netmeter.h"
-#include "xosview.h"
-#include "Host.h"
 #include "kernel.h"
-#include <stdlib.h>		//  For atoi().  BCG
-#include <unistd.h>  /*  For gethostname().  BCG */
 
-CVSID("$Id: netmeter.cc,v 1.11 1998/04/06 03:20:37 bgrayson Exp $");
+CVSID("$Id: netmeter.cc,v 1.12 1998/05/29 21:22:10 bgrayson Exp $");
 CVSID_DOT_H(NETMETER_H_CVSID);
 CVSID_DOT_H2(TIMER_H_CVSID);
 CVSID_DOT_H3(TIMEVAL_H_CVSID);
@@ -34,14 +31,9 @@ NetMeter::NetMeter( XOSView *parent, float max )
   total_ = netBandwidth_;
   _lastBytesIn = _lastBytesOut = 0;
   BSDGetNetInOut (&_lastBytesIn, &_lastBytesOut);
-
-  char hostname[100];
-  gethostname(hostname, 99);
-  _thisHost = new Host(hostname);
 }
 
 NetMeter::~NetMeter( void ){
-  delete _thisHost;
 }
 
 void NetMeter::checkResources( void ){
