@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.20 1999/01/25 05:51:26 bgrayson Exp $
+// $Id: memmeter.cc,v 1.21 1999/01/31 19:57:47 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
@@ -29,7 +29,7 @@
 # include <sys/vmmeter.h>
 #endif
 
-CVSID("$Id: memmeter.cc,v 1.20 1999/01/25 05:51:26 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.21 1999/01/31 19:57:47 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 
 MemMeter::MemMeter( XOSView *parent )
@@ -48,7 +48,7 @@ MemMeter::MemMeter( XOSView *parent )
 MemMeter::~MemMeter( void ){ }
 
 void MemMeter::checkResources( void ){
-  FieldMeter::checkResources();
+  FieldMeterGraph::checkResources();
 
   //  The Active and Inactive colors are new.
   setfieldcolor( 0, parent_->getResource("memActiveColor") );

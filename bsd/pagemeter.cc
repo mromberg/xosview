@@ -13,14 +13,14 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.cc,v 1.12 1998/10/20 19:37:34 bgrayson Exp $
+// $Id: pagemeter.cc,v 1.13 1999/01/31 19:57:47 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
 #include "pagemeter.h"
 #include "kernel.h"		//  For NetBSD Page functions.
 
-CVSID("$Id: pagemeter.cc,v 1.12 1998/10/20 19:37:34 bgrayson Exp $");
+CVSID("$Id: pagemeter.cc,v 1.13 1999/01/31 19:57:47 bgrayson Exp $");
 CVSID_DOT_H(PAGEMETER_H_CVSID);
 
 PageMeter::PageMeter( XOSView *parent, double total )
@@ -37,7 +37,7 @@ PageMeter::PageMeter( XOSView *parent, double total )
 PageMeter::~PageMeter( void ){ }
 
 void PageMeter::checkResources( void ){
-  FieldMeter::checkResources();
+  FieldMeterGraph::checkResources();
 
   //  The Active and Inactive colors are new.
   setfieldcolor( 0, parent_->getResource("pageInColor") );

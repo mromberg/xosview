@@ -13,14 +13,14 @@
 //    authors for a copy.
 //
 //
-// $Id: loadmeter.cc,v 1.11 1999/01/23 18:34:26 mromberg Exp $
+// $Id: loadmeter.cc,v 1.12 1999/01/31 19:57:46 bgrayson Exp $
 //
 #include <stdlib.h>  //  for getloadavg()
 #include "general.h"
 #include "loadmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: loadmeter.cc,v 1.11 1999/01/23 18:34:26 mromberg Exp $");
+CVSID("$Id: loadmeter.cc,v 1.12 1999/01/31 19:57:46 bgrayson Exp $");
 CVSID_DOT_H(LOADMETER_H_CVSID);
 
 LoadMeter::LoadMeter( XOSView *parent )
@@ -31,7 +31,7 @@ LoadMeter::~LoadMeter( void ){
 }
 
 void LoadMeter::checkResources( void ){
-  FieldMeter::checkResources();
+  FieldMeterGraph::checkResources();
 
   warnloadcol_ = parent_->allocColor(parent_->getResource("loadWarnColor"));
   procloadcol_ = parent_->allocColor(parent_->getResource("loadProcColor"));
