@@ -13,10 +13,10 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.h,v 1.20 2002/03/22 03:23:40 bgrayson Exp $
+// $Id: kernel.h,v 1.21 2003/10/09 04:24:01 bgrayson Exp $
 //
 
-#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.20 2002/03/22 03:23:40 bgrayson Exp $"
+#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.21 2003/10/09 04:24:01 bgrayson Exp $"
 
 void
 BSDInit();
@@ -46,7 +46,7 @@ void
 BSDGetCPUTimes(long* timesArray);
 #endif
 
-void
+int
 BSDNetInit();
 
 void
