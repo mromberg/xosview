@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.47 2003/10/10 04:56:51 bgrayson Exp $
+// $Id: kernel.cc,v 1.48 2003/10/10 05:11:29 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -120,7 +120,7 @@ __END_DECLS
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.47 2003/10/10 04:56:51 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.48 2003/10/10 05:11:29 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -326,7 +326,7 @@ OpenKDIfNeeded() {
   //  Look at all of the returned symbols, and check for bad lookups.
   //  (This may be unnecessary, but better to check than not to...  )
   struct nlist * nlp = nlst;
-  while (nlp && nlp->n_name && strcmp(nlp->n_name, DUMMY_SYM)) {
+  while (nlp && nlp->n_name && strncmp(nlp->n_name, DUMMY_SYM, strlen(DUMMY_SYM))) {
     if ((nlp->n_type == 0) || (nlp->n_value == 0))
       /*errx (-1, "kvm_nlist() lookup failed for symbol '%s'.", nlp->n_name);*/
       warnx ("kvm_nlist() lookup failed for symbol '%s'.", nlp->n_name);
