@@ -10,7 +10,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: MeterMaker.cc,v 1.9 1997/11/15 02:56:53 bgrayson Exp $
+// $Id: MeterMaker.cc,v 1.10 1997/12/01 15:19:19 bgrayson Exp $
 //
 #include <stdlib.h>
 #include "general.h"
@@ -30,7 +30,7 @@
 
 CVSID_DOT_H2(PLLIST_H_CVSID);
 CVSID_DOT_H(METERMAKER_H_CVSID);
-CVSID("$Id: MeterMaker.cc,v 1.9 1997/11/15 02:56:53 bgrayson Exp $");
+CVSID("$Id: MeterMaker.cc,v 1.10 1997/12/01 15:19:19 bgrayson Exp $");
 
 MeterMaker::MeterMaker(XOSView *xos){
   _xos = xos;
@@ -50,7 +50,12 @@ void MeterMaker::makeMeters(void){
 #ifndef XOSVIEW_FREEBSD		/*  FreeBSD swap meter isn't done yet.  */
   if (_xos->isResourceTrue("swap"))
     push(new SwapMeter(_xos));
+#endif
 
+  if (_xos->isResourceTrue("page"))
+    push(new PageMeter (_xos, atof(_xos->getResource("pageBandwidth"))));
+
+#ifndef XOSVIEW_FREEBSD		/*  FreeBSD net meter isn't done yet.  */
   // check for the net meter
   if (_xos->isResourceTrue("net"))
     push(new NetMeter(_xos, atof(_xos->getResource("netBandwidth"))));
@@ -60,9 +65,6 @@ void MeterMaker::makeMeters(void){
   if (_xos->isResourceTrue("disk"))
     push(new DiskMeter (_xos, atof(_xos->getResource("diskBandwidth"))));
 #endif
-
-  if (_xos->isResourceTrue("page"))
-    push(new PageMeter (_xos, atof(_xos->getResource("pageBandwidth"))));
 
   //  The serial meters and the interrupt meter are not yet
   //  available for NetBSD.  BCG
