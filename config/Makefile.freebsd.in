@@ -2,7 +2,7 @@
 # FreeBSD Makefile template
 #
 #
-# $Id: Makefile.freebsd.in,v 1.4 1997/11/29 20:58:22 bgrayson Exp $
+# $Id: Makefile.freebsd.in,v 1.5 1998/02/09 11:43:05 bgrayson Exp $
 #
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
@@ -17,16 +17,19 @@ netmeter.o \
 loadmeter.o \
 diskmeter.o \
 pagemeter.o \
+swapmeter.o \
+swapinternal.o \
 kernel.o
 
-#  These next four are not yet supported in the FreeBSD port.
+#  These next two are not yet supported in the FreeBSD port.
 #intmeter.o \
 #serialmeter.o \
-#swapmeter.o \
-#swapinternal.o \
 
 CFILES := $(OBJS:.o=.cc)
-BSDCSRCS := MeterMaker.cc cpumeter.cc memmeter.cc netmeter.cc loadmeter.cc diskmeter.cc pagemeter.cc kernel.cc
+BSDCSRCS := MeterMaker.cc cpumeter.cc memmeter.cc netmeter.cc \
+   loadmeter.cc diskmeter.cc pagemeter.cc kernel.cc swapmeter.cc \
+   swapinternal.cc
+
 BSDHEADERS := $(BSDCSRCS:%.cc=%.h)
 DEPFILES := $(OBJS:%=.%.d)
 
