@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.h,v 1.2 1996/08/14 06:20:57 mromberg Exp $
+// $Id: cpumeter.h,v 1.3 1997/11/23 22:00:04 mromberg Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
@@ -13,18 +13,24 @@
 
 class CPUMeter : public FieldMeterDecay {
 public:
-  CPUMeter( XOSView *parent );
-  ~CPUMeter( void );
+  CPUMeter(XOSView *parent, const char *cpuID = "cpu");
+  ~CPUMeter(void);
 
-  const char *name( void ) const { return "CPUMeter"; }
-  void checkevent( void );
+  const char *name(void) const { return "CPUMeter"; }
+  void checkevent(void);
 
-  void checkResources( void );
+  void checkResources(void);
+
+  static int countCPUs(void);
+  static const char *cpuStr(int num);
 protected:
+  int _lineNum;
   float cputime_[2][4];
   int cpuindex_;
 
-  void getcputime( void );
+  void getcputime(void);
+  int findLine(const char *cpuID);
+  const char *toUpper(const char *str);
 private:
 };
 

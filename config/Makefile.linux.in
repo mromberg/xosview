@@ -2,9 +2,10 @@
 # Linux Makefile template
 #
 #
-# $Id: Makefile.linux.in,v 1.6 1997/07/18 03:44:49 bgrayson Exp $
+# $Id: Makefile.linux.in,v 1.7 1997/11/23 22:00:03 mromberg Exp $
 #
 include ../Makefile.config
+-include ../Makefile.GNU.autodep
 
 CXXFLAGS += -I@top_srcdir@
 
