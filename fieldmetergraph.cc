@@ -8,7 +8,7 @@
 //  Modifications from FieldMeterDecay class done in Oct. 1998
 //    by Scott McNab ( jedi@tartarus.uwa.edu.au )
 //
-// $Id: fieldmetergraph.cc,v 1.3 1999/01/31 19:58:20 bgrayson Exp $
+// $Id: fieldmetergraph.cc,v 1.4 1999/02/19 09:44:25 mcnab Exp $
 //
 
 // In order to use the FieldMeterGraph class in place of a FieldMeter class in
@@ -31,7 +31,7 @@
 #include "fieldmetergraph.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmetergraph.cc,v 1.3 1999/01/31 19:58:20 bgrayson Exp $");
+CVSID("$Id: fieldmetergraph.cc,v 1.4 1999/02/19 09:44:25 mcnab Exp $");
 CVSID_DOT_H(FIELDMETERGRAPH_H_CVSID);
 
 FieldMeterGraph::FieldMeterGraph( XOSView *parent,
@@ -117,44 +117,69 @@ void FieldMeterGraph::drawfields( int manditory )
 		heightfield_[graphpos_*numfields_+i] = a;
 	}
 
-	for( i = 0; i < graphNumCols_; i++ )
+	if( !parent_->isExposed() && parent_->isFullyVisible() )
 	{
-		int y = y_ + height_;
-		int x = x_ + i*width_/graphNumCols_;
-		int barwidth = (x_ + (i+1)*width_/graphNumCols_)-x;
-
-		if( barwidth>0 )
+		// scroll area
+		int col_width = width_/graphNumCols_;
+		if( col_width < 1 )
 		{
-			int barheight;
-			for( j = 0 ; j < numfields_; j++ )
-			{
-				/*  Round up, by adding 0.5 before
-				 *  converting to an int.  */
-				barheight = (int)((heightfield_[i*numfields_+j]*height_)+0.5);
-
-    			parent_->setForeground( colors_[j] );
-    			parent_->setStippleN(j%4);
-
-    			if( barheight > (y-y_) )
-    				barheight = (y-y_);
-
-				// hack to ensure last field always reaches top of graph area
-				if( j == numfields_-1 )
-					barheight = (y-y_);
-	
-    			y -= barheight;
-    			if( barheight>0 )
-					parent_->drawFilledRectangle( x, y, barwidth, barheight );
-			}
+			col_width = 1;
 		}
 
+		int sx = x_ + col_width;
+		int swidth = width_ - col_width;
+		int sheight = height_ + 1;
+		if( sx > x_ && swidth > 0 && sheight > 0 )
+			parent_->copyArea( sx, y_, swidth, sheight, x_, y_ );
+		drawBar( graphNumCols_ - 1 );
 	}
+	else
+	{
+		// need to draw entire graph on expose event
+		for( i = 0; i < graphNumCols_; i++ )
+		{
+			drawBar( i );
+		}
+	}
+
 	graphpos_++;
     parent_->setStippleN(0);	//  Restore all-bits stipple.
     if ( dousedlegends_ )
     {
     	drawused( manditory );
     }
+}
+void FieldMeterGraph::drawBar( int i )
+{
+	int j;
+	int y = y_ + height_;
+	int x = x_ + i*width_/graphNumCols_;
+	int barwidth = (x_ + (i+1)*width_/graphNumCols_)-x;
+
+	if( barwidth>0 )
+	{
+		int barheight;
+		for( j = 0 ; j < numfields_; j++ )
+		{
+			/*  Round up, by adding 0.5 before
+		 	*  converting to an int.  */
+			barheight = (int)((heightfield_[i*numfields_+j]*height_)+0.5);
+
+			parent_->setForeground( colors_[j] );
+  			parent_->setStippleN(j%4);
+
+			if( barheight > (y-y_) )
+  				barheight = (y-y_);
+
+			// hack to ensure last field always reaches top of graph area
+			if( j == numfields_-1 )
+				barheight = (y-y_);
+
+			y -= barheight;
+			if( barheight>0 )
+				parent_->drawFilledRectangle( x, y, barwidth, barheight );
+		}
+	}
 }
 void FieldMeterGraph::checkResources( void )
 {

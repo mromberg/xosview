@@ -1,5 +1,5 @@
 //
-// $Id: xwin.h,v 1.6 1999/01/25 06:21:22 bgrayson Exp $
+// $Id: xwin.h,v 1.7 1999/02/19 09:44:26 mcnab Exp $
 //
 #ifndef _XWIN_H_
 #define _XWIN_H_
@@ -12,7 +12,7 @@
 #include <iostream.h>
 #include <string.h>
 
-#define XWIN_H_CVSID "$Id: xwin.h,v 1.6 1999/01/25 06:21:22 bgrayson Exp $"
+#define XWIN_H_CVSID "$Id: xwin.h,v 1.7 1999/02/19 09:44:26 mcnab Exp $"
 
 class XWin;
 class Xrm;
@@ -79,6 +79,8 @@ public:
     { XFillRectangle( display_, window_, gc_, x, y, width + 1, height + 1 ); }
   void drawString( int x, int y, const char *str )
     { XDrawString( display_, window_, gc_, x, y, str, strlen( str ) ); }
+  void copyArea( int src_x, int src_y, int width, int height, int dest_x, int dest_y )
+    { XCopyArea( display_, window_, window_, gc_, src_x, src_y, width, height, dest_x, dest_y ); }
   int textWidth( const char *str, int n )
     { return XTextWidth( font_, str, n ); }
   int textWidth( const char *str )

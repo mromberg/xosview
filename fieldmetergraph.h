@@ -12,7 +12,7 @@
 #ifndef _FIELDMETERGRAPH_H_
 #define _FIELDMETERGRAPH_H_
 
-#define FIELDMETERGRAPH_H_CVSID "$Id: fieldmetergraph.h,v 1.2 1999/01/23 18:34:26 mromberg Exp $"
+#define FIELDMETERGRAPH_H_CVSID "$Id: fieldmetergraph.h,v 1.3 1999/02/19 09:44:26 mcnab Exp $"
 
 #include "meter.h"
 #include "fieldmeterdecay.h"
@@ -36,6 +36,7 @@ protected:
   int graphpos_;
   float *heightfield_;
 private:
+  void drawBar( int i );
 };
 
 #endif

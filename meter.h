@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: meter.h,v 1.6 1999/01/23 18:34:26 mromberg Exp $
+// $Id: meter.h,v 1.7 1999/02/19 09:44:26 mcnab Exp $
 //
 #ifndef _METER_H_
 #define _METER_H_
 
-#define METER_H_CVSID "$Id: meter.h,v 1.6 1999/01/23 18:34:26 mromberg Exp $"
+#define METER_H_CVSID "$Id: meter.h,v 1.7 1999/02/19 09:44:26 mcnab Exp $"
 
 #include <stdio.h>
 #include "xosview.h"	//  To grab MAX_SAMPLES_PER_SECOND.
@@ -43,6 +43,11 @@ public:
     counter_ = (counter_ + 1) % priority_;
     return !rval;
   }
+
+  int getX() const { return x_; }
+  int getY() const { return y_; }
+  int getWidth() const { return width_; }
+  int getHeight() const { return height_; }
 
   virtual void checkResources( void );
 
