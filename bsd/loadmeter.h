@@ -6,11 +6,12 @@
 //  Most of this code was written by Werner Fink <werner@suse.de>
 //  Only small changes were made on my part (M.R.)
 //
-// $Id: loadmeter.h,v 1.3 1996/11/19 06:34:33 bgrayson Exp $
+// $Id: loadmeter.h,v 1.4 1996/11/24 04:37:56 bgrayson Exp $
 //
 #ifndef _LOADMETER_H_
 #define _LOADMETER_H_
 
+#define LOADMETER_H_CVSID "$Id: "
 
 #include "fieldmeterdecay.h"
 
