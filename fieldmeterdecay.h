@@ -7,7 +7,7 @@
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
 //  This file may be distributed under terms of the GPL or of the BSD
-//    copyright, whichever you choose.  The full copyright notices are
+//    license, whichever you choose.  The full license notices are
 //    contained in the files COPYING.GPL and COPYING.BSD, which you
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
@@ -16,7 +16,7 @@
 #ifndef _FIELDMETERDECAY_H_
 #define _FIELDMETERDECAY_H_
 
-#define FIELDMETERDECAY_H_CVSID "$Id: fieldmeterdecay.h,v 1.3 1997/02/14 06:12:06 bgrayson Exp $"
+#define FIELDMETERDECAY_H_CVSID "$Id: fieldmeterdecay.h,v 1.4 1997/02/14 07:22:01 bgrayson Exp $"
 
 #include "meter.h"
 #include "fieldmeter.h"

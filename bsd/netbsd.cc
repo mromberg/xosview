@@ -6,12 +6,12 @@
 //    projects.
 // dummy device ignore code by : David Cuka (dcuka@intgp1.ih.att.com)
 //  This file may be distributed under terms of the GPL or of the BSD
-//    copyright, whichever you choose.  The full copyright notices are
+//    license, whichever you choose.  The full license notices are
 //    contained in the files COPYING.GPL and COPYING.BSD, which you
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netbsd.cc,v 1.6 1997/02/14 06:01:53 bgrayson Exp $
+// $Id: netbsd.cc,v 1.7 1997/02/14 07:24:06 bgrayson Exp $
 //
 #include "general.h"
 #include <stdio.h>
@@ -29,7 +29,7 @@
 #include <net/if.h>             /*    NetMeter helper functions.  */
 #include "netbsd.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: netbsd.cc,v 1.6 1997/02/14 06:01:53 bgrayson Exp $");
+CVSID("$Id: netbsd.cc,v 1.7 1997/02/14 07:24:06 bgrayson Exp $");
 CVSID_DOT_H(NETBSD_H_CVSID);
 
 

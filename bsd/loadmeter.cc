@@ -7,13 +7,13 @@
 //  And the near-trivial port to NetBSD was done by Brian Grayson
 //
 //  This file may be distributed under terms of the GPL or of the BSD
-//    copyright, whichever you choose.  The full copyright notices are
+//    license, whichever you choose.  The full license notices are
 //    contained in the files COPYING.GPL and COPYING.BSD, which you
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
 //
-// $Id: loadmeter.cc,v 1.6 1997/02/14 06:01:39 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.7 1997/02/14 07:24:02 bgrayson Exp $
 //
 #include "general.h"
 #include "loadmeter.h"
@@ -21,7 +21,7 @@
 #include <stdlib.h>  //  for getloadavg()
 #include <stdio.h>
 
-CVSID("$Id: loadmeter.cc,v 1.6 1997/02/14 06:01:39 bgrayson Exp $");
+CVSID("$Id: loadmeter.cc,v 1.7 1997/02/14 07:24:02 bgrayson Exp $");
 CVSID_DOT_H(LOADMETER_H_CVSID);
 
 LoadMeter::LoadMeter( XOSView *parent )

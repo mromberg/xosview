@@ -6,12 +6,12 @@
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
 //  This file may be distributed under terms of the GPL or of the BSD
-//    copyright, whichever you choose.  The full copyright notices are
+//    license, whichever you choose.  The full license notices are
 //    contained in the files COPYING.GPL and COPYING.BSD, which you
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-#define GENERAL_H_CVSID "$Id: general.h,v 1.2 1997/02/14 06:12:07 bgrayson Exp $"
+#define GENERAL_H_CVSID "$Id: general.h,v 1.3 1997/02/14 07:22:03 bgrayson Exp $"
 
   /*  This file should be included by every .cc file, after any system
       includes but before any local includes.  It should NOT be included

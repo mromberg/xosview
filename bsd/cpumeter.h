@@ -7,17 +7,17 @@
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
 //  This file may be distributed under terms of the GPL or of the BSD
-//    copyright, whichever you choose.  The full copyright notices are
+//    license, whichever you choose.  The full license notices are
 //    contained in the files COPYING.GPL and COPYING.BSD, which you
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: cpumeter.h,v 1.6 1997/02/14 06:01:30 bgrayson Exp $
+// $Id: cpumeter.h,v 1.7 1997/02/14 07:24:13 bgrayson Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
 
-#define CPUMETER_H_CVSID "$Id: cpumeter.h,v 1.6 1997/02/14 06:01:30 bgrayson Exp $"
+#define CPUMETER_H_CVSID "$Id: cpumeter.h,v 1.7 1997/02/14 07:24:13 bgrayson Exp $"
 
 #include "fieldmeterdecay.h"
 

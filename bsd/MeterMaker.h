@@ -5,17 +5,17 @@
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
 //  This file may be distributed under terms of the GPL or of the BSD
-//    copyright, whichever you choose.  The full copyright notices are
+//    license, whichever you choose.  The full license notices are
 //    contained in the files COPYING.GPL and COPYING.BSD, which you
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: MeterMaker.h,v 1.4 1997/02/14 06:01:26 bgrayson Exp $
+// $Id: MeterMaker.h,v 1.5 1997/02/14 07:24:11 bgrayson Exp $
 //
 #ifndef _MeterMaker_h
 #define _MeterMaker_h
 
-#define METERMAKER_H_CVSID "$Id: MeterMaker.h,v 1.4 1997/02/14 06:01:26 bgrayson Exp $"
+#define METERMAKER_H_CVSID "$Id: MeterMaker.h,v 1.5 1997/02/14 07:24:11 bgrayson Exp $"
 
 #include "pllist.h"
 
