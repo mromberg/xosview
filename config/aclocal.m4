@@ -3,13 +3,21 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.9 1997/10/19 19:12:17 mromberg Exp $
+dnl $Id: aclocal.m4,v 1.10 1997/11/17 07:44:26 mromberg Exp $
 dnl
 
 AC_DEFUN(AC_XOSV_LINUX, [
 
 EXTRA_OUT_FILES="$EXTRA_OUT_FILES \
   linux/memstat/Makefile:config/Makefile.linux.memstat.in"
+
+dnl
+dnl Define GNULIBC for the new GNU libc for linux
+dnl
+if test "$host_os" == "linux-gnulibc2"; then
+AC_DEFINE(GNULIBC)
+echo "GNULIBC"
+fi
 
 dnl
 dnl Add a switch to add -DUSESYSCALLS for linux.

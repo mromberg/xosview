@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.6 1997/10/12 06:33:55 mromberg Exp $
+// $Id: netmeter.cc,v 1.7 1997/11/17 07:44:26 mromberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -34,8 +34,13 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
+#ifdef GNULIBC
+#include <net/if.h>
+#else
 #include <linux/if.h>
+#endif
 #include <netinet/in.h>
+#include <errno.h>
 
 static const char NETFILENAME[] = "/proc/net/ip_acct";
 
