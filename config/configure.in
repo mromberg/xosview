@@ -1,7 +1,8 @@
 dnl
-dnl $Id: configure.in,v 1.20 1998/02/12 05:14:28 bgrayson Exp $
+dnl $Id: configure.in,v 1.21 1998/02/24 17:04:14 mromberg Exp $
 dnl
 AC_INIT(xosview.1)
+CF_TOP_SRCDIR
 AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_HOST
 AC_PROG_CXX

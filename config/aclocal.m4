@@ -3,8 +3,16 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.14 1997/12/06 23:23:01 mromberg Exp $
+dnl $Id: aclocal.m4,v 1.15 1998/02/24 17:04:14 mromberg Exp $
 dnl
+
+dnl Make an absolute symbol for the top of the configuration.
+dnl
+AC_DEFUN([CF_TOP_SRCDIR],
+[TOP_SRCDIR=`cd $srcdir;pwd`
+AC_SUBST(TOP_SRCDIR)
+])dnl
+
 
 AC_DEFUN(AC_SYS_LINUX_VERS,[[
 changequote(<<, >>)
