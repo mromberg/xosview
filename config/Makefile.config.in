@@ -4,7 +4,7 @@
 # The configure script should set up this file for most all cases.
 # One can override compile / link options here if needed.
 #
-# $Id: Makefile.config.in,v 1.20 2001/10/09 02:50:39 bgrayson Exp $
+# $Id: Makefile.config.in,v 1.21 2001/10/10 02:21:54 bgrayson Exp $
 #
 
 # version number for release
@@ -22,7 +22,7 @@ CXX           = @CXX@
 #-----------------------------------------------------------------
 
 # Optimized CXXFLAGS
-CXXFLAGS      += $(CFLAGS) -Wall -O4 -pipe -I@x_includes@ \
+CXXFLAGS      += $(CFLAGS) @EXTRA_CXXFLAGS@ -I@x_includes@ \
                 -DXOSVIEW_VERSION=\"$(VERS)\" -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
 # DEBUG CXXFLAGS
 #CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pipe -I@x_includes@ \
