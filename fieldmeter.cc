@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.13 1998/04/06 03:24:16 bgrayson Exp $
+// $Id: fieldmeter.cc,v 1.14 1998/04/06 20:10:12 bgrayson Exp $
 //
 #include <fstream.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.13 1998/04/06 03:24:16 bgrayson Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.14 1998/04/06 20:10:12 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -181,7 +181,13 @@ void FieldMeter::drawused( int manditory ){
        *  999.5, if not rounded up to 1.0 K, will be rounded by the
        *  %.0f to be 1000, which is too wide.  So anything at or above
        *  999.5 needs to be bumped up.  */
-    if (used_ >= 999.5*1000*1000)
+    if (used_ >= 999.5*1000*1000*1000*1000*1000*1000)
+	{scale='E'; scaled_used = used_/1024/1024/1024/1024/1024/1024;}
+    else if (used_ >= 999.5*1000*1000*1000*1000)
+	{scale='P'; scaled_used = used_/1024/1024/1024/1024/1024;}
+    else if (used_ >= 999.5*1000*1000*1000)
+	{scale='T'; scaled_used = used_/1024/1024/1024/1024;}
+    else if (used_ >= 999.5*1000*1000)
 	{scale='G'; scaled_used = used_/1024/1024/1024;}
     else if (used_ >= 999.5*1000)
 	{scale='M'; scaled_used = used_/1024/1024;}
