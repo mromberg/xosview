@@ -6,7 +6,7 @@
 //  Copyright (c) 1995 Brian Grayson(bgrayson@pine.ece.utexas.edu)
 //
 //
-// $Id: kernel.h,v 1.2 1996/08/14 06:21:41 mromberg Exp $
+// $Id: kernel.h,v 1.3 1996/11/19 06:26:45 bgrayson Exp $
 //
 
 #include <stdio.h>
@@ -16,6 +16,12 @@
 
 #include <sys/socket.h>
 #include <net/if.h>
+
+void
+NetBSDInit();
+
+void
+SetKernelName(const char* const kernelName);
 
 void
 NetBSDCPUInit();
@@ -29,4 +35,9 @@ NetBSDNetInit();
 void
 NetBSDGetNetInOut (long long * inbytes, long long * outbytes);
 
+int
+NetBSDDiskInit();
+
+void
+NetBSDGetDiskXFerBytes (unsigned long long * bytes);
 #endif
