@@ -12,15 +12,21 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.h,v 1.1 1997/07/18 03:37:33 bgrayson Exp $
+// $Id: pagemeter.h,v 1.2 1998/03/30 20:42:14 bgrayson Exp $
 //
 #ifndef _PAGEMETER_H_
 #define _PAGEMETER_H_
 
-#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.1 1997/07/18 03:37:33 bgrayson Exp $"
+#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.2 1998/03/30 20:42:14 bgrayson Exp $"
 
 #include "fieldmeterdecay.h"
+#if defined(UVM)
+#include <sys/param.h>
+#include <vm/vm.h>
+#include <uvm/uvm_extern.h>
+#else
 #include <sys/vmmeter.h>
+#endif
 
 class PageMeter : public FieldMeterDecay {
 public:
@@ -35,7 +41,11 @@ protected:
 
   void getpageinfo( void );
 private:
+#if defined(UVM)
+  struct uvmexp	prev_;
+#else
   struct vmmeter prev_;
+#endif
 };
 
 
