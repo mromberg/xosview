@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.10 1998/05/16 20:31:46 mromberg Exp $
+// $Id: netmeter.cc,v 1.11 1998/05/19 05:42:12 mromberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -119,7 +119,6 @@ void NetMeter::checkeventNew(void)
 
     unsigned long in, out, ig;
     unsigned long totin = 0, totout = 0;
-    char buf[256];
     
     fields_[2] = maxpackets_;     // assume no
     fields_[0] = fields_[1] = 0;  // network activity
@@ -131,7 +130,8 @@ void NetMeter::checkeventNew(void)
 
     while (!ifs.eof())
         {
-        ifs >> buf >> in >> ig >> ig >> ig >> ig >> ig >> ig >> ig >> out;
+        ifs.ignore(1024, ':');
+        ifs >> in >> ig >> ig >> ig >> ig >> ig >> ig >> ig >> out;
 
         if (!ifs.eof())
             {
