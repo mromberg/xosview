@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.9 1996/12/26 20:18:52 mromberg Exp $
+dnl $Id: configure.in,v 1.10 1997/01/14 17:57:06 bgrayson Exp $
 dnl
 AC_INIT(xosview.1)
 AC_CONFIG_AUX_DIR(config)
@@ -7,7 +7,8 @@ AC_CANONICAL_HOST
 AC_PROG_CXX
 AC_PATH_X
 dnl AC_PREFIX_PROGRAM(X)
-AC_PREFIX_DEFAULT(/usr/X11)
+dnl AC_PREFIX_DEFAULT(/usr/X11)	dnl No longer needed with our
+dnl 				x_includes magic in Makefile.top.in.
 AC_SUBST(x_includes)
 AC_SUBST(x_libraries)
 AC_PROG_INSTALL
