@@ -10,7 +10,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: MeterMaker.cc,v 1.18 1999/11/17 05:53:02 bgrayson Exp $
+// $Id: MeterMaker.cc,v 1.19 2001/10/09 02:37:15 bgrayson Exp $
 //
 #include <stdlib.h>
 #include "general.h"
@@ -33,7 +33,7 @@
 
 CVSID_DOT_H2(PLLIST_H_CVSID);
 CVSID_DOT_H(METERMAKER_H_CVSID);
-CVSID("$Id: MeterMaker.cc,v 1.18 1999/11/17 05:53:02 bgrayson Exp $");
+CVSID("$Id: MeterMaker.cc,v 1.19 2001/10/09 02:37:15 bgrayson Exp $");
 
 MeterMaker::MeterMaker(XOSView *xos){
   _xos = xos;
@@ -73,6 +73,8 @@ void MeterMaker::makeMeters(void){
   }
 
 #ifdef HAVE_BATTERY_METER
+  //  NOTE:  Only xosview for NetBSD (out of all the BSDs) currently
+  //  supports the Battery Meter.
   //  This one is done in its own file, not kernel.cc
   if (_xos->isResourceTrue("battery"))
       push(new BtryMeter(_xos));
