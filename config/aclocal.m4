@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.7 1996/11/19 06:13:21 bgrayson Exp $
+dnl $Id: aclocal.m4,v 1.8 1997/08/09 01:15:51 bgrayson Exp $
 dnl
 
 AC_DEFUN(AC_XOSV_LINUX, [
@@ -76,6 +76,11 @@ dnl
         EXTRALIBS=-lkvm
         INSTALL_ARGS='-s -g kmem -m 02555'
 	AC_DEFINE(XOSVIEW_NETBSD)
+])
+dnl  For now, make FreeBSD be a superset of NetBSD.
+AC_DEFUN(AC_XOSV_FREEBSD, [
+AC_XOSV_NETBSD
+AC_DEFINE(XOSVIEW_FREEBSD)
 ])
 
 
