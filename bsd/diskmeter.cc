@@ -9,7 +9,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.cc,v 1.15 1998/10/20 19:37:33 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.16 1999/01/18 09:49:47 bgrayson Exp $
 //
 #include <err.h>        //  For err() and warn(), etc.  BCG
 #include <stdlib.h>	//  For use of atoi  BCG
@@ -17,7 +17,7 @@
 #include "diskmeter.h"
 #include "kernel.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
 
-CVSID("$Id: diskmeter.cc,v 1.15 1998/10/20 19:37:33 bgrayson Exp $");
+CVSID("$Id: diskmeter.cc,v 1.16 1999/01/18 09:49:47 bgrayson Exp $");
 CVSID_DOT_H(DISKMETER_H_CVSID);
 
 DiskMeter::DiskMeter( XOSView *parent, float max )
@@ -114,6 +114,12 @@ void DiskMeter::getstats( void ){
      *  sampling time.  */
     
   setUsed ( fields_[0]*IntervalTimeInMicrosecs()/1e6, total_);
+#ifdef HAVE_DEVSTAT
+  /*  The devstat library provides a differential value already,
+   *  so we should compare against 0 each time.  */
+  prevBytes = currBytes = 0;
+#else
   prevBytes = currBytes;
+#endif
   IntervalTimerStart();
 }
