@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.cc,v 1.7 1998/03/07 21:47:31 mromberg Exp $
+// $Id: intmeter.cc,v 1.8 1998/05/30 21:56:27 mromberg Exp $
 //
 #include "intmeter.h"
 #include "xosview.h"
@@ -52,6 +52,7 @@ void IntMeter::checkResources( void ){
   BitMeter::checkResources();
   onColor_  = parent_->allocColor( parent_->getResource( "intOnColor" ) );
   offColor_ = parent_->allocColor( parent_->getResource( "intOffColor" ) );
+  priority_ = atoi(parent_->getResource("intPriority"));
 }
 
 float IntMeter::getLinuxVersion(void) {
