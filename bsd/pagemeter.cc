@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.cc,v 1.3 1997/08/09 01:31:09 bgrayson Exp $
+// $Id: pagemeter.cc,v 1.4 1997/10/28 00:50:18 bgrayson Exp $
 //
 #include "general.h"
 #include "pagemeter.h"
@@ -25,7 +25,7 @@
 #include <stdlib.h>		//  For atoi().  BCG
 #include "kernel.h"		//  For NetBSD Page functions.
 
-CVSID("$Id: pagemeter.cc,v 1.3 1997/08/09 01:31:09 bgrayson Exp $");
+CVSID("$Id: pagemeter.cc,v 1.4 1997/10/28 00:50:18 bgrayson Exp $");
 CVSID_DOT_H(PAGEMETER_H_CVSID);
 
 PageMeter::PageMeter( XOSView *parent, double total )
@@ -64,8 +64,8 @@ void PageMeter::getpageinfo (void) {
   fields_[0] = vm.v_vnodein - prev_.v_vnodein;
   fields_[1] = vm.v_vnodeout - prev_.v_vnodeout;
 #else
-  fields_[0] = vm.v_pageins - prev_.v_pageins;
-  fields_[1] = vm.v_pageouts - prev_.v_pageouts;
+  fields_[0] = vm.v_pgpgin - prev_.v_pgpgin;
+  fields_[1] = vm.v_pgpgout - prev_.v_pgpgout;
 #endif
   prev_ = vm;
 //  End NetBSD-specific code...
