@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.cc,v 1.2 1998/02/12 05:04:04 bgrayson Exp $
+// $Id: intmeter.cc,v 1.3 1998/03/26 20:58:02 bgrayson Exp $
 //
 #include "intmeter.h"
 #include "xosview.h"
@@ -22,7 +22,7 @@ IntMeter::IntMeter( XOSView *parent,
   //  ought to auto-detect how many there are.  I'll delay adding the
   //  code to do this for a few weeks, so that we can get version 1.6
   //  out the door.
-  : BitMeter( parent, "INTS", "IRQs (0 - 15)", 16, 
+  : BitMeter( parent, "INTS", "IRQs", BSDNumInts(), 
               dolegends, dousedlegends ) {
   for ( int i = 0 ; i < 16 ; i++ )
     irqs_[i] = lastirqs_[i] = 0;
