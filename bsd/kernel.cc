@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.25 1998/05/17 21:22:29 bgrayson Exp $
+// $Id: kernel.cc,v 1.26 1998/05/17 21:54:57 bgrayson Exp $
 //
 #include "general.h"
 #include <stdio.h>
@@ -26,9 +26,8 @@
                                       many cpu states there are.  */
 #ifndef XOSVIEW_FREEBSD
 #include <sys/device.h>
-#ifndef XOSVIEW_OPENBSD		/*  OpenBSD doesn't like this include.  */
-#include <sys/disklabel.h>
-#endif
+/*  ----------  XXX  Still need to see if any of these includes
+ *  can be removed.  bgrayson  */
 #include <sys/disk.h>		/*  For disk statistics.  */
 #endif
 
@@ -57,7 +56,7 @@
 
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.25 1998/05/17 21:22:29 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.26 1998/05/17 21:54:57 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
