@@ -1,6 +1,9 @@
-  /*  $Id: CHANGES,v 1.33 2002/05/29 17:14:36 romberg Exp $  */
+  /*  $Id: CHANGES,v 1.34 2002/05/29 17:26:59 romberg Exp $  */
 
 Changes since xosview-1.8.0
+
+- Add -Wno-deprecated for gcc builds.  This avoids warnings about
+  the new C++ header files.  This should be fixed for the next release.
 
 - Change MAX_PROC_LENGTH in linux/cpumeter to 4096 to avoid
   an infinite loop with redhat 7.3

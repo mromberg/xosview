@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.29 2001/10/10 15:58:22 eile Exp $
+dnl $Id: aclocal.m4,v 1.30 2002/05/29 17:27:00 romberg Exp $
 dnl
 
 dnl Make an absolute symbol for the top of the configuration.
@@ -55,7 +55,7 @@ fi
 
 dnl	For gcc-based (or primarily-gcc) OS's, set EXTRA_CXXFLAGS to -Wall -O4 -pipe.
 AC_DEFUN(AC_GCC_EXTRA_CXXFLAGS, [
-	EXTRA_CXXFLAGS="-Wall -O4 -pipe"
+	EXTRA_CXXFLAGS="-Wall -O4 -pipe -Wno-deprecated"
 ])
 
 AC_DEFUN(SMP_LINUX,
@@ -189,7 +189,7 @@ AC_DEFUN(AC_XOSV_NETBSD, [
 dnl  Remember the full version in host_os_full
 	host_os_full=$host_os
 dnl  We need to strip the version numbers off the $host_os string (netbsd1.1)
-dnl  Let's just be lazy -- set host_os to be netbsd.  
+dnl  Let's just be lazy -- set host_os to be netbsd.
 	host_os=netbsd
 dnl
 dnl Netbsd needs to link with libkvm
@@ -239,7 +239,7 @@ dnl
 ])
 
 AC_DEFUN(AC_XOSV_IRIX65, [
-	dnl	
+	dnl
 	EXTRALIBS="-lrpcsvc"
     AC_DEFINE(_G_HAVE_BOOL)
     AC_DEFINE(HAVE_SNPRINTF)
