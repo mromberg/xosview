@@ -1,5 +1,7 @@
-  /*  $Id: CHANGES,v 1.16 1999/01/23 18:34:26 mromberg Exp $  */
+  /*  $Id: CHANGES,v 1.17 1999/01/24 00:41:00 mromberg Exp $  */
 Changes since xosview-1.6.1
+  Check for and set -D__SMP__ if the linux memstat module is built on a
+    SMP system.
   New option to omit the meter captions (+-captions) added by
     Christian 'Dr. Disk' Hechelmann <drdisk@tc-gruppe.de>
   New graphing meter display mode added.
