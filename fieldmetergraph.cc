@@ -8,7 +8,7 @@
 //  Modifications from FieldMeterDecay class done in Oct. 1998
 //    by Scott McNab ( jedi@tartarus.uwa.edu.au )
 //
-// $Id: fieldmetergraph.cc,v 1.7 2002/03/22 03:45:20 bgrayson Exp $
+// $Id: fieldmetergraph.cc,v 1.8 2003/10/09 03:34:11 bgrayson Exp $
 //
 
 // In order to use the FieldMeterGraph class in place of a FieldMeter class in
@@ -24,14 +24,18 @@
 //   5.  Make the checkResources () function in the meter set the 
 //	 useGraph_ variable according to the, e.g., xosview*cpuGraph resource.
 
+#ifdef HAVE_FSTREAM
+#include <fstream>
+#else
 #include <fstream.h>
+#endif
 #include <math.h>		//  For fabs()
 #include "general.h"
 #include "fieldmeter.h"
 #include "fieldmetergraph.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmetergraph.cc,v 1.7 2002/03/22 03:45:20 bgrayson Exp $");
+CVSID("$Id: fieldmetergraph.cc,v 1.8 2003/10/09 03:34:11 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETERGRAPH_H_CVSID);
 
 FieldMeterGraph::FieldMeterGraph( XOSView *parent,
