@@ -1,6 +1,6 @@
 '\" t
 .\" @(#)xosview.1	1.7.0 1/99 "
-.TH XOSVIEW 1.7.0 "$Date: 1999/01/31 20:39:51 $"
+.TH XOSVIEW 1.7.0 "$Date: 1999/02/01 17:43:47 $"
 .UC
 .SH NAME
 xosview \- X based system monitor
@@ -156,7 +156,7 @@ an abbreviation for all three of the free BSD operating systems
    all platforms: used | free
 
 \fBDisk Usage (bytes/sec)\fP
-   Linux  : transferred | idle
+   Linux  : in  |  out  | idle
    *BSD   : transferred | idle
    HPUX   : < Not Supported >
 
@@ -688,6 +688,16 @@ This number is used to specify the expected maximum bandwidth in bytes
 per second for the disk meter.
 .RE
 
+xosview*diskWriteColor: \fIcolor\fP
+.RS
+This color will be used for the linux meter to show writes.
+.RE
+
+xosview*diskReadColor: \fIcolor\fP
+.RS
+This color will be used for the linux meter to show reads.
+.RE
+
 .\"  Priority, decay, usedFormat resources:
 .pp disk
 .dc disk
@@ -737,7 +747,7 @@ as up-to-date.
 
 .SH MAN PAGE REVISION
 
-$Id: xosview.1,v 1.32 1999/01/31 20:39:51 bgrayson Exp $
+$Id: xosview.1,v 1.33 1999/02/01 17:43:47 mromberg Exp $
 
 .SH AUTHORS
 
