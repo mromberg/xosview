@@ -4,14 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: main.cc,v 1.5 1998/09/18 19:59:03 bgrayson Exp $
+// $Id: main.cc,v 1.6 1999/11/05 05:39:03 romberg Exp $
 //
 #include "general.h"
 #include "xosview.h"
 
-CVSID("$Id: main.cc,v 1.5 1998/09/18 19:59:03 bgrayson Exp $");
+CVSID("$Id: main.cc,v 1.6 1999/11/05 05:39:03 romberg Exp $");
 
-main( int argc, char *argv[] ) {
+int main( int argc, char *argv[] ) {
   /*  Icky.  Need to check for -name option here.  */
   char** argp = argv;
   char* instanceName = "xosview";	// Default value.
@@ -24,4 +24,6 @@ main( int argc, char *argv[] ) {
   XOSView xosview( instanceName, argc, argv );
 
   xosview.run();
+
+  return 0;
 }

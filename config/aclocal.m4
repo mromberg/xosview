@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.24 1999/07/06 04:06:16 bgrayson Exp $
+dnl $Id: aclocal.m4,v 1.25 1999/11/05 05:39:04 romberg Exp $
 dnl
 
 dnl Make an absolute symbol for the top of the configuration.
@@ -126,7 +126,13 @@ dnl
 dnl If this module is to be built then check to see if we can
 dnl use MODVERSIONS.
 dnl
-AC_CHECK_HEADER(linux/modversions.h, [USE_MOD_VERSIONS=-DMODVERSIONS])
+AC_MSG_CHECKING(for MODVERSIONS)
+AC_EGREP_CPP(yes,
+[#include <linux/config.h>
+#ifdef CONFIG_MODVERSIONS
+yes
+#endif
+], [USE_MOD_VERSIONS=-DMODVERSIONS] AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
 SMP_LINUX
 INSTALL_ARGS='-s -m 4755'
 fi
@@ -140,7 +146,14 @@ dnl
 dnl If this module is to be built then check to see if we can
 dnl use MODVERSIONS.
 dnl
-        AC_CHECK_HEADER(linux/modversions.h, [USE_MOD_VERSIONS=-DMODVERSIONS])
+dnl        AC_CHECK_HEADER(linux/modversions.h, [USE_MOD_VERSIONS=-DMODVERSIONS])
+        AC_MSG_CHECKING(for MODVERSIONS)
+        AC_EGREP_CPP(yes,
+[#include <linux/config.h>
+#ifdef CONFIG_MODVERSIONS
+yes
+#endif
+], [USE_MOD_VERSIONS=-DMODVERSIONS] AC_MSG_RESULT(yes), AC_MSG_RESULT(no))
         SMP_LINUX
 else
         MEMSTAT=

@@ -4,13 +4,13 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: llist.cc,v 1.3 1996/11/19 03:59:18 bgrayson Exp $
+// $Id: llist.cc,v 1.4 1999/11/05 05:39:03 romberg Exp $
 //
 #include <iostream.h>
 #include "general.h"
 #include "llist.h"
 
-CVSID("$Id: llist.cc,v 1.3 1996/11/19 03:59:18 bgrayson Exp $");
+CVSID("$Id: llist.cc,v 1.4 1999/11/05 05:39:03 romberg Exp $");
 CVSID_DOT_H(LLIST_H_CVSID);
 
 LList::LNode::LNode( void *data ){
@@ -266,9 +266,9 @@ int LList::restore( int size, FILE *fp ){
 }
 
 void LList::kill( void ){
-  while ( n_ ) {
-    delete pop();
-  }
+//  while ( n_ ) {
+//    delete pop();
+//  }
 }
 
 
