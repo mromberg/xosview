@@ -1,4 +1,4 @@
-Revision: $Id: TODO,v 1.8 1998/04/02 21:03:47 bgrayson Exp $
+Revision: $Id: TODO,v 1.9 1998/04/06 03:26:13 bgrayson Exp $
 
 * Do if(dolegends_) fix for loadmeter.cc for all ports.
 * Add a version string, so that xosview -v prints out the version.
@@ -54,3 +54,8 @@ x Add in support and auto-detect for new NetBSD UVM stuff.
     much for my taste.  bgrayson
   
   Add in the pixmap support.
+
+* The Netmeter under *BSD has wrap problems:  the internal
+    counter in the kernel is 32 bits, so once we receive 4G of
+    traffic, we wrap, and it looks like we received a lot of
+    negative traffic?  (I _think_ this is the cause).
