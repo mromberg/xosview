@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.25 1999/02/26 23:28:13 bgrayson Exp $
+// $Id: xosview.cc,v 1.26 1999/02/26 23:36:19 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -25,7 +25,7 @@ static const char NAME[] = "xosview@";
 
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.25 1999/02/26 23:28:13 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.26 1999/02/26 23:36:19 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -238,7 +238,7 @@ XOSView::~XOSView( void ){
   }
 }
 
-void XOSView::draw( void ){
+void XOSView::reallydraw( void ){
   XOSDEBUG("Doing draw.\n");
   clear();
   MeterNode *tmp = meters_;
@@ -252,9 +252,9 @@ void XOSView::draw( void ){
   expose_flag_ = 0;
 }
 
-void XOSView::safedraw ( void ) {
+void XOSView::draw ( void ) {
   if (hasBeenExposedAtLeastOnce() && isAtLeastPartiallyVisible())
-    draw();
+    reallydraw();
   else {
     if (!hasBeenExposedAtLeastOnce()) {
       XOSDEBUG("Skipping draw:  not yet exposed.\n");
@@ -372,16 +372,16 @@ void XOSView::exposeEvent( XExposeEvent &event ) {
   if ( event.count == 0 ) 
   {
     expose_flag_++;
-    safedraw();
+    draw();
   }
   XOSDEBUG("Got expose event.\n");
-  if (!exposed_once_flag_) { exposed_once_flag_ = 1; safedraw(); }
+  if (!exposed_once_flag_) { exposed_once_flag_ = 1; draw(); }
 }
 
 void XOSView::resizeEvent( XEvent & ) {
   resize(); 
   expose_flag_++;
-  safedraw();
+  draw();
 }
 
 
