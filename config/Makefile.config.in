@@ -4,7 +4,7 @@
 # The configure script should set up this file for most all cases.
 # One can override compile / link options here if needed.
 #
-# $Id: Makefile.config.in,v 1.6 1997/07/18 03:48:18 bgrayson Exp $
+# $Id: Makefile.config.in,v 1.7 1997/10/24 02:13:20 bgrayson Exp $
 #
 
 #-----------------------------------------------------------------
@@ -49,7 +49,4 @@ LIBS          += -lmeter -lX11 @EXTRALIBS@
 .cc.o:
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-.%.o.d : %.cc
-	@echo building dependencies for $<
-	@$(SHELL) -ec '$(CXX) -MM $(CXXFLAGS) $< \
-	   | sed '\''s/$*.o/$*.o $@/'\'' > $@'
+@AUTODEPRULE@
