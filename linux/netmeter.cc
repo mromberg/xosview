@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.18 1999/11/07 20:22:11 romberg Exp $
+// $Id: netmeter.cc,v 1.19 1999/11/12 04:32:32 romberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -84,9 +84,9 @@ void NetMeter::checkOSVersion(void)
             chains >> buf;
             chains.ignore(1024, '\n');
             
-            if (!strcmp(buf, "iacct"))
+            if (!strncmp(buf, "iacct", 5))
                 n |= 1;
-            if (!strcmp(buf, "oacct"))
+            if (!strncmp(buf, "oacct", 5))
                 n |= 2;
             }
 
@@ -156,9 +156,9 @@ void NetMeter::checkeventNew(void)
         {
 	ifs >> buf;
 
-	if (!strcmp(buf, "iacct")) 
+	if (!strncmp(buf, "iacct", 5)) 
 	  ifs >> buf >> buf >> ig >> ig >> ig >> ig >> ig >> ig >> totin;
-	else if (!strcmp(buf, "oacct")) 
+	else if (!strncmp(buf, "oacct", 5)) 
 	  ifs >> buf >> buf >> ig >> ig >> ig >> ig >> ig >> ig >> totout;
 
 	ifs.ignore(1024, '\n');
