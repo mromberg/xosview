@@ -1,5 +1,5 @@
 //
-// $Id: xwin.cc,v 1.5 1996/12/02 04:52:57 bgrayson Exp $
+// $Id: xwin.cc,v 1.6 1996/12/04 04:05:34 bgrayson Exp $
 //
 
 #include <X11/Xatom.h>
@@ -10,7 +10,7 @@
 #include "xwin.h"
 #include "Xrm.h"
 
-CVSID("$Id: xwin.cc,v 1.5 1996/12/02 04:52:57 bgrayson Exp $");
+CVSID("$Id: xwin.cc,v 1.6 1996/12/04 04:05:34 bgrayson Exp $");
 CVSID_DOT_H(XWIN_H_CVSID);
 
 //-----------------------------------------------------------------------------
@@ -156,8 +156,8 @@ void XWin::setHints( int argc, char *argv[] ){
     cerr <<"Error allocating class hint!" <<endl;
     exit(1);
   }
-  classhints_->res_name = name_;
-  classhints_->res_class = name_;
+  classhints_->res_name = xrmptr_->instanceName();
+  classhints_->res_class = xrmptr_->className();
 
   // Set up the window manager hints
   if((wmhints_ = XAllocWMHints()) == NULL){
