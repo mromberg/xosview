@@ -6,7 +6,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.7 1997/06/28 05:33:43 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.8 1997/07/10 03:51:21 bgrayson Exp $
 //
 //  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //
@@ -147,6 +147,7 @@ NetBSDInitSwapInfo()
                                 strcat(msgbuf, syms[i].n_name);
                         }
                 }
+		strcat(msgbuf,"\n");
                 printf(msgbuf);
 #endif
                 return (0);
