@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.h,v 1.13 1999/01/31 20:03:32 bgrayson Exp $
+// $Id: fieldmeter.h,v 1.14 1999/11/19 09:50:20 bgrayson Exp $
 //
 #ifndef _FIELDMETER_H_
 #define _FIELDMETER_H_
 
-#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.13 1999/01/31 20:03:32 bgrayson Exp $"
+#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.14 1999/11/19 09:50:20 bgrayson Exp $"
 
 #include "meter.h"
 #include "timer.h"
@@ -65,8 +65,11 @@ private:
 protected:
   void IntervalTimerStart() { _timer.start(); }
   void IntervalTimerStop() { _timer.stop(); }
-  LONG_LONG IntervalTimeInMicrosecs() { return _timer.report(); }
-  double IntervalTimeInSecs() { return _timer.report()/1e6; }
+  //  Before, we simply called _timer.report(), which returns usecs.
+  //  However, it suffers from wrap/overflow/sign-bit problems, so
+  //  instead we use doubles for everything.
+  double IntervalTimeInMicrosecs() { return _timer.report_usecs(); }
+  double IntervalTimeInSecs() { return _timer.report_usecs()/1e6; }
 };
 
 #endif

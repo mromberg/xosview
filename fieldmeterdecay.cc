@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: fieldmeterdecay.cc,v 1.12 1999/01/23 18:34:26 mromberg Exp $
+// $Id: fieldmeterdecay.cc,v 1.13 1999/11/19 09:50:20 bgrayson Exp $
 //
 
 // In order to use the FieldMeterDecay class in place of a FieldMeter class in
@@ -33,7 +33,7 @@
 #include "fieldmeterdecay.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeterdecay.cc,v 1.12 1999/01/23 18:34:26 mromberg Exp $");
+CVSID("$Id: fieldmeterdecay.cc,v 1.13 1999/11/19 09:50:20 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETERDECAY_H_CVSID);
 
 FieldMeterDecay::FieldMeterDecay( XOSView *parent,
@@ -115,6 +115,11 @@ void FieldMeterDecay::drawfields( int manditory ){
     //  We want to round the widths, rather than truncate.
     twidth = (int) (0.5 + (width_ * (float) fields_[i]) / total_); 
     decaytwidth = (int) (0.5 + width_ * decay_[i]);
+    if (decaytwidth < 0.0) {
+      cerr << "Error:  FieldMeterDecay " << name() << ":  decaytwidth of " <<
+      decaytwidth << ", width of " << width_ << ", decay_[" << i << "]
+      of " << decay_[i] << endl;
+    }
 
     //  However, due to rounding, we may have gone one
     //  pixel too far by the time we get to the later fields...
