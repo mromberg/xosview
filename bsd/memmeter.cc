@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.17 1998/05/29 21:21:47 bgrayson Exp $
+// $Id: memmeter.cc,v 1.18 1998/09/18 18:18:11 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
@@ -29,7 +29,7 @@
 # include <sys/vmmeter.h>
 #endif
 
-CVSID("$Id: memmeter.cc,v 1.17 1998/05/29 21:21:47 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.18 1998/09/18 18:18:11 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 
 MemMeter::MemMeter( XOSView *parent )
@@ -60,7 +60,7 @@ void MemMeter::checkResources( void ){
 #endif
   setfieldcolor( FREE_INDEX, parent_->getResource("memFreeColor") );
   priority_ = atoi (parent_->getResource("memPriority"));
-  dodecay_ = !strcmp (parent_->getResource("memDecay"),"True");
+  dodecay_ = !strncasecmp (parent_->getResource("memDecay"),"True", 5);
   SetUsedFormat (parent_->getResource("memUsedFormat"));
 }
 

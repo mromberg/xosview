@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.cc,v 1.15 1998/05/29 21:34:13 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.16 1998/09/18 18:18:11 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #ifndef HAVE_SWAPCTL
@@ -23,7 +23,7 @@
 #include "swapinternal.h"	/*  For *SwapInfo() functions.  */
 #include "kernel.h"		/*  For BSDSwapInit().  */
 
-CVSID("$Id: swapmeter.cc,v 1.15 1998/05/29 21:34:13 bgrayson Exp $");
+CVSID("$Id: swapmeter.cc,v 1.16 1998/09/18 18:18:11 bgrayson Exp $");
 CVSID_DOT_H(SWAPMETER_H_CVSID);
 
 static int doSwap = 1;
@@ -63,7 +63,7 @@ void SwapMeter::checkResources( void ){
   setfieldcolor( 0, parent_->getResource("swapUsedColor") );
   setfieldcolor( 1, parent_->getResource("swapFreeColor") );
   priority_ = atoi (parent_->getResource("swapPriority"));
-  dodecay_ = !strcmp (parent_->getResource("swapDecay"),"True");
+  dodecay_ = !strncasecmp (parent_->getResource("swapDecay"),"True", 5);
   SetUsedFormat (parent_->getResource("swapUsedFormat"));
 }
 

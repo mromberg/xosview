@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: cpumeter.cc,v 1.12 1998/05/29 20:52:18 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.13 1998/09/18 18:18:10 bgrayson Exp $
 //
 #include <sys/dkstat.h>         //  For CPUSTATES #define.  BCG
 #include <stdlib.h>		//  For use of atoi  BCG
@@ -20,7 +20,7 @@
 #include "cpumeter.h"
 #include "kernel.h"             //  For NetBSD-specific icky kvm_ code.  BCG
 
-CVSID("$Id: cpumeter.cc,v 1.12 1998/05/29 20:52:18 bgrayson Exp $");
+CVSID("$Id: cpumeter.cc,v 1.13 1998/09/18 18:18:10 bgrayson Exp $");
 CVSID_DOT_H(CPUMETER_H_CVSID);
 
 CPUMeter::CPUMeter( XOSView *parent )
@@ -57,7 +57,7 @@ void CPUMeter::checkResources( void ){
   setfieldcolor( 3, parent_->getResource("cpuFreeColor") );
 #endif
   priority_ = atoi (parent_->getResource("cpuPriority"));
-  dodecay_ = !strcmp (parent_->getResource("cpuDecay"),"True");
+  dodecay_ = !strncasecmp (parent_->getResource("cpuDecay"),"True", 5);
   SetUsedFormat (parent_->getResource("cpuUsedFormat"));
 
 }
