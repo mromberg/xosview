@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.17 1998/02/12 04:04:49 bgrayson Exp $
+// $Id: kernel.cc,v 1.18 1998/02/12 04:28:28 bgrayson Exp $
 //
 #include "general.h"
 #include <stdio.h>
@@ -41,7 +41,7 @@
 #endif
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.17 1998/02/12 04:04:49 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.18 1998/02/12 04:28:28 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -412,7 +412,6 @@ NetBSDGetIntrStats (unsigned long intrCount[NUM_INTR])
     int nintr;
     nintr = (nlst[EINTRCNT_SYM_INDEX].n_value -
 	     nlst[INTRCNT_SYM_INDEX].n_value)   / sizeof(int);
-    long kvm_intrcnt[nintr];
 #  if 0
     if (nintr/sizeof(int) != NUM_INTR*2) {
       static int firsttime=1;

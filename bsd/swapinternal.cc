@@ -6,7 +6,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.10 1998/02/09 11:43:06 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.11 1998/02/12 04:28:29 bgrayson Exp $
 //
 //  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //
@@ -148,6 +148,7 @@ NetBSDInitSwapInfo()
         static int once = 0;
         u_long ptr;
 
+	(void) ptr;	//  Avoid gcc warnings.
         if (once)
                 return (1);
         if (kvm_nlist(swap_kd, syms)) {
