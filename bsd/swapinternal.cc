@@ -6,7 +6,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.11 1998/02/12 04:28:29 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.12 1998/02/12 05:04:07 bgrayson Exp $
 //
 //  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //
@@ -143,7 +143,7 @@ static int nfree;
         }
 
 int
-NetBSDInitSwapInfo()
+BSDInitSwapInfo()
 {
         static int once = 0;
         u_long ptr;
@@ -309,7 +309,7 @@ fetchswap()
 #endif /* XOSVIEW_FREEBSD */
 
 void
-NetBSDGetSwapInfo(int* total, int* free)
+BSDGetSwapInfo(int* total, int* free)
 {
         int i, avail, npfree, used=0, xsize, xfree;
 

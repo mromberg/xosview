@@ -9,7 +9,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.cc,v 1.10 1998/02/02 16:34:58 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.11 1998/02/12 05:04:04 bgrayson Exp $
 //
 #include "general.h"
 #include "diskmeter.h"
@@ -18,7 +18,7 @@
 #include "kernel.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
 #include <stdlib.h>	//  For use of atoi  BCG
 
-CVSID("$Id: diskmeter.cc,v 1.10 1998/02/02 16:34:58 bgrayson Exp $");
+CVSID("$Id: diskmeter.cc,v 1.11 1998/02/12 05:04:04 bgrayson Exp $");
 CVSID_DOT_H(DISKMETER_H_CVSID);
 
 DiskMeter::DiskMeter( XOSView *parent, float max )
@@ -26,7 +26,7 @@ DiskMeter::DiskMeter( XOSView *parent, float max )
   //  The setting of the priority will be done in checkResources().  BCG
   dodecay_ = 0;
 
-  kernelHasStats_ = NetBSDDiskInit();
+  kernelHasStats_ = BSDDiskInit();
   if (!kernelHasStats_)
   {
     warnx(
@@ -85,7 +85,7 @@ void DiskMeter::getstats( void ){
   total_ = maxBandwidth_;
 
   if (kernelHasStats_) {
-    NetBSDGetDiskXFerBytes (&currBytes);
+    BSDGetDiskXFerBytes (&currBytes);
 #if DEBUG
     printf ("currBytes is %#x %#0x\n", (int) (currBytes >> 32), (int)
 	    (currBytes & 0xffffffff));

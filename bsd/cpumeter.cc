@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: cpumeter.cc,v 1.9 1998/02/09 11:44:40 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.10 1998/02/12 05:04:04 bgrayson Exp $
 //
 #include "general.h"
 #include "cpumeter.h"
@@ -22,7 +22,7 @@
 #include "kernel.h"             //  For NetBSD-specific icky kvm_ code.  BCG
 #include <stdlib.h>		//  For use of atoi  BCG
 
-CVSID("$Id: cpumeter.cc,v 1.9 1998/02/09 11:44:40 bgrayson Exp $");
+CVSID("$Id: cpumeter.cc,v 1.10 1998/02/12 05:04:04 bgrayson Exp $");
 CVSID_DOT_H(CPUMETER_H_CVSID);
 
 CPUMeter::CPUMeter( XOSView *parent )
@@ -40,7 +40,7 @@ CPUMeter::CPUMeter( XOSView *parent )
   //  The setting of the priority will be done in checkResources().  BCG
   dodecay_ = 0;
 
-  NetBSDCPUInit();
+  BSDCPUInit();
 }
 
 CPUMeter::~CPUMeter( void ){
@@ -75,7 +75,7 @@ void CPUMeter::getcputime( void ){
   //  Begin NetBSD-specific code...  BCG
   long tempCPU[CPUSTATES];
 
-  NetBSDGetCPUTimes (tempCPU);
+  BSDGetCPUTimes (tempCPU);
 
   cputime_[cpuindex_][0] = tempCPU[0];
   cputime_[cpuindex_][1] = tempCPU[1];

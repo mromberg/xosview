@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.11 1998/02/02 23:17:12 bgrayson Exp $
+// $Id: memmeter.cc,v 1.12 1998/02/12 05:04:06 bgrayson Exp $
 //
 #include "general.h"
 #include "memmeter.h"
@@ -27,7 +27,7 @@
 #include <sys/vmmeter.h>
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: memmeter.cc,v 1.11 1998/02/02 23:17:12 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.12 1998/02/12 05:04:06 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 
 MemMeter::MemMeter( XOSView *parent )
@@ -85,7 +85,7 @@ void MemMeter::getmeminfo (void) {
 
   // New code.  Use the cnt structure:
   struct vmmeter kvm_cnt;
-  NetBSDGetPageStats (&kvm_cnt);
+  BSDGetPageStats (&kvm_cnt);
 
   /*  Note that the numbers are in terms of pages,
       and we want fields_ in bytes.  */

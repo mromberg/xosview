@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.10 1997/12/07 19:11:09 bgrayson Exp $
+// $Id: xosview.cc,v 1.11 1998/02/12 05:04:03 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -22,7 +22,7 @@
 static const char NAME[] = "xosview@";
 #include "version.cc"
 
-CVSID("$Id: xosview.cc,v 1.10 1997/12/07 19:11:09 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.11 1998/02/12 05:04:03 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -36,7 +36,7 @@ XOSView::XOSView( char * instName, int argc, char *argv[] ) : XWin(),
   xrm.loadAndMergeResources (argc, argv, display_); 
   XWinInit (argc, argv, NULL, &xrm);
 #ifdef XOSVIEW_NETBSD
-  NetBSDInit();	/*  Needs to be done before processing of -N option.  */
+  BSDInit();	/*  Needs to be done before processing of -N option.  */
 #endif
 
   checkArgs (argc, argv);  //  Check for any other unhandled args.

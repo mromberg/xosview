@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.cc,v 1.12 1997/08/09 00:41:08 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.13 1998/02/12 05:04:08 bgrayson Exp $
 //
 #include "general.h"
 #include "swapmeter.h"
@@ -23,7 +23,7 @@
 #include <err.h>			//  For warnx.  BCG
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: swapmeter.cc,v 1.12 1997/08/09 00:41:08 bgrayson Exp $");
+CVSID("$Id: swapmeter.cc,v 1.13 1998/02/12 05:04:08 bgrayson Exp $");
 CVSID_DOT_H(SWAPMETER_H_CVSID);
 
 static int doSwap = 1;
@@ -33,8 +33,8 @@ SwapMeter::SwapMeter( XOSView *parent )
 #ifdef HAVE_SWAPCTL
   useSwapCtl = 0;
 #endif
-  NetBSDSwapInit();	//  In kernel.cc
-  if (!NetBSDInitSwapInfo())
+  BSDSwapInit();	//  In kernel.cc
+  if (!BSDInitSwapInfo())
   {
 #ifdef HAVE_SWAPCTL
     //  Set up to use new swap code instead.
@@ -78,10 +78,10 @@ void SwapMeter::getswapinfo( void ){
   if (doSwap) {
 #ifdef HAVE_SWAPCTL
     if (useSwapCtl)
-      NetBSDGetSwapCtlInfo(&total_int, &free_int);
+      BSDGetSwapCtlInfo(&total_int, &free_int);
     else
 #endif
-      NetBSDGetSwapInfo (&total_int, &free_int);
+      BSDGetSwapInfo (&total_int, &free_int);
   }
   else {
     total_int = 1;	/*  So the meter looks blank.  */

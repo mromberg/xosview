@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.cc,v 1.1 1998/02/12 04:23:51 bgrayson Exp $
+// $Id: intmeter.cc,v 1.2 1998/02/12 05:04:04 bgrayson Exp $
 //
 #include "intmeter.h"
 #include "xosview.h"
@@ -51,5 +51,5 @@ void IntMeter::checkResources( void ){
 void 
 IntMeter::getirqs( void )
 {
-    NetBSDGetIntrStats (irqs_);
+    BSDGetIntrStats (irqs_);
 }

@@ -3,16 +3,16 @@
 //  NetBSD distribution.
 //  
 //
-// $Id: swapinternal.h,v 1.4 1997/06/28 05:35:21 bgrayson Exp $
+// $Id: swapinternal.h,v 1.5 1998/02/12 05:04:07 bgrayson Exp $
 //
 
 //  Header file for the swap internal/NetBSD-specific code.
 
 int
-NetBSDInitSwapInfo();
+BSDInitSwapInfo();
 
 void
-NetBSDGetSwapInfo(int* total, int* free);
+BSDGetSwapInfo(int* total, int* free);
 
 void
-NetBSDGetSwapCtlInfo(int* total, int* free);
+BSDGetSwapCtlInfo(int* total, int* free);

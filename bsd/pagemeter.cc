@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.cc,v 1.7 1998/02/02 21:29:11 bgrayson Exp $
+// $Id: pagemeter.cc,v 1.8 1998/02/12 05:04:06 bgrayson Exp $
 //
 #include "general.h"
 #include "pagemeter.h"
@@ -22,14 +22,14 @@
 #include <stdlib.h>		//  For atoi().  BCG
 #include "kernel.h"		//  For NetBSD Page functions.
 
-CVSID("$Id: pagemeter.cc,v 1.7 1998/02/02 21:29:11 bgrayson Exp $");
+CVSID("$Id: pagemeter.cc,v 1.8 1998/02/12 05:04:06 bgrayson Exp $");
 CVSID_DOT_H(PAGEMETER_H_CVSID);
 
 PageMeter::PageMeter( XOSView *parent, double total )
 : FieldMeterDecay( parent, 3, "PAGE", "IN/OUT/IDLE" ){
   total_ = total;
-  NetBSDPageInit();
-  NetBSDGetPageStats(&prev_);
+  BSDPageInit();
+  BSDGetPageStats(&prev_);
 }
 
 PageMeter::~PageMeter( void ){ }
@@ -55,7 +55,7 @@ void PageMeter::getpageinfo (void) {
 //  Begin NetBSD-specific code...
   struct vmmeter vm;
 
-  NetBSDGetPageStats(&vm);
+  BSDGetPageStats(&vm);
 #ifdef XOSVIEW_FREEBSD
   /* It depends, of course on what you want to measure.  I think, howver,
      that you want the sum of pages paged to swap (i.e. dirty pages) and
