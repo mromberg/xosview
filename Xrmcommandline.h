@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.5 1996/12/02 04:25:16 bgrayson Exp $
+// $Id: Xrmcommandline.h,v 1.6 1996/12/02 04:52:20 bgrayson Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.5 1996/12/02 04:25:16 bgrayson Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.6 1996/12/02 04:52:20 bgrayson Exp $"
 
 #include <X11/Xresource.h>
 
@@ -24,8 +24,19 @@ static XrmOptionDescRec options[] = {
 //  XOSView-specific resources:
 { "-labels", "*labels", XrmoptionNoArg, "False" },
 { "+labels", "*labels", XrmoptionNoArg, "True" },
+//  CPU resources
+{ "-cpu", "*cpu", XrmoptionNoArg, "False" },
+{ "+cpu", "*cpu", XrmoptionNoArg, "True" },
+// Load resources
 { "-load", "*load", XrmoptionNoArg, "False" },
 { "+load", "*load", XrmoptionNoArg, "True" },
+// Memmeter resources
+{ "-mem", "*mem", XrmoptionNoArg, "False" },
+{ "+mem", "*mem", XrmoptionNoArg, "True" },
+// Swapmeter resources
+{ "-swap", "*swap", XrmoptionNoArg, "False" },
+{ "+swap", "*swap", XrmoptionNoArg, "True" },
+
 //  Previously, network was overloaded to be the bandwidth and the
 //  on/off flag.  Now, we have -net for on/off, and networkBandwidth
 //  for bandwidth, with the alias networkBW, and network for backwards
