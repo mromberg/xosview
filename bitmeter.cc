@@ -4,13 +4,13 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: bitmeter.cc,v 1.7 1999/01/23 18:34:26 mromberg Exp $
+// $Id: bitmeter.cc,v 1.8 1999/11/06 22:48:16 romberg Exp $
 //
 #include "general.h"
 #include "bitmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: bitmeter.cc,v 1.7 1999/01/23 18:34:26 mromberg Exp $");
+CVSID("$Id: bitmeter.cc,v 1.8 1999/11/06 22:48:16 romberg Exp $");
 CVSID_DOT_H(BITMETER_H_CVSID);
 
 BitMeter::BitMeter( XOSView *parent,
@@ -65,7 +65,7 @@ void BitMeter::drawBits( int manditory ){
       else
 	parent_->setForeground( offColor_ );
 
-      parent_->drawFilledRectangle( x1, y_, x2 - x1, height_ - 1 );
+      parent_->drawFilledRectangle( x1, y_, x2 - x1, height_);
     }
     
     lastbits_[i] = bits_[i];
@@ -77,7 +77,7 @@ void BitMeter::drawBits( int manditory ){
 void BitMeter::draw( void ){
   parent_->lineWidth( 1 );
   parent_->setForeground( parent_->foreground() );
-  parent_->drawFilledRectangle( x_ -1, y_ - 1, width_ + 2, height_ + 1 );
+  parent_->drawFilledRectangle( x_ -1, y_ - 1, width_ + 2, height_ + 2 );
 
   parent_->lineWidth( 0 );
 
@@ -90,7 +90,7 @@ void BitMeter::draw( void ){
     else
       offset = parent_->textWidth( "XXXXX" );
     
-    parent_->drawString( x_ - offset, y_ + height_, title_ );
+    parent_->drawString( x_ - offset + 1, y_ + height_, title_ );
     parent_->setForeground( onColor_ );
     if(docaptions_)
       parent_->drawString( x_, y_ - 5, legend_ );

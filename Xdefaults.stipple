@@ -1,4 +1,4 @@
-#$Id: Xdefaults.stipple,v 1.4 1999/02/26 05:19:06 bgrayson Exp $
+#$Id: Xdefaults.stipple,v 1.5 1999/11/06 22:48:16 romberg Exp $
 #  See the README.netbsd file on how to use the stipple options and
 #  these example resources.
 
@@ -59,7 +59,7 @@ xosvstipplebw*memActiveColor:	black
 xosvstipplebw*memInactiveColor: black
 xosvstipplebw*swapUsedColor:    black
 xosvstipplebw*swapFreeColor:    black
-xosvstipplebw*swapReservedColor:  black
+xosvstipplebw*swapReservedColor:black
 xosvstipplebw*netInColor:       black
 xosvstipplebw*netOutColor:      black
 xosvstipplebw*netBackground:    black

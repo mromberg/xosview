@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.23 1999/02/26 23:23:51 bgrayson Exp $
+// $Id: fieldmeter.cc,v 1.24 1999/11/06 22:48:16 romberg Exp $
 //
 #include <fstream.h>
 #include <stdlib.h>
@@ -13,7 +13,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.23 1999/02/26 23:23:51 bgrayson Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.24 1999/11/06 22:48:16 romberg Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -127,7 +127,7 @@ void FieldMeter::draw( void ){
     else
       offset = parent_->textWidth( "XXXXX" );
     
-    parent_->drawString( x_ - offset, y_ + height_, title_ );
+    parent_->drawString( x_ - offset + 1, y_ + height_, title_ );
     if(docaptions_)
       drawlegend();
   }
@@ -227,7 +227,7 @@ void FieldMeter::drawused( int manditory ){
   parent_->clear( x_ - xoffset, y_ + height_ - parent_->textHeight(), 
 		 xoffset - onechar / 2, parent_->textHeight() + 1 );
   parent_->setForeground( usedcolor_ );
-  parent_->drawString( x_ - (strlen( buf ) + 1 ) * onechar, 
+  parent_->drawString( x_ - (strlen( buf ) + 1 ) * onechar + 2, 
 		      y_ + height_, buf );
 
   lastused_ = used_;
@@ -291,8 +291,12 @@ void FieldMeter::setNumFields(int n){
   lastx_ = new int[numfields_];
 
   total_ = 0;
-  for ( int i = 0 ; i < numfields_ ; i++ )
-    fields_[i] = lastvals_[i] = lastx_[i] = 0;
+  for ( int i = 0 ; i < numfields_ ; i++ ){
+    fields_[i] = 0.0;             /* egcs 2.91.66 bug !? don't do this and */
+    lastvals_[i] = lastx_[i] = 0; /* that in a single statement or it'll   */
+                                  /* overwrite too much with 0 ...         */
+				  /* Thomas Waldmann ( tw@com-ma.de )      */
+  }
 }
 
 bool FieldMeter::checkX(int x, int width) const {
