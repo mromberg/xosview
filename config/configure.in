@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.47 1999/11/17 07:19:26 bgrayson Exp $
+dnl $Id: configure.in,v 1.48 1999/11/19 09:46:46 bgrayson Exp $
 dnl
 AC_INIT(xosview.1)
 CF_TOP_SRCDIR
@@ -246,10 +246,12 @@ fi
 
 
 AC_SUBST(host_dir)
+AC_SUBST(NetMeter_Default_Setting)
 AC_OUTPUT(\
   Makefile:config/Makefile.top.in \
   $host_dir/Makefile:config/Makefile.$host_dir.in \
   Makefile.config:config/Makefile.config.in \
   Makefile.GNU.autodep:config/Makefile.GNU.autodep.in \
+  Xdefaults:Xdefaults.in \
   $EXTRA_OUT_FILES)
 
