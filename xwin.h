@@ -1,5 +1,5 @@
 //
-// $Id: xwin.h,v 1.7 1999/02/19 09:44:26 mcnab Exp $
+// $Id: xwin.h,v 1.8 2002/02/24 19:52:00 romberg Exp $
 //
 #ifndef _XWIN_H_
 #define _XWIN_H_
@@ -12,7 +12,7 @@
 #include <iostream.h>
 #include <string.h>
 
-#define XWIN_H_CVSID "$Id: xwin.h,v 1.7 1999/02/19 09:44:26 mcnab Exp $"
+#define XWIN_H_CVSID "$Id: xwin.h,v 1.8 2002/02/24 19:52:00 romberg Exp $"
 
 class XWin;
 class Xrm;
@@ -51,7 +51,7 @@ public:
     { XSetForeground( display_, gc_, pixelvalue ); }
   void setBackground( unsigned long pixelvalue )
     { XSetBackground( display_, gc_, pixelvalue ); }
-  void setStipple( Pixmap stipple) 
+  void setStipple( Pixmap stipple)
     { if (!doStippling_) return;
       XSetStipple(display_, gc_, stipple);
       XGCValues xgcv;
@@ -63,7 +63,7 @@ public:
       0, 1, 1); }
   unsigned long foreground( void ) { return fgcolor_; }
   unsigned long background( void ) { return bgcolor_; }
-  void resize( int width, int height ) 
+  void resize( int width, int height )
     { XResizeWindow( display_, window_, width, height ); }
   void lineWidth( int width )
     {
@@ -89,7 +89,7 @@ public:
   int textDescent( void ) { return font_->descent; }
   int textHeight( void ) { return textAscent() + textDescent(); }
 
-  
+
   virtual void checkevent( void );
   void map( void ) { XMapWindow( display_, window_ ); }
   void unmap( void ) { XUnmapWindow( display_, window_ ); }
@@ -100,18 +100,18 @@ public:
   const int isResourceTrue( const char* name ) {
     return (!strncasecmp(getResource(name),"True", 5)); }
   void dumpResources( ostream &os );
-  
+
 protected:
   class Event {
   public:
     Event( XWin *parent, int event, EventCallBack callBack );
     virtual ~Event( void ){}
 
-    friend XWin;
+    friend class XWin;
 
     void callBack( XEvent &event )
       { if ( event.type == event_ ) (parent_->*callBack_)( event ); }
-    
+
   protected:
     XWin *parent_;
     EventCallBack callBack_;
