@@ -13,21 +13,10 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.h,v 1.17 1998/03/30 20:44:14 bgrayson Exp $
+// $Id: kernel.h,v 1.18 1998/05/29 21:21:36 bgrayson Exp $
 //
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <kvm.h>
-#include <nlist.h>
-
-#include <sys/socket.h>
-//  net/if.h is not protected from multiple inclusions, and apparently
-//  something changed recently such that it is included via
-//  sys/socket.h???  bgrayson
-//#include <net/if.h>
-
-#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.17 1998/03/30 20:44:14 bgrayson Exp $"
+#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.18 1998/05/29 21:21:36 bgrayson Exp $"
 
 void
 BSDInit();

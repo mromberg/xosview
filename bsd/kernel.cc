@@ -11,13 +11,16 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.26 1998/05/17 21:54:57 bgrayson Exp $
+// $Id: kernel.cc,v 1.27 1998/05/29 21:21:05 bgrayson Exp $
 //
-#include "general.h"
-#include <stdio.h>
+#ifndef XOSVIEW_NETBSD
+/*  NetBSD pulls in stdio.h via one of the other includes, but
+ *  the other BSDs don't.  */
+# include <stdio.h>
+#endif
+
 #include <fcntl.h>
 #include <kvm.h>
-#include <nlist.h>
 #include <limits.h>		/*  For _POSIX2_LINE_MAX  */
 
 #include <err.h>                /*  For err(), warn(), etc.  BCG  */
@@ -25,9 +28,6 @@
 #include <sys/dkstat.h>         /*  For CPUSTATES, which tells us how
                                       many cpu states there are.  */
 #ifndef XOSVIEW_FREEBSD
-#include <sys/device.h>
-/*  ----------  XXX  Still need to see if any of these includes
- *  can be removed.  bgrayson  */
 #include <sys/disk.h>		/*  For disk statistics.  */
 #endif
 
@@ -49,14 +49,15 @@
 #endif
 
 #ifdef HAVE_SWAPCTL
-#include <unistd.h>
-#include <vm/vm_swap.h>
-#include <stdlib.h>
+#include <unistd.h>		/*  For swapctl proto.  */
+#include <vm/vm_swap.h>		/*  For swapent, SWAP_*.  */
+#include <stdlib.h>		/*  For malloc(), free().  */
 #endif
 
+#include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.26 1998/05/17 21:54:57 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.27 1998/05/29 21:21:05 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
