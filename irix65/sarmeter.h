@@ -1,5 +1,5 @@
 //  
-// $Id: sarmeter.h,v 1.1 2002/02/20 11:15:04 eile Exp $
+// $Id: sarmeter.h,v 1.2 2002/02/28 15:23:53 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 
@@ -8,17 +8,48 @@
 
 #include "fieldmetergraph.h"
 #include <unistd.h>
+#include <sys/sysinfo.h>
 
 // common function for all sar based graphs
 class SarMeter
 {
 public:
-	SarMeter() {}
-	~SarMeter(void) {}
+    static SarMeter *Instance();
 
-protected:
+    gfxinfo *getGfxInfo( void )
+        {
+            checkSadc();
+
+            if( _giNew )
+            {
+                _giNew = 0;
+                return &_gi;
+            }
+            else
+                return NULL;
+        }
+
+private:
+    SarMeter()
+            : _lastPos(0),
+              _giNew(0)
+        {
+            _input = setupSadc();
+        }
+
+    ~SarMeter(void) {}
+
     size_t readLine( int input, char *buf, size_t max );
-    int    setupSar( const char *option );
+    int    setupSadc( void );
+    void   checkSadc( void );
+
+    static SarMeter *_instance;
+    int    _input;
+    off_t  _lastPos;
+    char   _buf[50000];
+
+    gfxinfo _gi;
+    bool    _giNew;
 };
 
 #endif

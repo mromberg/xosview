@@ -1,5 +1,5 @@
 //  
-// $Id: gfxmeter.h,v 1.1 2002/02/20 11:15:04 eile Exp $
+// $Id: gfxmeter.h,v 1.2 2002/02/28 15:23:53 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 #ifndef _GFXMETER_H_
@@ -8,9 +8,8 @@
 #include "sarmeter.h"
 
 #include <rpcsvc/rstat.h>
-#include <sys/sysinfo.h>
 
-class GfxMeter : public FieldMeterGraph, public SarMeter {
+class GfxMeter : public FieldMeterGraph {
  public:
 	GfxMeter(XOSView *parent, int max);
 	~GfxMeter(void);
@@ -27,13 +26,8 @@ protected:
 private:
     int warnThreshold, critThreshold, alarmstate, lastalarmstate;
     int nPipes;
-    int input;
-    struct statstime res;
 
-    gfxinfo gi;
     unsigned int lastSwapBuf;
-    off_t lastPos;
-    char buf[50000];
 };
 
 #endif
