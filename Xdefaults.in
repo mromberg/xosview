@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.10 1996/12/03 18:36:45 romberg Exp $
+!  $Id: Xdefaults.in,v 1.11 1996/12/26 20:18:26 mromberg Exp $
 
 ! General Resources
 
@@ -99,10 +99,16 @@ xosview*netUsedFormat:	  autoscale
 !!!
 ! Serial Meter Resources
 
+xosview*serial0: False
 xosview*serial1: False
 xosview*serial2: False
 xosview*serial3: False
 xosview*serial4: False
+xosview*serial5: False
+xosview*serial6: False
+xosview*serial7: False
+xosview*serial8: False
+xosview*serial9: False
 xosview*serialOnColor:    red
 xosview*serialOffColor:   aquamarine
 xosview*serialPriority:   1

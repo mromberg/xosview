@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.6 1996/12/04 04:41:50 bgrayson Exp $
+// $Id: xosview.cc,v 1.7 1996/12/26 20:18:51 mromberg Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -22,7 +22,7 @@
 static const char NAME[] = "xosview@";
 #include "version.cc"
 
-CVSID("$Id: xosview.cc,v 1.6 1996/12/04 04:41:50 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.7 1996/12/26 20:18:51 mromberg Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -221,6 +221,7 @@ void XOSView::draw( void ){
     tmp->meter_->draw();
     tmp = tmp->next_;
   }
+  flush();
 }
 
 void XOSView::keyrelease( char *ch ){

@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.7 1996/12/05 20:33:42 bgrayson Exp $
+// $Id: fieldmeter.cc,v 1.8 1996/12/26 20:18:47 mromberg Exp $
 //
 #include <fstream.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.7 1996/12/05 20:33:42 bgrayson Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.8 1996/12/26 20:18:47 mromberg Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -226,7 +226,7 @@ void FieldMeter::drawfields( int manditory ){
     x += twidth;
   }
 
-  parent_->flush();
+  //parent_->flush();
 }
 
 void FieldMeter::checkevent( void ){

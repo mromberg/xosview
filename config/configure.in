@@ -1,12 +1,13 @@
 dnl
-dnl $Id: configure.in,v 1.8 1996/12/02 17:48:08 romberg Exp $
+dnl $Id: configure.in,v 1.9 1996/12/26 20:18:52 mromberg Exp $
 dnl
 AC_INIT(xosview.1)
 AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_HOST
 AC_PROG_CXX
 AC_PATH_X
-AC_PREFIX_DEFAULT(/usr/local)
+dnl AC_PREFIX_PROGRAM(X)
+AC_PREFIX_DEFAULT(/usr/X11)
 AC_SUBST(x_includes)
 AC_SUBST(x_libraries)
 AC_PROG_INSTALL
