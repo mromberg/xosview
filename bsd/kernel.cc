@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.27 1998/05/29 21:21:05 bgrayson Exp $
+// $Id: kernel.cc,v 1.28 1998/09/18 15:21:05 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -57,7 +57,7 @@
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.27 1998/05/29 21:21:05 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.28 1998/09/18 15:21:05 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -286,7 +286,7 @@ BSDGetNetInOut (long long * inbytes, long long * outbytes)
     safe_kvm_read ((unsigned long) ifnetp, &ifnet, sizeof(ifnet));
 #ifdef NET_DEBUG
     safe_kvm_read ((unsigned long) ifnet.if_name, ifname, 256);
-    sprintf (ifname, "%s%d", ifname, ifnet.if_unit);
+    snprintf (ifname, 256, "%s%d", ifname, ifnet.if_unit);
     printf ("Interface name is %s\n", ifname);
     printf ("Ibytes: %8ld Obytes %8ld\n", ifnet.if_ibytes, ifnet.if_obytes);
     printf ("Ipackets:  %8ld\n", ifnet.if_ipackets);

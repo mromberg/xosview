@@ -1,5 +1,5 @@
 //
-// $Id: xwin.cc,v 1.8 1997/04/15 23:40:26 bgrayson Exp $
+// $Id: xwin.cc,v 1.9 1998/09/18 15:21:05 bgrayson Exp $
 //
 
 #include <X11/Xatom.h>
@@ -10,7 +10,7 @@
 #include "xwin.h"
 #include "Xrm.h"
 
-CVSID("$Id: xwin.cc,v 1.8 1997/04/15 23:40:26 bgrayson Exp $");
+CVSID("$Id: xwin.cc,v 1.9 1998/09/18 15:21:05 bgrayson Exp $");
 CVSID_DOT_H(XWIN_H_CVSID);
 
 //-----------------------------------------------------------------------------
@@ -241,7 +241,7 @@ void XWin::getGeometry( void ){
   sizehints_->y = y_;
 
   // Construct a default geometry string
-  sprintf(default_geometry, "%dx%d+%d+%d", sizehints_->width,
+  snprintf(default_geometry, 80, "%dx%d+%d+%d", sizehints_->width,
 	  sizehints_->height, sizehints_->x, sizehints_->y);
 
   // Process the geometry specification

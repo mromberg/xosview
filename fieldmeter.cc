@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.16 1998/06/22 14:23:16 bgrayson Exp $
+// $Id: fieldmeter.cc,v 1.17 1998/09/18 15:21:05 bgrayson Exp $
 //
 #include <fstream.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.16 1998/06/22 14:23:16 bgrayson Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.17 1998/09/18 15:21:05 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -171,8 +171,7 @@ void FieldMeter::drawused( int manditory ){
   char buf[10];
 
   if (print_ == PERCENT){
-    sprintf( buf, "%d", (int)used_ );
-    strcat( buf, "%" );
+    snprintf( buf, 10, "%d%%", (int)used_ );
   }
   else if (print_ == AUTOSCALE){
     char scale;
@@ -204,18 +203,18 @@ void FieldMeter::drawused( int manditory ){
        *  print 965, or we can print 34, but we can't print 34.7 (the
        *  decimal point takes up one character).  bgrayson   */
     if (scaled_used == 0.0)
-      sprintf (buf, "0");
+      snprintf (buf, 10, "0");
     else if (scaled_used < 9.95)  //  9.95 or above would get
 				  //  rounded to 10.0, which is too wide.
-      sprintf (buf, "%.1f%c", scaled_used, scale);
+      snprintf (buf, 10, "%.1f%c", scaled_used, scale);
     /*  We don't need to check against 99.5 -- it all gets %.0f.  */
     /*else if (scaled_used < 99.5)*/
-      /*sprintf (buf, "%.0f%c", scaled_used, scale);*/
+      /*snprintf (buf, 10, "%.0f%c", scaled_used, scale);*/
     else 
-      sprintf (buf, "%.0f%c", scaled_used, scale);
+      snprintf (buf, 10, "%.0f%c", scaled_used, scale);
   }
   else {
-    sprintf( buf, "%.1f", used_ );
+    snprintf( buf, 10, "%.1f", used_ );
   }
 
   parent_->clear( x_ - xoffset, y_ + height_ - parent_->textHeight(), 
