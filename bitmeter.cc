@@ -4,20 +4,20 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: bitmeter.cc,v 1.8 1999/11/06 22:48:16 romberg Exp $
+// $Id: bitmeter.cc,v 1.9 2003/10/09 04:14:53 bgrayson Exp $
 //
 #include "general.h"
 #include "bitmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: bitmeter.cc,v 1.8 1999/11/06 22:48:16 romberg Exp $");
+CVSID("$Id: bitmeter.cc,v 1.9 2003/10/09 04:14:53 bgrayson Exp $");
 CVSID_DOT_H(BITMETER_H_CVSID);
 
 BitMeter::BitMeter( XOSView *parent,
 		    const char *title, const char *legend, int numBits,
 		    int docaptions, int, int dousedlegends)
   : Meter( parent, title, legend, docaptions, dousedlegends, dousedlegends ),
-  bits_(NULL), lastbits_(NULL)  {
+  bits_(NULL), lastbits_(NULL), disabled_(false)  {
   setNumBits(numBits); 
 }
 
@@ -36,6 +36,14 @@ void BitMeter::setNumBits(int n){
   
   for ( int i = 0 ; i < numbits_ ; i++ )
       bits_[i] = lastbits_[i] = 0;
+}
+
+void BitMeter::disableMeter ( void ) {
+  disabled_ = true;
+  onColor_ = parent_->allocColor ("gray");
+  offColor_ = onColor_;
+  Meter::legend ("Disabled");
+
 }
 
 void BitMeter::checkResources( void ){
@@ -93,7 +101,9 @@ void BitMeter::draw( void ){
     parent_->drawString( x_ - offset + 1, y_ + height_, title_ );
     parent_->setForeground( onColor_ );
     if(docaptions_)
+    {
       parent_->drawString( x_, y_ - 5, legend_ );
+      }
   }
 
   drawBits( 1 );

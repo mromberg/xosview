@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: bitmeter.h,v 1.5 1999/01/23 18:34:26 mromberg Exp $
+// $Id: bitmeter.h,v 1.6 2003/10/09 04:14:53 bgrayson Exp $
 //
 #ifndef _BITMETER_H_
 #define _BITMETER_H_
 
-#define BITMETER_H_CVSID "$Id: bitmeter.h,v 1.5 1999/01/23 18:34:26 mromberg Exp $"
+#define BITMETER_H_CVSID "$Id: bitmeter.h,v 1.6 2003/10/09 04:14:53 bgrayson Exp $"
 
 #include "meter.h"
 
@@ -24,6 +24,7 @@ public:
 
   void checkevent( void );
   void draw( void );
+  void disableMeter ( void );
 
   int numBits(void) const { return numbits_; }
   void setNumBits(int n);
@@ -33,6 +34,7 @@ protected:
   unsigned long onColor_, offColor_;
   char *bits_, *lastbits_;
   int numbits_;
+  bool disabled_;
 
   void setBits(int startbit, unsigned char values);
 
