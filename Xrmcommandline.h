@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.17 1999/01/23 18:34:26 mromberg Exp $
+// $Id: Xrmcommandline.h,v 1.18 1999/05/17 20:44:40 romberg Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.17 1999/01/23 18:34:26 mromberg Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.18 1999/05/17 20:44:40 romberg Exp $"
 
 #include <X11/Xresource.h>
 
@@ -61,11 +61,10 @@ static XrmOptionDescRec options[] = {
 { "+page", "*page", XrmoptionNoArg, "True" },
 { "-pagespeed", "*pageBandWidth", XrmoptionSepArg, (caddr_t) NULL },
 
-#if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
 //  Disk Meter Options
 { "-disk", "*disk", XrmoptionNoArg, "False" },
 { "+disk", "*disk", XrmoptionNoArg, "True" },
-#endif
+
 // Interrupt meter resources  --  all sorts of aliases.
 { "-int", "*interrupts", XrmoptionNoArg, "False" },
 { "+int", "*interrupts", XrmoptionNoArg, "True" },
