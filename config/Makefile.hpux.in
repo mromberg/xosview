@@ -2,7 +2,7 @@
 # HPUX Makefile template
 #
 #
-# $Id: Makefile.hpux.in,v 1.4 1997/02/26 18:34:49 mromberg Exp $
+# $Id: Makefile.hpux.in,v 1.5 1997/07/18 03:44:49 bgrayson Exp $
 #
 include ../Makefile.config
 
@@ -31,5 +31,6 @@ clean :
 
 libmeter.a : $(OBJS)
 	ar cvr libmeter.a $(OBJS)
+	@RANLIB@ $@
 
 @AUTODEPEND@
