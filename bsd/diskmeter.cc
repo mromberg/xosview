@@ -9,7 +9,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.cc,v 1.6 1997/02/14 07:24:00 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.7 1997/07/18 03:36:43 bgrayson Exp $
 //
 #include "general.h"
 #include "diskmeter.h"
@@ -19,7 +19,7 @@
 #include "netbsd.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
 #include <stdlib.h>	//  For use of atoi  BCG
 
-CVSID("$Id: diskmeter.cc,v 1.6 1997/02/14 07:24:00 bgrayson Exp $");
+CVSID("$Id: diskmeter.cc,v 1.7 1997/07/18 03:36:43 bgrayson Exp $");
 CVSID_DOT_H(DISKMETER_H_CVSID);
 
 DiskMeter::DiskMeter( XOSView *parent, float max )
@@ -44,6 +44,7 @@ DiskMeter::DiskMeter( XOSView *parent, float max )
 	gazillion bytes, let's reset total_ again and do another
 	call.  This will force total_ to be something reasonable.  */
   total_ = max;
+  IntervalTimerStart();
   getstats();
     /*  By doing this check, we eliminate the startup situation where
 	all fields are 0, and total is 0, leading to nothing being drawn
@@ -79,6 +80,7 @@ void DiskMeter::checkevent( void ){
 }
 
 void DiskMeter::getstats( void ){
+  IntervalTimerStop();
   u_int64_t currBytes = 0;
 //  Reset to desired full-scale settings.
   total_ = maxBandwidth_;
@@ -104,6 +106,7 @@ void DiskMeter::getstats( void ){
     /*  For bytes/sec, we need to scale by our priority and the
      *  sampling time.  */
     
-  setUsed ( fields_[0]*samplesPerSecond(), total_);
+  setUsed ( fields_[0]*IntervalTimeInMicrosecs()/1e6, total_);
   prevBytes = currBytes;
+  IntervalTimerStart();
 }
