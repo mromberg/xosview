@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.39 2000/04/10 04:26:35 bgrayson Exp $
+// $Id: kernel.cc,v 1.40 2000/04/16 04:16:05 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -67,7 +67,11 @@ int DevStat_Get();
 
 #ifdef HAVE_SWAPCTL
 #include <unistd.h>		/*  For swapctl proto.  */
-#include <vm/vm_swap.h>		/*  For swapent, SWAP_*.  */
+#if defined(XOSVIEW_NETBSD) && defined(__NetBSD_Version__) && __NetBSD_Version__ >= 104000000
+#include <sys/swap.h>		/*  For swapent, SWAP_*.  */
+#else
+#include <vm/vm_swap.h>		/* swapent, SWAP_*. */
+#endif
 #include <stdlib.h>		/*  For malloc(), free().  */
 #endif
 
@@ -89,7 +93,7 @@ __END_DECLS
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.39 2000/04/10 04:26:35 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.40 2000/04/16 04:16:05 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
