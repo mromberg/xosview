@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.22 1999/01/25 21:22:10 mromberg Exp $
+// $Id: fieldmeter.cc,v 1.23 1999/02/26 23:23:51 bgrayson Exp $
 //
 #include <fstream.h>
 #include <stdlib.h>
@@ -13,7 +13,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.22 1999/01/25 21:22:10 mromberg Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.23 1999/02/26 23:23:51 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -205,7 +205,11 @@ void FieldMeter::drawused( int manditory ){
        *  suffix, without overprinting the legends.  Thus, we can
        *  print 965, or we can print 34, but we can't print 34.7 (the
        *  decimal point takes up one character).  bgrayson   */
-    if (scaled_used == 0.0)
+      /*  Also check for negative values, and just print "-" for
+       *  them.  */
+    if (scaled_used < 0)
+      snprintf (buf, 10, "-");
+    else if (scaled_used == 0.0)
       snprintf (buf, 10, "0");
     else if (scaled_used < 9.95)  //  9.95 or above would get
 				  //  rounded to 10.0, which is too wide.
