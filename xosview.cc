@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.3 1996/11/19 04:42:27 bgrayson Exp $
+// $Id: xosview.cc,v 1.4 1996/11/28 22:16:36 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -20,9 +20,9 @@
 #endif
 
 static const char NAME[] = "xosview@";
-static const char versionString[] = "xosview 1.4.0";
+#include "version.cc"
 
-CVSID("$Id: xosview.cc,v 1.3 1996/11/19 04:42:27 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.4 1996/11/28 22:16:36 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
