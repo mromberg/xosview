@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.h,v 1.2 1996/08/14 06:21:29 mromberg Exp $
+// $Id: cpumeter.h,v 1.3 1996/11/19 06:34:35 bgrayson Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
@@ -19,7 +19,7 @@ public:
   CPUMeter( XOSView *parent );
   ~CPUMeter( void );
 
-  const char *name( void ) { return "CPUMeter"; }
+  const char *name( void ) const { return "CPUMeter"; }
   void checkevent( void );
 
   void checkResources( void );
