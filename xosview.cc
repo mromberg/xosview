@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.4 1996/11/28 22:16:36 bgrayson Exp $
+// $Id: xosview.cc,v 1.5 1996/12/04 04:03:46 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -22,12 +22,12 @@
 static const char NAME[] = "xosview@";
 #include "version.cc"
 
-CVSID("$Id: xosview.cc,v 1.4 1996/11/28 22:16:36 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.5 1996/12/04 04:03:46 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
-XOSView::XOSView( int argc, char *argv[] ) : XWin(), xrm(Xrm("xosview")){
-
+XOSView::XOSView( char * instName, int argc, char *argv[] ) : XWin(),
+						xrm(Xrm("xosview", instName)){
   setDisplayName (xrm.getDisplayName( argc, argv));
   openDisplay();  //  So that the Xrm class can contact the display for its
 		  //  default values.
@@ -286,6 +286,14 @@ void XOSView::checkArgs (int argc, char** argv) const
       case 'v':
       		cerr << versionString << endl;
 		exit(0);
+      case 'n': //  Check for -name option that was already parsed
+		//  and acted upon by main().
+		if (!strcmp(*argv, "-name"))
+		{
+		  argv++;	//  Skip arg to -name.
+		  argc--;
+		}
+		break;
 #ifdef XOSVIEW_NETBSD
       case 'N': if (strlen(argv[0]) > 2)
       		  SetKernelName(argv[0]+2);
