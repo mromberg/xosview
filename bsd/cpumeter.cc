@@ -7,8 +7,9 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.cc,v 1.2 1996/08/14 06:21:27 mromberg Exp $
+// $Id: cpumeter.cc,v 1.3 1996/11/19 06:44:54 bgrayson Exp $
 //
+#include "general.h"
 #include "cpumeter.h"
 #include "xosview.h"
 #include <sys/dkstat.h>         //  For CPUSTATES #define.  BCG
@@ -16,6 +17,8 @@
 #include "netbsd.h"             //  For NetBSD-specific icky kvm_ code.  BCG
 #include <stdlib.h>		//  For use of atoi  BCG
 
+CVSID("$Id: ");
+CVSID_DOT_H(CPUMETER_H_CVSID);
 
 CPUMeter::CPUMeter( XOSView *parent )
 : FieldMeterDecay( parent, 4, "CPU", "USR/NICE/SYS/FREE" ){
