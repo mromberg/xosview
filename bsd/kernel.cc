@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.48 2003/10/10 05:11:29 bgrayson Exp $
+// $Id: kernel.cc,v 1.49 2003/10/14 01:53:17 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -120,7 +120,7 @@ __END_DECLS
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.48 2003/10/10 05:11:29 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.49 2003/10/14 01:53:17 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -533,8 +533,8 @@ BSDSwapInit() {
 //
 
 void
-BSDGetSwapCtlInfo(int *totalp, int *freep) {
-  int	totalinuse, totalsize;
+BSDGetSwapCtlInfo(unsigned long long *totalp, unsigned long long *freep) {
+  unsigned long long	totalinuse, totalsize;
   int rnswap, nswap = swapctl(SWAP_NSWAP, 0, 0);
   struct swapent *swapiter;
 

@@ -13,10 +13,10 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.h,v 1.21 2003/10/09 04:24:01 bgrayson Exp $
+// $Id: kernel.h,v 1.22 2003/10/14 01:53:17 bgrayson Exp $
 //
 
-#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.21 2003/10/09 04:24:01 bgrayson Exp $"
+#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.22 2003/10/14 01:53:17 bgrayson Exp $"
 
 void
 BSDInit();
@@ -57,7 +57,7 @@ BSDSwapInit();
 
 #ifdef HAVE_SWAPCTL
 void
-BSDGetSwapCtlInfo(int* total, int* free);
+BSDGetSwapCtlInfo(unsigned long long* total, unsigned long long* free);
 #endif
 
 int
