@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.cc,v 1.4 1998/05/29 21:20:32 bgrayson Exp $
+// $Id: intmeter.cc,v 1.5 1998/09/24 19:23:18 bgrayson Exp $
 //
 #include <stdlib.h>		/*  For atoi().  */
 #include "intmeter.h"
@@ -20,7 +20,9 @@ IntMeter::IntMeter( XOSView *parent,
   //  ought to auto-detect how many there are.  I'll delay adding the
   //  code to do this for a few weeks, so that we can get version 1.6
   //  out the door.
-  : BitMeter( parent, "INTS", "IRQs", BSDNumInts(), 
+  //  Same goes for platforms (like Alpha) with more than 16
+  //  interrupts.
+  : BitMeter( parent, "INTS", "IRQs", 16 /*BSDNumInts()*/, 
               dolegends, dousedlegends ) {
   for ( int i = 0 ; i < 16 ; i++ )
     irqs_[i] = lastirqs_[i] = 0;
