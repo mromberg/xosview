@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.h,v 1.6 1997/07/18 03:33:11 bgrayson Exp $
+// $Id: fieldmeter.h,v 1.7 1997/12/03 13:45:21 bgrayson Exp $
 //
 #ifndef _FIELDMETER_H_
 #define _FIELDMETER_H_
 
-#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.6 1997/07/18 03:33:11 bgrayson Exp $"
+#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.7 1997/12/03 13:45:21 bgrayson Exp $"
 
 #include "meter.h"
 #include "timer.h"
@@ -28,8 +28,8 @@ public:
   void dousedlegends( int val ) { dousedlegends_ = val; }
   void reset( void );
     /*  These next two are deprecated -- use setUsed instead.  bgrayson  */
-  void used( int val ) { print_ = PERCENT; used_ = val; }
-  void absolute( float val ) { print_ = FLOAT; used_ = val; }
+  void used_obsolete( int val ) { print_ = PERCENT; used_ = val; }
+  void absolute_obsolete( float val ) { print_ = FLOAT; used_ = val; }
 
   void setUsed (float val, float total);
   void draw( void );
