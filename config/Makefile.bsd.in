@@ -2,7 +2,7 @@
 # NetBSD Makefile template
 #
 #
-# $Id: Makefile.bsd.in,v 1.5 1997/07/18 03:45:12 bgrayson Exp $
+# $Id: Makefile.bsd.in,v 1.6 1997/08/09 01:14:26 bgrayson Exp $
 #
 include ../Makefile.config
 
@@ -18,7 +18,7 @@ netmeter.o \
 loadmeter.o \
 diskmeter.o \
 pagemeter.o \
-netbsd.o
+kernel.o
 
 #  These next two are not yet supported in the NetBSD port.
 #intmeter.o \
