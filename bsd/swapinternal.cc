@@ -1,7 +1,7 @@
-// For OpenBSD with HAVE_SWAPCTL, we don't need any of this file.
+// For OpenBSD (or NetBSD with HAVE_SWAPCTL), we don't need any of this file.
 // For others, include it to provide the old method of getting swap
 // info.
-#if !(defined(XOSVIEW_OPENBSD) && defined(HAVE_SWAPCTL))
+#if !(defined(XOSVIEW_OPENBSD) || defined(HAVE_SWAPCTL))
 
 //  Copyright (c) 1995 by Brian Grayson (bgrayson@netbsd.org)
 //
@@ -11,7 +11,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.22 2003/10/09 04:32:14 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.23 2003/10/10 05:07:25 bgrayson Exp $
 //
 //  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //
