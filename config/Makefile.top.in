@@ -2,7 +2,7 @@
 # Top level Makefile Template for xosview.
 #
 #
-# $Id: Makefile.top.in,v 1.3 1996/08/14 06:20:31 mromberg Exp $
+# $Id: Makefile.top.in,v 1.4 1996/11/19 05:57:12 bgrayson Exp $
 #
 include Makefile.config
 
@@ -53,7 +53,9 @@ distrib: distclean
 
 clean :
 	$(MAKE) -C @host_os@ clean
-	$(MAKE) -C config clean
+	@#  Only clean the config directory if it exists...
+	sh -c 'if [ -d config ]; then \
+	    $(MAKE) -C config clean; fi'
 	rm -f xosview $(OBJS) $(DEPFILES) *~ defaultstring.cc
 
 distclean: clean
