@@ -6,7 +6,7 @@
 //  Most of this code was written by Werner Fink <werner@suse.de>
 //  Only small changes were made on my part (M.R.)
 //
-// $Id: loadmeter.h,v 1.2 1996/08/14 06:21:05 mromberg Exp $
+// $Id: loadmeter.h,v 1.3 1996/11/24 05:07:55 bgrayson Exp $
 //
 #ifndef _LOADMETER_H_
 #define _LOADMETER_H_
@@ -20,7 +20,7 @@ public:
   LoadMeter( XOSView *parent );
   ~LoadMeter( void );
 
-  const char *name( void ) { return "LoadMeter"; }  
+  const char *name( void ) const { return "LoadMeter"; }  
   void checkevent( void );
 
   void checkResources( void );
