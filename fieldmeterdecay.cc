@@ -6,7 +6,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeterdecay.cc,v 1.5 1996/11/19 05:47:36 bgrayson Exp $
+// $Id: fieldmeterdecay.cc,v 1.6 1996/12/02 04:57:05 bgrayson Exp $
 //
 
 // In order to use the FieldMeterDecay class in place of a FieldMeter class in
@@ -28,7 +28,7 @@
 #include "fieldmeterdecay.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeterdecay.cc,v 1.5 1996/11/19 05:47:36 bgrayson Exp $");
+CVSID("$Id: fieldmeterdecay.cc,v 1.6 1996/12/02 04:57:05 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETERDECAY_H_CVSID);
 
 FieldMeterDecay::FieldMeterDecay( XOSView *parent,
@@ -126,6 +126,7 @@ void FieldMeterDecay::drawfields( int manditory ){
       decaytwidth = width_ + x_ - decayx;
 
     parent_->setForeground( colors_[i] );
+    parent_->setStippleN(i%4);
 
       //  drawFilledRectangle() adds one to its width and height.
       //    Let's correct for that here.
@@ -146,6 +147,7 @@ void FieldMeterDecay::drawfields( int manditory ){
     lastx_[i] = x;
     lastDecayval_[i] = decay_[i];
 
+    parent_->setStippleN(0);	/*  Restore all-bits stipple.  */
     if ( dousedlegends_ )
       drawused( manditory );
     x += twidth;
