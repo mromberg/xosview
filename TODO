@@ -1,4 +1,4 @@
-Revision: $Id: TODO,v 1.4 1997/01/19 23:14:21 bgrayson Exp $
+Revision: $Id: TODO,v 1.5 1998/02/09 12:06:51 bgrayson Exp $
 
 * Do if(dolegends_) fix for loadmeter.cc for all ports.
 * Add a version string, so that xosview -v prints out the version.
@@ -35,3 +35,11 @@ Revision: $Id: TODO,v 1.4 1997/01/19 23:14:21 bgrayson Exp $
     correct formula (it took me a few attempts to get it right!)
   Fix depend stuff
 * Get autolookup of X stuff -- perhaps use xmkmf/imake in configure?
+
+  Change the CacheColor stuff from Tom Pavel's patches to be a
+    new memWiredColor.
+
+  Change the names on all NetBSD* functions to just be BSD*,
+    since they are shared across multiple *BSD ports.
+
+  Merge in NetBSD interrupt support.
