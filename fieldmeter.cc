@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.6 1996/12/04 04:58:07 bgrayson Exp $
+// $Id: fieldmeter.cc,v 1.7 1996/12/05 20:33:42 bgrayson Exp $
 //
 #include <fstream.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.6 1996/12/04 04:58:07 bgrayson Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.7 1996/12/05 20:33:42 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -179,9 +179,10 @@ void FieldMeter::drawused( int manditory ){
        *  legends.  */
     if (scaled_used == 0.0)
       sprintf (buf, "0");
-    else if (scaled_used < 9.995)
+    else if (scaled_used < 9.95)  //  9.95 or above would get
+				  //  rounded to 10.0, which is too wide.
       sprintf (buf, "%.1f%c", scaled_used, scale);
-    else if (scaled_used < 99.95)
+    else if (scaled_used < 99.5)
       sprintf (buf, "%.0f%c", scaled_used, scale);
     else 
       sprintf (buf, "%.0f%c", scaled_used, scale);
