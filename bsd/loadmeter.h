@@ -12,17 +12,17 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: loadmeter.h,v 1.7 1997/02/14 07:24:17 bgrayson Exp $
+// $Id: loadmeter.h,v 1.8 1998/10/20 19:37:34 bgrayson Exp $
 //
 #ifndef _LOADMETER_H_
 #define _LOADMETER_H_
 
-#define LOADMETER_H_CVSID "$Id: loadmeter.h,v 1.7 1997/02/14 07:24:17 bgrayson Exp $"
+#define LOADMETER_H_CVSID "$Id: loadmeter.h,v 1.8 1998/10/20 19:37:34 bgrayson Exp $"
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 
 
-class LoadMeter : public FieldMeterDecay {
+class LoadMeter : public FieldMeterGraph {
 public:
   LoadMeter( XOSView *parent );
   ~LoadMeter( void );

@@ -12,14 +12,14 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.h,v 1.2 1998/03/30 20:42:14 bgrayson Exp $
+// $Id: pagemeter.h,v 1.3 1998/10/20 19:37:35 bgrayson Exp $
 //
 #ifndef _PAGEMETER_H_
 #define _PAGEMETER_H_
 
-#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.2 1998/03/30 20:42:14 bgrayson Exp $"
+#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.3 1998/10/20 19:37:35 bgrayson Exp $"
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 #if defined(UVM)
 #include <sys/param.h>
 #include <vm/vm.h>
@@ -28,7 +28,7 @@
 #include <sys/vmmeter.h>
 #endif
 
-class PageMeter : public FieldMeterDecay {
+class PageMeter : public FieldMeterGraph {
 public:
   PageMeter( XOSView *parent, double total );
   ~PageMeter( void );

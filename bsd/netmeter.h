@@ -12,19 +12,19 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.h,v 1.9 1998/05/29 21:22:10 bgrayson Exp $
+// $Id: netmeter.h,v 1.10 1998/10/20 19:37:34 bgrayson Exp $
 //
 #ifndef _NETMETER_H_
 #define _NETMETER_H_
 
-#define NETMETER_H_CVSID "$Id: netmeter.h,v 1.9 1998/05/29 21:22:10 bgrayson Exp $"
+#define NETMETER_H_CVSID "$Id: netmeter.h,v 1.10 1998/10/20 19:37:34 bgrayson Exp $"
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 #include "timer.h"
 
 class Host;
 
-class NetMeter : public FieldMeterDecay {
+class NetMeter : public FieldMeterGraph {
 public:
   NetMeter(XOSView *parent, float max);
   ~NetMeter( void );

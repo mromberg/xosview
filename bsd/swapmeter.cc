@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.cc,v 1.16 1998/09/18 18:18:11 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.17 1998/10/20 19:37:35 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #ifndef HAVE_SWAPCTL
@@ -23,13 +23,13 @@
 #include "swapinternal.h"	/*  For *SwapInfo() functions.  */
 #include "kernel.h"		/*  For BSDSwapInit().  */
 
-CVSID("$Id: swapmeter.cc,v 1.16 1998/09/18 18:18:11 bgrayson Exp $");
+CVSID("$Id: swapmeter.cc,v 1.17 1998/10/20 19:37:35 bgrayson Exp $");
 CVSID_DOT_H(SWAPMETER_H_CVSID);
 
 static int doSwap = 1;
 
 SwapMeter::SwapMeter( XOSView *parent )
-: FieldMeterDecay( parent, 2, "SWAP", "USED/FREE" ){
+: FieldMeterGraph( parent, 2, "SWAP", "USED/FREE" ){
 #ifdef HAVE_SWAPCTL
   useSwapCtl = 0;
 #endif
@@ -64,6 +64,7 @@ void SwapMeter::checkResources( void ){
   setfieldcolor( 1, parent_->getResource("swapFreeColor") );
   priority_ = atoi (parent_->getResource("swapPriority"));
   dodecay_ = !strncasecmp (parent_->getResource("swapDecay"),"True", 5);
+  useGraph_ = !strncasecmp (parent_->getResource("swapGraph"),"True", 5);
   SetUsedFormat (parent_->getResource("swapUsedFormat"));
 }
 

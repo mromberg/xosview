@@ -10,17 +10,17 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.h,v 1.6 1997/02/14 07:24:15 bgrayson Exp $
+// $Id: diskmeter.h,v 1.7 1998/10/20 19:37:34 bgrayson Exp $
 //
 #ifndef _DISKMETER_H_
 #define _DISKMETER_H_
 
-#define DISKMETER_H_CVSID "$Id: diskmeter.h,v 1.6 1997/02/14 07:24:15 bgrayson Exp $"
+#define DISKMETER_H_CVSID "$Id: diskmeter.h,v 1.7 1998/10/20 19:37:34 bgrayson Exp $"
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 #include <sys/types.h>		//  For u_int64_t
 
-class DiskMeter : public FieldMeterDecay {
+class DiskMeter : public FieldMeterGraph {
 public:
   DiskMeter( XOSView *parent, float max );
   ~DiskMeter( void );

@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: cpumeter.cc,v 1.13 1998/09/18 18:18:10 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.14 1998/10/20 19:37:33 bgrayson Exp $
 //
 #include <sys/dkstat.h>         //  For CPUSTATES #define.  BCG
 #include <stdlib.h>		//  For use of atoi  BCG
@@ -20,15 +20,15 @@
 #include "cpumeter.h"
 #include "kernel.h"             //  For NetBSD-specific icky kvm_ code.  BCG
 
-CVSID("$Id: cpumeter.cc,v 1.13 1998/09/18 18:18:10 bgrayson Exp $");
+CVSID("$Id: cpumeter.cc,v 1.14 1998/10/20 19:37:33 bgrayson Exp $");
 CVSID_DOT_H(CPUMETER_H_CVSID);
 
 CPUMeter::CPUMeter( XOSView *parent )
 #ifdef XOSVIEW_FREEBSD
-: FieldMeterDecay( parent, 5, "CPU", "USR/NICE/SYS/INT/FREE" ){
+: FieldMeterGraph( parent, 5, "CPU", "USR/NICE/SYS/INT/FREE" ){
 #define FREE_INDEX 4
 #else
-: FieldMeterDecay( parent, 4, "CPU", "USR/NICE/SYS/FREE" ){
+: FieldMeterGraph( parent, 4, "CPU", "USR/NICE/SYS/FREE" ){
 #define FREE_INDEX 3
 #endif
   for ( int i = 0 ; i < 2 ; i++ )
@@ -58,8 +58,8 @@ void CPUMeter::checkResources( void ){
 #endif
   priority_ = atoi (parent_->getResource("cpuPriority"));
   dodecay_ = !strncasecmp (parent_->getResource("cpuDecay"),"True", 5);
+  useGraph_ = !strncasecmp (parent_->getResource("cpuGraph"),"True", 5);
   SetUsedFormat (parent_->getResource("cpuUsedFormat"));
-
 }
 
 void CPUMeter::checkevent( void ){

@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.18 1998/09/18 18:18:11 bgrayson Exp $
+// $Id: memmeter.cc,v 1.19 1998/10/20 19:37:34 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
@@ -29,17 +29,17 @@
 # include <sys/vmmeter.h>
 #endif
 
-CVSID("$Id: memmeter.cc,v 1.18 1998/09/18 18:18:11 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.19 1998/10/20 19:37:34 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 
 MemMeter::MemMeter( XOSView *parent )
 #ifdef  XOSVIEW_FREEBSD
-: FieldMeterDecay( parent, 5, "MEM", "ACT/INACT/WRD/BUF/FR" ) {
+: FieldMeterGraph( parent, 5, "MEM", "ACT/INACT/WRD/BUF/FR" ) {
 #define FREE_INDEX 4
 #else
   //  Once we figure out how to get the buffers field for NetBSD,
   //  change the next line.
-: FieldMeterDecay( parent, 4, "MEM", "ACT/INACT/WIRE/FREE" ){
+: FieldMeterGraph( parent, 4, "MEM", "ACT/INACT/WIRE/FREE" ){
 #define FREE_INDEX 3
 #endif
   BSDPageInit();
@@ -61,6 +61,7 @@ void MemMeter::checkResources( void ){
   setfieldcolor( FREE_INDEX, parent_->getResource("memFreeColor") );
   priority_ = atoi (parent_->getResource("memPriority"));
   dodecay_ = !strncasecmp (parent_->getResource("memDecay"),"True", 5);
+  useGraph_ = !strncasecmp (parent_->getResource("memGraph"),"True", 5);
   SetUsedFormat (parent_->getResource("memUsedFormat"));
 }
 

@@ -12,16 +12,16 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.h,v 1.7 1997/02/14 07:24:19 bgrayson Exp $
+// $Id: memmeter.h,v 1.8 1998/10/20 19:37:34 bgrayson Exp $
 //
 #ifndef _MEMMETER_H_
 #define _MEMMETER_H_
 
-#define MEMMETER_H_CVSID "$Id: memmeter.h,v 1.7 1997/02/14 07:24:19 bgrayson Exp $"
+#define MEMMETER_H_CVSID "$Id: memmeter.h,v 1.8 1998/10/20 19:37:34 bgrayson Exp $"
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 
-class MemMeter : public FieldMeterDecay {
+class MemMeter : public FieldMeterGraph {
 public:
   MemMeter( XOSView *parent );
   ~MemMeter( void );

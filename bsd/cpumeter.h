@@ -12,16 +12,16 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: cpumeter.h,v 1.9 1998/04/03 22:44:14 bgrayson Exp $
+// $Id: cpumeter.h,v 1.10 1998/10/20 19:37:33 bgrayson Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
 
-#define CPUMETER_H_CVSID "$Id: cpumeter.h,v 1.9 1998/04/03 22:44:14 bgrayson Exp $"
+#define CPUMETER_H_CVSID "$Id: cpumeter.h,v 1.10 1998/10/20 19:37:33 bgrayson Exp $"
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 
-class CPUMeter : public FieldMeterDecay {
+class CPUMeter : public FieldMeterGraph {
 public:
   CPUMeter( XOSView *parent );
   ~CPUMeter( void );

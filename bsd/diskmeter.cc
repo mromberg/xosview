@@ -9,7 +9,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.cc,v 1.14 1998/10/20 19:12:44 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.15 1998/10/20 19:37:33 bgrayson Exp $
 //
 #include <err.h>        //  For err() and warn(), etc.  BCG
 #include <stdlib.h>	//  For use of atoi  BCG
@@ -17,11 +17,11 @@
 #include "diskmeter.h"
 #include "kernel.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
 
-CVSID("$Id: diskmeter.cc,v 1.14 1998/10/20 19:12:44 bgrayson Exp $");
+CVSID("$Id: diskmeter.cc,v 1.15 1998/10/20 19:37:33 bgrayson Exp $");
 CVSID_DOT_H(DISKMETER_H_CVSID);
 
 DiskMeter::DiskMeter( XOSView *parent, float max )
-: FieldMeterDecay( parent, 2, "DISK", "XFER/IDLE" ){
+: FieldMeterGraph( parent, 2, "DISK", "XFER/IDLE" ){
   //  The setting of the priority will be done in checkResources().  BCG
   dodecay_ = 0;
 
@@ -74,6 +74,7 @@ void DiskMeter::checkResources( void ){
     setfieldcolor( 1, parent_->getResource("diskIdleColor") );
     priority_ = atoi (parent_->getResource("diskPriority"));
     dodecay_ = !strncasecmp (parent_->getResource("diskDecay"),"True", 5);
+    useGraph_ = !strncasecmp (parent_->getResource("diskGraph"),"True", 5);
     SetUsedFormat (parent_->getResource("diskUsedFormat"));
   }
   fields_[0] = 0.0;
