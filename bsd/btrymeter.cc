@@ -7,12 +7,16 @@
 //  BSD porting work done by David W. Talmage
 //  <talmage@jefferson.cmf.nrl.navy.mil>
 //
-// $Id: btrymeter.cc,v 1.2 2001/10/09 02:38:09 bgrayson Exp $
+// $Id: btrymeter.cc,v 1.3 2003/10/09 03:53:42 bgrayson Exp $
 //
 //  Only supported for NetBSD so far.
 #include "btrymeter.h"
 #include "xosview.h"
+#ifdef HAVE_FSTREAM
+#include <fstream>
+#else
 #include <fstream.h>
+#endif
 #include <stdlib.h>
 
 #include <fcntl.h>
@@ -54,7 +58,7 @@ void BtryMeter::getpwrinfo( void ){
   int loadinfo = open(APMFILENAME, O_RDONLY, 0);
 
   if ( !loadinfo ){
-    cerr <<"Can not open file : " <<APMFILENAME <<endl;
+    std::cerr <<"Can not open file : " <<APMFILENAME << std::endl;
     parent_->done(1);
     return;
   }
