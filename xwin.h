@@ -1,15 +1,18 @@
 //
-// $Id: xwin.h,v 1.5 1998/09/18 15:49:24 bgrayson Exp $
+// $Id: xwin.h,v 1.6 1999/01/25 06:21:22 bgrayson Exp $
 //
 #ifndef _XWIN_H_
 #define _XWIN_H_
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#ifdef HAVE_XPM
+#include <X11/xpm.h>
+#endif
 #include <iostream.h>
 #include <string.h>
 
-#define XWIN_H_CVSID "$Id: xwin.h,v 1.5 1998/09/18 15:49:24 bgrayson Exp $"
+#define XWIN_H_CVSID "$Id: xwin.h,v 1.6 1999/01/25 06:21:22 bgrayson Exp $"
 
 class XWin;
 class Xrm;
@@ -143,6 +146,7 @@ protected:
 
   void init( int argc, char *argv[] );
   void getGeometry( void );
+  int getPixmap(Pixmap *);
   void setDisplayName (const char* new_display_name) { strncpy
     (display_name_, new_display_name, 256); }
   const char* displayName () { return display_name_; }
