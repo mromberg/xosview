@@ -9,6 +9,8 @@
 #ifndef _FIELDMETERDECAY_H_
 #define _FIELDMETERDECAY_H_
 
+#define FIELDMETERDECAY_H_CVSID "$Id: fieldmeterdecay.h,v 1.2 1996/11/19 03:47:32 bgrayson Exp $"
+
 #include "meter.h"
 #include "fieldmeter.h"
 

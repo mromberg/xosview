@@ -1,9 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.3 1996/10/27 23:22:47 mromberg Exp $
+// $Id: Xrmcommandline.h,v 1.4 1996/11/19 03:47:28 bgrayson Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
+
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.4 1996/11/19 03:47:28 bgrayson Exp $"
 
 #include <X11/Xresource.h>
 
