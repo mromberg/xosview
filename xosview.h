@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.h,v 1.11 1999/02/26 23:36:20 bgrayson Exp $
+// $Id: xosview.h,v 1.12 2002/03/24 23:13:54 zedpobre Exp $
 //
 #ifndef _XOSVIEW_H_
 #define _XOSVIEW_H_
 
-#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.11 1999/02/26 23:36:20 bgrayson Exp $"
+#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.12 2002/03/24 23:13:54 zedpobre Exp $"
 
 #include "xwin.h"
 #include "Xrm.h"  //  For Xrm resource manager class.
@@ -57,6 +57,7 @@ protected:
   MeterNode *meters_;
   
   int caption_, legend_, xoff_, yoff_, nummeters_, usedlabels_;
+  int hmargin_, vmargin_, vspacing_;
   unsigned long sleeptime_, usleeptime_;
 
   int expose_flag_, exposed_once_flag_;

@@ -30,7 +30,7 @@
 
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.41 2002/02/24 22:00:47 romberg Exp $
+!  $Id: Xdefaults.in,v 1.42 2002/03/24 23:13:54 zedpobre Exp $
 
 ! General Resources
 
@@ -229,6 +229,10 @@ xosview*RAIDresynctodoColor:  red
 xosview*RAIDresynccompleteColor:  green
 xosview*RAIDPriority:         20
 xosview*RAIDUsedFormat:       percent
+
+xosview*horizontalMargin:      5
+xosview*verticalMargin:        5
+xosview*verticalSpacing:       5
 
 ! Lms Temp
 xosview*lmstemp:	False

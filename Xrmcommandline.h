@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.22 2002/02/24 22:00:47 romberg Exp $
+// $Id: Xrmcommandline.h,v 1.23 2002/03/24 23:13:54 zedpobre Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.22 2002/02/24 22:00:47 romberg Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.23 2002/03/24 23:13:54 zedpobre Exp $"
 
 #include <X11/Xresource.h>
 
@@ -20,6 +20,10 @@ static XrmOptionDescRec options[] = {
 { "-font", "*font", XrmoptionSepArg, (caddr_t) NULL },
 { "-title", "*title", XrmoptionSepArg, (caddr_t) NULL },
 { "-geometry", "*geometry", XrmoptionSepArg, (caddr_t) NULL },
+{ "-hmargin", "*horizontalMargin", XrmoptionSepArg, (caddr_t) NULL },
+{ "-vmargin", "*verticalMargin", XrmoptionSepArg, (caddr_t) NULL },
+{ "-vspacing", "*verticalSpacing", XrmoptionSepArg, (caddr_t) NULL },
+
 
 //  XOSView-specific resources:
 { "-labels", "*labels", XrmoptionNoArg, "False" },
