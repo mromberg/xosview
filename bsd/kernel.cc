@@ -1,13 +1,17 @@
 //
 //  NetBSD port:  
-//  Copyright (c) 1995 Brian Grayson(bgrayson@pine.ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
 //
+//  This file was written by Brian Grayson for the NetBSD and xosview
+//    projects.
 // dummy device ignore code by : David Cuka (dcuka@intgp1.ih.att.com)
+//  This file may be distributed under terms of the GPL or of the BSD
+//    copyright, whichever you choose.  The full copyright notices are
+//    contained in the files COPYING.GPL and COPYING.BSD, which you
+//    should have received.  If not, contact one of the xosview
+//    authors for a copy.
 //
-//  This file may be distributed under terms of the GPL
-//
-//
-// $Id: kernel.cc,v 1.5 1997/02/14 05:42:03 bgrayson Exp $
+// $Id: kernel.cc,v 1.6 1997/02/14 06:01:53 bgrayson Exp $
 //
 #include "general.h"
 #include <stdio.h>
@@ -25,7 +29,7 @@
 #include <net/if.h>             /*    NetMeter helper functions.  */
 #include "netbsd.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.5 1997/02/14 05:42:03 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.6 1997/02/14 06:01:53 bgrayson Exp $");
 CVSID_DOT_H(NETBSD_H_CVSID);
 
 

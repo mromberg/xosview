@@ -1,18 +1,20 @@
 //  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
 //
-//  NetBSD port:  
-//  Copyright (c) 1995 Brian Grayson(bgrayson@pine.ece.utexas.edu)
+//  This file was written by Brian Grayson for the NetBSD and xosview
+//    projects.
+//  This file may be distributed under terms of the GPL or of the BSD
+//    copyright, whichever you choose.  The full copyright notices are
+//    contained in the files COPYING.GPL and COPYING.BSD, which you
+//    should have received.  If not, contact one of the xosview
+//    authors for a copy.
 //
-//  This file may be distributed under terms of the GPL
-//
-//
-// $Id: swapmeter.h,v 1.5 1997/02/14 05:42:13 bgrayson Exp $
+// $Id: swapmeter.h,v 1.6 1997/02/14 06:02:13 bgrayson Exp $
 //
 #ifndef _SWAPMETER_H_
 #define _SWAPMETER_H_
 
-#define SWAPMETER_H_CVSID "$Id: swapmeter.h,v 1.5 1997/02/14 05:42:13 bgrayson Exp $"
+#define SWAPMETER_H_CVSID "$Id: swapmeter.h,v 1.6 1997/02/14 06:02:13 bgrayson Exp $"
 
 #include "fieldmeterdecay.h"
 

@@ -3,10 +3,17 @@
 
 //
 //  NetBSD port:  
-//  Copyright (c) 1995 Brian Grayson(bgrayson@pine.ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
 //
+//  This file was written by Brian Grayson for the NetBSD and xosview
+//    projects.
+//  This file may be distributed under terms of the GPL or of the BSD
+//    copyright, whichever you choose.  The full copyright notices are
+//    contained in the files COPYING.GPL and COPYING.BSD, which you
+//    should have received.  If not, contact one of the xosview
+//    authors for a copy.
 //
-// $Id: kernel.h,v 1.5 1997/02/14 05:42:05 bgrayson Exp $
+// $Id: kernel.h,v 1.6 1997/02/14 06:01:57 bgrayson Exp $
 //
 
 #include <stdio.h>
@@ -20,7 +27,7 @@
 //  sys/socket.h???  bgrayson
 //#include <net/if.h>
 
-#define NETBSD_H_CVSID	"$Id: kernel.h,v 1.5 1997/02/14 05:42:05 bgrayson Exp $"
+#define NETBSD_H_CVSID	"$Id: kernel.h,v 1.6 1997/02/14 06:01:57 bgrayson Exp $"
 void
 NetBSDInit();
 

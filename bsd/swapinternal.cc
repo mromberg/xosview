@@ -6,7 +6,9 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.4 1996/12/09 15:16:56 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.5 1997/02/14 06:02:05 bgrayson Exp $
+//
+//  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //
 
 /*      $NetBSD: swap.c,v 1.4 1995/08/31 22:20:19 jtc Exp $     */
