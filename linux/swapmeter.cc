@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: swapmeter.cc,v 1.10 2003/10/20 01:37:36 romberg Exp $
+// $Id: swapmeter.cc,v 1.11 2004/06/01 04:43:55 romberg Exp $
 //
 
 #include "swapmeter.h"
@@ -54,6 +54,7 @@ void SwapMeter::checkevent( void ){
 #ifdef USESYSCALLS
 void SwapMeter::getswapinfo( void ){
   struct sysinfo sinfo;
+  int unit;
 
 #if defined(GNULIBC) || defined(__GLIBC__)
   sysinfo(&sinfo);
@@ -61,9 +62,11 @@ void SwapMeter::getswapinfo( void ){
   syscall( SYS_sysinfo, &sinfo );
 #endif
 
-  total_ = sinfo.totalswap;
-  fields_[0] = total_ - sinfo.freeswap;
-  fields_[1] = sinfo.freeswap;
+  unit = (sinfo.mem_unit ? sinfo.mem_unit : 1); 
+
+  total_ = sinfo.totalswap * unit;
+  fields_[0] = (sinfo.totalswap - sinfo.freeswap) * unit;
+  fields_[1] = sinfo.freeswap * unit;
 
   if ( total_ == 0 ){
     total_ = 1;
