@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: MeterMaker.cc,v 1.5 1996/12/04 04:42:20 bgrayson Exp $
+// $Id: MeterMaker.cc,v 1.6 1996/12/04 04:54:07 bgrayson Exp $
 //
 #include "MeterMaker.h"
 #include "xosview.h"
@@ -42,7 +42,7 @@ void MeterMaker::makeMeters(void){
       push(new PageMeter(_xos, atof(_xos->getResource("pageBandwidth"))));
 
   // check for the net meter
-  if (strcmp(_xos->getResource("net"), "True"))
+  if (!strcmp(_xos->getResource("net"), "True"))
     push(new NetMeter(_xos, atof(_xos->getResource("netBandwidth"))));
 
   // check for the serial meters.
