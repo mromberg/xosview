@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.h,v 1.16 1998/03/26 20:57:14 bgrayson Exp $
+// $Id: kernel.h,v 1.17 1998/03/30 20:44:14 bgrayson Exp $
 //
 
 #include <stdio.h>
@@ -27,7 +27,7 @@
 //  sys/socket.h???  bgrayson
 //#include <net/if.h>
 
-#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.16 1998/03/26 20:57:14 bgrayson Exp $"
+#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.17 1998/03/30 20:44:14 bgrayson Exp $"
 
 void
 BSDInit();
@@ -38,8 +38,13 @@ SetKernelName(const char* const kernelName);
 void
 BSDPageInit();
 
+#if defined(UVM)
+void
+BSDGetUVMPageStats(struct uvmexp* uvmp);
+#else
 void
 BSDGetPageStats(struct vmmeter* vmp);
+#endif
 
 void
 BSDCPUInit();
