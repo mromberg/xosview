@@ -2,7 +2,7 @@
 # NetBSD Makefile template
 #
 #
-# $Id: Makefile.bsd.in,v 1.9 1998/02/12 04:29:03 bgrayson Exp $
+# $Id: Makefile.bsd.in,v 1.10 1998/06/01 21:11:51 bgrayson Exp $
 #
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
