@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.23 2003/10/20 01:37:36 romberg Exp $
+// $Id: netmeter.cc,v 1.24 2004/05/21 23:12:40 romberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -31,6 +31,7 @@
 
 #include <unistd.h>
 #include <fstream>
+#include <string.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -43,6 +44,7 @@
 #include <errno.h>
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 NetMeter::NetMeter( XOSView *parent, float max )
   : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ){
@@ -145,6 +147,7 @@ void NetMeter::checkeventNew(void)
         return;
         }
 
+    std::string str_in;
     unsigned long in, out, ig;
     unsigned long totin = 0, totout = 0;
     char buf[1024];
@@ -174,7 +177,14 @@ void NetMeter::checkeventNew(void)
 	  while (ifs)
 	      {
 	      ifs.ignore(1024, ':');
-	      ifs >> in >> ig >> ig >> ig >> ig >> ig >> ig >> ig >> out;
+              ifs >> str_in;
+              if (str_in == "No")
+                continue;
+              else
+                {
+                  in = strtoul(str_in.c_str(), NULL, 10);
+                  ifs >> ig >> ig >> ig >> ig >> ig >> ig >> ig >> out;
+                }
 
 	      if (!ifs.eof())
 		  {
