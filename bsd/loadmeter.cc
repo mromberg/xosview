@@ -7,7 +7,7 @@
 //  Only small changes were made on my part (M.R.)
 //  And the near-trivial port to NetBSD was done by Brian Grayson
 //
-// $Id: loadmeter.cc,v 1.3 1996/11/19 06:44:57 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.4 1996/11/24 04:45:11 bgrayson Exp $
 //
 #include "general.h"
 #include "loadmeter.h"
@@ -41,6 +41,7 @@ void LoadMeter::checkResources( void ){
 
   priority_ = atoi (parent_->getResource("loadPriority"));
   dodecay_ = !strcmp (parent_->getResource("loadDecay"),"True");
+  SetUsedFormat (parent_->getResource("loadUsedFormat"));
 
   alarmThreshold = atoi (parent_->getResource("loadAlarmThreshold"));
 
@@ -63,10 +64,8 @@ void LoadMeter::checkResources( void ){
 
 void LoadMeter::checkevent( void ){
   getloadinfo();
-
   drawfields();
 }
-
 
 void LoadMeter::getloadinfo( void ){
   double oneMinLoad;
@@ -88,5 +87,7 @@ void LoadMeter::getloadinfo( void ){
     total_ = fields_[1] = alarmThreshold;
   }
 
-  absolute( fields_[0] );
+  /*  I don't see why anyone would want to use any format besides
+   *  float, but just in case.... */
+  setUsed (fields_[0], total_);
 }

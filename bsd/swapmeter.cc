@@ -7,13 +7,17 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: swapmeter.cc,v 1.2 1996/08/14 06:21:51 mromberg Exp $
+// $Id: swapmeter.cc,v 1.3 1996/11/24 04:45:07 bgrayson Exp $
 //
+#include "general.h"
 #include "swapmeter.h"
 #include "xosview.h"
 
 #include "swapinternal.h"
 #include <stdlib.h>		//  For atoi().  BCG
+
+CVSID("$Id: ");
+CVSID_DOT_H(SWAPMETER_H_CVSID);
 
 SwapMeter::SwapMeter( XOSView *parent )
 : FieldMeterDecay( parent, 2, "SWAP", "USED/FREE" ){
@@ -28,9 +32,9 @@ void SwapMeter::checkResources( void ){
 
   setfieldcolor( 0, parent_->getResource("swapUsedColor") );
   setfieldcolor( 1, parent_->getResource("swapFreeColor") );
-
   priority_ = atoi (parent_->getResource("swapPriority"));
   dodecay_ = !strcmp (parent_->getResource("swapDecay"),"True");
+  SetUsedFormat (parent_->getResource("swapUsedFormat"));
 }
 
 void SwapMeter::checkevent( void ){
@@ -38,20 +42,15 @@ void SwapMeter::checkevent( void ){
   drawfields();
 }
 
-
 void SwapMeter::getswapinfo( void ){
   int total_int, free_int;
 
   NetBSDGetSwapInfo (&total_int, &free_int);
   total_ = total_int;
+  if ( total_ == 0 )
+    total_ = 1;	/*  We don't want any division by zero, now, do we?  :)  */
   fields_[1] = free_int;
   fields_[0] = total_ - fields_[1];
 
-  if ( total_ == 0 ){
-    total_ = 1;
-    fields_[0] = 0;
-    fields_[1] = 1;
-  }
-
-  used( (int)((100 * fields_[0]) / total_ ) );
+  setUsed (fields_[0], total_);
 }
