@@ -2,7 +2,7 @@
 //  The original FieldMeter class is Copyright (c) 1994 by Mike Romberg 
 //    ( romberg@fsl.noaa.gov )
 //  Modifications from FieldMeter class done in Oct. 1995
-//    by Brian Grayson ( bgrayson@ece.utexas.edu )
+//    by Brian Grayson ( bgrayson@netbsd.org )
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: fieldmeterdecay.cc,v 1.14 2001/10/10 15:58:22 eile Exp $
+// $Id: fieldmeterdecay.cc,v 1.15 2002/03/22 03:45:20 bgrayson Exp $
 //
 
 // In order to use the FieldMeterDecay class in place of a FieldMeter class in
@@ -33,7 +33,7 @@
 #include "fieldmeterdecay.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeterdecay.cc,v 1.14 2001/10/10 15:58:22 eile Exp $");
+CVSID("$Id: fieldmeterdecay.cc,v 1.15 2002/03/22 03:45:20 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETERDECAY_H_CVSID);
 
 FieldMeterDecay::FieldMeterDecay( XOSView *parent,

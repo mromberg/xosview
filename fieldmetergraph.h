@@ -3,7 +3,7 @@
 //    ( romberg@fsl.noaa.gov )
 //
 //  Modifications from FieldMeter class done in Oct. 1995
-//    by Brian Grayson ( bgrayson@ece.utexas.edu )
+//    by Brian Grayson ( bgrayson@netbsd.org )
 //
 //  Modifications from FieldMeterDecay class done in Oct. 1998
 //    by Scott McNab ( jedi@tartarus.uwa.edu.au )
@@ -12,7 +12,7 @@
 #ifndef _FIELDMETERGRAPH_H_
 #define _FIELDMETERGRAPH_H_
 
-#define FIELDMETERGRAPH_H_CVSID "$Id: fieldmetergraph.h,v 1.4 1999/02/26 23:26:16 bgrayson Exp $"
+#define FIELDMETERGRAPH_H_CVSID "$Id: fieldmetergraph.h,v 1.5 2002/03/22 03:45:20 bgrayson Exp $"
 
 #include "meter.h"
 #include "fieldmeterdecay.h"

@@ -1,7 +1,7 @@
 #ifndef General_h
 #define General_h
 
-//  Copyright (c) 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-#define GENERAL_H_CVSID "$Id: general.h,v 1.3 1997/02/14 07:22:03 bgrayson Exp $"
+#define GENERAL_H_CVSID "$Id: general.h,v 1.4 2002/03/22 03:45:20 bgrayson Exp $"
 
   /*  This file should be included by every .cc file, after any system
       includes but before any local includes.  It should NOT be included

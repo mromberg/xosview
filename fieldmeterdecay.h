@@ -2,7 +2,7 @@
 //  Original FieldMeter class is Copyright (c) 1994 by Mike Romberg 
 //    ( romberg@fsl.noaa.gov )
 //  Modifications from FieldMeter class done in Oct. 1995
-//    by Brian Grayson ( bgrayson@ece.utexas.edu )
+//    by Brian Grayson ( bgrayson@netbsd.org )
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -16,7 +16,7 @@
 #ifndef _FIELDMETERDECAY_H_
 #define _FIELDMETERDECAY_H_
 
-#define FIELDMETERDECAY_H_CVSID "$Id: fieldmeterdecay.h,v 1.5 1999/01/23 18:34:26 mromberg Exp $"
+#define FIELDMETERDECAY_H_CVSID "$Id: fieldmeterdecay.h,v 1.6 2002/03/22 03:45:20 bgrayson Exp $"
 
 #include "meter.h"
 #include "fieldmeter.h"

@@ -3,12 +3,12 @@
 //    ( romberg@fsl.noaa.gov )
 //
 //  Modifications from FieldMeter class done in Oct. 1995
-//    by Brian Grayson ( bgrayson@ece.utexas.edu )
+//    by Brian Grayson ( bgrayson@netbsd.org )
 //
 //  Modifications from FieldMeterDecay class done in Oct. 1998
 //    by Scott McNab ( jedi@tartarus.uwa.edu.au )
 //
-// $Id: fieldmetergraph.cc,v 1.6 1999/02/26 23:28:38 bgrayson Exp $
+// $Id: fieldmetergraph.cc,v 1.7 2002/03/22 03:45:20 bgrayson Exp $
 //
 
 // In order to use the FieldMeterGraph class in place of a FieldMeter class in
@@ -31,7 +31,7 @@
 #include "fieldmetergraph.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmetergraph.cc,v 1.6 1999/02/26 23:28:38 bgrayson Exp $");
+CVSID("$Id: fieldmetergraph.cc,v 1.7 2002/03/22 03:45:20 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETERGRAPH_H_CVSID);
 
 FieldMeterGraph::FieldMeterGraph( XOSView *parent,
