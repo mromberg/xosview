@@ -1,6 +1,7 @@
-  /*  $Id: CHANGES,v 1.41 2004/05/21 23:22:24 romberg Exp $  */
+  /*  $Id: CHANGES,v 1.42 2004/05/22 05:10:35 romberg Exp $  */
 
 Changes since xosview-1.8.1
+ - Merge in the fedora-2 nfs patch.
 
  - Merge in the fedora-2 strip patch.
 

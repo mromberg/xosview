@@ -2,7 +2,7 @@
 # Linux Makefile template
 #
 #
-# $Id: Makefile.linux.in,v 1.15 2004/05/21 22:58:47 romberg Exp $
+# $Id: Makefile.linux.in,v 1.16 2004/05/22 05:10:35 romberg Exp $
 #
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
@@ -15,6 +15,7 @@ memmeter.o \
 swapmeter.o \
 pagemeter.o \
 netmeter.o \
+nfsmeter.o \
 intmeter.o \
 loadmeter.o \
 btrymeter.o \

@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: MeterMaker.cc,v 1.21 2004/05/21 22:58:47 romberg Exp $
+// $Id: MeterMaker.cc,v 1.22 2004/05/22 05:10:35 romberg Exp $
 //
 #include "MeterMaker.h"
 #include "xosview.h"
@@ -21,6 +21,7 @@
 #include "diskmeter.h"
 #include "raidmeter.h"
 #include "lmstemp.h"
+#include "nfsmeter.h"
 
 #include <stdlib.h>
 
@@ -100,5 +101,12 @@ void MeterMaker::makeMeters(void){
       const char *lab = _xos->getResourceOrUseDefault(s, "TMP");
       push(new LmsTemp(_xos, res, lab, caption));
     }
+  }
+  // check for the NFS mesters
+  if (_xos->isResourceTrue("NFSDStats")){
+      push(new NFSDStats(_xos));
+  }
+  if (_xos->isResourceTrue("NFSStats")){
+      push(new NFSStats(_xos));
   }
 }
