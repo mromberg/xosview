@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Xrm.cc,v 1.6 1997/11/04 19:51:38 mromberg Exp $
+// $Id: Xrm.cc,v 1.7 1998/09/18 15:04:26 bgrayson Exp $
 //
 
 #include <string.h>
@@ -17,7 +17,7 @@
 #include "Xrm.h"
 #include "Xrmcommandline.h"
 
-CVSID("$Id: Xrm.cc,v 1.6 1997/11/04 19:51:38 mromberg Exp $");
+CVSID("$Id: Xrm.cc,v 1.7 1998/09/18 15:04:26 bgrayson Exp $");
 CVSID_DOT_H(XRM_H_CVSID);
 CVSID_DOT_H2(XRMCOMMANDLINE_H_CVSID);
 
@@ -156,7 +156,7 @@ Listed from weakest to strongest:
   if (xappdir != NULL)
   {
     char xappfile[1024];
-    sprintf (xappfile, "%s/%s", xappdir, className());
+    snprintf (xappfile, 1024, "%s/%s", xappdir, className());
     // this did not work for XAPPLRESDIR
     //if (!access (xappfile, X_OK | R_OK))  
     if (!access (xappfile, R_OK))
@@ -185,8 +185,8 @@ Listed from weakest to strongest:
   //  Now, check for a user resource file, and merge it in if there is one...
   if ( getenv( "HOME" ) != NULL ){
     char userrfilename[1024];
-    strcpy(userrfilename, getenv("HOME"));
-    strcat(userrfilename, "/.Xdefaults");
+    char *home = getenv("HOME");
+    snprintf(userrfilename, 1024, "%s/.Xdefaults", home);
     //  User file overrides system (_db).
     XrmCombineFileDatabase (userrfilename, &_db, 1);
   }
