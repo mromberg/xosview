@@ -1,5 +1,5 @@
 //  
-// $Id: MeterMaker.cc,v 1.5 2002/04/24 08:23:11 eile Exp $
+// $Id: MeterMaker.cc,v 1.6 2002/04/24 08:26:06 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 #include "MeterMaker.h"
@@ -67,13 +67,14 @@ void MeterMaker::makeMeters(void)
 
     }
 
-    if (_xos->isResourceTrue("gfx"))
-        push(new GfxMeter( _xos, atoi( _xos->getResource( "gfxWarnThreshold" ))));
 
     if (_xos->isResourceTrue("mem"))
         push(new MemMeter(_xos));
 
 #if 0 // eile: not yet working correctly -- display is delayed?
+    if (_xos->isResourceTrue("gfx"))
+        push(new GfxMeter( _xos, atoi( _xos->getResource( "gfxWarnThreshold" ))));
+
     if (_xos->isResourceTrue("disk"))
         push(new DiskMeter(_xos, atof(_xos->getResource("diskBandwidth"))));
 #endif
