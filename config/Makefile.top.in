@@ -2,7 +2,7 @@
 # Top level Makefile Template for xosview.
 #
 #
-# $Id: Makefile.top.in,v 1.15 1998/06/22 14:24:51 bgrayson Exp $
+# $Id: Makefile.top.in,v 1.16 1998/09/18 15:00:09 bgrayson Exp $
 #
 include Makefile.config
 
@@ -36,8 +36,9 @@ meterlib:
 
 @top_srcdir@/@host_dir@/libmeter.a: meterlib
 
+##  Also use LDFLAGS, which is inherited from the system.
 xosview: $(OBJS) @top_srcdir@/@host_dir@/libmeter.a
-	$(CXX) $(LFLAGS) -o xosview $(OBJS) $(LIBS)
+	$(CXX) $(LDFLAGS) $(LFLAGS) -o xosview $(OBJS) $(LIBS)
 
 ##  If for some reason (such as permissions) you wish to change where
 ##    xosview is installed, re-run configure with
