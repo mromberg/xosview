@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: MeterMaker.cc,v 1.14 1998/09/18 18:17:17 bgrayson Exp $
+// $Id: MeterMaker.cc,v 1.15 1999/01/31 08:38:43 mromberg Exp $
 //
 #include "MeterMaker.h"
 #include "xosview.h"
@@ -18,6 +18,7 @@
 #include "serialmeter.h"
 #include "loadmeter.h"
 #include "btrymeter.h"
+#include "diskmeter.h"
 
 #include <stdlib.h>
 
@@ -49,6 +50,9 @@ void MeterMaker::makeMeters(void){
   // check for the net meter
   if (_xos->isResourceTrue("net"))
     push(new NetMeter(_xos, atof(_xos->getResource("netBandwidth"))));
+
+  if (_xos->isResourceTrue("disk"))
+      push(new DiskMeter(_xos, atof(_xos->getResource("diskBandwidth"))));
 
   // check for the serial meters.
   for (int i = 0 ; i < SerialMeter::numDevices() ; i++)
