@@ -1,5 +1,5 @@
 //  
-// $Id: cpumeter.cc,v 1.3 1998/09/18 15:38:56 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.4 1998/09/18 19:53:49 bgrayson Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "cpumeter.h"
@@ -43,7 +43,7 @@ void CPUMeter::checkResources(void)
 	setfieldcolor(2, parent_->getResource("cpuInterruptColor"));
 	setfieldcolor(3, parent_->getResource("cpuFreeColor"));
 	priority_ = atoi(parent_->getResource("cpuPriority"));
-	dodecay_ = !strcmp(parent_->getResource("cpuDecay"), "True");
+	dodecay_ = !strncasecmp(parent_->getResource("cpuDecay"), "True", 5);
 	SetUsedFormat(parent_->getResource("cpuUsedFormat"));
 }
 

@@ -1,5 +1,5 @@
 //  
-// $Id: swapmeter.cc,v 1.2 1998/06/22 15:57:29 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.3 1998/09/18 19:53:49 bgrayson Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "swapmeter.h"
@@ -30,7 +30,8 @@ void SwapMeter::checkResources(void)
 	setfieldcolor(1, parent_->getResource("swapReservedColor"));
 	setfieldcolor(2, parent_->getResource("swapFreeColor"));
 	priority_ = atoi(parent_->getResource("swapPriority"));
-	dodecay_ = !strcmp(parent_->getResource("swapDecay"), "True");
+	dodecay_ =
+	  !strncasecmp(parent_->getResource("swapDecay"), "True", 5);
 	SetUsedFormat(parent_->getResource("swapUsedFormat"));
 }
 

@@ -1,5 +1,5 @@
 //  
-// $Id: loadmeter.cc,v 1.2 1998/06/22 15:57:29 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.3 1998/09/18 19:53:49 bgrayson Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "loadmeter.h"
@@ -35,7 +35,7 @@ void LoadMeter::checkResources(void)
 	setfieldcolor(0, procloadcol_);
 	setfieldcolor(1, parent_->getResource("loadIdleColor"));
 	priority_ = atoi (parent_->getResource("loadPriority"));
-	dodecay_ = !strcmp (parent_->getResource("loadDecay"), "True");
+	dodecay_ = !strncasecmp (parent_->getResource("loadDecay"), "True", 5);
 	SetUsedFormat(parent_->getResource("loadUsedFormat"));
 
 	alarmThreshold = atoi (parent_->getResource("loadAlarmThreshold"));
