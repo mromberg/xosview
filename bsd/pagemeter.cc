@@ -2,7 +2,7 @@
 //  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:  
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was originally written by Brian Grayson for the NetBSD and
 //    xosview projects.
@@ -13,14 +13,14 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.cc,v 1.15 1999/01/31 20:31:08 bgrayson Exp $
+// $Id: pagemeter.cc,v 1.16 2002/03/22 03:23:41 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
 #include "pagemeter.h"
 #include "kernel.h"		//  For NetBSD Page functions.
 
-CVSID("$Id: pagemeter.cc,v 1.15 1999/01/31 20:31:08 bgrayson Exp $");
+CVSID("$Id: pagemeter.cc,v 1.16 2002/03/22 03:23:41 bgrayson Exp $");
 CVSID_DOT_H(PAGEMETER_H_CVSID);
 
 PageMeter::PageMeter( XOSView *parent, double total )

@@ -1,5 +1,5 @@
 //  
-//  Copyright (c) 1999 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1999 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file may be distributed under terms of the GPL or of the BSD
 //    license, whichever you choose.  The full license notices are
@@ -7,14 +7,14 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: intratemeter.cc,v 1.1 1999/11/17 05:53:02 bgrayson Exp $
+// $Id: intratemeter.cc,v 1.2 2002/03/22 03:23:40 bgrayson Exp $
 //
 #include <stdlib.h>	//  For atoi.
 #include "general.h"
 #include "intratemeter.h"
 #include "xosview.h"
 
-CVSID("$Id: intratemeter.cc,v 1.1 1999/11/17 05:53:02 bgrayson Exp $");
+CVSID("$Id: intratemeter.cc,v 1.2 2002/03/22 03:23:40 bgrayson Exp $");
 CVSID_DOT_H(IRQRATEMETER_H_CVSID);
 
 IrqRateMeter::IrqRateMeter( XOSView *parent )

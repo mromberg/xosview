@@ -1,6 +1,6 @@
 //  
 //  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  Most of this code was written by Werner Fink <werner@suse.de>.
 //  Only small changes were made on my part (M.R.)
@@ -13,14 +13,14 @@
 //    authors for a copy.
 //
 //
-// $Id: loadmeter.cc,v 1.14 1999/11/19 10:38:24 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.15 2002/03/22 03:23:40 bgrayson Exp $
 //
 #include <stdlib.h>  //  for getloadavg()
 #include "general.h"
 #include "loadmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: loadmeter.cc,v 1.14 1999/11/19 10:38:24 bgrayson Exp $");
+CVSID("$Id: loadmeter.cc,v 1.15 2002/03/22 03:23:40 bgrayson Exp $");
 CVSID_DOT_H(LOADMETER_H_CVSID);
 
 LoadMeter::LoadMeter( XOSView *parent )

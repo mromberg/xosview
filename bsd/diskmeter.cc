@@ -1,5 +1,5 @@
 //  
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -9,7 +9,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.cc,v 1.20 1999/02/01 16:23:01 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.21 2002/03/22 03:23:40 bgrayson Exp $
 //
 #include <err.h>        //  For err() and warn(), etc.  BCG
 #include <stdlib.h>	//  For use of atoi  BCG
@@ -17,7 +17,7 @@
 #include "diskmeter.h"
 #include "kernel.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
 
-CVSID("$Id: diskmeter.cc,v 1.20 1999/02/01 16:23:01 bgrayson Exp $");
+CVSID("$Id: diskmeter.cc,v 1.21 2002/03/22 03:23:40 bgrayson Exp $");
 CVSID_DOT_H(DISKMETER_H_CVSID);
 
 DiskMeter::DiskMeter( XOSView *parent, float max )

@@ -1,6 +1,6 @@
 //  
 //  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -10,12 +10,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: MeterMaker.h,v 1.5 1997/02/14 07:24:11 bgrayson Exp $
+// $Id: MeterMaker.h,v 1.6 2002/03/22 03:23:40 bgrayson Exp $
 //
 #ifndef _MeterMaker_h
 #define _MeterMaker_h
 
-#define METERMAKER_H_CVSID "$Id: MeterMaker.h,v 1.5 1997/02/14 07:24:11 bgrayson Exp $"
+#define METERMAKER_H_CVSID "$Id: MeterMaker.h,v 1.6 2002/03/22 03:23:40 bgrayson Exp $"
 
 #include "pllist.h"
 

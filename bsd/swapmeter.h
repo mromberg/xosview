@@ -1,5 +1,5 @@
 //  
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -9,12 +9,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.h,v 1.9 1998/10/20 19:37:35 bgrayson Exp $
+// $Id: swapmeter.h,v 1.10 2002/03/22 03:23:41 bgrayson Exp $
 //
 #ifndef _SWAPMETER_H_
 #define _SWAPMETER_H_
 
-#define SWAPMETER_H_CVSID "$Id: swapmeter.h,v 1.9 1998/10/20 19:37:35 bgrayson Exp $"
+#define SWAPMETER_H_CVSID "$Id: swapmeter.h,v 1.10 2002/03/22 03:23:41 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 

@@ -1,6 +1,6 @@
 //  
 //  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -10,7 +10,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: MeterMaker.cc,v 1.19 2001/10/09 02:37:15 bgrayson Exp $
+// $Id: MeterMaker.cc,v 1.20 2002/03/22 03:23:40 bgrayson Exp $
 //
 #include <stdlib.h>
 #include "general.h"
@@ -33,7 +33,7 @@
 
 CVSID_DOT_H2(PLLIST_H_CVSID);
 CVSID_DOT_H(METERMAKER_H_CVSID);
-CVSID("$Id: MeterMaker.cc,v 1.19 2001/10/09 02:37:15 bgrayson Exp $");
+CVSID("$Id: MeterMaker.cc,v 1.20 2002/03/22 03:23:40 bgrayson Exp $");
 
 MeterMaker::MeterMaker(XOSView *xos){
   _xos = xos;

@@ -1,6 +1,6 @@
 //  
 //  NetBSD port:  
-//  Copyright (c) 1995,1996,1997 Brian Grayson(bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995,1996,1997 Brian Grayson(bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -10,12 +10,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.h,v 1.7 1998/10/20 19:37:34 bgrayson Exp $
+// $Id: diskmeter.h,v 1.8 2002/03/22 03:23:40 bgrayson Exp $
 //
 #ifndef _DISKMETER_H_
 #define _DISKMETER_H_
 
-#define DISKMETER_H_CVSID "$Id: diskmeter.h,v 1.7 1998/10/20 19:37:34 bgrayson Exp $"
+#define DISKMETER_H_CVSID "$Id: diskmeter.h,v 1.8 2002/03/22 03:23:40 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 #include <sys/types.h>		//  For u_int64_t

@@ -1,5 +1,5 @@
 //  
-//  Copyright (c) 1999 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1999 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file may be distributed under terms of the GPL or of the BSD
 //    license, whichever you choose.  The full license notices are
@@ -7,12 +7,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: intratemeter.h,v 1.1 1999/11/17 05:53:02 bgrayson Exp $
+// $Id: intratemeter.h,v 1.2 2002/03/22 03:23:40 bgrayson Exp $
 //
 #ifndef _IRQRATEMETER_H_
 #define _IRQRATEMETER_H_
 
-#define IRQRATEMETER_H_CVSID "$Id: intratemeter.h,v 1.1 1999/11/17 05:53:02 bgrayson Exp $"
+#define IRQRATEMETER_H_CVSID "$Id: intratemeter.h,v 1.2 2002/03/22 03:23:40 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 #include "kernel.h"

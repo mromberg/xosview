@@ -1,6 +1,6 @@
 //  
 //  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  Most of this code was written by Werner Fink <werner@suse.de>
 //  Only small changes were made on my part (M.R.)
@@ -12,12 +12,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: loadmeter.h,v 1.9 1999/11/19 10:38:24 bgrayson Exp $
+// $Id: loadmeter.h,v 1.10 2002/03/22 03:23:40 bgrayson Exp $
 //
 #ifndef _LOADMETER_H_
 #define _LOADMETER_H_
 
-#define LOADMETER_H_CVSID "$Id: loadmeter.h,v 1.9 1999/11/19 10:38:24 bgrayson Exp $"
+#define LOADMETER_H_CVSID "$Id: loadmeter.h,v 1.10 2002/03/22 03:23:40 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 

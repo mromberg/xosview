@@ -2,7 +2,7 @@
 //  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:  
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -12,12 +12,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: cpumeter.h,v 1.10 1998/10/20 19:37:33 bgrayson Exp $
+// $Id: cpumeter.h,v 1.11 2002/03/22 03:23:40 bgrayson Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
 
-#define CPUMETER_H_CVSID "$Id: cpumeter.h,v 1.10 1998/10/20 19:37:33 bgrayson Exp $"
+#define CPUMETER_H_CVSID "$Id: cpumeter.h,v 1.11 2002/03/22 03:23:40 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 

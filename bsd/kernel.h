@@ -3,7 +3,7 @@
 
 //
 //  NetBSD port:  
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -13,10 +13,10 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.h,v 1.19 2001/10/09 02:40:51 bgrayson Exp $
+// $Id: kernel.h,v 1.20 2002/03/22 03:23:40 bgrayson Exp $
 //
 
-#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.19 2001/10/09 02:40:51 bgrayson Exp $"
+#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.20 2002/03/22 03:23:40 bgrayson Exp $"
 
 void
 BSDInit();

@@ -1,6 +1,6 @@
 //
 //  NetBSD port:  
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.41 2001/10/09 02:40:51 bgrayson Exp $
+// $Id: kernel.cc,v 1.42 2002/03/22 03:23:40 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -102,7 +102,7 @@ __END_DECLS
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.41 2001/10/09 02:40:51 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.42 2002/03/22 03:23:40 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 

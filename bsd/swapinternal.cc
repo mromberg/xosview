@@ -1,4 +1,4 @@
-//  Copyright (c) 1995 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This code is borrowed HEAVILY from the vmstat source code in the
 //  NetBSD distribution.  As such, the NetBSD copyright claim/disclaimer
@@ -6,7 +6,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.19 1999/11/17 07:19:26 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.20 2002/03/22 03:23:41 bgrayson Exp $
 //
 //  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //

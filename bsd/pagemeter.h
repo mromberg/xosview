@@ -2,7 +2,7 @@
 //  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:  
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -12,12 +12,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.h,v 1.4 2001/10/09 02:41:30 bgrayson Exp $
+// $Id: pagemeter.h,v 1.5 2002/03/22 03:23:41 bgrayson Exp $
 //
 #ifndef _PAGEMETER_H_
 #define _PAGEMETER_H_
 
-#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.4 2001/10/09 02:41:30 bgrayson Exp $"
+#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.5 2002/03/22 03:23:41 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 #if defined(UVM)

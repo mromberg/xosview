@@ -2,7 +2,7 @@
 //  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:  
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: cpumeter.cc,v 1.18 2001/10/09 02:45:32 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.19 2002/03/22 03:23:40 bgrayson Exp $
 //
 #include <sys/param.h>		// Needed for __NetBSD_Version__
 #include <stdlib.h>		//  For use of atoi  BCG
@@ -27,7 +27,7 @@
 #include <sys/dkstat.h>
 #endif
 
-CVSID("$Id: cpumeter.cc,v 1.18 2001/10/09 02:45:32 bgrayson Exp $");
+CVSID("$Id: cpumeter.cc,v 1.19 2002/03/22 03:23:40 bgrayson Exp $");
 CVSID_DOT_H(CPUMETER_H_CVSID);
 
 CPUMeter::CPUMeter( XOSView *parent )
@@ -127,7 +127,7 @@ void CPUMeter::getcputime( void ){
 be due to running a kernel besides /netbsd (or the equivalent for FreeBSD).
   If this is the case, re-run xosview with the -N kernel-name option.
   If not, then this is a bug.  Please send a message to
-bgrayson@ece.utexas.edu, in addition to any send-pr bug reports
+bgrayson@netbsd.org, in addition to any send-pr bug reports
 (or in lieu of -- it ought to get fixed faster if you contact me
 directly).  Thanks!\n");
       firstTime = 0;

@@ -2,7 +2,7 @@
 //  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:  
-//  Copyright (c) 1995, 1996, 1997 by Brian Grayson (bgrayson@ece.utexas.edu)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was originally written by Brian Grayson for the NetBSD and
 //    xosview projects.
@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.23 1999/07/06 04:06:54 bgrayson Exp $
+// $Id: memmeter.cc,v 1.24 2002/03/22 03:23:40 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
@@ -29,7 +29,7 @@
 # include <sys/vmmeter.h>
 #endif
 
-CVSID("$Id: memmeter.cc,v 1.23 1999/07/06 04:06:54 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.24 2002/03/22 03:23:40 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 
 MemMeter::MemMeter( XOSView *parent )
