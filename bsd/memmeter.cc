@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.19 1998/10/20 19:37:34 bgrayson Exp $
+// $Id: memmeter.cc,v 1.20 1999/01/25 05:51:26 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
@@ -29,12 +29,12 @@
 # include <sys/vmmeter.h>
 #endif
 
-CVSID("$Id: memmeter.cc,v 1.19 1998/10/20 19:37:34 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.20 1999/01/25 05:51:26 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 
 MemMeter::MemMeter( XOSView *parent )
 #ifdef  XOSVIEW_FREEBSD
-: FieldMeterGraph( parent, 5, "MEM", "ACT/INACT/WRD/BUF/FR" ) {
+: FieldMeterGraph( parent, 5, "MEM", "ACT/INACT/WRD/CA/FRE" ) {
 #define FREE_INDEX 4
 #else
   //  Once we figure out how to get the buffers field for NetBSD,
