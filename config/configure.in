@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.5 1996/09/06 05:04:56 mromberg Exp $
+dnl $Id: configure.in,v 1.6 1996/09/27 21:07:43 romberg Exp $
 dnl
 AC_INIT(xosview.1)
 AC_CONFIG_AUX_DIR(config)
@@ -59,9 +59,11 @@ netbsd*)  AC_MSG_WARN([
 to autoconf!
   Thanks!
 *******************************************
-]); AC_XOSV_NETBSD ;;
+]); AC_XOSV_NETBSD 
+    host_os=netbsd ;;
 
-hpux)    AC_XOSV_HPUX   ;;
+hpux*)    AC_XOSV_HPUX   
+          host_os=hpux ;;
 *)       AC_MSG_ERROR([xosview has not been ported to $host_os :(.  Sorry.]) ;;
 esac
 
