@@ -4,14 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.h,v 1.3 1997/11/23 22:00:04 mromberg Exp $
+// $Id: cpumeter.h,v 1.4 1998/10/15 21:28:17 mromberg Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 
-class CPUMeter : public FieldMeterDecay {
+class CPUMeter : public FieldMeterGraph {
 public:
   CPUMeter(XOSView *parent, const char *cpuID = "cpu");
   ~CPUMeter(void);

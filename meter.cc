@@ -4,13 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: meter.cc,v 1.4 1998/09/18 15:38:55 bgrayson Exp $
+// $Id: meter.cc,v 1.5 1998/10/15 21:28:16 mromberg Exp $
 //
 #include "general.h"
 #include "meter.h"
 #include "xosview.h"
+#include <strstream.h>
 
-CVSID("$Id: meter.cc,v 1.4 1998/09/18 15:38:55 bgrayson Exp $");
+CVSID("$Id: meter.cc,v 1.5 1998/10/15 21:28:16 mromberg Exp $");
 CVSID_DOT_H(METER_H_CVSID);
 
 Meter::Meter( XOSView *parent, const char *title, const char *legend, 
@@ -38,16 +39,16 @@ void Meter::checkResources( void ){
 
 void Meter::title( const char *title ){
   delete[] title_;
-  int len = strlen(title);
-  title_ = new char[len + 1];
-  strncpy( title_, title, len );
+  ostrstream os;
+  os << title << ends;
+  title_ = os.str();
 }
 
 void Meter::legend( const char *legend ){
   delete[] legend_;
-  int len = strlen(legend);
-  legend_ = new char[len + 1];
-  strncpy( legend_, legend, len );
+  ostrstream os;
+  os << legend << ends;
+  legend_ = os.str();
 }
 
 void Meter::resize( int x, int y, int width, int height ){

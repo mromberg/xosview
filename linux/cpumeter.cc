@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.cc,v 1.6 1998/09/18 18:17:18 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.7 1998/10/15 21:28:17 mromberg Exp $
 //
 #include "cpumeter.h"
 #include "xosview.h"
@@ -17,7 +17,7 @@
 static const char STATFILENAME[] = "/proc/stat";
 
 CPUMeter::CPUMeter(XOSView *parent, const char *cpuID)
-: FieldMeterDecay( parent, 4, toUpper(cpuID), "USR/NICE/SYS/FREE" ) {
+: FieldMeterGraph( parent, 4, toUpper(cpuID), "USR/NICE/SYS/FREE" ) {
   _lineNum = findLine(cpuID);
   for ( int i = 0 ; i < 2 ; i++ )
     for ( int j = 0 ; j < 4 ; j++ )
@@ -30,7 +30,7 @@ CPUMeter::~CPUMeter( void ){
 }
 
 void CPUMeter::checkResources( void ){
-  FieldMeterDecay::checkResources();
+  FieldMeterGraph::checkResources();
 
   setfieldcolor( 0, parent_->getResource( "cpuUserColor" ) );
   setfieldcolor( 1, parent_->getResource( "cpuNiceColor" ) );
@@ -38,6 +38,7 @@ void CPUMeter::checkResources( void ){
   setfieldcolor( 3, parent_->getResource( "cpuFreeColor" ) );
   priority_ = atoi (parent_->getResource( "cpuPriority" ) );
   dodecay_ = !strncasecmp (parent_->getResource( "cpuDecay" ), "True", 5 );
+  useGraph_ = !strncasecmp (parent_->getResource( "cpuGraph" ), "True", 5 );
   SetUsedFormat (parent_->getResource("cpuUsedFormat"));
 }
 

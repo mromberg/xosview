@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: fieldmeterdecay.cc,v 1.10 1998/04/06 03:24:17 bgrayson Exp $
+// $Id: fieldmeterdecay.cc,v 1.11 1998/10/15 21:28:16 mromberg Exp $
 //
 
 // In order to use the FieldMeterDecay class in place of a FieldMeter class in
@@ -27,14 +27,13 @@
 //	 dodecay_ variable according to the, e.g., xosview*cpuDecay resource.
 
 #include <fstream.h>
-#include <stdio.h>
 #include <math.h>		//  For fabs()
 #include "general.h"
 #include "fieldmeter.h"
 #include "fieldmeterdecay.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeterdecay.cc,v 1.10 1998/04/06 03:24:17 bgrayson Exp $");
+CVSID("$Id: fieldmeterdecay.cc,v 1.11 1998/10/15 21:28:16 mromberg Exp $");
 CVSID_DOT_H(FIELDMETERDECAY_H_CVSID);
 
 FieldMeterDecay::FieldMeterDecay( XOSView *parent,

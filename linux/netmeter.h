@@ -4,17 +4,17 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.h,v 1.3 1998/05/16 20:31:54 mromberg Exp $
+// $Id: netmeter.h,v 1.4 1998/10/15 21:28:18 mromberg Exp $
 //
 #ifndef _NETMETER_H_
 #define _NETMETER_H_
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 #include "timer.h"
 
 class Host;
 
-class NetMeter : public FieldMeterDecay {
+class NetMeter : public FieldMeterGraph {
 public:
   NetMeter(XOSView *parent, float max);
   ~NetMeter( void );

@@ -4,14 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: memmeter.h,v 1.4 1997/10/12 06:33:55 mromberg Exp $
+// $Id: memmeter.h,v 1.5 1998/10/15 21:28:18 mromberg Exp $
 //
 #ifndef _MEMMETER_H_
 #define _MEMMETER_H_
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 
-class MemMeter : public FieldMeterDecay {
+class MemMeter : public FieldMeterGraph {
 public:
   MemMeter( XOSView *parent );
   ~MemMeter( void );

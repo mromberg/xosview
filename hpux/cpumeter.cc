@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.cc,v 1.5 1998/09/18 18:17:18 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.6 1998/10/15 21:28:17 mromberg Exp $
 //
 #include "cpumeter.h"
 #include "xosview.h"
@@ -12,7 +12,7 @@
 #include <stdlib.h>
 
 CPUMeter::CPUMeter( XOSView *parent )
-: FieldMeterDecay( parent, 5, "CPU", "USR/NICE/SYS/INT/FREE" ){
+: FieldMeterGraph( parent, 5, "CPU", "USR/NICE/SYS/INT/FREE" ){
   for ( int i = 0 ; i < 2 ; i++ )
     for ( int j = 0 ; j < 5 ; j++ )
       cputime_[i][j] = 0;
@@ -23,7 +23,7 @@ CPUMeter::~CPUMeter( void ){
 }
 
 void CPUMeter::checkResources( void ){
-  FieldMeterDecay::checkResources();
+  FieldMeterGraph::checkResources();
 
   setfieldcolor( 0, parent_->getResource( "cpuUserColor" ) );
   setfieldcolor( 1, parent_->getResource( "cpuNiceColor" ) );
@@ -32,6 +32,7 @@ void CPUMeter::checkResources( void ){
   setfieldcolor( 4, parent_->getResource( "cpuFreeColor" ) );
   priority_ = atoi (parent_->getResource( "cpuPriority" ) );
   dodecay_ = !strncasecmp (parent_->getResource( "cpuDecay" ), "True", 5 );
+  useGraph_ = !strncasecmp (parent_->getResource( "pageGraph" ), "True", 5 );
   SetUsedFormat( parent_->getResource( "cpuUsedFormat" ) );
 }
 

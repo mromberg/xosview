@@ -4,16 +4,16 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: swapmeter.h,v 1.2 1996/08/14 06:21:21 mromberg Exp $
+// $Id: swapmeter.h,v 1.3 1998/10/15 21:28:18 mromberg Exp $
 //
 #ifndef _SWAPMETER_H_
 #define _SWAPMETER_H_
 
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 
 
-class SwapMeter : public FieldMeterDecay {
+class SwapMeter : public FieldMeterGraph {
 public:
   SwapMeter( XOSView *parent );
   ~SwapMeter( void );

@@ -6,16 +6,16 @@
 //  Most of this code was written by Werner Fink <werner@suse.de>
 //  Only small changes were made on my part (M.R.)
 //
-// $Id: loadmeter.h,v 1.3 1996/11/24 05:07:55 bgrayson Exp $
+// $Id: loadmeter.h,v 1.4 1998/10/15 21:28:17 mromberg Exp $
 //
 #ifndef _LOADMETER_H_
 #define _LOADMETER_H_
 
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 
 
-class LoadMeter : public FieldMeterDecay {
+class LoadMeter : public FieldMeterGraph {
 public:
   LoadMeter( XOSView *parent );
   ~LoadMeter( void );

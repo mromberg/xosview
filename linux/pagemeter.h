@@ -4,14 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: pagemeter.h,v 1.1 1996/10/27 23:23:03 mromberg Exp $
+// $Id: pagemeter.h,v 1.2 1998/10/15 21:28:18 mromberg Exp $
 //
 #ifndef _PAGEMETER_H_
 #define _PAGEMETER_H_
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 
-class PageMeter : public FieldMeterDecay {
+class PageMeter : public FieldMeterGraph {
 public:
   PageMeter( XOSView *parent, float max );
   ~PageMeter( void );
