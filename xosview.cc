@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.24 1999/02/19 09:44:26 mcnab Exp $
+// $Id: xosview.cc,v 1.25 1999/02/26 23:28:13 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -25,7 +25,7 @@ static const char NAME[] = "xosview@";
 
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.24 1999/02/19 09:44:26 mcnab Exp $");
+CVSID("$Id: xosview.cc,v 1.25 1999/02/26 23:28:13 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -62,6 +62,7 @@ XOSView::XOSView( char * instName, int argc, char *argv[] ) : XWin(),
   name_ = "xosview";
   _isvisible = false;
   _ispartiallyvisible = false;
+  exposed_once_flag_ = 0;
 
   expose_flag_ = 1;
 
@@ -238,6 +239,7 @@ XOSView::~XOSView( void ){
 }
 
 void XOSView::draw( void ){
+  XOSDEBUG("Doing draw.\n");
   clear();
   MeterNode *tmp = meters_;
 
@@ -250,6 +252,17 @@ void XOSView::draw( void ){
   expose_flag_ = 0;
 }
 
+void XOSView::safedraw ( void ) {
+  if (hasBeenExposedAtLeastOnce() && isAtLeastPartiallyVisible())
+    draw();
+  else {
+    if (!hasBeenExposedAtLeastOnce()) {
+      XOSDEBUG("Skipping draw:  not yet exposed.\n");
+    } else if (!isAtLeastPartiallyVisible()) {
+      XOSDEBUG("Skipping draw:  not visible.\n");
+    }
+  }
+}
 void XOSView::keyrelease( char *ch ){
 /*  WARNING:  This code is not called by anything.  */
 (void) ch;  /*  To avoid gcc warnings.  */
@@ -359,19 +372,20 @@ void XOSView::exposeEvent( XExposeEvent &event ) {
   if ( event.count == 0 ) 
   {
     expose_flag_++;
-    draw();
+    safedraw();
   }
+  XOSDEBUG("Got expose event.\n");
+  if (!exposed_once_flag_) { exposed_once_flag_ = 1; safedraw(); }
 }
 
 void XOSView::resizeEvent( XEvent & ) {
   resize(); 
   expose_flag_++;
-  draw();
+  safedraw();
 }
 
 
 void XOSView::visibilityEvent( XVisibilityEvent &event ){
-
   _ispartiallyvisible = false;
   if (event.state == VisibilityPartiallyObscured){
     _ispartiallyvisible = true;
@@ -383,6 +397,8 @@ void XOSView::visibilityEvent( XVisibilityEvent &event ){
   else {
     _isvisible = true;
   }
+  XOSDEBUG("Got visibility event; %d and %d\n",
+      _ispartiallyvisible, _isvisible);
 }
 
 void XOSView::unmapEvent( XUnmapEvent & ){
