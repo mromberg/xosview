@@ -1,14 +1,14 @@
-//  
+//
 //  Copyright (c) 1997 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: btrymeter.cc,v 1.5 1999/01/23 18:34:26 mromberg Exp $
+// $Id: btrymeter.cc,v 1.6 2003/10/20 01:37:36 romberg Exp $
 //
 #include "btrymeter.h"
 #include "xosview.h"
-#include <fstream.h>
+#include <fstream>
 #include <stdlib.h>
 
 static const char APMFILENAME[] = "/proc/apm";
@@ -38,10 +38,10 @@ void BtryMeter::checkevent( void ){
 
 
 void BtryMeter::getpwrinfo( void ){
-  ifstream loadinfo( APMFILENAME );
+  std::ifstream loadinfo( APMFILENAME );
 
   if ( !loadinfo ){
-    cerr <<"Can not open file : " <<APMFILENAME <<endl;
+    std::cerr <<"Can not open file : " <<APMFILENAME << std::endl;
     parent_->done(1);
     return;
   }
