@@ -5,5 +5,8 @@
  *  to fixes to allow NetBSD-alpha to mostly work.  bgrayson  */
 /*  Version 1.6.2.b:  now has FreeBSD libdevstat support, for fixed
     diskmeter.  bgrayson  */
-static const char * const versionString = "xosview version 1.6.2.b";
-static const char * const version_cc_cvsID = "$Id: version.cc,v 1.10 1999/01/18 09:52:12 bgrayson Exp $";
+/*  Version 1.7.0:  has pixmap support, OpenBSD interrupt meter,
+ *  NetBSD battery meter, some more Solaris support,
+ *  sliding-graphs, and more.  */
+static const char * const versionString = "xosview version 1.7.0";
+static const char * const version_cc_cvsID = "$Id: version.cc,v 1.11 1999/01/25 20:23:13 bgrayson Exp $";
