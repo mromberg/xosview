@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.3 1996/08/27 03:46:50 mromberg Exp $
+// $Id: netmeter.cc,v 1.4 1996/09/06 05:05:00 mromberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -119,18 +119,16 @@ void NetMeter::checkevent( void ){
     }
   }
 
-  // I'm not sure why this happens but
-  // this should fix it when it does....
+  // This will happen when a dynamic connection (SLIP/PPP) goes down.
   if ((tot_in < _lastBytesIn) || (tot_out < _lastBytesOut)){
-    cerr <<"*** TOTAL < LAST ***" <<endl;
     fields_[0] = fields_[1] = 0;
+    _lastBytesIn = tot_in;
+    _lastBytesOut = tot_out;
   }
   else {  
-    // This should be what happens every time
-    // why it does not is still a mystery.
     float t = 1000000.0 / _timer.report();
 
-    if (t < 0)  // can happen when system clock is reset.
+    if (t < 0)  // can happen when system clock is reset. (ntp, timed, etc)
       t = 0.1;
 
     fields_[0] = (tot_in - _lastBytesIn) * t;

@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.4 1996/09/06 00:57:32 bgrayson Exp $
+dnl $Id: configure.in,v 1.5 1996/09/06 05:04:56 mromberg Exp $
 dnl
 AC_INIT(xosview.1)
 AC_CONFIG_AUX_DIR(config)
@@ -71,9 +71,11 @@ dnl are exported by AC_OUTPUT.
 dnl
 AC_SUBST(EXTRALIBS)
 AC_SUBST(INSTALL_ARGS)
+AC_SUBST(USE_MOD_VERSIONS)
 
 AC_OUTPUT(\
   Makefile:config/Makefile.top.in \
   $host_os/Makefile:config/Makefile.$host_os.in \
-  Makefile.config:config/Makefile.config.in)
+  Makefile.config:config/Makefile.config.in \
+  $EXTRA_OUT_FILES)
 

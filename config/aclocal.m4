@@ -3,10 +3,14 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.4 1996/09/06 01:00:13 bgrayson Exp $
+dnl $Id: aclocal.m4,v 1.5 1996/09/06 05:04:52 mromberg Exp $
 dnl
 
 AC_DEFUN(AC_XOSV_LINUX, [
+
+EXTRA_OUT_FILES="$EXTRA_OUT_FILES \
+  linux/memstat/Makefile:config/Makefile.linux.memstat.in"
+
 dnl
 dnl Add a switch to add -DUSESYSCALLS for linux.
 dnl
@@ -38,10 +42,17 @@ then
 else
         MEMSTAT=MemStat
         echo "enabled  the Linux memstat module"
+
+dnl
+dnl If this module is to be built then check to see if we can
+dnl use MODVERSIONS.
+dnl
+AC_CHECK_HEADER(linux/modversions.h, [USE_MOD_VERSIONS=-DMODVERSIONS])
+
 fi
 ,
-MEMSTAT=
-echo "disabled the Linux memstat module by default"
+MEMSTAT=MemStat
+echo "enabled  Linux memstat module by default"
 )
 AC_SUBST(MEMSTAT)
 
