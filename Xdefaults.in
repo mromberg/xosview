@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.31 1999/11/12 05:13:21 romberg Exp $
+!  $Id: Xdefaults.in,v 1.32 1999/11/17 05:53:01 bgrayson Exp $
 
 ! General Resources
 
@@ -140,6 +140,15 @@ xosview*interrupts:         True
 xosview*intOnColor:         red
 xosview*intOffColor:        aquamarine
 xosview*intPriority:	    1
+
+! Interrupt Rate Meter Resources
+xosview*irqrate:	True
+xosview*irqrateUsedColor:	red
+xosview*irqrateIdleColor:	black
+xosview*irqratePriority:	1
+xosview*irqrateUsedFormat:  autoscale
+xosview*irqrateDecay:	True
+xosview*irqrateGraph:	False
 
 ! Battery Meter Resources
 
