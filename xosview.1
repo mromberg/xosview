@@ -1,6 +1,6 @@
 '\" t
 .\" @(#)xosview.1	1.7.3 1/99 "
-.TH XOSVIEW 1.7.3 "$Date: 1999/11/19 09:45:19 $"
+.TH XOSVIEW 1.7.3 "$Date: 1999/11/21 23:37:53 $"
 .UC
 .SH NAME
 xosview \- X based system monitor
@@ -197,6 +197,12 @@ an abbreviation for all three of the free BSD operating systems
     FreeBSD: < Not Supported >
     OpenBSD: < Not Supported >
     HPUX   : < Not Supported >
+
+\fBRAID status\fP
+    Shows the state of disks contained in your (software)
+    RAID1/4/5 array(s) and the rebuild state of the
+    array(s). 
+    Linux  : Disk0 Disk1 Disk2 .. DiskN | Rebuild Progress
 
 .SH OPTIONS
 
@@ -717,6 +723,41 @@ This color will be used for the linux meter to show reads.
 .dg disk
 .uf disk
 
+\fBRAID Meter Resources\fP
+
+.\"  Do the RAID: True resource.
+.xt RAID
+
+xosview*RAIDdevicecount: \fIint\fP
+.RS
+Please enter your RAID device count (n) here or 0 if you don't have any
+supported RAID devices. xosview then will display n RAID state displays.
+.RE
+
+xosview*RAIDdiskOnlineColor: \fIcolor\fP
+
+xosview*RAIDdiskFailureColor: \fIcolor\fP
+.RS
+These colors will be used for indicating working/online or failed/offline
+disks. The order (from left to right) is the same as in /proc/mdstat.
+.RE
+
+xosview*RAIDresyncdoneColor: \fIcolor\fP
+
+xosview*RAIDresynctodoColor: \fIcolor\fP
+
+xosview*RAIDresynccompleteColor: \fIcolor\fP
+.RS
+If a resync/rebuild of the RAID array is in progress, the "done" and "todo"
+colors will be used. If no rebuild/resync is running, then the "complete"
+color will be shown.
+.RE
+
+.\"  RAIDpriority resource
+.pp RAID
+
+.\"  RAIDUsedFormat resource
+.uf RAID
 
 .SH BUGS
 
@@ -760,7 +801,7 @@ as up-to-date.
 
 .SH MAN PAGE REVISION
 
-$Id: xosview.1,v 1.43 1999/11/19 09:45:19 bgrayson Exp $
+$Id: xosview.1,v 1.44 1999/11/21 23:37:53 romberg Exp $
 
 .SH AUTHORS
 

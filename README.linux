@@ -123,6 +123,8 @@ ipchains -A output -j oacct
 
         http://www-isia.cma.fr/~forissie/smp_kernel_patch/
 
+        These patches are only needed for 2.0 kernels.  Newer kernels
+        already have the patch.
 
       - Raidmeter notes from Thomas Waldmann:
 
@@ -216,4 +218,4 @@ Other notes:
 
 Mike Romberg (romberg@fsl.noaa.gov)
 
-Revision: $Id: README.linux,v 1.12 1999/11/12 05:13:21 romberg Exp $
+Revision: $Id: README.linux,v 1.13 1999/11/21 23:37:53 romberg Exp $
