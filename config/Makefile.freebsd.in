@@ -1,0 +1,41 @@
+#
+# FreeBSD Makefile template
+#
+#
+# $Id: Makefile.freebsd.in,v 1.1 1997/08/09 00:46:09 bgrayson Exp $
+#
+include ../Makefile.config
+
+CXXFLAGS += -I@top_srcdir@
+
+OBJS = \
+MeterMaker.o \
+cpumeter.o \
+memmeter.o \
+netmeter.o \
+loadmeter.o \
+diskmeter.o \
+pagemeter.o \
+netbsd.o
+
+#  These next four are not yet supported in the FreeBSD port.
+#intmeter.o \
+#serialmeter.o \
+#swapmeter.o \
+#swapinternal.o \
+
+CFILES := $(OBJS:.o=.cc)
+DEPFILES := $(OBJS:%=.%.d)
+
+#-----------------------------------------------------------------------
+
+all : libmeter.a # concatdepend
+
+clean :
+	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
+
+libmeter.a : $(OBJS)
+	ar cvr libmeter.a $(OBJS)
+	@RANLIB@ $@
+
+@AUTODEPEND@
