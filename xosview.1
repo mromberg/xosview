@@ -1,6 +1,6 @@
 '\" t
 .\" @(#)xosview.1	1.3 7/17/97 "
-.TH XOSVIEW 1.5.1 "$Date: 1997/11/23 22:04:34 $"
+.TH XOSVIEW 1.5.1 "$Date: 1997/11/24 00:14:16 $"
 .UC
 .SH NAME
 xosview \- X based system monitor
@@ -986,7 +986,7 @@ sunsite.unc.edu /pub/Linux/X11/xutils/status/
 
 .SH MAN PAGE REVISION
 
-$Id: xosview.1,v 1.14 1997/11/23 22:04:34 mromberg Exp $
+$Id: xosview.1,v 1.15 1997/11/24 00:14:16 mromberg Exp $
 
 .SH AUTHORS
 
@@ -1013,6 +1013,20 @@ Linux pagemeter.
 Carsten Schabacker (cschaba@spock.central.de)
 .RS
 Made extensions to the serial-meter.
+.RE
+
+Paal Beyer <pbeyer@online.no>
+.RS
+Ported the linux memstat kernel module to linux-2.1
+.RE
+
+Jerome Forissier <forissier@isia.cma.fr>
+.RS
+Maintains the linux SMP kernel patch which xosview uses to display meters
+for each cpu.  This patch can be found at the following URL:
+.RS
+http://www-isia.cma.fr/~forissie/smp_kernel_patch/
+.RE
 .RE
 
 And many others who have sent in small fixes and improvements.
