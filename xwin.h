@@ -1,3 +1,6 @@
+//
+// $Id: xwin.h,v 1.2 1996/08/14 06:20:20 mromberg Exp $
+//
 #ifndef _XWIN_H_
 #define _XWIN_H_
 

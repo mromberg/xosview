@@ -5,6 +5,9 @@
 //  NetBSD port:  
 //  Copyright (c) 1995 Brian Grayson(bgrayson@pine.ece.utexas.edu)
 //
+//
+// $Id: netbsd.h,v 1.2 1996/08/14 06:21:41 mromberg Exp $
+//
 
 #include <stdio.h>
 #include <fcntl.h>

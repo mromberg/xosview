@@ -3,7 +3,9 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
+//
+// $Id: cpumeter.cc,v 1.2 1996/08/14 06:20:40 mromberg Exp $
+//
 #include "cpumeter.h"
 #include "xosview.h"
 #include <sys/pstat.h>

@@ -3,6 +3,8 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
+dnl $Id: aclocal.m4,v 1.3 1996/08/14 06:20:33 mromberg Exp $
+dnl
 
 AC_DEFUN(AC_XOSV_LINUX, [
 dnl

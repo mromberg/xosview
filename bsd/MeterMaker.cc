@@ -5,6 +5,9 @@
 //
 //  Most of this code was written by Brian Grayson
 //  (bgrayson@pine.ece.utexas.edu).
+//
+// $Id: MeterMaker.cc,v 1.2 1996/08/14 06:21:23 mromberg Exp $
+//
 
 #include "MeterMaker.h"
 #include "xosview.h"

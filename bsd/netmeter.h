@@ -6,7 +6,9 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
+//
+// $Id: netmeter.h,v 1.2 1996/08/14 06:21:45 mromberg Exp $
+//
 #ifndef _NETMETER_H_
 #define _NETMETER_H_
 

@@ -1,3 +1,7 @@
+//
+// $Id: xwin.cc,v 1.2 1996/08/14 06:20:18 mromberg Exp $
+//
+
 #include "xwin.h"
 #include "Xrm.h"
 #include <X11/Xatom.h>

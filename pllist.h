@@ -3,7 +3,9 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
+//
+// $Id: pllist.h,v 1.2 1996/08/14 06:20:05 mromberg Exp $
+//
 #ifndef _pllist_h
 #define _pllist_h
 

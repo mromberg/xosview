@@ -3,7 +3,9 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
+//
+// $Id: llist.h,v 1.2 1996/08/14 06:19:57 mromberg Exp $
+//
 #ifndef __LLIST_H__
 #define __LLIST_H__
 

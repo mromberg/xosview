@@ -3,7 +3,9 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
+//
+// $Id: llist.cc,v 1.2 1996/08/14 06:19:55 mromberg Exp $
+//
 #include <iostream.h>
 #include "llist.h"
 

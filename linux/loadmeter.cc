@@ -5,7 +5,9 @@
 //
 //  Most of this code was written by Werner Fink <werner@suse.de>.
 //  Only small changes were made on my part (M.R.)
-
+//
+// $Id: loadmeter.cc,v 1.2 1996/08/14 06:21:03 mromberg Exp $
+//
 #include "loadmeter.h"
 #include "xosview.h"
 #include <fstream.h>

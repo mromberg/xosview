@@ -3,7 +3,8 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
+// $Id: memmeter.cc,v 1.2 1996/08/14 06:21:07 mromberg Exp $
+//
 #include "memmeter.h"
 #include "xosview.h"
 #include <fstream.h>

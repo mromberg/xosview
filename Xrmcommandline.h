@@ -1,3 +1,7 @@
+//
+// $Id: Xrmcommandline.h,v 1.2 1996/08/14 06:19:41 mromberg Exp $
+//
+
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 

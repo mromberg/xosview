@@ -3,7 +3,9 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
+//
+// $Id: meter.h,v 1.2 1996/08/14 06:20:03 mromberg Exp $
+//
 #ifndef _METER_H_
 #define _METER_H_
 
