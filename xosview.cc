@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.5 1996/12/04 04:03:46 bgrayson Exp $
+// $Id: xosview.cc,v 1.6 1996/12/04 04:41:50 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -22,7 +22,7 @@
 static const char NAME[] = "xosview@";
 #include "version.cc"
 
-CVSID("$Id: xosview.cc,v 1.5 1996/12/04 04:03:46 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.6 1996/12/04 04:41:50 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -69,6 +69,12 @@ XOSView::XOSView( char * instName, int argc, char *argv[] ) : XWin(),
   mm.makeMeters();
   for (int i = 1 ; i <= mm.n() ; i++)
     addmeter(mm[i]);
+
+  if (nummeters_ == 0)
+  {
+    fprintf (stderr, "No meters were enabled!  Exiting...\n");
+    exit (0);
+  }
 
   //  Have the meters re-check the resources.
   checkMeterResources();
