@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.30 2002/05/29 17:27:00 romberg Exp $
+dnl $Id: aclocal.m4,v 1.31 2003/10/10 05:10:17 bgrayson Exp $
 dnl
 
 dnl Make an absolute symbol for the top of the configuration.
@@ -53,9 +53,9 @@ AC_DEFINE(LONG_LONG,long)
 fi
 ])dnl
 
-dnl	For gcc-based (or primarily-gcc) OS's, set EXTRA_CXXFLAGS to -Wall -O4 -pipe.
+dnl	For gcc-based (or primarily-gcc) OS's, set EXTRA_CXXFLAGS to -Wall -O4
 AC_DEFUN(AC_GCC_EXTRA_CXXFLAGS, [
-	EXTRA_CXXFLAGS="-Wall -O4 -pipe -Wno-deprecated"
+	EXTRA_CXXFLAGS="-Wall -O4"
 ])
 
 AC_DEFUN(SMP_LINUX,
