@@ -4,7 +4,7 @@
 # The configure script should set up this file for most all cases.
 # One can override compile / link options here if needed.
 #
-# $Id: Makefile.config.in,v 1.12 1999/02/24 23:17:24 bgrayson Exp $
+# $Id: Makefile.config.in,v 1.13 1999/04/01 21:54:20 romberg Exp $
 #
 
 # version number for release
@@ -37,15 +37,15 @@ CXXFLAGS      += $(CFLAGS) -Wall -O4 -pipe -I@x_includes@ \
 
 # NORMAL LIBS
 LFLAGS        += -L$(TOP)/@host_dir@ -L@x_libraries@
-LIBS          += -lmeter -lX11 @EXTRALIBS@
+LIBS          += -lmeter @EXTRALIBS@ -lX11
 
 # DEBUG LIBS
 #LFLAGS        += -L$(TOP)/@host_dir@ -L@x_libraries@ -static
-#LIBS          += -lmeter -lX11 @EXTRALIBS@
+#LIBS          += -lmeter @EXTRALIBS@ -lX11
 
 # PROFILE LIBS
 #LFLAGS        += -L$(TOP)/@host_dir@ -L@x_libraries@ -pg
-#LIBS          += -lmeter -lX11 @EXTRALIBS@ -lgmon
+#LIBS          += -lmeter @EXTRALIBS@ -lX11 -lgmon
 
 #-----------------------------------------------------------------
 # Rules
