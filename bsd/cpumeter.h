@@ -12,12 +12,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: cpumeter.h,v 1.8 1998/02/09 11:44:40 bgrayson Exp $
+// $Id: cpumeter.h,v 1.9 1998/04/03 22:44:14 bgrayson Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
 
-#define CPUMETER_H_CVSID "$Id: cpumeter.h,v 1.8 1998/02/09 11:44:40 bgrayson Exp $"
+#define CPUMETER_H_CVSID "$Id: cpumeter.h,v 1.9 1998/04/03 22:44:14 bgrayson Exp $"
 
 #include "fieldmeterdecay.h"
 
@@ -31,7 +31,7 @@ public:
 
   void checkResources( void );
 protected:
-  float cputime_[2][5];
+  long cputime_[2][5];
   int cpuindex_;
 
   void getcputime( void );
