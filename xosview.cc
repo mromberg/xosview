@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.8 1997/01/14 18:28:11 bgrayson Exp $
+// $Id: xosview.cc,v 1.9 1997/08/09 01:05:22 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -16,13 +16,13 @@
 #include "meter.h"
 #include "MeterMaker.h"
 #ifdef XOSVIEW_NETBSD
-#include "netbsd.h"
+#include "kernel.h"
 #endif
 
 static const char NAME[] = "xosview@";
 #include "version.cc"
 
-CVSID("$Id: xosview.cc,v 1.8 1997/01/14 18:28:11 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.9 1997/08/09 01:05:22 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
