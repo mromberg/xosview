@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.23 1998/10/15 21:28:15 mromberg Exp $
+!  $Id: Xdefaults.in,v 1.24 1998/10/20 20:35:55 bgrayson Exp $
 
 ! General Resources
 
@@ -167,3 +167,4 @@ xosview*diskBandwidth:  5000000
 xosview*diskPriority:	10
 xosview*diskDecay:	True
 xosview*diskUsedFormat: autoscale
+xosview*diskGraph:	False
