@@ -6,7 +6,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeterdecay.cc,v 1.2 1996/08/14 06:19:53 mromberg Exp $
+// $Id: fieldmeterdecay.cc,v 1.3 1996/08/27 03:46:45 mromberg Exp $
 //
 
 // In order to use the FieldMeterDecay class in place of a FieldMeter class in
@@ -114,12 +114,18 @@ void FieldMeterDecay::drawfields( int manditory ){
 
     parent_->setForeground( colors_[i] );
 
-    if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) )
+    if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
+      if (!checkX(x, twidth))
+        cerr <<"ONE" <<endl;
       parent_->drawFilledRectangle( x, y_, twidth, halfheight );
+    }
 
-    if ( manditory || (decay_[i] != lastDecayval_[i]) )
+    if ( manditory || (decay_[i] != lastDecayval_[i]) ){
+      if (!checkX(x, twidth))
+        cerr <<"ONE" <<endl;
       parent_->drawFilledRectangle( decayx, y_+halfheight,
             decaytwidth, height_ - halfheight);
+    }
 
     lastvals_[i] = twidth;
     lastx_[i] = x;
