@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.27 1999/01/29 06:01:42 mcnab Exp $
+!  $Id: Xdefaults.in,v 1.28 1999/02/01 17:39:22 mromberg Exp $
 
 ! General Resources
 
@@ -152,14 +152,13 @@ xosview*batteryUsedColor: aquamarine
 xosview*batteryPriority:  50
 xosview*batteryUsedFormat: percent
 
-!!!
-!!!  NetBSD-only meters
-!!!
 ! Disk Meter Resources
 
 xosview*disk:		True
 xosview*diskUsedColor:	seagreen
 xosview*diskIdleColor:	aquamarine
+xosview*diskWriteColor: SlateBlue1
+xosview*diskReadColor:  SkyBlue
 !  Default to 5MB/s bandwidth -- I
 ! think that's IDE's theoretical
 ! peak?, and SCSI-II's peak (no fast, no
