@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netbsd.cc,v 1.7 1997/02/14 07:24:06 bgrayson Exp $
+// $Id: netbsd.cc,v 1.8 1997/06/28 05:35:10 bgrayson Exp $
 //
 #include "general.h"
 #include <stdio.h>
@@ -29,7 +29,7 @@
 #include <net/if.h>             /*    NetMeter helper functions.  */
 #include "netbsd.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: netbsd.cc,v 1.7 1997/02/14 07:24:06 bgrayson Exp $");
+CVSID("$Id: netbsd.cc,v 1.8 1997/06/28 05:35:10 bgrayson Exp $");
 CVSID_DOT_H(NETBSD_H_CVSID);
 
 
@@ -199,6 +199,49 @@ NetBSDSwapInit() {
   /*return ValidSymbol(*/
   return 1;
 }
+
+/*  If we have swapctl, let's enable that stuff.  However, the default
+    is still the old method, so if we compile on a swapctl-capable machine,
+    the binary will still work on an older machine.  */
+#ifdef HAVE_SWAPCTL
+//  This code is based on a patch sent in by Scott Stevens
+//  (s.k.stevens@ic.ac.uk, at the time).
+//
+#include <sys/param.h>
+#include <vm/vm_swap.h>
+#include <stdlib.h>
+
+void
+NetBSDGetSwapCtlInfo(int *total, int *free)
+{
+  struct swapent *sep;
+  int	totalinuse, totalsize;
+  int rnswap, nswap = swapctl(SWAP_NSWAP, 0, 0);
+
+  if (nswap < 1) {
+    *total = *free = 0;
+    return;
+  }
+
+  sep = (struct swapent *)malloc(nswap * sizeof(*sep));
+  if (sep == NULL)
+    err(1, "malloc");
+  rnswap = swapctl(SWAP_STATS, (void *)sep, nswap);
+  if (nswap < 0)
+    errx(1, "SWAP_STATS");
+  if (nswap != rnswap)
+    warnx("SWAP_STATS gave different value than SWAP_NSWAP");
+
+  totalsize = totalinuse = 0;
+  for (; rnswap-- > 0; sep++) {
+    totalsize += sep->se_nblks;
+    totalinuse += sep->se_inuse;
+  }
+#define BYTES_PER_SWAPBLOCK	512
+  *total = totalsize * BYTES_PER_SWAPBLOCK;
+  *free = (totalsize - totalinuse) * BYTES_PER_SWAPBLOCK;
+}
+#endif	/*  Swapctl info retrieval  */
 
 /*  ---------------------- Disk Meter stuff  -----------------  */
 int

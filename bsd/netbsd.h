@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netbsd.h,v 1.7 1997/02/14 07:24:20 bgrayson Exp $
+// $Id: netbsd.h,v 1.8 1997/06/28 05:35:16 bgrayson Exp $
 //
 
 #include <stdio.h>
@@ -27,7 +27,7 @@
 //  sys/socket.h???  bgrayson
 //#include <net/if.h>
 
-#define NETBSD_H_CVSID	"$Id: netbsd.h,v 1.7 1997/02/14 07:24:20 bgrayson Exp $"
+#define NETBSD_H_CVSID	"$Id: netbsd.h,v 1.8 1997/06/28 05:35:16 bgrayson Exp $"
 void
 NetBSDInit();
 
@@ -48,6 +48,11 @@ NetBSDGetNetInOut (long long * inbytes, long long * outbytes);
 
 int
 NetBSDSwapInit();
+
+#ifdef HAVE_SWAPCTL
+void
+NetBSDGetSwapCtlInfo(int* total, int* free);
+#endif
 
 int
 NetBSDDiskInit();

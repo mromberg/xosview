@@ -9,12 +9,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.h,v 1.7 1997/02/14 07:24:24 bgrayson Exp $
+// $Id: swapmeter.h,v 1.8 1997/06/28 05:35:32 bgrayson Exp $
 //
 #ifndef _SWAPMETER_H_
 #define _SWAPMETER_H_
 
-#define SWAPMETER_H_CVSID "$Id: swapmeter.h,v 1.7 1997/02/14 07:24:24 bgrayson Exp $"
+#define SWAPMETER_H_CVSID "$Id: swapmeter.h,v 1.8 1997/06/28 05:35:32 bgrayson Exp $"
 
 #include "fieldmeterdecay.h"
 
@@ -32,6 +32,9 @@ protected:
 
   void getswapinfo( void );
 private:
+#ifdef HAVE_SWAPCTL
+  int useSwapCtl;
+#endif
 };
 
 
