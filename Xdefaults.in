@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.21 1998/05/29 20:33:44 bgrayson Exp $
+!  $Id: Xdefaults.in,v 1.22 1998/06/22 14:22:07 bgrayson Exp $
 
 ! General Resources
 
@@ -66,6 +66,7 @@ xosview*memUsedFormat:	  autoscale
 xosview*swap: True
 xosview*swapUsedColor:    seagreen
 xosview*swapFreeColor:    aquamarine
+xosview*swapReservedColor: yellow
 xosview*swapPriority:     10
 xosview*swapDecay:        False
 xosview*swapUsedFormat:	  autoscale
