@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.16 1997/04/15 23:58:56 bgrayson Exp $
+!  $Id: Xdefaults.in,v 1.17 1997/04/27 20:43:15 bgrayson Exp $
 
 ! General Resources
 
@@ -145,8 +145,8 @@ xosview*batteryPriority:  50
 ! Disk Meter Resources
 
 xosview*disk:		True
-xosview*diskUsedColor:	yellow
-xosview*diskIdleColor:	black
+xosview*diskUsedColor:	seagreen
+xosview*diskIdleColor:	aquamarine
 xosview*diskPriority:	10
 xosview*diskDecay:	True
 xosview*diskUsedFormat: autoscale
