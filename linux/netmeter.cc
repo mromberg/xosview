@@ -7,8 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.15 1998/10/20 18:03:09 mromberg Exp $
-// $Name:  $
+// $Id: netmeter.cc,v 1.16 1998/10/20 18:06:44 mromberg Exp $
 //
 
 //-----------------------------------------------------------------------
