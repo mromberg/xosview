@@ -1,5 +1,5 @@
 //  
-// $Id: sarmeter.h,v 1.4 2002/03/12 11:17:09 eile Exp $
+// $Id: sarmeter.h,v 1.5 2002/04/24 08:23:11 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 
@@ -42,6 +42,19 @@ public:
             {
                 _giNew = 0;
                 return &_gi;
+            }
+            else
+                return NULL;
+        }
+
+    diskinfo *getDiskInfo( void )
+        {
+            checkSadc();
+
+            if( _diNew )
+            {
+                _diNew = 0;
+                return _di;
             }
             else
                 return NULL;

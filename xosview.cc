@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.28 2002/03/24 23:13:54 zedpobre Exp $
+// $Id: xosview.cc,v 1.29 2002/04/24 08:23:11 eile Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -23,6 +23,20 @@
 static const char * const versionString = "xosview version: " XOSVIEW_VERSION;
 
 static const char NAME[] = "xosview@";
+
+#ifdef sgi
+
+#define MIN(x,y)		\
+(				\
+    x < y ? x : y		\
+)
+
+#define MAX(x,y)		\
+(				\
+    x > y ? x : y		\
+)
+
+#else
 
 #define MIN(x,y)		\
 ({				\
@@ -44,9 +58,11 @@ static const char NAME[] = "xosview@";
     _x > _y ? _x : _y;		\
 })
 
+#endif // sgi
+
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.28 2002/03/24 23:13:54 zedpobre Exp $");
+CVSID("$Id: xosview.cc,v 1.29 2002/04/24 08:23:11 eile Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 

@@ -1,5 +1,5 @@
 //  
-// $Id: MeterMaker.cc,v 1.4 2002/02/20 11:15:04 eile Exp $
+// $Id: MeterMaker.cc,v 1.5 2002/04/24 08:23:11 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 #include "MeterMaker.h"
@@ -10,8 +10,8 @@
 #include "cpumeter.h"
 #include "memmeter.h"
 #include "gfxmeter.h"
+#include "diskmeter.h"
 #if 0
-#include "swapmeter.h"
 #include "pagemeter.h"
 #endif
 
@@ -73,13 +73,9 @@ void MeterMaker::makeMeters(void)
     if (_xos->isResourceTrue("mem"))
         push(new MemMeter(_xos));
 
-#if 0
-    if (_xos->isResourceTrue("swap"))
-        push(new SwapMeter(_xos, kc));
-
-    if (_xos->isResourceTrue("page"))
-        push(new PageMeter(_xos, kc,
-            atof(_xos->getResource("pageBandwidth"))));
+#if 0 // eile: not yet working correctly -- display is delayed?
+    if (_xos->isResourceTrue("disk"))
+        push(new DiskMeter(_xos, atof(_xos->getResource("diskBandwidth"))));
 #endif
 }
 

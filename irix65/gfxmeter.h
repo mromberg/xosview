@@ -1,7 +1,8 @@
 //  
-// $Id: gfxmeter.h,v 1.2 2002/02/28 15:23:53 eile Exp $
+// $Id: gfxmeter.h,v 1.3 2002/04/24 08:23:11 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
+
 #ifndef _GFXMETER_H_
 #define _GFXMETER_H_
 
