@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.12 1997/08/09 01:31:08 bgrayson Exp $
+// $Id: kernel.cc,v 1.13 1997/11/15 03:00:02 bgrayson Exp $
 //
 #include "general.h"
 #include <stdio.h>
@@ -23,9 +23,7 @@
 #include <err.h>                /*  For err(), warn(), etc.  BCG  */
 #include <sys/dkstat.h>         /*  For CPUSTATES, which tells us how
                                       many cpu states there are.  */
-#ifdef XOSVIEW_FREEBSD
-#warning "FreeBSD hack here."
-#else
+#ifndef XOSVIEW_FREEBSD
 #include <sys/device.h>
 #include <sys/disklabel.h>
 #include <sys/disk.h>		/*  For disk statistics.  */
@@ -38,7 +36,7 @@
 #include <sys/vmmeter.h>	/*  For struct vmmeter.  */
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.12 1997/08/09 01:31:08 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.13 1997/11/15 03:00:02 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -184,6 +182,8 @@ void
 NetBSDGetNetInOut (long long * inbytes, long long * outbytes)
 {
 #ifdef XOSVIEW_FREEBSD
+  /*  This is a temporary hack, to just have a meter that
+   *  updates.  It is not enabled in FreeBSD version of MeterMaker.cc  */
   static int i = 0;
   i+= 1000;
   *inbytes = *outbytes = i;
@@ -287,6 +287,9 @@ void
 NetBSDGetDiskXFerBytes (unsigned long long *bytesXferred)
 {
 #ifdef XOSVIEW_FREEBSD
+  /*  This also does not work in FreeBSD-land, so I just added a
+   *  dummy stat function that keeps incrementing.  Meter is disabled in
+   *  FreeBSD MeterMaker.cc.  */
   static int i = 0;
 i+= 1000;
 *bytesXferred = i;
