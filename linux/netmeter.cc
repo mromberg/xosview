@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.19 1999/11/12 04:32:32 romberg Exp $
+// $Id: netmeter.cc,v 1.20 1999/11/21 23:06:52 romberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -183,7 +183,7 @@ void NetMeter::checkeventNew(void)
 	      }
 	}
 
-    float t = 1000000.0 / _timer.report();
+    float t = 1000000.0 / _timer.report_usecs();
 
     if (t < 0)
         t = 0.1;
@@ -273,7 +273,7 @@ void NetMeter::checkeventOld(void)
         }
     else 
         {  
-        float t = 1000000.0 / _timer.report();
+        float t = 1000000.0 / _timer.report_usecs();
 
         if (t < 0)  // can happen when system clock is reset. (ntp, timed, etc)
             t = 0.1;
