@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.3 1996/10/08 01:39:31 bgrayson Exp $
+!  $Id: Xdefaults.in,v 1.4 1996/10/27 23:22:44 mromberg Exp $
 
 ! General Resources
 
@@ -61,6 +61,17 @@ xosview*swapUsedColor:    seagreen
 xosview*swapFreeColor:    aquamarine
 xosview*swapPriority:     10
 xosview*swapDecay:        False
+
+! Page Meter Resources
+
+xosview*page:           True
+xosview*pageBandWidth:  120
+xosview*pageInColor:    SkyBlue
+xosview*pageOutColor:   SlateBlue1
+xosview*pageIdleColor:  aquamarine
+xosview*pagePriority:   5
+xosview*pageDecay:      False
+
 
 ! Network Meter Resources
 

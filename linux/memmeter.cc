@@ -3,7 +3,7 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-// $Id: memmeter.cc,v 1.3 1996/08/27 03:46:48 mromberg Exp $
+// $Id: memmeter.cc,v 1.4 1996/10/27 23:22:59 mromberg Exp $
 //
 #include "memmeter.h"
 #include "xosview.h"
@@ -93,7 +93,7 @@ void MemMeter::getmemstat(MemStat *mstat){
 
   ifstream meminfo( MEMFILENAME );
   if ( !meminfo ){
-    cerr <<"Con not open file : " <<MEMFILENAME <<endl;
+    cerr <<"Can not open file : " <<MEMFILENAME <<endl;
     exit( 1 );
   }
 
@@ -108,7 +108,7 @@ void MemMeter::getmemstat(MemStat *mstat){
   if (_shAdj == 0){
     ifstream memstat(MEMSTATFNAME);
     if ( !memstat ){
-      cerr <<"Con not open file : " <<MEMSTATFNAME <<endl;
+      cerr <<"Can not open file : " <<MEMSTATFNAME <<endl;
       exit( 1 );
     }
 

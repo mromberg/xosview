@@ -1,5 +1,5 @@
 //
-// $Id: Xrmcommandline.h,v 1.2 1996/08/14 06:19:41 mromberg Exp $
+// $Id: Xrmcommandline.h,v 1.3 1996/10/27 23:22:47 mromberg Exp $
 //
 
 #ifndef _Xrmcommandline_h
@@ -32,6 +32,11 @@ static XrmOptionDescRec options[] = {
 { "-network", "*network", XrmoptionSepArg, (caddr_t) NULL },
 //  -net is an abbreviation for -network
 { "-net", "*network", XrmoptionSepArg, (caddr_t) NULL },
+
+// Page Meter
+{ "-page", "*page", XrmoptionNoArg, "False" },
+{ "+page", "*page", XrmoptionNoArg, "True" },
+{ "-pagespeed", "*pageBandWidth", XrmoptionSepArg, (caddr_t) NULL },
 
 //  Serial Meter Options
 { "+serial1", "*serial1", XrmoptionNoArg, "True" },
