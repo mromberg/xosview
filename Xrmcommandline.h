@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.21 2002/02/20 15:15:52 eile Exp $
+// $Id: Xrmcommandline.h,v 1.22 2002/02/24 22:00:47 romberg Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.21 2002/02/20 15:15:52 eile Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.22 2002/02/24 22:00:47 romberg Exp $"
 
 #include <X11/Xresource.h>
 
@@ -83,6 +83,10 @@ static XrmOptionDescRec options[] = {
 { "+irqrate", "*irqrate", XrmoptionNoArg, "True" },
 { "-intrate", "*irqrate", XrmoptionNoArg, "False" },
 { "+intrate", "*irqrate", XrmoptionNoArg, "True" },
+
+// lmstemp resources
+{ "-lmstemp", "*lmstemp", XrmoptionNoArg, "False" },
+{ "+lmstemp", "*lmstemp", XrmoptionNoArg, "True" },
 
 //  Special, catch-all option here --
 //    xosview -xrm "*memFreeColor: purple" should work, for example.

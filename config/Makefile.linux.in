@@ -2,7 +2,7 @@
 # Linux Makefile template
 #
 #
-# $Id: Makefile.linux.in,v 1.12 1999/11/21 23:17:19 romberg Exp $
+# $Id: Makefile.linux.in,v 1.13 2002/02/24 22:00:47 romberg Exp $
 #
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
@@ -20,6 +20,7 @@ loadmeter.o \
 btrymeter.o \
 diskmeter.o \
 raidmeter.o \
+lmstemp.o \
 MeterMaker.o
 
 FAIL_ARCHS =3D m68k sparc

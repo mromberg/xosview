@@ -1,6 +1,8 @@
-  /*  $Id: CHANGES,v 1.30 2002/02/24 19:52:00 romberg Exp $  */
+  /*  $Id: CHANGES,v 1.31 2002/02/24 22:00:47 romberg Exp $  */
 
 Changes since xosview-1.7.3
+
+- Add Leopold Toetsch's linux lmstemp meter.
 
 - Linux port (and maybe others) now works with gcc-3.0.4
 
