@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.26 1998/06/22 14:24:35 bgrayson Exp $
+dnl $Id: configure.in,v 1.27 1998/06/22 15:59:01 bgrayson Exp $
 dnl
 AC_INIT(xosview.1)
 CF_TOP_SRCDIR
@@ -138,6 +138,10 @@ openbsd*) AC_XOSV_OPENBSD
 hpux*)    AC_XOSV_HPUX   
 	  host_dir=hpux
           host_os=hpux ;;
+solaris2*)
+	EXTRALIBS='-lsocket -lnsl -lkstat'
+	host_dir=sunos5
+	host_os=sunos5 ;;
 *)       AC_MSG_ERROR([xosview has not been ported to $host_os :(.  Sorry.]) ;;
 esac
 
