@@ -2,7 +2,7 @@
 # Top level Makefile Template for xosview.
 #
 #
-# $Id: Makefile.top.in,v 1.24 1999/02/16 14:29:34 bgrayson Exp $
+# $Id: Makefile.top.in,v 1.25 1999/02/24 23:16:36 bgrayson Exp $
 #
 include Makefile.config
 
@@ -85,7 +85,7 @@ distrib: checksource distclean
 #  The next one is only used by bgrayson to set up the local
 #  mirrors of the xosview distributions.
 distrib-and-copy: distrib
-	cp ../$(PACKAGENAME).tar.gz ~bgrayson/public_html/xosview
+	cp ../$(PACKAGENAME).tar.gz `echo ~bgrayson/public_html/xosview`
 	scp ../$(PACKAGENAME).tar.gz omni:~bgrayson/public_html/xosview
 
 clean :
