@@ -4,7 +4,7 @@
 # The configure script should set up this file for most all cases.
 # One can override compile / link options here if needed.
 #
-# $Id: Makefile.config.in,v 1.22 2003/10/20 01:37:36 romberg Exp $
+# $Id: Makefile.config.in,v 1.23 2004/06/02 16:32:08 romberg Exp $
 #
 
 # version number for release
@@ -52,6 +52,6 @@ LIBS          += -lmeter @EXTRALIBS@ -lX11
 #-----------------------------------------------------------------
 ##  The GNU-style rule of %.o: %.cc is not as portable as .cc.o.
 .cc.o:
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) @CPP_DEP@ -c $< -o $@
 
 @AUTODEPRULE@

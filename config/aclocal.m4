@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.32 2004/05/21 23:22:24 romberg Exp $
+dnl $Id: aclocal.m4,v 1.33 2004/06/02 16:32:08 romberg Exp $
 dnl
 
 dnl Make an absolute symbol for the top of the configuration.
@@ -243,4 +243,32 @@ AC_DEFUN(AC_XOSV_IRIX65, [
 	EXTRALIBS="-lrpcsvc"
     AC_DEFINE(_G_HAVE_BOOL)
     AC_DEFINE(HAVE_SNPRINTF)
+])
+
+dnl MY_C_SWITCH(switch)
+dnl -------------------
+dnl try to compile and link a simple C program with the switch compile switch
+dnl "${CC-cc} $CFLAGS $1 conftest.c -o conftest"
+dnl sets my_cc_switch to switch if it worked
+dnl my_cc_switch is not modified elsewhere
+
+AC_DEFUN(MY_CXX_SWITCH,[
+        AC_MSG_CHECKING(for [$1] as CXX compilation switch)
+        cat > conftest.c <<__EOF
+int main() { return 0;}
+__EOF
+        my_c='${CXX-cc} $CXXFLAGS $1 conftest.c -o conftest${ac_exeext}'
+        (eval echo configure:__oline__: \"$my_c\") 1>&5
+        (eval $my_c 1>/dev/null 2>conftest.log)
+        cat conftest.log 1>&5
+        if grep <conftest.log option  >/dev/null ||
+           grep <conftest.log ERROR >/dev/null
+        then
+                my_cxx_switch="no"
+                AC_MSG_RESULT(no)
+        else
+                my_cxx_switch="yes"
+                AC_MSG_RESULT(yes)
+        fi
+        rm -rf conftest*
 ])
