@@ -4,13 +4,13 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: bitmeter.cc,v 1.5 1998/04/04 17:25:04 bgrayson Exp $
+// $Id: bitmeter.cc,v 1.6 1998/04/06 20:09:29 bgrayson Exp $
 //
 #include "general.h"
 #include "bitmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: bitmeter.cc,v 1.5 1998/04/04 17:25:04 bgrayson Exp $");
+CVSID("$Id: bitmeter.cc,v 1.6 1998/04/06 20:09:29 bgrayson Exp $");
 CVSID_DOT_H(BITMETER_H_CVSID);
 
 BitMeter::BitMeter( XOSView *parent,
@@ -91,6 +91,7 @@ void BitMeter::draw( void ){
       offset = parent_->textWidth( "XXXXX" );
     
     parent_->drawString( x_ - offset, y_ + height_, title_ );
+    parent_->setForeground( onColor_ );
     parent_->drawString( x_, y_ - 5, legend_ );
   }
 
