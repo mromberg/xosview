@@ -2,7 +2,7 @@
 # Top level Makefile Template for xosview.
 #
 #
-# $Id: Makefile.top.in,v 1.11 1998/05/10 07:12:10 bgrayson Exp $
+# $Id: Makefile.top.in,v 1.12 1998/05/12 01:51:08 mromberg Exp $
 #
 include Makefile.config
 
@@ -64,7 +64,7 @@ XAPPLOADDIR=$(PREFIX_TO_USE)/lib/X11/app-defaults
 
 X11BASEDIR=`echo @x_includes@ | sed -e 's:/[^/]*$$::'`
 ##  If the variable PREFIX is _not_ set, use the X11 dir found above.
-PREFIX?=$(X11BASEDIR)
+PREFIX=$(X11BASEDIR)
 BINDIR=$(PREFIX)/bin
 MANDIR=$(PREFIX)/man/man1
 XAPPLOADDIR=$(PREFIX)/lib/X11/app-defaults
