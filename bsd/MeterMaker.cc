@@ -10,7 +10,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: MeterMaker.cc,v 1.7 1997/07/18 03:35:41 bgrayson Exp $
+// $Id: MeterMaker.cc,v 1.8 1997/08/09 01:31:08 bgrayson Exp $
 //
 #include <stdlib.h>
 #include "general.h"
@@ -18,7 +18,9 @@
 #include "xosview.h"
 #include "cpumeter.h"
 #include "memmeter.h"
-#include "swapmeter.h"
+#ifndef XOSVIEW_FREEBSD		/*  FreeBSD swap meter isn't done yet.  */
+# include "swapmeter.h"
+#endif
 #include "netmeter.h"
 #include "loadmeter.h"
 #include "diskmeter.h"
@@ -28,7 +30,7 @@
 
 CVSID_DOT_H2(PLLIST_H_CVSID);
 CVSID_DOT_H(METERMAKER_H_CVSID);
-CVSID("$Id: MeterMaker.cc,v 1.7 1997/07/18 03:35:41 bgrayson Exp $");
+CVSID("$Id: MeterMaker.cc,v 1.8 1997/08/09 01:31:08 bgrayson Exp $");
 
 MeterMaker::MeterMaker(XOSView *xos){
   _xos = xos;
@@ -44,15 +46,19 @@ void MeterMaker::makeMeters(void){
     push(new CPUMeter(_xos));
   if (_xos->isResourceTrue("mem"))
     push(new MemMeter(_xos));
+#ifndef XOSVIEW_FREEBSD		/*  FreeBSD swap meter isn't done yet.  */
   if (_xos->isResourceTrue("swap"))
     push(new SwapMeter(_xos));
+#endif
 
   // check for the net meter
   if (_xos->isResourceTrue("net"))
     push(new NetMeter(_xos, atof(_xos->getResource("netBandwidth"))));
 
+#ifndef XOSVIEW_FREEBSD		/*  FreeBSD diskmeter also isn't done.  */
   if (_xos->isResourceTrue("disk"))
     push(new DiskMeter (_xos, atof(_xos->getResource("diskBandwidth"))));
+#endif
 
   if (_xos->isResourceTrue("page"))
     push(new PageMeter (_xos, atof(_xos->getResource("pageBandwidth"))));
