@@ -1,5 +1,5 @@
 //
-// $Id: xwin.cc,v 1.10 1998/10/15 21:28:16 mromberg Exp $
+// $Id: xwin.cc,v 1.11 1998/10/15 21:34:01 romberg Exp $
 //
 
 #include <X11/Xatom.h>
@@ -10,7 +10,7 @@
 #include "xwin.h"
 #include "Xrm.h"
 
-CVSID("$Id: xwin.cc,v 1.10 1998/10/15 21:28:16 mromberg Exp $");
+CVSID("$Id: xwin.cc,v 1.11 1998/10/15 21:34:01 romberg Exp $");
 CVSID_DOT_H(XWIN_H_CVSID);
 
 //-----------------------------------------------------------------------------
@@ -22,8 +22,8 @@ XWin::XWin(){
 //-----------------------------------------------------------------------------
 
 XWin::XWin( int argc, char *argv[], int x, int y, int width, int height ){
-  fprintf (stderr, "This constructor call is not supported!  (%s:%d)\n",
-    __FILE__, __LINE__);
+  cerr << "This constructor call is not supported! (" << __FILE__
+       << ":" << __LINE__ << ")" << endl;
   exit (-1);
   //  FIXME BCG  This constructor needs to do much of the work of the above
   //  one.  Or, we need to drop this as a constructor.  As it is, it is
