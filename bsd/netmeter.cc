@@ -12,14 +12,14 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.cc,v 1.15 1999/01/31 19:57:47 bgrayson Exp $
+// $Id: netmeter.cc,v 1.16 1999/01/31 20:18:49 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
 #include "netmeter.h"
 #include "kernel.h"
 
-CVSID("$Id: netmeter.cc,v 1.15 1999/01/31 19:57:47 bgrayson Exp $");
+CVSID("$Id: netmeter.cc,v 1.16 1999/01/31 20:18:49 bgrayson Exp $");
 CVSID_DOT_H(NETMETER_H_CVSID);
 CVSID_DOT_H2(TIMER_H_CVSID);
 CVSID_DOT_H3(TIMEVAL_H_CVSID);
@@ -43,8 +43,8 @@ void NetMeter::checkResources( void ){
   setfieldcolor( 1, parent_->getResource("netOutColor") );
   setfieldcolor( 2, parent_->getResource("netBackground") );
   priority_ = atoi (parent_->getResource("netPriority") );
-  dodecay_ = !strncasecmp (parent_->getResource("netDecay"),"True", 5);
-  useGraph_ = !strncasecmp (parent_->getResource("netGraph"),"True", 5);
+  dodecay_ = parent_->isResourceTrue("netDecay");
+  useGraph_ = parent_->isResourceTrue("netGraph");
   SetUsedFormat (parent_->getResource("netUsedFormat"));
 }
 

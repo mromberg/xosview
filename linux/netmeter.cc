@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.16 1998/10/20 18:06:44 mromberg Exp $
+// $Id: netmeter.cc,v 1.17 1999/01/31 20:18:49 bgrayson Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -87,8 +87,8 @@ void NetMeter::checkResources( void ){
   setfieldcolor( 1, parent_->getResource( "netOutColor" ) );
   setfieldcolor( 2, parent_->getResource( "netBackground" ) );
   priority_ = atoi (parent_->getResource( "netPriority" ) );
-  useGraph_ = !strncasecmp (parent_->getResource( "netGraph" ), "True", 5 );
-  dodecay_ = !strncasecmp (parent_->getResource( "netDecay" ), "True", 5 );
+  useGraph_ = parent_->isResourceTrue( "netGraph" );
+  dodecay_ = parent_->isResourceTrue( "netDecay" );
   SetUsedFormat (parent_->getResource("netUsedFormat"));
 
   _ipsock = socket(AF_INET, SOCK_DGRAM, 0);

@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: pagemeter.cc,v 1.5 1998/10/15 21:28:18 mromberg Exp $
+// $Id: pagemeter.cc,v 1.6 1999/01/31 20:18:49 bgrayson Exp $
 //
 #include "pagemeter.h"
 #include "xosview.h"
@@ -36,8 +36,8 @@ void PageMeter::checkResources( void ){
   setfieldcolor( 2, parent_->getResource( "pageIdleColor" ) );
   priority_ = atoi (parent_->getResource( "pagePriority" ) );
   maxspeed_ *= priority_ / 10.0;
-  dodecay_ = !strncasecmp (parent_->getResource( "pageDecay" ), "True", 5 );
-  useGraph_ = !strncasecmp (parent_->getResource( "pageGraph" ), "True", 5 );
+  dodecay_ = parent_->isResourceTrue( "pageDecay" );
+  useGraph_ = parent_->isResourceTrue( "pageGraph" );
   SetUsedFormat (parent_->getResource("pageUsedFormat"));
 }
 

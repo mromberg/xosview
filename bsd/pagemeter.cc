@@ -13,14 +13,14 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.cc,v 1.13 1999/01/31 19:57:47 bgrayson Exp $
+// $Id: pagemeter.cc,v 1.14 1999/01/31 20:18:49 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
 #include "pagemeter.h"
 #include "kernel.h"		//  For NetBSD Page functions.
 
-CVSID("$Id: pagemeter.cc,v 1.13 1999/01/31 19:57:47 bgrayson Exp $");
+CVSID("$Id: pagemeter.cc,v 1.14 1999/01/31 20:18:49 bgrayson Exp $");
 CVSID_DOT_H(PAGEMETER_H_CVSID);
 
 PageMeter::PageMeter( XOSView *parent, double total )
@@ -44,8 +44,8 @@ void PageMeter::checkResources( void ){
   setfieldcolor( 1, parent_->getResource("pageOutColor") );
   setfieldcolor( 2, parent_->getResource("pageIdleColor") );
   priority_ = atoi (parent_->getResource("pagePriority"));
-  dodecay_ = !strncasecmp (parent_->getResource("pageDecay"),"True", 5);
-  useGraph_ = !strncasecmp (parent_->getResource("pageGraph"),"True", 5);
+  dodecay_ = parent_->isResourceTrue("pageDecay");
+  useGraph_ = parent_->isResourceTrue("pageGraph");
   SetUsedFormat (parent_->getResource("pageUsedFormat"));
 }
 

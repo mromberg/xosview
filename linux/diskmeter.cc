@@ -3,7 +3,7 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-// $Id: diskmeter.cc,v 1.5 1999/01/31 19:57:47 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.6 1999/01/31 20:18:49 bgrayson Exp $
 //
 
 #include "diskmeter.h"
@@ -31,8 +31,8 @@ void DiskMeter::checkResources( void )
     setfieldcolor( 0, parent_->getResource("diskUsedColor") );
     setfieldcolor( 1, parent_->getResource("diskIdleColor") );
     priority_ = atoi (parent_->getResource( "diskPriority" ) );
-    dodecay_ = !strncasecmp(parent_->getResource("diskDecay" ), "True", 5);
-    useGraph_ = !strncasecmp(parent_->getResource( "diskGraph" ), "True", 5 );
+    dodecay_ = parent_->isResourceTrue("diskDecay" );
+    useGraph_ = parent_->isResourceTrue( "diskGraph" );
     SetUsedFormat(parent_->getResource("diskUsedFormat"));
     }
 

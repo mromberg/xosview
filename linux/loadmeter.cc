@@ -6,7 +6,7 @@
 //  Most of this code was written by Werner Fink <werner@suse.de>.
 //  Only small changes were made on my part (M.R.)
 //
-// $Id: loadmeter.cc,v 1.6 1999/01/23 18:34:27 mromberg Exp $
+// $Id: loadmeter.cc,v 1.7 1999/01/31 20:18:49 bgrayson Exp $
 //
 #include "loadmeter.h"
 #include "xosview.h"
@@ -32,8 +32,8 @@ void LoadMeter::checkResources( void ){
   setfieldcolor( 0, procloadcol_ );
   setfieldcolor( 1, parent_->getResource( "loadIdleColor" ) );
   priority_ = atoi (parent_->getResource( "loadPriority" ) );
-  useGraph_ = !strncasecmp (parent_->getResource( "loadGraph" ), "True", 5 );
-  dodecay_ = !strncasecmp (parent_->getResource( "loadDecay" ), "True", 5 );
+  useGraph_ = parent_->isResourceTrue( "loadGraph" );
+  dodecay_ = parent_->isResourceTrue( "loadDecay" );
   SetUsedFormat (parent_->getResource("loadUsedFormat"));
 
   alarmThreshold = atoi (parent_->getResource("loadAlarmThreshold"));

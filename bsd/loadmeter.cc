@@ -13,14 +13,14 @@
 //    authors for a copy.
 //
 //
-// $Id: loadmeter.cc,v 1.12 1999/01/31 19:57:46 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.13 1999/01/31 20:18:49 bgrayson Exp $
 //
 #include <stdlib.h>  //  for getloadavg()
 #include "general.h"
 #include "loadmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: loadmeter.cc,v 1.12 1999/01/31 19:57:46 bgrayson Exp $");
+CVSID("$Id: loadmeter.cc,v 1.13 1999/01/31 20:18:49 bgrayson Exp $");
 CVSID_DOT_H(LOADMETER_H_CVSID);
 
 LoadMeter::LoadMeter( XOSView *parent )
@@ -45,8 +45,8 @@ void LoadMeter::checkResources( void ){
       parent_->getResource("loadIdleColor") );
 
   priority_ = atoi (parent_->getResource("loadPriority"));
-  dodecay_ = !strncasecmp (parent_->getResource("loadDecay"),"True", 5);
-  useGraph_ = !strncasecmp (parent_->getResource("loadGraph"),"True", 5);
+  dodecay_ = parent_->isResourceTrue("loadDecay");
+  useGraph_ = parent_->isResourceTrue("loadGraph");
   SetUsedFormat (parent_->getResource("loadUsedFormat"));
 
   alarmThreshold = atoi (parent_->getResource("loadAlarmThreshold"));

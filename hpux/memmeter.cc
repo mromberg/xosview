@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: memmeter.cc,v 1.11 1999/01/23 22:20:40 mromberg Exp $
+// $Id: memmeter.cc,v 1.12 1999/01/31 20:18:49 bgrayson Exp $
 //
 #include "memmeter.h"
 #include "xosview.h"
@@ -30,7 +30,7 @@ void MemMeter::checkResources( void ){
   setfieldcolor( 2, parent_->getResource( "memOtherColor" ) );
   setfieldcolor( 3, parent_->getResource( "memFreeColor" ) );
   priority_ = atoi (parent_->getResource( "memPriority" ) );
-  dodecay_ = !strncasecmp (parent_->getResource( "memDecay" ), "True", 5 );
+  dodecay_ = parent_->isResourceTrue( "memDecay" );
   SetUsedFormat( parent_->getResource( "memUsedFormat" ) );
 }
 
