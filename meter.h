@@ -4,13 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: meter.h,v 1.4 1997/01/14 18:23:27 bgrayson Exp $
+// $Id: meter.h,v 1.5 1998/02/12 05:00:08 bgrayson Exp $
 //
 #ifndef _METER_H_
 #define _METER_H_
 
-#define METER_H_CVSID "$Id: meter.h,v 1.4 1997/01/14 18:23:27 bgrayson Exp $"
+#define METER_H_CVSID "$Id: meter.h,v 1.5 1998/02/12 05:00:08 bgrayson Exp $"
 
+#include <stdio.h>
 #include "xosview.h"	//  To grab MAX_SAMPLES_PER_SECOND.
 
 class XOSView;
@@ -32,6 +33,11 @@ public:
   void dolegends( int val ) { dolegends_ = val; }
   void dousedlegends( int val ) { dousedlegends_ = val; }
   int requestevent( void ){ 
+    if (priority_ == 0) {
+      fprintf(stderr, "Warning:  meter %s had an invalid priority "
+	      "of 0.  Resetting to 1...\n", name());
+      priority_ = 1;
+    }
     int rval = counter_ % priority_;
     counter_ = (counter_ + 1) % priority_;
     return !rval;
