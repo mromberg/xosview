@@ -2,7 +2,7 @@
 # Linux memstat Makefile template
 #
 #
-# $Id: Makefile.linux.memstat.in,v 1.1 1996/09/06 05:04:48 mromberg Exp $
+# $Id: Makefile.linux.memstat.in,v 1.2 1997/11/22 23:03:09 mromberg Exp $
 #
 CC     = gcc
 CFLAGS = -D__KERNEL__ -Wall -Wstrict-prototypes \
@@ -28,6 +28,9 @@ clean :
 
 tags TAGS :
 	etags $(CFILES) *.h
+
+%.o : %-@LVERSION@.$(FEXT)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 %.o : %.$(FEXT)
 	$(CC) $(CFLAGS) -c $< -o $@
