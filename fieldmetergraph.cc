@@ -8,7 +8,7 @@
 //  Modifications from FieldMeterDecay class done in Oct. 1998
 //    by Scott McNab ( jedi@tartarus.uwa.edu.au )
 //
-// $Id: fieldmetergraph.cc,v 1.2 1999/01/23 18:34:26 mromberg Exp $
+// $Id: fieldmetergraph.cc,v 1.3 1999/01/31 19:58:20 bgrayson Exp $
 //
 
 // In order to use the FieldMeterGraph class in place of a FieldMeter class in
@@ -19,7 +19,9 @@
 //       FieldMeter.
 //   3.  Change the constructor call to use FieldMeterGraph(), rather than
 //       FieldMeter().
-//   4.  Make the checkResources () function in the meter set the 
+//   4.  Make the meter call FieldMeterGraph::checkResources(),
+//       to pick up graphNumCols resource.
+//   5.  Make the checkResources () function in the meter set the 
 //	 useGraph_ variable according to the, e.g., xosview*cpuGraph resource.
 
 #include <fstream.h>
@@ -29,7 +31,7 @@
 #include "fieldmetergraph.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmetergraph.cc,v 1.2 1999/01/23 18:34:26 mromberg Exp $");
+CVSID("$Id: fieldmetergraph.cc,v 1.3 1999/01/31 19:58:20 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETERGRAPH_H_CVSID);
 
 FieldMeterGraph::FieldMeterGraph( XOSView *parent,
@@ -126,7 +128,9 @@ void FieldMeterGraph::drawfields( int manditory )
 			int barheight;
 			for( j = 0 ; j < numfields_; j++ )
 			{
-				barheight = (int)(heightfield_[i*numfields_+j]*height_);
+				/*  Round up, by adding 0.5 before
+				 *  converting to an int.  */
+				barheight = (int)((heightfield_[i*numfields_+j]*height_)+0.5);
 
     			parent_->setForeground( colors_[j] );
     			parent_->setStippleN(j%4);
