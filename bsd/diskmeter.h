@@ -6,7 +6,7 @@
 //    copyright, whichever you choose.
 //
 //
-// $Id: diskmeter.h,v 1.2 1997/01/06 04:06:19 bgrayson Exp $
+// $Id: diskmeter.h,v 1.3 1997/01/19 23:15:49 bgrayson Exp $
 //
 #ifndef _DISKMETER_H_
 #define _DISKMETER_H_
@@ -30,7 +30,7 @@ protected:
 private:
   u_int64_t prevBytes;
   int kernelHasStats_;
-  long	maxBandwidth_;
+  float	maxBandwidth_;
 };
 
 #endif
