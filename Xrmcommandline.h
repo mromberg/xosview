@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.20 1999/11/17 05:53:02 bgrayson Exp $
+// $Id: Xrmcommandline.h,v 1.21 2002/02/20 15:15:52 eile Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.20 1999/11/17 05:53:02 bgrayson Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.21 2002/02/20 15:15:52 eile Exp $"
 
 #include <X11/Xresource.h>
 
@@ -44,6 +44,9 @@ static XrmOptionDescRec options[] = {
 // Batterymeter resources
 { "-battery", "*battery", XrmoptionNoArg, "False" },
 { "+battery", "*battery", XrmoptionNoArg, "True" },
+//  GFX resources
+{ "-gfx", "*gfx", XrmoptionNoArg, "False" },
+{ "+gfx", "*gfx", XrmoptionNoArg, "True" },
 
 // Networkmeter resources
 { "-net", "*net", XrmoptionNoArg, "False" },
