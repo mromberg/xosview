@@ -9,7 +9,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.cc,v 1.9 1997/12/30 08:37:34 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.10 1998/02/02 16:34:58 bgrayson Exp $
 //
 #include "general.h"
 #include "diskmeter.h"
@@ -18,7 +18,7 @@
 #include "kernel.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
 #include <stdlib.h>	//  For use of atoi  BCG
 
-CVSID("$Id: diskmeter.cc,v 1.9 1997/12/30 08:37:34 bgrayson Exp $");
+CVSID("$Id: diskmeter.cc,v 1.10 1998/02/02 16:34:58 bgrayson Exp $");
 CVSID_DOT_H(DISKMETER_H_CVSID);
 
 DiskMeter::DiskMeter( XOSView *parent, float max )
@@ -80,7 +80,7 @@ void DiskMeter::checkevent( void ){
 
 void DiskMeter::getstats( void ){
   IntervalTimerStop();
-  u_int64_t currBytes = 0;
+  unsigned long long currBytes = 0;
 //  Reset to desired full-scale settings.
   total_ = maxBandwidth_;
 
