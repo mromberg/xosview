@@ -4,11 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: llist.cc,v 1.2 1996/08/14 06:19:55 mromberg Exp $
+// $Id: llist.cc,v 1.3 1996/11/19 03:59:18 bgrayson Exp $
 //
 #include <iostream.h>
+#include "general.h"
 #include "llist.h"
 
+CVSID("$Id: llist.cc,v 1.3 1996/11/19 03:59:18 bgrayson Exp $");
+CVSID_DOT_H(LLIST_H_CVSID);
 
 LList::LNode::LNode( void *data ){
   data_ = data;

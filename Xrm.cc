@@ -4,11 +4,8 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Xrm.cc,v 1.2 1996/08/14 06:19:37 mromberg Exp $
+// $Id: Xrm.cc,v 1.3 1996/11/19 03:59:22 bgrayson Exp $
 //
-#include "Xrm.h"
-//#include "defaultstring.h"
-#include "Xrmcommandline.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -16,6 +13,13 @@
 #include <ctype.h>
 #include <iostream.h>
 #include <unistd.h>  //  for access(), etc.  BCG
+#include "general.h"
+#include "Xrm.h"
+#include "Xrmcommandline.h"
+
+CVSID("$Id: Xrm.cc,v 1.3 1996/11/19 03:59:22 bgrayson Exp $");
+CVSID_DOT_H(XRM_H_CVSID);
+CVSID_DOT_H2(XRMCOMMANDLINE_H_CVSID);
 
 
 extern char *defaultXResourceString;
