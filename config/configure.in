@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.13 1997/07/10 04:22:55 bgrayson Exp $
+dnl $Id: configure.in,v 1.14 1997/07/18 03:43:59 bgrayson Exp $
 dnl
 AC_INIT(xosview.1)
 AC_CONFIG_AUX_DIR(config)
@@ -13,6 +13,7 @@ AC_SUBST(x_includes)
 AC_SUBST(x_libraries)
 AC_PROG_INSTALL
 AC_PROG_AWK
+AC_PROG_RANLIB
 
 dnl
 dnl Add an option which will enable or disable automatic dependencies.
