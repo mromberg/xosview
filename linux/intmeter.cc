@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.cc,v 1.3 1996/12/26 20:18:55 mromberg Exp $
+// $Id: intmeter.cc,v 1.4 1997/10/28 16:55:25 romberg Exp $
 //
 #include "intmeter.h"
 #include "xosview.h"
@@ -55,6 +55,7 @@ void IntMeter::getirqs( void ){
 
   while ( !intfile.eof() ){
     intfile >>intno;
+    if (!intfile) break;
     intfile.ignore(1);
     if ( !intfile.eof() ){
       intfile >>count;
@@ -63,4 +64,17 @@ void IntMeter::getirqs( void ){
       irqs_[intno] = count;
     }
   }
+
+#if 0
+  while ( !intfile.eof() ){
+    intfile >>intno;
+    intfile.ignore(1);
+    if ( !intfile.eof() ){
+      intfile >>count;
+      intfile.istream::ignore(1024, '\n');
+      
+      irqs_[intno] = count;
+    }
+  }
+#endif
 }
