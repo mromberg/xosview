@@ -10,27 +10,9 @@
 ! **
 ! **********************************************************************
 ! **********************************************************************
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.42 2002/03/24 23:13:54 zedpobre Exp $
+!  $Id: Xdefaults.in,v 1.43 2002/03/24 23:16:55 zedpobre Exp $
 
 ! General Resources
 
