@@ -1,14 +1,14 @@
 //  
-// $Id: swapmeter.h,v 1.2 1998/06/22 15:57:30 bgrayson Exp $
+// $Id: swapmeter.h,v 1.3 1999/01/31 20:26:38 bgrayson Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #ifndef _SWAPMETER_H_
 #define _SWAPMETER_H_
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 #include <kstat.h>
 
-class SwapMeter : public FieldMeterDecay {
+class SwapMeter : public FieldMeterGraph {
  public:
 	SwapMeter(XOSView *parent, kstat_ctl_t *kcp);
 	~SwapMeter(void);

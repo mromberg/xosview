@@ -1,16 +1,16 @@
 //  
-// $Id: cpumeter.h,v 1.2 1998/06/22 15:57:29 bgrayson Exp $
+// $Id: cpumeter.h,v 1.3 1999/01/31 20:26:38 bgrayson Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 
 #include <kstat.h>
 #include <sys/sysinfo.h>
 
-class CPUMeter : public FieldMeterDecay {
+class CPUMeter : public FieldMeterGraph {
  public:
 	CPUMeter(XOSView *parent, kstat_ctl_t *kcp, const int cpuid = 0);
 	~CPUMeter(void);

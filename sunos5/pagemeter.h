@@ -1,14 +1,14 @@
 //  
-// $Id: pagemeter.h,v 1.2 1998/06/22 15:57:29 bgrayson Exp $
+// $Id: pagemeter.h,v 1.3 1999/01/31 20:26:38 bgrayson Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #ifndef _PAGEMETER_H_
 #define _PAGEMETER_H_
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 #include <kstat.h>
 
-class PageMeter : public FieldMeterDecay {
+class PageMeter : public FieldMeterGraph {
  public:
 	PageMeter(XOSView *parent, kstat_ctl_t *kcp, float max);
 	~PageMeter(void);

@@ -1,5 +1,5 @@
 //  
-// $Id: swapmeter.cc,v 1.3 1998/09/18 19:53:49 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.4 1999/01/31 20:26:38 bgrayson Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "swapmeter.h"
@@ -12,7 +12,7 @@
 static size_t Pagesize;
 
 SwapMeter::SwapMeter(XOSView *parent, kstat_ctl_t *_kc)
-	: FieldMeterDecay(parent, 3, "SWAP", "USED/RSVD/FREE")
+	: FieldMeterGraph(parent, 3, "SWAP", "USED/RSVD/FREE")
 {
 	if (!Pagesize)
 		Pagesize = sysconf(_SC_PAGESIZE);
@@ -24,14 +24,14 @@ SwapMeter::~SwapMeter(void)
 
 void SwapMeter::checkResources(void)
 {
-	FieldMeterDecay::checkResources();
+	FieldMeterGraph::checkResources();
 
 	setfieldcolor(0, parent_->getResource("swapUsedColor"));
 	setfieldcolor(1, parent_->getResource("swapReservedColor"));
 	setfieldcolor(2, parent_->getResource("swapFreeColor"));
 	priority_ = atoi(parent_->getResource("swapPriority"));
-	dodecay_ =
-	  !strncasecmp(parent_->getResource("swapDecay"), "True", 5);
+	dodecay_ = parent_->isResourceTrue("swapDecay");
+	useGraph_ = parent_->isResourceTrue("swapGraph");
 	SetUsedFormat(parent_->getResource("swapUsedFormat"));
 }
 

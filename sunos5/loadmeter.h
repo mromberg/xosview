@@ -1,14 +1,14 @@
 //  
-// $Id: loadmeter.h,v 1.2 1998/06/22 15:57:29 bgrayson Exp $
+// $Id: loadmeter.h,v 1.3 1999/01/31 20:26:38 bgrayson Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #ifndef _LOADMETER_H_
 #define _LOADMETER_H_
 
-#include "fieldmeterdecay.h"
+#include "fieldmetergraph.h"
 #include <kstat.h>
 
-class LoadMeter : public FieldMeterDecay {
+class LoadMeter : public FieldMeterGraph {
  public:
 	LoadMeter(XOSView *parent, kstat_ctl_t *kcp);
 	~LoadMeter(void);

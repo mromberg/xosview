@@ -1,5 +1,5 @@
 //  
-// $Id: pagemeter.cc,v 1.3 1998/09/18 19:53:49 bgrayson Exp $
+// $Id: pagemeter.cc,v 1.4 1999/01/31 20:26:38 bgrayson Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "pagemeter.h"
@@ -9,7 +9,7 @@
 #include <sys/sysinfo.h>
 
 PageMeter::PageMeter(XOSView *parent, kstat_ctl_t *_kc, float max)
-	: FieldMeterDecay( parent, 3, "PAGE", "IN/OUT/IDLE")
+	: FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE")
 {
 	kc = _kc;
 
@@ -35,14 +35,15 @@ PageMeter::~PageMeter(void)
 
 void PageMeter::checkResources(void)
 {
-	FieldMeterDecay::checkResources();
+	FieldMeterGraph::checkResources();
 
 	setfieldcolor(0, parent_->getResource("pageInColor"));
 	setfieldcolor(1, parent_->getResource("pageOutColor"));
 	setfieldcolor(2, parent_->getResource("pageIdleColor"));
 	priority_ = atoi (parent_->getResource("pagePriority"));
 	maxspeed_ *= priority_ / 10.0;
-	dodecay_ = !strncasecmp (parent_->getResource("pageDecay"), "True", 5);
+	dodecay_ = parent_->isResourceTrue("pageDecay");
+	useGraph_ = parent_->isResourceTrue("pageGraph");
 	SetUsedFormat(parent_->getResource("pageUsedFormat"));
 }
 
