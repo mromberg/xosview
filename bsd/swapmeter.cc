@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.cc,v 1.9 1997/07/08 22:44:02 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.10 1997/07/10 03:51:03 bgrayson Exp $
 //
 #include "general.h"
 #include "swapmeter.h"
@@ -23,7 +23,7 @@
 #include <err.h>			//  For warnx.  BCG
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: swapmeter.cc,v 1.9 1997/07/08 22:44:02 bgrayson Exp $");
+CVSID("$Id: swapmeter.cc,v 1.10 1997/07/10 03:51:03 bgrayson Exp $");
 CVSID_DOT_H(SWAPMETER_H_CVSID);
 
 static int doSwap = 1;
@@ -49,6 +49,7 @@ SwapMeter::SwapMeter( XOSView *parent )
   "an alternate kernel file.\n"
   "\nThe SwapMeter has been disabled.\n");
   doSwap = 0;
+  disableMeter();
 #endif
   }
 }
