@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.23 1999/01/24 00:35:53 mromberg Exp $
+dnl $Id: aclocal.m4,v 1.24 1999/07/06 04:06:16 bgrayson Exp $
 dnl
 
 dnl Make an absolute symbol for the top of the configuration.
@@ -190,6 +190,16 @@ dnl
 	AC_DEFINE(XOSVIEW_OPENBSD)
 ])
 
+AC_DEFUN(AC_XOSV_BSDI, [
+dnl
+dnl BSDI (surprise, surprise) also needs to link with libkvm
+dnl BSDI before 4.0 should probably have CXX=shlicc++ too so use
+dnl gmake CXX=shlicc++ on bsdi [23].x
+dnl
+	EXTRALIBS="-lkvm $XPMLIB"
+	INSTALL_ARGS='-s -g kmem -m 02555'
+	AC_DEFINE(XOSVIEW_BSDI)
+])
 AC_DEFUN(AC_XOSV_HPUX, [
 dnl
 dnl No special config options for HPUX.
