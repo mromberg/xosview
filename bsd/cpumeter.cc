@@ -12,17 +12,17 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: cpumeter.cc,v 1.7 1997/02/14 07:23:58 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.8 1997/08/09 00:41:07 bgrayson Exp $
 //
 #include "general.h"
 #include "cpumeter.h"
 #include "xosview.h"
 #include <sys/dkstat.h>         //  For CPUSTATES #define.  BCG
 #include <err.h>                //  For err() and warn(), etc.  BCG
-#include "netbsd.h"             //  For NetBSD-specific icky kvm_ code.  BCG
+#include "kernel.h"             //  For NetBSD-specific icky kvm_ code.  BCG
 #include <stdlib.h>		//  For use of atoi  BCG
 
-CVSID("$Id: cpumeter.cc,v 1.7 1997/02/14 07:23:58 bgrayson Exp $");
+CVSID("$Id: cpumeter.cc,v 1.8 1997/08/09 00:41:07 bgrayson Exp $");
 CVSID_DOT_H(CPUMETER_H_CVSID);
 
 CPUMeter::CPUMeter( XOSView *parent )

@@ -9,17 +9,17 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.cc,v 1.7 1997/07/18 03:36:43 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.8 1997/08/09 00:41:07 bgrayson Exp $
 //
 #include "general.h"
 #include "diskmeter.h"
 #include "xosview.h"
 #include <sys/dkstat.h>
 #include <err.h>        //  For err() and warn(), etc.  BCG
-#include "netbsd.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
+#include "kernel.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
 #include <stdlib.h>	//  For use of atoi  BCG
 
-CVSID("$Id: diskmeter.cc,v 1.7 1997/07/18 03:36:43 bgrayson Exp $");
+CVSID("$Id: diskmeter.cc,v 1.8 1997/08/09 00:41:07 bgrayson Exp $");
 CVSID_DOT_H(DISKMETER_H_CVSID);
 
 DiskMeter::DiskMeter( XOSView *parent, float max )

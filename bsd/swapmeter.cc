@@ -12,18 +12,18 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.cc,v 1.11 1997/07/10 05:15:41 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.12 1997/08/09 00:41:08 bgrayson Exp $
 //
 #include "general.h"
 #include "swapmeter.h"
 #include "xosview.h"
 
 #include "swapinternal.h"
-#include "netbsd.h"
+#include "kernel.h"
 #include <err.h>			//  For warnx.  BCG
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: swapmeter.cc,v 1.11 1997/07/10 05:15:41 bgrayson Exp $");
+CVSID("$Id: swapmeter.cc,v 1.12 1997/08/09 00:41:08 bgrayson Exp $");
 CVSID_DOT_H(SWAPMETER_H_CVSID);
 
 static int doSwap = 1;
@@ -33,7 +33,7 @@ SwapMeter::SwapMeter( XOSView *parent )
 #ifdef HAVE_SWAPCTL
   useSwapCtl = 0;
 #endif
-  NetBSDSwapInit();	//  In netbsd.cc
+  NetBSDSwapInit();	//  In kernel.cc
   if (!NetBSDInitSwapInfo())
   {
 #ifdef HAVE_SWAPCTL

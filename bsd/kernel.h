@@ -1,5 +1,5 @@
-#ifndef __netbsd_h__
-#define __netbsd_h__
+#ifndef __kernel_h__
+#define __kernel_h__
 
 //
 //  NetBSD port:  
@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.h,v 1.10 1997/08/09 00:31:57 bgrayson Exp $
+// $Id: kernel.h,v 1.11 1997/08/09 00:42:01 bgrayson Exp $
 //
 
 #include <stdio.h>
@@ -27,7 +27,7 @@
 //  sys/socket.h???  bgrayson
 //#include <net/if.h>
 
-#define NETBSD_H_CVSID	"$Id: kernel.h,v 1.10 1997/08/09 00:31:57 bgrayson Exp $"
+#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.11 1997/08/09 00:42:01 bgrayson Exp $"
 void
 NetBSDInit();
 

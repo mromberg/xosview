@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.10 1997/08/09 00:31:56 bgrayson Exp $
+// $Id: kernel.cc,v 1.11 1997/08/09 00:42:01 bgrayson Exp $
 //
 #include "general.h"
 #include <stdio.h>
@@ -28,10 +28,10 @@
 #include <sys/socket.h>         /*  These two are needed for the  */
 #include <net/if.h>             /*    NetMeter helper functions.  */
 #include <sys/vmmeter.h>	/*  For struct vmmeter.  */
-#include "netbsd.h"		/*  To grab CVSID stuff.  */
+#include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.10 1997/08/09 00:31:56 bgrayson Exp $");
-CVSID_DOT_H(NETBSD_H_CVSID);
+CVSID("$Id: kernel.cc,v 1.11 1997/08/09 00:42:01 bgrayson Exp $");
+CVSID_DOT_H(KERNEL_H_CVSID);
 
 
 // ------------------------  local variables  ---------------------

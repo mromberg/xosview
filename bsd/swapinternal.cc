@@ -6,7 +6,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.8 1997/07/10 03:51:21 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.9 1997/08/09 00:42:24 bgrayson Exp $
 //
 //  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //
@@ -86,7 +86,7 @@
 extern char *getbsize __P((int *headerlenp, long *printoutblocksizep));
 
 //-----------------------  We use a single kd for kvm access,
-//			   initialized in netbsd.cc, so the local one
+//			   initialized in kernel.cc, so the local one
 //			   (swap_kd) has been commented out, and a
 //			   #define has been added to make future
 //			   references to swap_kd look like kd.  BCG

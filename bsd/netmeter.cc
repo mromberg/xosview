@@ -12,17 +12,17 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.cc,v 1.8 1997/07/18 03:38:00 bgrayson Exp $
+// $Id: netmeter.cc,v 1.9 1997/08/09 00:41:07 bgrayson Exp $
 //
 #include "general.h"
 #include "netmeter.h"
 #include "xosview.h"
 #include "Host.h"
-#include "netbsd.h"
+#include "kernel.h"
 #include <stdlib.h>		//  For atoi().  BCG
 #include <unistd.h>  /*  For gethostname().  BCG */
 
-CVSID("$Id: netmeter.cc,v 1.8 1997/07/18 03:38:00 bgrayson Exp $");
+CVSID("$Id: netmeter.cc,v 1.9 1997/08/09 00:41:07 bgrayson Exp $");
 CVSID_DOT_H(NETMETER_H_CVSID);
 CVSID_DOT_H2(TIMER_H_CVSID);
 CVSID_DOT_H3(TIMEVAL_H_CVSID);
@@ -67,7 +67,7 @@ void NetMeter::checkevent( void ){
 //  Begin NetBSD-specific code.  BCG
   long long nowBytesIn, nowBytesOut;
 
-//  The NetBSDGetNetInOut() function is in netbsd.cc    BCG
+//  The NetBSDGetNetInOut() function is in kernel.cc    BCG
   NetBSDGetNetInOut (&nowBytesIn, &nowBytesOut);
   float t = (1e6) / IntervalTimeInMicrosecs();
   fields_[0] = (float)(nowBytesIn - _lastBytesIn) * t;
