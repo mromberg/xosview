@@ -1,4 +1,4 @@
-Revision: $Id: TODO,v 1.3 1996/12/04 04:32:12 bgrayson Exp $
+Revision: $Id: TODO,v 1.4 1997/01/19 23:14:21 bgrayson Exp $
 
 * Do if(dolegends_) fix for loadmeter.cc for all ports.
 * Add a version string, so that xosview -v prints out the version.
@@ -33,3 +33,5 @@ Revision: $Id: TODO,v 1.3 1996/12/04 04:32:12 bgrayson Exp $
     function that does the calculation, using SAMPLE_MSECS and
     priority_.  See the netbsd/diskmeter.cc code for what I think is the
     correct formula (it took me a few attempts to get it right!)
+  Fix depend stuff
+* Get autolookup of X stuff -- perhaps use xmkmf/imake in configure?
