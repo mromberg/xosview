@@ -2,7 +2,7 @@
 # Linux Makefile template
 #
 #
-# $Id: Makefile.linux.in,v 1.14 2002/03/24 22:57:03 zedpobre Exp $
+# $Id: Makefile.linux.in,v 1.15 2004/05/21 22:58:47 romberg Exp $
 #
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
@@ -23,7 +23,7 @@ raidmeter.o \
 lmstemp.o \
 MeterMaker.o
 
-FAIL_ARCHS = arm m68k powerpc s390 sparc
+FAIL_ARCHS = arm m68k powerpc s390 sparc 3D s390x powerpc64
 
 # Test for arm specifically, because arm can show up as a number of
 # things prefixed by "arm"
