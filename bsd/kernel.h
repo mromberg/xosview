@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.h,v 1.11 1997/08/09 00:42:01 bgrayson Exp $
+// $Id: kernel.h,v 1.12 1998/02/02 23:16:51 bgrayson Exp $
 //
 
 #include <stdio.h>
@@ -27,7 +27,7 @@
 //  sys/socket.h???  bgrayson
 //#include <net/if.h>
 
-#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.11 1997/08/09 00:42:01 bgrayson Exp $"
+#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.12 1998/02/02 23:16:51 bgrayson Exp $"
 void
 NetBSDInit();
 
@@ -65,4 +65,10 @@ NetBSDDiskInit();
 
 void
 NetBSDGetDiskXFerBytes (unsigned long long * bytes);
+
+#ifdef XOSVIEW_FREEBSD
+void
+FreeBSDGetBufspace(int* bfsp);
+#endif
+
 #endif
