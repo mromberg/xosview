@@ -4,14 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Host.cc,v 1.5 1999/01/23 22:20:39 mromberg Exp $
+// $Id: Host.cc,v 1.6 2003/10/09 02:48:12 bgrayson Exp $
 //
 #include <stdlib.h>
 #include <string.h>
 #include "general.h"
 #include "Host.h"
 
-CVSID("$Id: Host.cc,v 1.5 1999/01/23 22:20:39 mromberg Exp $");
+CVSID("$Id: Host.cc,v 1.6 2003/10/09 02:48:12 bgrayson Exp $");
 CVSID_DOT_H(HOST_H_CVSID);
 
 #if defined(__hpux__) || defined(__hpux)
@@ -168,7 +168,7 @@ bool Host::operator==(const Host& host) const {
   return false;
 }
 
-ostream &Host::print(ostream& os) const {
+std::ostream &Host::print(std::ostream& os) const {
   /*  Cast 'this' to a char*, so we don't need to create a Host::! operator.*/
   if (!*((char*)this))
     return os <<"Invalid Host.  h_errno was = " <<_failure <<"\n";
