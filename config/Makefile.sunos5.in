@@ -1,0 +1,38 @@
+#
+# SunOS 5 Makefile template
+#
+#
+# $Id: Makefile.sunos5.in,v 1.1 1998/06/22 16:00:45 bgrayson Exp $
+#
+include ../Makefile.config
+@AUTODEPRULE_SUBDIR@
+
+CXXFLAGS += -I@top_srcdir@
+
+OBJS = \
+MeterMaker.o \
+loadmeter.o \
+cpumeter.o \
+memmeter.o \
+pagemeter.o \
+swapmeter.o
+
+
+CFILES := $(OBJS:.o=.cc)
+DEPFILES := $(OBJS:%=.%.d)
+
+vpath %.h $(TOP)
+vpath %.cc $(TOP)
+
+#-----------------------------------------------------------------------
+
+all : libmeter.a
+
+clean :
+	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
+
+libmeter.a : $(OBJS)
+	ar cvr libmeter.a $(OBJS)
+	@RANLIB@ $@
+
+@AUTODEPEND@
