@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.44 1999/11/12 04:28:45 romberg Exp $
+dnl $Id: configure.in,v 1.45 1999/11/17 06:04:32 bgrayson Exp $
 dnl
 AC_INIT(xosview.1)
 CF_TOP_SRCDIR
@@ -100,7 +100,7 @@ dnl    according to GNU m4 and autoconf, [ and ] are the
 dnl    quote characters.
 dnl  This check is ugly.  Maybe it should be hidden away in aclocal?
 dnl    bgrayson 9/96
-netbsd1.[012345]*)  AC_XOSV_NETBSD
+netbsd1.[[012345]]*)  AC_XOSV_NETBSD
   ## Also check for the existence of UVM.  This is a nasty,
   ## complicated check.  This could be avoided by having the *BSD
   ## platform-specific Makefiles include <bsd.own.mk> on their own.
