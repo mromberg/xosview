@@ -1,5 +1,5 @@
 //
-// $Id: xwin.cc,v 1.7 1996/12/05 20:32:49 bgrayson Exp $
+// $Id: xwin.cc,v 1.8 1997/04/15 23:40:26 bgrayson Exp $
 //
 
 #include <X11/Xatom.h>
@@ -10,7 +10,7 @@
 #include "xwin.h"
 #include "Xrm.h"
 
-CVSID("$Id: xwin.cc,v 1.7 1996/12/05 20:32:49 bgrayson Exp $");
+CVSID("$Id: xwin.cc,v 1.8 1997/04/15 23:40:26 bgrayson Exp $");
 CVSID_DOT_H(XWIN_H_CVSID);
 
 //-----------------------------------------------------------------------------
@@ -53,9 +53,9 @@ void XWin::XWinInit (int argc, char** argv, char* geometry, Xrm* xrm) {
   
   // Set up the default Events
   events_ = NULL;
-  addEvent( new Event( this, ConfigureNotify, configureEvent ) );
-  addEvent( new Event( this, ClientMessage, deleteEvent ) );
-  addEvent( new Event( this, MappingNotify, mappingNotify ) );
+  addEvent( new Event( this, ConfigureNotify, &configureEvent ) );
+  addEvent( new Event( this, ClientMessage, &deleteEvent ) );
+  addEvent( new Event( this, MappingNotify, &mappingNotify ) );
 
   //openDisplay();  //  Done explicitly in xosview.cc.
 }
