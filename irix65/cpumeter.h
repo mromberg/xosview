@@ -1,5 +1,5 @@
 //  
-// $Id: cpumeter.h,v 1.2 2001/10/17 14:03:55 eile Exp $
+// $Id: cpumeter.h,v 1.3 2003/04/25 14:09:44 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 #ifndef _CPUMETER_H_
@@ -23,7 +23,7 @@ class CPUMeter : public FieldMeterGraph {
 
 	void checkResources(void);
 
-	static int countCPUs();
+	static int nCPUs();
 	static const char *cpuStr(int num);
 
  protected:

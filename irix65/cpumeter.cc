@@ -1,5 +1,5 @@
 //
-// $Id: cpumeter.cc,v 1.5 2002/02/24 21:31:02 romberg Exp $
+// $Id: cpumeter.cc,v 1.6 2003/04/25 14:09:44 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 #include "cpumeter.h"
@@ -94,20 +94,21 @@ const char *CPUMeter::toUpper(const char *str)
 const char *CPUMeter::cpuStr(int num)
 {
     static char buffer[32];
+    const int nCPU = nCPUs();
 
-    if( CPUMeter::countCPUs()==1 || num==-1 )
+    if( nCPU==1 || num==-1 )
     {
         snprintf(buffer, 32, "CPU");
     }
-    else if( CPUMeter::countCPUs()<=10 )
+    else if( nCPU<=10 )
     {
         snprintf(buffer, 32, "#%d", num);
     }
-    else if ( CPUMeter::countCPUs()<=100 )
+    else if ( nCPU<=100 )
     {
         snprintf(buffer, 32, "#%02d", num);
     }
-    else if ( CPUMeter::countCPUs()<=1000 )
+    else if ( nCPU<=1000 )
     {
         snprintf(buffer, 32, "#%03d", num);
     }
@@ -118,7 +119,7 @@ const char *CPUMeter::cpuStr(int num)
     return buffer;
 }
 
-int CPUMeter::countCPUs()
+int CPUMeter::nCPUs()
 {
     return sysmp(MP_NPROCS); // FIXME: use NAPROCS + identify 'unused procs'
 }
