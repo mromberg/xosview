@@ -4,12 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: swapmeter.cc,v 1.2 1996/08/14 06:20:47 mromberg Exp $
+// $Id: swapmeter.cc,v 1.3 1997/02/26 18:34:59 mromberg Exp $
 //
 #include "swapmeter.h"
 #include "xosview.h"
 #include <sys/pstat.h>
 #include <stdlib.h>
+
+static int MAX_SWAP_AREAS = 16;
 
 SwapMeter::SwapMeter( XOSView *parent )
 : FieldMeterDecay( parent, 2, "SWAP", "USED/FREE" ){
@@ -39,14 +41,21 @@ void SwapMeter::checkevent( void ){
 }
 
 void SwapMeter::getswapinfo( void ){
-  struct pst_dynamic stats;
+  struct pst_swapinfo swapinfo;
 
-  pstat_getdynamic( &stats, sizeof( pst_dynamic ), 1, 0 );
+  total_ = 0;
+  fields_[1] = 0;
 
-  total_ = stats.psd_vm;	
+  for (int i = 0 ; i < MAX_SWAP_AREAS ; i++)
+      {
+      pstat_getswap(&swapinfo, sizeof(swapinfo), 1, i);
+      if (swapinfo.pss_idx == (unsigned)i)
+          {
+          total_ += swapinfo.pss_nblks;
+          fields_[1] += swapinfo.pss_nfpgs * 4;
+          }
+      }
 
-  fields_[0] = stats.psd_avm;
-  fields_[1] = total_ - stats.psd_avm;
-
+  fields_[0] = total_ - fields_[1];
   used( (int)((100 * fields_[0]) / total_ ) );
 }
