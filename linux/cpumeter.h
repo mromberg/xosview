@@ -1,10 +1,10 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2004 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.h,v 1.4 1998/10/15 21:28:17 mromberg Exp $
+// $Id: cpumeter.h,v 1.5 2004/05/22 06:24:15 romberg Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
@@ -25,7 +25,7 @@ public:
   static const char *cpuStr(int num);
 protected:
   int _lineNum;
-  float cputime_[2][4];
+  long cputime_[2][4];
   int cpuindex_;
 
   void getcputime(void);
