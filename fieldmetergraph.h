@@ -12,7 +12,7 @@
 #ifndef _FIELDMETERGRAPH_H_
 #define _FIELDMETERGRAPH_H_
 
-#define FIELDMETERGRAPH_H_CVSID "$Id: fieldmetergraph.h,v 1.3 1999/02/19 09:44:26 mcnab Exp $"
+#define FIELDMETERGRAPH_H_CVSID "$Id: fieldmetergraph.h,v 1.4 1999/02/26 23:26:16 bgrayson Exp $"
 
 #include "meter.h"
 #include "fieldmeterdecay.h"
@@ -34,6 +34,10 @@ protected:
   int useGraph_;
   int graphNumCols_;
   int graphpos_;
+  int firstTimeDrawn_;
+  /*  There's some sort of corruption going on -- we can't have
+   *  variables after the heightfield_ below, otherwise they get
+   *  corrupted???  */
   float *heightfield_;
 private:
   void drawBar( int i );
