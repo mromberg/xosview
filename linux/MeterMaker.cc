@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: MeterMaker.cc,v 1.11 1997/11/23 22:00:04 mromberg Exp $
+// $Id: MeterMaker.cc,v 1.12 1998/03/07 21:20:38 mromberg Exp $
 //
 #include "MeterMaker.h"
 #include "xosview.h"
@@ -57,8 +57,10 @@ void MeterMaker::makeMeters(void){
       push(new SerialMeter(_xos, (SerialMeter::Device)i));
 
   // check for the interrupt meter
-  if (_xos->isResourceTrue("interrupts"))
-    push(new IntMeter(_xos));
+  if (_xos->isResourceTrue("interrupts")) {
+    for (int i = 0 ; i < IntMeter::countCPUs() ; i++)
+      push(new IntMeter(_xos, i));
+  }
 
   if (_xos->isResourceTrue("battery"))
     push(new BtryMeter(_xos));
