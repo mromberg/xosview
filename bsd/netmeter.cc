@@ -12,14 +12,14 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.cc,v 1.16 1999/01/31 20:18:49 bgrayson Exp $
+// $Id: netmeter.cc,v 1.17 1999/01/31 20:31:07 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
 #include "netmeter.h"
 #include "kernel.h"
 
-CVSID("$Id: netmeter.cc,v 1.16 1999/01/31 20:18:49 bgrayson Exp $");
+CVSID("$Id: netmeter.cc,v 1.17 1999/01/31 20:31:07 bgrayson Exp $");
 CVSID_DOT_H(NETMETER_H_CVSID);
 CVSID_DOT_H2(TIMER_H_CVSID);
 CVSID_DOT_H3(TIMEVAL_H_CVSID);
@@ -71,7 +71,7 @@ void NetMeter::checkevent( void ){
    *  (1+2^32) is still too big.  */
   if (nowBytesIn < _lastBytesIn) _lastBytesIn -= correction;
   if (nowBytesOut < _lastBytesOut) _lastBytesOut -= correction;
-  float t = (1e6) / IntervalTimeInMicrosecs();
+  float t = (1.0) / IntervalTimeInSecs();
   fields_[0] = (float)(nowBytesIn - _lastBytesIn) * t;
   _lastBytesIn = nowBytesIn;
   fields_[1] = (float)(nowBytesOut - _lastBytesOut) * t;
