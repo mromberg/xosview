@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: MeterMaker.cc,v 1.3 1996/10/27 23:22:57 mromberg Exp $
+// $Id: MeterMaker.cc,v 1.4 1996/12/03 18:37:16 romberg Exp $
 //
 #include "MeterMaker.h"
 #include "xosview.h"
@@ -39,7 +39,7 @@ void MeterMaker::makeMeters(void){
     push(new SwapMeter(_xos));
   
   if (!strcmp(_xos->getResource("page"), "True"))
-      push(new PageMeter(_xos, atof(_xos->getResource("pageBandWidth"))));
+      push(new PageMeter(_xos, atof(_xos->getResource("pageBandwidth"))));
 
   // check for the net meter
   //  FIXME  This check should be changed to check for the "net" resource.  BCG

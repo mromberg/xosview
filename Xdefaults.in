@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.9 1996/12/02 19:41:47 romberg Exp $
+!  $Id: Xdefaults.in,v 1.10 1996/12/03 18:36:45 romberg Exp $
 
 ! General Resources
 
@@ -74,7 +74,7 @@ xosview*swapUsedFormat:	  autoscale
 ! Page Meter Resources
 
 xosview*page:           True
-xosview*pageBandWidth:  120
+xosview*pageBandwidth:  120
 xosview*pageInColor:    SkyBlue
 xosview*pageOutColor:   SlateBlue1
 xosview*pageIdleColor:  aquamarine
