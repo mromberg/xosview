@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.29 1999/01/18 08:23:04 bgrayson Exp $
+dnl $Id: configure.in,v 1.30 1999/01/18 09:47:42 bgrayson Exp $
 dnl
 AC_INIT(xosview.1)
 CF_TOP_SRCDIR
@@ -62,7 +62,7 @@ AC_CHECK_LIB(Xpm, main,AC_DEFINE(HAVE_XPM) XPMLIB=-lXpm)
 dnl  For FreeBSD, see if libdevstat exists.
 case $host_os in
 freebsd*)
-  AC_CHECK_LIB(devstat, main, AC_DEFINE(HAVE_DEVSTAT)) ;;
+  AC_CHECK_LIB(devstat, main, AC_DEFINE(HAVE_DEVSTAT) DEVSTATLIB=-ldevstat) ;;
 esac
 
 dnl
