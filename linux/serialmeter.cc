@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: serialmeter.cc,v 1.8 1998/10/03 22:57:49 mromberg Exp $
+// $Id: serialmeter.cc,v 1.9 1998/10/04 18:16:38 mromberg Exp $
 //
 
 //
@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <strstream.h>
 
+// This should go away after types.h gets fixed in the kernel.
 #ifdef __alpha__
 typedef unsigned char u8;
 typedef signed short s16;
