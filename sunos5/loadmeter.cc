@@ -1,5 +1,5 @@
 //  
-// $Id: loadmeter.cc,v 1.3 1998/09/18 19:53:49 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.4 1999/01/23 23:50:17 mromberg Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "loadmeter.h"
@@ -9,7 +9,7 @@
 /*#include <sys/loadavg.h>*/
 
 LoadMeter::LoadMeter(XOSView *parent, kstat_ctl_t *_kc)
-	: FieldMeterDecay(parent, 2, "LOAD", "PROCS/MIN", 1, 0)
+	: FieldMeterDecay(parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0)
 {
 	kc = _kc;
 	ksp = kstat_lookup(kc, "unix", 0, "system_misc");
