@@ -6,7 +6,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.6 1997/02/14 06:12:10 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.7 1997/06/28 05:33:43 bgrayson Exp $
 //
 //  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //
@@ -80,8 +80,6 @@
 
 
 
-static long netbsdSwapBlockSize;
-
 #include <sys/cdefs.h>
 #include <fcntl.h>
 
@@ -133,16 +131,16 @@ static int nfree;
 int
 NetBSDInitSwapInfo()
 {
-        int i;
-        char msgbuf[BUFSIZ];
         static int once = 0;
-	int stringlen;
 
-	getbsize (&stringlen, &netbsdSwapBlockSize);
         if (once)
                 return (1);
         if (kvm_nlist(swap_kd, syms)) {
-                strcpy(msgbuf, "systat: swap: cannot find");
+#ifndef HAVE_SWAPCTL
+		int i;
+		char msgbuf[BUFSIZ];
+
+                strcpy(msgbuf, "xosview: swap: cannot find");
                 for (i = 0; syms[i].n_name != NULL; i++) {
                         if (syms[i].n_value == 0) {
                                 strcat(msgbuf, " ");
@@ -150,6 +148,7 @@ NetBSDInitSwapInfo()
                         }
                 }
                 printf(msgbuf);
+#endif
                 return (0);
         }
         KGET(VM_NSWAP, nswap);
@@ -160,7 +159,8 @@ NetBSDInitSwapInfo()
         if ((sw = (struct swdevt*) malloc(nswdev * sizeof(*sw))) == NULL ||
             (perdev = (long*) malloc(nswdev * sizeof(*perdev))) == NULL ||
             (mp = (struct mapent*) malloc(nswapmap * sizeof(*mp))) == NULL) {
-                printf("swap malloc");
+                printf("xosview: swap: malloc returned NULL.\n"  
+		  "Number of Swap devices (nswdef) looked like %d\n", nswdev);
                 return (0);
         }
         KGET1(VM_SWDEVT, sw, (signed) (nswdev * sizeof(*sw)), "swdevt");
