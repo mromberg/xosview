@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: MeterMaker.cc,v 1.12 1998/03/07 21:20:38 mromberg Exp $
+// $Id: MeterMaker.cc,v 1.13 1998/03/07 21:47:31 mromberg Exp $
 //
 #include "MeterMaker.h"
 #include "xosview.h"
@@ -58,7 +58,9 @@ void MeterMaker::makeMeters(void){
 
   // check for the interrupt meter
   if (_xos->isResourceTrue("interrupts")) {
-    for (int i = 0 ; i < IntMeter::countCPUs() ; i++)
+    int cpuCount = IntMeter::countCPUs();
+    cpuCount = cpuCount == 0 ? 1 : cpuCount;
+    for (int i = 0 ; i < cpuCount ; i++)
       push(new IntMeter(_xos, i));
   }
 

@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.cc,v 1.6 1998/03/07 21:38:13 mromberg Exp $
+// $Id: intmeter.cc,v 1.7 1998/03/07 21:47:31 mromberg Exp $
 //
 #include "intmeter.h"
 #include "xosview.h"
@@ -72,7 +72,7 @@ float IntMeter::getLinuxVersion(void) {
 }
 
 int IntMeter::countCPUs(void) {
- return CPUMeter::countCPUs() + 1;
+ return CPUMeter::countCPUs();
 }
 
 void IntMeter::getirqs( void ){
