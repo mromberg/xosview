@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.22 1999/01/31 20:18:49 bgrayson Exp $
+// $Id: memmeter.cc,v 1.23 1999/07/06 04:06:54 bgrayson Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
@@ -24,12 +24,12 @@
 
 #include <sys/param.h>		/*  Needed for sysctl.h include.  */
 #include <sys/sysctl.h>		/*  Needed for kvm_cnt, kvm_uvm_exp.  */
-#if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)	/*  Does
+#if defined(XOSVIEW_BSDI) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)	/*  Does
 							OpenBSD need this?  */
 # include <sys/vmmeter.h>
 #endif
 
-CVSID("$Id: memmeter.cc,v 1.22 1999/01/31 20:18:49 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.23 1999/07/06 04:06:54 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 
 MemMeter::MemMeter( XOSView *parent )
