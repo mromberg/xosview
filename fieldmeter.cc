@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.17 1998/09/18 15:21:05 bgrayson Exp $
+// $Id: fieldmeter.cc,v 1.18 1998/09/18 15:49:24 bgrayson Exp $
 //
 #include <fstream.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.17 1998/09/18 15:21:05 bgrayson Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.18 1998/09/18 15:49:24 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -56,11 +56,11 @@ void FieldMeter::checkResources( void ){
 
 void FieldMeter::SetUsedFormat ( const char * const fmt ) {
     /*  Do case-insensitive compares.  */
-  if (!strcasecmp (fmt, "percent"))
+  if (!strncasecmp (fmt, "percent", 8))
     print_ = PERCENT;
-  else if (!strcasecmp (fmt, "autoscale"))
+  else if (!strncasecmp (fmt, "autoscale", 10))
     print_ = AUTOSCALE;
-  else if (!strcasecmp (fmt, "float"))
+  else if (!strncasecmp (fmt, "float", 6))
     print_ = FLOAT;
   else
   {

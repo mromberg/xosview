@@ -1,5 +1,5 @@
 //
-// $Id: xwin.h,v 1.4 1996/12/02 04:51:39 bgrayson Exp $
+// $Id: xwin.h,v 1.5 1998/09/18 15:49:24 bgrayson Exp $
 //
 #ifndef _XWIN_H_
 #define _XWIN_H_
@@ -9,7 +9,7 @@
 #include <iostream.h>
 #include <string.h>
 
-#define XWIN_H_CVSID "$Id: xwin.h,v 1.4 1996/12/02 04:51:39 bgrayson Exp $"
+#define XWIN_H_CVSID "$Id: xwin.h,v 1.5 1998/09/18 15:49:24 bgrayson Exp $"
 
 class XWin;
 class Xrm;
@@ -93,7 +93,7 @@ public:
   const char *getResource( const char *name );
   const char *getResourceOrUseDefault( const char *name, const char* defaultVal );
   const int isResourceTrue( const char* name ) {
-    return (!strcasecmp(getResource(name),"True")); }
+    return (!strncasecmp(getResource(name),"True", 5)); }
   void dumpResources( ostream &os );
   
 protected:
@@ -143,7 +143,8 @@ protected:
 
   void init( int argc, char *argv[] );
   void getGeometry( void );
-  void setDisplayName (const char* new_display_name) { strcpy (display_name_, new_display_name); }
+  void setDisplayName (const char* new_display_name) { strncpy
+    (display_name_, new_display_name, 256); }
   const char* displayName () { return display_name_; }
 
   void addEvent( Event *event );
