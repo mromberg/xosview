@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: btrymeter.h,v 1.1 1997/02/26 23:44:50 mromberg Exp $
+// $Id: btrymeter.h,v 1.2 2004/06/01 04:33:01 romberg Exp $
 //
 #ifndef _BTRYMETER_H_
 #define _BTRYMETER_H_
@@ -26,6 +26,12 @@ protected:
 
   void getpwrinfo( void );
 private:
+  bool getapminfo( void );
+  bool getacpiinfo( void );
+  bool getacpiinfofield(const std::string& filename,
+			const std::string& fieldname,
+			float& value);
+
   int alarmThreshold;
 };
 
