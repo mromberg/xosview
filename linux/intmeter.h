@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.h,v 1.5 1998/10/03 22:57:49 mromberg Exp $
+// $Id: intmeter.h,v 1.6 2002/03/24 21:52:58 zedpobre Exp $
 //
 #ifndef _INTMETER_H_
 #define _INTMETER_H_
@@ -24,17 +24,14 @@ public:
   static int countCPUs(void);
 
 protected:
-#ifdef __alpha__
-  // Alphas can have up to 64 IRQs!
-  unsigned long irqs_[65], lastirqs_[65];
-#else
-  unsigned long irqs_[24], lastirqs_[24];
-#endif
+  unsigned long *irqs_, *lastirqs_;
 
   int _cpu;
   bool _old;
 
   void getirqs( void );
+  void updateirqcount( int n, bool init );
+  void initirqcount( void );
 };
 
 #endif
