@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.7 1996/12/26 20:18:51 mromberg Exp $
+// $Id: xosview.cc,v 1.8 1997/01/14 18:28:11 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -22,7 +22,7 @@
 static const char NAME[] = "xosview@";
 #include "version.cc"
 
-CVSID("$Id: xosview.cc,v 1.7 1996/12/26 20:18:51 mromberg Exp $");
+CVSID("$Id: xosview.cc,v 1.8 1997/01/14 18:28:11 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -245,11 +245,11 @@ void XOSView::run( void ){
 
       flush();
     }
-    unsigned long sleeptime = 1000*SAMPLE_MSECS;
+    unsigned long usleeptime = 1000000/MAX_SAMPLES_PER_SECOND;
 #ifdef HAVE_USLEEP
-    usleep( sleeptime );
+    usleep( usleeptime );
 #else
-    usleep_via_select ( sleeptime );
+    usleep_via_select ( usleeptime );
 #endif
     counter = (counter + 1) % 5;    
   }
