@@ -6,7 +6,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.3 1996/11/24 04:58:19 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.4 1996/12/09 15:16:56 bgrayson Exp $
 //
 
 /*      $NetBSD: swap.c,v 1.4 1995/08/31 22:20:19 jtc Exp $     */
@@ -240,8 +240,10 @@ NetBSDGetSwapInfo(int* total, int* free)
                  * yet been activated via swapon(8).
                  */
                 if (!sw[i].sw_freed) {
-                        printf ("Device %d not available for swapping.\n",
-                        i);
+			/* -----  Originally, this printed a
+			 * warning.  However, for xosview, we
+			 * don't want the warning printed.
+			 * bgrayson  */
                         continue;
                 }
                 xsize = sw[i].sw_nblks;
