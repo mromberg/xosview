@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Xrm.cc,v 1.4 1996/12/04 04:01:29 bgrayson Exp $
+// $Id: Xrm.cc,v 1.5 1997/03/10 22:57:37 bgrayson Exp $
 //
 
 #include <string.h>
@@ -17,7 +17,7 @@
 #include "Xrm.h"
 #include "Xrmcommandline.h"
 
-CVSID("$Id: Xrm.cc,v 1.4 1996/12/04 04:01:29 bgrayson Exp $");
+CVSID("$Id: Xrm.cc,v 1.5 1997/03/10 22:57:37 bgrayson Exp $");
 CVSID_DOT_H(XRM_H_CVSID);
 CVSID_DOT_H2(XRMCOMMANDLINE_H_CVSID);
 
@@ -146,7 +146,7 @@ Listed from weakest to strongest:
   char rfilename[2048];
 
   // Get the app-defaults
-  strcpy(rfilename, "/usr/lib/X11/app-defaults/");
+  strcpy(rfilename, "/usr/X11R6/lib/X11/app-defaults/");
   strcat(rfilename, XrmQuarkToString(_class));
   if (rfilename != NULL)
     XrmCombineFileDatabase (rfilename, &_db, 1);
