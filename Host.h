@@ -4,13 +4,13 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Host.h,v 1.3 1996/11/19 02:17:25 bgrayson Exp $
+// $Id: Host.h,v 1.4 1999/01/23 22:20:39 mromberg Exp $
 //
 
 #ifndef _Host_h
 #define _Host_h
 
-#define HOST_H_CVSID "$Id: Host.h,v 1.3 1996/11/19 02:17:25 bgrayson Exp $"
+#define HOST_H_CVSID "$Id: Host.h,v 1.4 1999/01/23 22:20:39 mromberg Exp $"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -18,6 +18,7 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include <iostream.h>
+#include "bool.h"
 
 class Host {
 public:

@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.18 1999/01/23 18:34:26 mromberg Exp $
+// $Id: xosview.cc,v 1.19 1999/01/23 22:20:40 mromberg Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -25,7 +25,7 @@ static const char NAME[] = "xosview@";
 
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.18 1999/01/23 18:34:26 mromberg Exp $");
+CVSID("$Id: xosview.cc,v 1.19 1999/01/23 22:20:40 mromberg Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -269,8 +269,8 @@ void XOSView::run( void ){
 #ifdef HAVE_USLEEP
     /*  First, sleep for the proper integral number of seconds --
      *  usleep only deals with times less than 1 sec.  */
-    if (sleeptime_) sleep(sleeptime_);
-    if (usleeptime_) usleep( usleeptime_);
+    if (sleeptime_) sleep((unsigned int)sleeptime_);
+    if (usleeptime_) usleep( (unsigned int)usleeptime_);
 #else
     usleep_via_select ( usleeptime_ );
 #endif
@@ -281,7 +281,7 @@ void XOSView::run( void ){
 void XOSView::usleep_via_select( unsigned long usec ){
   struct timeval time;
 
-  time.tv_sec = usec / 1000000;
+  time.tv_sec = (int)(usec / 1000000);
   time.tv_usec = usec - time.tv_sec * 1000000;
 
   select( 0, 0, 0, 0, &time );

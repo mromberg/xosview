@@ -4,16 +4,17 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.20 1999/01/23 18:34:26 mromberg Exp $
+// $Id: fieldmeter.cc,v 1.21 1999/01/23 22:20:40 mromberg Exp $
 //
 #include <fstream.h>
 #include <strstream.h>
 #include <iomanip.h>
+#include <stdlib.h>
 #include "general.h"
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.20 1999/01/23 18:34:26 mromberg Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.21 1999/01/23 22:20:40 mromberg Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 

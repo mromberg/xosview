@@ -4,12 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Xrm.h,v 1.4 1996/12/04 04:01:36 bgrayson Exp $
+// $Id: Xrm.h,v 1.5 1999/01/23 22:20:39 mromberg Exp $
 //
 #ifndef _Xrm_h
 #define _Xrm_h
 
-#define XRM_H_CVSID "$Id: Xrm.h,v 1.4 1996/12/04 04:01:36 bgrayson Exp $"
+#include "bool.h"
+
+#define XRM_H_CVSID "$Id: Xrm.h,v 1.5 1999/01/23 22:20:39 mromberg Exp $"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>

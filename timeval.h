@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: timeval.h,v 1.3 1996/11/19 02:13:41 bgrayson Exp $
+// $Id: timeval.h,v 1.4 1999/01/23 22:20:40 mromberg Exp $
 //
 #ifndef _TIMEVAL_H_
 #define _TIMEVAL_H_
 
-#define TIMEVAL_H_CVSID "$Id: timeval.h,v 1.3 1996/11/19 02:13:41 bgrayson Exp $"
+#define TIMEVAL_H_CVSID "$Id: timeval.h,v 1.4 1999/01/23 22:20:40 mromberg Exp $"
 
 #include <sys/time.h>
 #include <iostream.h>
@@ -17,14 +17,14 @@
 class TimeVal {
 public:
   TimeVal(unsigned long sec = 0, unsigned long usec = 0) {
-    _val.tv_sec = sec;
+    _val.tv_sec = (int)sec;
     _val.tv_usec = usec;
   }
   TimeVal(const struct timeval &val) { _val = val; }
 
   unsigned long sec(void) const { return _val.tv_sec; }
   unsigned long usec(void) const { return _val.tv_usec; }
-  void sec(unsigned long s) { _val.tv_sec = s; }
+  void sec(unsigned long s) { _val.tv_sec = (int)s; }
   void usec(unsigned long us) { _val.tv_usec = us; }
 
   operator struct timeval(void) const { return _val; }

@@ -4,17 +4,17 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Host.cc,v 1.4 1998/09/18 15:38:55 bgrayson Exp $
+// $Id: Host.cc,v 1.5 1999/01/23 22:20:39 mromberg Exp $
 //
 #include <stdlib.h>
 #include <string.h>
 #include "general.h"
 #include "Host.h"
 
-CVSID("$Id: Host.cc,v 1.4 1998/09/18 15:38:55 bgrayson Exp $");
+CVSID("$Id: Host.cc,v 1.5 1999/01/23 22:20:39 mromberg Exp $");
 CVSID_DOT_H(HOST_H_CVSID);
 
-#ifdef __hpux__
+#if defined(__hpux__) || defined(__hpux)
 extern int h_errno;
 #endif
 
@@ -32,7 +32,8 @@ Host::Host(const struct in_addr *address){
 }
 
 Host::Host(unsigned int addr){
-  struct in_addr ia = {htonl(addr)};
+  struct in_addr ia;
+  ia.s_addr = htonl(addr);
   constuct(&ia);
 }
 

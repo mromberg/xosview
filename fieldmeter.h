@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.h,v 1.11 1999/01/23 18:34:26 mromberg Exp $
+// $Id: fieldmeter.h,v 1.12 1999/01/23 22:20:40 mromberg Exp $
 //
 #ifndef _FIELDMETER_H_
 #define _FIELDMETER_H_
 
-#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.11 1999/01/23 18:34:26 mromberg Exp $"
+#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.12 1999/01/23 22:20:40 mromberg Exp $"
 
 #include "meter.h"
 #include "timer.h"
@@ -65,7 +65,7 @@ private:
 protected:
   void IntervalTimerStart() { _timer.start(); }
   void IntervalTimerStop() { _timer.stop(); }
-  long long IntervalTimeInMicrosecs() { return _timer.report(); }
+  LONG_LONG IntervalTimeInMicrosecs() { return _timer.report(); }
 };
 
 #endif

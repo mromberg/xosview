@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.21 1999/01/18 09:47:42 bgrayson Exp $
+dnl $Id: aclocal.m4,v 1.22 1999/01/23 22:20:40 mromberg Exp $
 dnl
 
 dnl Make an absolute symbol for the top of the configuration.
@@ -11,6 +11,46 @@ dnl
 AC_DEFUN([CF_TOP_SRCDIR],
 [TOP_SRCDIR=`cd $srcdir;pwd`
 AC_SUBST(TOP_SRCDIR)
+])dnl
+
+AC_DEFUN(ICE_CXX_BOOL,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether ${CXX} supports bool types)
+AC_CACHE_VAL(ice_cv_have_bool,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(,[bool b = true;],
+ice_cv_have_bool=yes,
+ice_cv_have_bool=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_bool)
+if test "$ice_cv_have_bool" = yes; then
+AC_DEFINE(HAVE_BOOL)
+fi
+])dnl
+
+AC_DEFUN(ICE_CXX_LONG_LONG,
+[
+AC_REQUIRE([AC_PROG_CXX])
+AC_MSG_CHECKING(whether ${CXX} supports long long types)
+AC_CACHE_VAL(ice_cv_have_long_long,
+[
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+AC_TRY_COMPILE(,[long long x; x = (long long)0;],
+ice_cv_have_long_long=yes,
+ice_cv_have_long_long=no)
+AC_LANG_RESTORE
+])
+AC_MSG_RESULT($ice_cv_have_long_long)
+if test "$ice_cv_have_long_long" = yes; then
+AC_DEFINE(LONG_LONG,long long)
+else
+AC_DEFINE(LONG_LONG,long)
+fi
 ])dnl
 
 
