@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.cc,v 1.4 1997/10/28 00:50:18 bgrayson Exp $
+// $Id: pagemeter.cc,v 1.5 1997/12/07 18:50:28 bgrayson Exp $
 //
 #include "general.h"
 #include "pagemeter.h"
@@ -25,7 +25,7 @@
 #include <stdlib.h>		//  For atoi().  BCG
 #include "kernel.h"		//  For NetBSD Page functions.
 
-CVSID("$Id: pagemeter.cc,v 1.4 1997/10/28 00:50:18 bgrayson Exp $");
+CVSID("$Id: pagemeter.cc,v 1.5 1997/12/07 18:50:28 bgrayson Exp $");
 CVSID_DOT_H(PAGEMETER_H_CVSID);
 
 PageMeter::PageMeter( XOSView *parent, double total )
@@ -61,6 +61,8 @@ void PageMeter::getpageinfo (void) {
   NetBSDGetPageStats(&vm);
 #ifdef XOSVIEW_FREEBSD
 #warning "FreeBSD hack"
+/*  I'm not completely sure these are the right statistics, but
+ *  they'll work for now.  */
   fields_[0] = vm.v_vnodein - prev_.v_vnodein;
   fields_[1] = vm.v_vnodeout - prev_.v_vnodeout;
 #else
