@@ -2,7 +2,7 @@
 # Linux Makefile template
 #
 #
-# $Id: Makefile.linux.in,v 1.4 1996/10/27 23:22:52 mromberg Exp $
+# $Id: Makefile.linux.in,v 1.5 1997/02/26 23:44:43 mromberg Exp $
 #
 include ../Makefile.config
 
@@ -17,6 +17,7 @@ netmeter.o \
 intmeter.o \
 serialmeter.o \
 loadmeter.o \
+btrymeter.o \
 MeterMaker.o
 
 CFILES := $(OBJS:.o=.cc)
