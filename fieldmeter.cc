@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.14 1998/04/06 20:10:12 bgrayson Exp $
+// $Id: fieldmeter.cc,v 1.15 1998/04/07 13:15:47 bgrayson Exp $
 //
 #include <fstream.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.14 1998/04/06 20:10:12 bgrayson Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.15 1998/04/07 13:15:47 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -21,6 +21,7 @@ FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title,
     /*  We need to set print_ to something valid -- the meters
      *  apparently get drawn before the meters have a chance to call
      *  CheckResources() themselves.  */
+  printedZeroTotalMesg_ = 0;
   print_ = PERCENT;
   used_ = 0;
   lastused_ = -1;
@@ -80,8 +81,12 @@ void FieldMeter::setUsed (float val, float total)
       used_ = val / total * 100.0;
     else
     {
-      fprintf(stderr, "Warning:  %s meter had a zero total field!  Would have "
-	      "caused a div-by-zero exception.\n", name());
+      if (!printedZeroTotalMesg_) {
+        printedZeroTotalMesg_ = 1;
+	fprintf(stderr, "Warning:  %s meter had a zero total "
+		"field!  Would have caused a div-by-zero "
+		"exception.\n", name());
+      }
       used_ = 0.0;
     }
   }
