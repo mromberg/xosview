@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: pagemeter.cc,v 1.1 1997/02/26 18:34:55 mromberg Exp $
+// $Id: pagemeter.cc,v 1.2 1997/12/03 13:46:31 bgrayson Exp $
 //
 #include "pagemeter.h"
 #include "xosview.h"
@@ -33,6 +33,7 @@ void PageMeter::checkResources( void ){
   priority_ = atoi (parent_->getResource( "pagePriority" ) );
   maxspeed_ *= priority_ / 10.0;
   dodecay_ = !strcmp (parent_->getResource( "pageDecay" ), "True" );
+  SetUsedFormat( parent_->getResource( "pageUsedFormat" );
 }
 
 void PageMeter::checkevent( void ){
@@ -67,6 +68,6 @@ void PageMeter::getpageinfo( void ){
     total_ = maxspeed_;
   }
 
-  used( (int)((100 * (total_ - fields_[2])) / maxspeed_) );
+  setUsed (total_ - fields_[2], maxspeed_ );
   pageindex_ = (pageindex_ + 1) % 2;
 }

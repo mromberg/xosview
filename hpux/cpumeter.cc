@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.cc,v 1.2 1996/08/14 06:20:40 mromberg Exp $
+// $Id: cpumeter.cc,v 1.3 1997/12/03 13:46:30 bgrayson Exp $
 //
 #include "cpumeter.h"
 #include "xosview.h"
@@ -32,6 +32,7 @@ void CPUMeter::checkResources( void ){
   setfieldcolor( 4, parent_->getResource( "cpuFreeColor" ) );
   priority_ = atoi (parent_->getResource( "cpuPriority" ) );
   dodecay_ = !strcmp (parent_->getResource( "cpuDecay" ), "True" );
+  SetUsedFormat( parent_->getResource( "cpuUsedFormat" );
 }
 
 void CPUMeter::checkevent( void ){
@@ -59,6 +60,6 @@ void CPUMeter::getcputime( void ){
   cpuindex_ = (cpuindex_ + 1) % 2;
 
   if (total_){
-    used( (int)((100 * (total_ - fields_[4])) / total_) );
+    setUsed( total_ - fields_[4], total_ );
   }
 }

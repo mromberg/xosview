@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: swapmeter.cc,v 1.3 1997/02/26 18:34:59 mromberg Exp $
+// $Id: swapmeter.cc,v 1.4 1997/12/03 13:46:32 bgrayson Exp $
 //
 #include "swapmeter.h"
 #include "xosview.h"
@@ -27,6 +27,7 @@ void SwapMeter::checkResources( void ){
   setfieldcolor( 1, parent_->getResource( "swapFreeColor" ) );
   priority_ = atoi (parent_->getResource( "swapPriority" ) );
   dodecay_ = !strcmp (parent_->getResource( "swapDecay" ), "True" );
+  SetUsedFormat( parent_->getResource( "swapUsedFormat" );
 }
 
 void SwapMeter::checkevent( void ){
@@ -57,5 +58,5 @@ void SwapMeter::getswapinfo( void ){
       }
 
   fields_[0] = total_ - fields_[1];
-  used( (int)((100 * fields_[0]) / total_ ) );
+  setUsed( fields_[0], total_ );
 }

@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: loadmeter.cc,v 1.1 1997/02/26 18:34:52 mromberg Exp $
+// $Id: loadmeter.cc,v 1.2 1997/12/03 13:46:31 bgrayson Exp $
 //
 #include "loadmeter.h"
 #include "xosview.h"
@@ -28,6 +28,7 @@ void LoadMeter::checkResources( void ){
   setfieldcolor( 1, parent_->getResource( "loadIdleColor" ) );
   priority_ = atoi (parent_->getResource( "loadPriority" ) );
   dodecay_ = !strcmp (parent_->getResource( "loadDecay" ), "True" );
+  SetUsedFormat( parent_->getResource( "loadUsedFormat" );
 
   alarmThreshold = atoi (parent_->getResource("loadAlarmThreshold"));
 
@@ -74,5 +75,5 @@ void LoadMeter::getloadinfo( void ){
     total_ = fields_[1] = alarmThreshold;
   }
 
-  absolute( fields_[0] );
+  setUsed( fields_[0], total_ );
 }
