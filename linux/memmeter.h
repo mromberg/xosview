@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: memmeter.h,v 1.5 1998/10/15 21:28:18 mromberg Exp $
+// $Id: memmeter.h,v 1.6 2003/08/14 15:08:04 eile Exp $
 //
 #ifndef _MEMMETER_H_
 #define _MEMMETER_H_
@@ -37,7 +37,7 @@ private:
     const char *id(void) { return _id; }
     int idlen(void) { return _idlen; }
 
-    void setVal(unsigned long val) { *_val = val; }
+    void setVal(double val) { *_val = val; }
 
   private:
     int _line;

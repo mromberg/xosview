@@ -3,7 +3,7 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-// $Id: memmeter.cc,v 1.11 1999/11/06 22:48:17 romberg Exp $
+// $Id: memmeter.cc,v 1.12 2003/08/14 15:08:04 eile Exp $
 //
 #include "memmeter.h"
 #include "xosview.h"
@@ -162,7 +162,7 @@ void MemMeter::getmemstat(const char *fname, LineInfo *infos, int ninfos){
     unsigned long val;
     line >> ignore >> val;
     /*  All stats are in KB.  */
-    infos[inum].setVal(val*1024);	/*  Multiply by 1024 bytes per K  */
+    infos[inum].setVal(val*1024.0);	/*  Multiply by 1024 bytes per K  */
 
     inum++;
     if (inum >= ninfos)
