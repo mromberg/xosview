@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.6 1996/10/27 23:22:54 mromberg Exp $
+dnl $Id: aclocal.m4,v 1.7 1996/11/19 06:13:21 bgrayson Exp $
 dnl
 
 AC_DEFUN(AC_XOSV_LINUX, [
@@ -75,6 +75,7 @@ dnl Netbsd needs to link with libkvm
 dnl
         EXTRALIBS=-lkvm
         INSTALL_ARGS='-s -g kmem -m 02555'
+	AC_DEFINE(XOSVIEW_NETBSD)
 ])
 
 
