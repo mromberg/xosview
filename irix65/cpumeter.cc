@@ -1,5 +1,5 @@
 //  
-// $Id: cpumeter.cc,v 1.2 2001/10/17 14:03:55 eile Exp $
+// $Id: cpumeter.cc,v 1.3 2001/10/17 14:39:22 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 #include "cpumeter.h"
@@ -77,7 +77,8 @@ void CPUMeter::getcputime(void)
 	cpuindex_ = (cpuindex_ + 1) % 2;
 
 	if (total_)
-		setUsed(total_ - fields_[3], total_);
+		setUsed(total_ - fields_[3] - fields_[4], total_); // wait doesn't count
+    // as used 
 }
 
 const char *CPUMeter::toUpper(const char *str)
