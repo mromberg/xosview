@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.h,v 1.3 1996/11/24 04:38:03 bgrayson Exp $
+// $Id: netmeter.h,v 1.4 1997/01/06 03:22:04 bgrayson Exp $
 //
 #ifndef _NETMETER_H_
 #define _NETMETER_H_
@@ -29,7 +29,7 @@ public:
 
   void checkResources( void );
 protected:
-  float maxpackets_;
+  float netBandwidth_;
 
 private:
   Host *_thisHost;
