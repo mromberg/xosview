@@ -1,5 +1,5 @@
 //  
-// $Id: sarmeter.h,v 1.3 2002/03/07 16:36:59 eile Exp $
+// $Id: sarmeter.h,v 1.4 2002/03/12 11:17:09 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 
@@ -19,12 +19,14 @@ typedef struct {
 header;
 
 typedef struct {
-    char           pad[64];
     char           name[12];
+    char           pad1[68];
     struct iotime  stat;
-    int            padding;
+    char           pad2[4];
 } 
 diskinfo;
+
+#define MAX_DISKS 16
 
 // common function for all sar based graphs
 class SarMeter
@@ -68,7 +70,7 @@ private:
     gfxinfo _gi;
     bool    _giNew;
 
-    diskinfo _di;
+    diskinfo _di[MAX_DISKS];
     bool     _diNew;
 };
 
