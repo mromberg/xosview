@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.cc,v 1.5 1998/09/24 19:23:18 bgrayson Exp $
+// $Id: intmeter.cc,v 1.6 2003/10/09 04:12:48 bgrayson Exp $
 //
 #include <stdlib.h>		/*  For atoi().  */
 #include "intmeter.h"
@@ -26,6 +26,9 @@ IntMeter::IntMeter( XOSView *parent,
               dolegends, dousedlegends ) {
   for ( int i = 0 ; i < 16 ; i++ )
     irqs_[i] = lastirqs_[i] = 0;
+  if (!BSDIntrInit()) {
+    disableMeter();
+  }
 }
 
 IntMeter::~IntMeter( void ){
@@ -44,9 +47,11 @@ void IntMeter::checkevent( void ){
 
 void IntMeter::checkResources( void ){
   BitMeter::checkResources();
-  onColor_  = parent_->allocColor( parent_->getResource( "intOnColor" ) );
-  offColor_ = parent_->allocColor( parent_->getResource( "intOffColor" ) );
-  priority_ = atoi( parent_->getResource( "intPriority" ) );
+  if (!disabled_) {
+    onColor_  = parent_->allocColor( parent_->getResource( "intOnColor" ) );
+    offColor_ = parent_->allocColor( parent_->getResource( "intOffColor" ) );
+    priority_ = atoi( parent_->getResource( "intPriority" ) );
+  }
 }
 
 void 
