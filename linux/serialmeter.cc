@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: serialmeter.cc,v 1.7 1998/09/18 15:49:24 bgrayson Exp $
+// $Id: serialmeter.cc,v 1.8 1998/10/03 22:57:49 mromberg Exp $
 //
 
 //
@@ -18,12 +18,26 @@
 #include <stdlib.h>
 #include <strstream.h>
 
+#ifdef __alpha__
+typedef unsigned char u8;
+typedef signed short s16;
+typedef unsigned short u16;
+typedef signed int s32;
+typedef unsigned int u32;
+typedef signed long long s64;
+typedef unsigned long long u64;
+#endif
+
 #include <unistd.h>
 #if defined(GNULIBC) || defined(__GLIBC__)
 #include <sys/io.h>
+#ifndef __alpha__
 #include <sys/perm.h>
+#endif
 #else
+#ifndef __alpha__
 #include <asm/io.h>
+#endif
 #endif
 #include <linux/serial.h>
 #include <linux/serial_reg.h>

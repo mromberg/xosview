@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.12 1998/09/18 18:17:18 bgrayson Exp $
+// $Id: netmeter.cc,v 1.13 1998/10/03 22:57:49 mromberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -204,7 +204,7 @@ void NetMeter::checkeventOld(void)
         if (!ifs.eof())
             {
             struct ifreq *ifr = ifc.ifc_req;
-            for (register i = ifc.ifc_len / sizeof(struct ifreq); 
+            for (int i = ifc.ifc_len / sizeof(struct ifreq);
                  --i >= 0; ifr++) 
                 {
                 unsigned long adr = ntohl(
