@@ -10,12 +10,15 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: MeterMaker.cc,v 1.16 1998/03/26 21:14:43 bgrayson Exp $
+// $Id: MeterMaker.cc,v 1.17 1999/01/25 20:15:26 bgrayson Exp $
 //
 #include <stdlib.h>
 #include "general.h"
 #include "MeterMaker.h"
 #include "xosview.h"
+#ifdef HAVE_BATTERY_METER
+#include "btrymeter.h"
+#endif
 #include "cpumeter.h"
 #include "memmeter.h"
 #include "swapmeter.h"
@@ -29,7 +32,7 @@
 
 CVSID_DOT_H2(PLLIST_H_CVSID);
 CVSID_DOT_H(METERMAKER_H_CVSID);
-CVSID("$Id: MeterMaker.cc,v 1.16 1998/03/26 21:14:43 bgrayson Exp $");
+CVSID("$Id: MeterMaker.cc,v 1.17 1999/01/25 20:15:26 bgrayson Exp $");
 
 MeterMaker::MeterMaker(XOSView *xos){
   _xos = xos;
@@ -62,6 +65,12 @@ void MeterMaker::makeMeters(void){
 
   if (_xos->isResourceTrue("interrupts"))
       push(new IntMeter(_xos));
+
+#ifdef HAVE_BATTERY_METER
+  //  This one is done in its own file, not kernel.cc
+  if (_xos->isResourceTrue("battery"))
+      push(new BtryMeter(_xos));
+#endif
 
   //  The serial meters are not yet available for the BSDs.  BCG
 }
