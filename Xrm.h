@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Xrm.h,v 1.3 1996/11/19 02:17:13 bgrayson Exp $
+// $Id: Xrm.h,v 1.4 1996/12/04 04:01:36 bgrayson Exp $
 //
 #ifndef _Xrm_h
 #define _Xrm_h
 
-#define XRM_H_CVSID "$Id: Xrm.h,v 1.3 1996/11/19 02:17:13 bgrayson Exp $"
+#define XRM_H_CVSID "$Id: Xrm.h,v 1.4 1996/12/04 04:01:36 bgrayson Exp $"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -18,7 +18,7 @@ class ostream;
 
 class Xrm {
 public:
-  Xrm(const char *instanceName);
+  Xrm(const char *className, const char *instanceName);
   Xrm(const char *instanceName, int argc, char **argv);
   ~Xrm();
 
@@ -40,7 +40,7 @@ private:
   static Bool enumCB(XrmDatabase *, XrmBindingList bindings,
                      XrmQuarkList quarks, XrmRepresentation *type,
                      XrmValue *value, XPointer closure);
-  void initClassName(void);
+  void initClassName(const char* className);
 
   static bool _initialized;
 };
