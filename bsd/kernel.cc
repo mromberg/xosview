@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.42 2002/03/22 03:23:40 bgrayson Exp $
+// $Id: kernel.cc,v 1.43 2002/07/14 03:47:25 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -76,7 +76,7 @@ int DevStat_Get();
 
 #ifdef HAVE_SWAPCTL
 #include <unistd.h>		/*  For swapctl proto.  */
-#if defined(XOSVIEW_NETBSD) && defined(__NetBSD_Version__) && __NetBSD_Version__ >= 104000000
+#if defined(XOSVIEW_OPENBSD) || (defined(XOSVIEW_NETBSD) && defined(__NetBSD_Version__) && __NetBSD_Version__ >= 104000000)
 #include <sys/swap.h>		/*  For swapent, SWAP_*.  */
 #else
 #include <vm/vm_swap.h>		/* swapent, SWAP_*. */
@@ -102,7 +102,7 @@ __END_DECLS
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.42 2002/03/22 03:23:40 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.43 2002/07/14 03:47:25 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -166,9 +166,9 @@ static struct nlist nlst[] =
 { "_eintrcnt" },
 #define EINTRCNT_SYM_INDEX 	8
 
-#if defined(XOSVIEW_OPENBSD) && (defined(pc532) || defined(i386))
+#if defined(XOSVIEW_OPENBSD) && (defined(__pc532__) || defined(__i386__))
 
-# ifdef i386
+# ifdef __i386__
 { "_intrhand" },
 #define INTRHAND_SYM_INDEX    9
 { "_intrstray" },
@@ -786,7 +786,7 @@ BSDGetDiskXFerBytes (unsigned long long *bytesXferred) {
 }
 
 /*  ---------------------- Interrupt Meter stuff  -----------------  */
-#if (!defined(XOSVIEW_OPENBSD) || !(defined(pc532) && defined(i386))) && !defined(XOSVIEW_BSDI)
+#if (!defined(XOSVIEW_OPENBSD) || !(defined(__pc532__) && defined(__i386__))) && !defined(XOSVIEW_BSDI)
 static unsigned long kvm_intrcnt[128];// guess at space needed
 #endif
 
@@ -806,9 +806,9 @@ int
 BSDIntrInit() {
     OpenKDIfNeeded();
 
-#if defined(XOSVIEW_OPENBSD) && defined(i386)
+#if defined(XOSVIEW_OPENBSD) && defined(__i386__)
     return ValidSymbol(INTRHAND_SYM_INDEX) && ValidSymbol(INTRSTRAY_SYM_INDEX);
-#elif defined (XOSVIEW_OPENBSD) && defined(pc532)
+#elif defined (XOSVIEW_OPENBSD) && defined(__pc532__)
     return ValidSymbol(IVP_SYM_INDEX);
 #elif defined (XOSVIEW_BSDI)
 #if _BSDI_VERSION >= 199802 /* BSD/OS 4.x */
@@ -821,7 +821,7 @@ BSDIntrInit() {
 #endif
 }
 
-#if (!defined(XOSVIEW_OPENBSD) || !(defined(pc532) || defined(i386))) && !defined (XOSVIEW_BSDI)
+#if (!defined(XOSVIEW_OPENBSD) || !(defined(__pc532__) || defined(__i386__))) && !defined (XOSVIEW_BSDI)
 int
 BSDNumInts() {
   int nintr;
@@ -882,8 +882,8 @@ BSDGetIntrStats (unsigned long intrCount[NUM_INTR]) {
   //  counts.  We'll just use the intrcnt array here.  If anyone
   //  has problems, please mail me.  bgrayson
   {
-#if defined(XOSVIEW_OPENBSD) && (defined(pc532) || defined(i386))
-# ifdef i386
+#if defined(XOSVIEW_OPENBSD) && (defined(__pc532__) || defined(__i386__))
+# ifdef __i386__
   struct intrhand *intrhand[16], *ihp, ih;
   int intrstray[16];
 
@@ -916,7 +916,7 @@ BSDGetIntrStats (unsigned long intrCount[NUM_INTR]) {
       intrCount[i] = 0;
   }
 # endif /* pc532 */
-#else /* XOSVIEW_OPENBSD && (pc532 || i386) */
+#else /* XOSVIEW_OPENBSD && (__pc532__ || __i386__) */
     int nintr = BSDNumInts();
     safe_kvm_read(nlst[INTRCNT_SYM_INDEX].n_value, kvm_intrcnt,
       sizeof(long)*nintr);
