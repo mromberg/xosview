@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.cc,v 1.4 1996/11/24 04:41:24 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.5 1997/02/14 05:41:47 bgrayson Exp $
 //
 #include "general.h"
 #include "cpumeter.h"
@@ -17,7 +17,7 @@
 #include "netbsd.h"             //  For NetBSD-specific icky kvm_ code.  BCG
 #include <stdlib.h>		//  For use of atoi  BCG
 
-CVSID("$Id: ");
+CVSID("$Id: cpumeter.cc,v 1.5 1997/02/14 05:41:47 bgrayson Exp $");
 CVSID_DOT_H(CPUMETER_H_CVSID);
 
 CPUMeter::CPUMeter( XOSView *parent )

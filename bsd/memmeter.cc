@@ -9,7 +9,7 @@
 //  The NetBSD memmeter was improved by Tom Pavel (pavel@slac.stanford.edu)
 //    to provide active and inactive values, rather than just "used."
 //
-// $Id: memmeter.cc,v 1.3 1996/11/24 04:59:45 bgrayson Exp $
+// $Id: memmeter.cc,v 1.4 1997/02/14 05:42:00 bgrayson Exp $
 //
 #include "general.h"
 #include "memmeter.h"
@@ -20,7 +20,7 @@
 #include <vm/vm_param.h>
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: ");
+CVSID("$Id: memmeter.cc,v 1.4 1997/02/14 05:42:00 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 //  Once we figure out how to get the buffers field, change the next line.
 #define FREE_INDEX 3

@@ -6,12 +6,12 @@
 //    copyright, whichever you choose.
 //
 //
-// $Id: diskmeter.h,v 1.3 1997/01/19 23:15:49 bgrayson Exp $
+// $Id: diskmeter.h,v 1.4 1997/02/14 05:41:54 bgrayson Exp $
 //
 #ifndef _DISKMETER_H_
 #define _DISKMETER_H_
 
-#define DISKMETER_H_CVSID "$Id: "
+#define DISKMETER_H_CVSID "$Id: diskmeter.h,v 1.4 1997/02/14 05:41:54 bgrayson Exp $"
 
 #include "fieldmeterdecay.h"
 #include <sys/types.h>		//  For u_int64_t

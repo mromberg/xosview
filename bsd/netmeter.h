@@ -7,12 +7,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.h,v 1.4 1997/01/06 03:22:04 bgrayson Exp $
+// $Id: netmeter.h,v 1.5 1997/02/14 05:42:09 bgrayson Exp $
 //
 #ifndef _NETMETER_H_
 #define _NETMETER_H_
 
-#define NETMETER_H_CVSID "$Id: "
+#define NETMETER_H_CVSID "$Id: netmeter.h,v 1.5 1997/02/14 05:42:09 bgrayson Exp $"
 
 #include "fieldmeterdecay.h"
 #include "timer.h"

@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.4 1997/01/06 03:21:59 bgrayson Exp $
+// $Id: netmeter.cc,v 1.5 1997/02/14 05:42:07 bgrayson Exp $
 //
 #include "general.h"
 #include "netmeter.h"
@@ -17,7 +17,7 @@
 #include <stdlib.h>		//  For atoi().  BCG
 #include <unistd.h>  /*  For gethostname().  BCG */
 
-CVSID("$Id: ");
+CVSID("$Id: netmeter.cc,v 1.5 1997/02/14 05:42:07 bgrayson Exp $");
 CVSID_DOT_H(NETMETER_H_CVSID);
 CVSID_DOT_H2(TIMER_H_CVSID);
 CVSID_DOT_H3(TIMEVAL_H_CVSID);

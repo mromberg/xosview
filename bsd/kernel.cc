@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: kernel.cc,v 1.4 1996/12/02 05:03:48 bgrayson Exp $
+// $Id: kernel.cc,v 1.5 1997/02/14 05:42:03 bgrayson Exp $
 //
 #include "general.h"
 #include <stdio.h>
@@ -23,6 +23,10 @@
 
 #include <sys/socket.h>         /*  These two are needed for the  */
 #include <net/if.h>             /*    NetMeter helper functions.  */
+#include "netbsd.h"		/*  To grab CVSID stuff.  */
+
+CVSID("$Id: kernel.cc,v 1.5 1997/02/14 05:42:03 bgrayson Exp $");
+CVSID_DOT_H(NETBSD_H_CVSID);
 
 
 // ------------------------  local variables  ---------------------

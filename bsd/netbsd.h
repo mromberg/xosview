@@ -6,7 +6,7 @@
 //  Copyright (c) 1995 Brian Grayson(bgrayson@pine.ece.utexas.edu)
 //
 //
-// $Id: netbsd.h,v 1.4 1996/12/02 05:02:15 bgrayson Exp $
+// $Id: netbsd.h,v 1.5 1997/02/14 05:42:05 bgrayson Exp $
 //
 
 #include <stdio.h>
@@ -15,8 +15,12 @@
 #include <nlist.h>
 
 #include <sys/socket.h>
-#include <net/if.h>
+//  net/if.h is not protected from multiple inclusions, and apparently
+//  something changed recently such that it is included via
+//  sys/socket.h???  bgrayson
+//#include <net/if.h>
 
+#define NETBSD_H_CVSID	"$Id: netbsd.h,v 1.5 1997/02/14 05:42:05 bgrayson Exp $"
 void
 NetBSDInit();
 

@@ -7,7 +7,7 @@
 //  Only small changes were made on my part (M.R.)
 //  And the near-trivial port to NetBSD was done by Brian Grayson
 //
-// $Id: loadmeter.cc,v 1.4 1996/11/24 04:45:11 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.5 1997/02/14 05:41:56 bgrayson Exp $
 //
 #include "general.h"
 #include "loadmeter.h"
@@ -15,7 +15,7 @@
 #include <stdlib.h>  //  for getloadavg()
 #include <stdio.h>
 
-CVSID("$Id: ");
+CVSID("$Id: loadmeter.cc,v 1.5 1997/02/14 05:41:56 bgrayson Exp $");
 CVSID_DOT_H(LOADMETER_H_CVSID);
 
 LoadMeter::LoadMeter( XOSView *parent )

@@ -7,7 +7,7 @@
 //    copyright, whichever you choose.
 //
 //
-// $Id: diskmeter.cc,v 1.3 1997/01/19 23:16:12 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.4 1997/02/14 05:41:52 bgrayson Exp $
 //
 #include "general.h"
 #include "diskmeter.h"
@@ -17,7 +17,7 @@
 #include "netbsd.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
 #include <stdlib.h>	//  For use of atoi  BCG
 
-CVSID("$Id: ");
+CVSID("$Id: diskmeter.cc,v 1.4 1997/02/14 05:41:52 bgrayson Exp $");
 CVSID_DOT_H(DISKMETER_H_CVSID);
 
 DiskMeter::DiskMeter( XOSView *parent, float max )

@@ -7,12 +7,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.h,v 1.4 1996/11/24 04:38:29 bgrayson Exp $
+// $Id: cpumeter.h,v 1.5 1997/02/14 05:41:50 bgrayson Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
 
-#define CPUMETER_H_CVSID "$Id: "
+#define CPUMETER_H_CVSID "$Id: cpumeter.h,v 1.5 1997/02/14 05:41:50 bgrayson Exp $"
 
 #include "fieldmeterdecay.h"
 

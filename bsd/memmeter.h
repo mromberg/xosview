@@ -7,12 +7,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: memmeter.h,v 1.4 1996/11/24 04:37:59 bgrayson Exp $
+// $Id: memmeter.h,v 1.5 1997/02/14 05:42:01 bgrayson Exp $
 //
 #ifndef _MEMMETER_H_
 #define _MEMMETER_H_
 
-#define MEMMETER_H_CVSID "$Id: "
+#define MEMMETER_H_CVSID "$Id: memmeter.h,v 1.5 1997/02/14 05:42:01 bgrayson Exp $"
 
 #include "fieldmeterdecay.h"
 
