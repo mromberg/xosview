@@ -4,18 +4,18 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.h,v 1.4 1996/12/04 04:03:52 bgrayson Exp $
+// $Id: xosview.h,v 1.5 1997/01/14 18:27:45 bgrayson Exp $
 //
 #ifndef _XOSVIEW_H_
 #define _XOSVIEW_H_
 
-#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.4 1996/12/04 04:03:52 bgrayson Exp $"
+#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.5 1997/01/14 18:27:45 bgrayson Exp $"
 
 #include "xwin.h"
 #include "Xrm.h"  //  For Xrm resource manager class.
 
-#define SAMPLE_MSECS	100	/*  Take samples every 100 millisecs,
-				    i.e., 10 times per second.  */
+#define MAX_SAMPLES_PER_SECOND	10  /*  Take at most n samples per
+					second (default of 10)  */
 
 class Meter;
 
