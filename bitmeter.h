@@ -4,10 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: bitmeter.h,v 1.2 1996/08/14 06:19:45 mromberg Exp $
+// $Id: bitmeter.h,v 1.3 1996/11/19 02:17:29 bgrayson Exp $
 //
 #ifndef _BITMETER_H_
 #define _BITMETER_H_
+
+#define BITMETER_H_CVSID "$Id: bitmeter.h,v 1.3 1996/11/19 02:17:29 bgrayson Exp $"
 
 #include "meter.h"
 

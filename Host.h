@@ -4,11 +4,13 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Host.h,v 1.2 1996/08/14 06:19:25 mromberg Exp $
+// $Id: Host.h,v 1.3 1996/11/19 02:17:25 bgrayson Exp $
 //
 
 #ifndef _Host_h
 #define _Host_h
+
+#define HOST_H_CVSID "$Id: Host.h,v 1.3 1996/11/19 02:17:25 bgrayson Exp $"
 
 #include <sys/types.h>
 #include <sys/socket.h>

@@ -1,5 +1,5 @@
 //
-// $Id: xwin.h,v 1.2 1996/08/14 06:20:20 mromberg Exp $
+// $Id: xwin.h,v 1.3 1996/11/19 02:17:17 bgrayson Exp $
 //
 #ifndef _XWIN_H_
 #define _XWIN_H_
@@ -9,6 +9,7 @@
 #include <iostream.h>
 #include <string.h>
 
+#define XWIN_H_CVSID "$Id: xwin.h,v 1.3 1996/11/19 02:17:17 bgrayson Exp $"
 
 class XWin;
 class Xrm;
