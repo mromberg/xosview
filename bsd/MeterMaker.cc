@@ -10,7 +10,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: MeterMaker.cc,v 1.8 1997/08/09 01:31:08 bgrayson Exp $
+// $Id: MeterMaker.cc,v 1.9 1997/11/15 02:56:53 bgrayson Exp $
 //
 #include <stdlib.h>
 #include "general.h"
@@ -30,7 +30,7 @@
 
 CVSID_DOT_H2(PLLIST_H_CVSID);
 CVSID_DOT_H(METERMAKER_H_CVSID);
-CVSID("$Id: MeterMaker.cc,v 1.8 1997/08/09 01:31:08 bgrayson Exp $");
+CVSID("$Id: MeterMaker.cc,v 1.9 1997/11/15 02:56:53 bgrayson Exp $");
 
 MeterMaker::MeterMaker(XOSView *xos){
   _xos = xos;
@@ -46,14 +46,15 @@ void MeterMaker::makeMeters(void){
     push(new CPUMeter(_xos));
   if (_xos->isResourceTrue("mem"))
     push(new MemMeter(_xos));
+  /*  Some FreeBSD meters are bogus or nonfunctional.  */
 #ifndef XOSVIEW_FREEBSD		/*  FreeBSD swap meter isn't done yet.  */
   if (_xos->isResourceTrue("swap"))
     push(new SwapMeter(_xos));
-#endif
 
   // check for the net meter
   if (_xos->isResourceTrue("net"))
     push(new NetMeter(_xos, atof(_xos->getResource("netBandwidth"))));
+#endif
 
 #ifndef XOSVIEW_FREEBSD		/*  FreeBSD diskmeter also isn't done.  */
   if (_xos->isResourceTrue("disk"))
