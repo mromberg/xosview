@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.h,v 1.8 1998/04/07 13:15:47 bgrayson Exp $
+// $Id: fieldmeter.h,v 1.9 1998/06/22 14:23:16 bgrayson Exp $
 //
 #ifndef _FIELDMETER_H_
 #define _FIELDMETER_H_
 
-#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.8 1998/04/07 13:15:47 bgrayson Exp $"
+#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.9 1998/06/22 14:23:16 bgrayson Exp $"
 
 #include "meter.h"
 #include "timer.h"
@@ -47,6 +47,7 @@ protected:
   unsigned long *colors_, usedcolor_;
   UsedType print_;
   int printedZeroTotalMesg_;
+  int numWarnings_;
 
   void SetUsedFormat ( const char * const str );
   void drawlegend( void );
