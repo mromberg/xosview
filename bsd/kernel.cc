@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.36 1999/05/13 04:13:01 bgrayson Exp $
+// $Id: kernel.cc,v 1.37 1999/06/26 17:40:03 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -74,7 +74,7 @@ int DevStat_Get();
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.36 1999/05/13 04:13:01 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.37 1999/06/26 17:40:03 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -262,6 +262,8 @@ BSDGetUVMPageStats(struct uvmexp* uvm) {
   mib[1] = VM_UVMEXP;
   if (sysctl(mib, 2, uvm, &size, NULL, 0) < 0) {
     printf("can't get uvmexp: %s\n", strerror(errno));
+    printf("(This is most likely due to a /usr/include/uvm/uvm_extern.h\n"
+	  "file older than /sys/uvm/uvm_extern.h.)\n");
     memset(&uvm, 0, sizeof(uvmexp));
   }
 }
