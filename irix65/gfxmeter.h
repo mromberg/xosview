@@ -1,5 +1,5 @@
 //  
-// $Id: gfxmeter.h,v 1.3 2002/04/24 08:23:11 eile Exp $
+// $Id: gfxmeter.h,v 1.4 2003/04/24 06:15:21 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 
@@ -24,11 +24,10 @@ protected:
     void getgfxinfo(void);
     
     unsigned long swapgfxcol_, warngfxcol_, critgfxcol_;
+
 private:
     int warnThreshold, critThreshold, alarmstate, lastalarmstate;
     int nPipes;
-
-    unsigned int lastSwapBuf;
 };
 
 #endif

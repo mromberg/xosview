@@ -1,5 +1,5 @@
 //  
-// $Id: diskmeter.h,v 1.1 2002/04/24 08:23:11 eile Exp $
+// $Id: diskmeter.h,v 1.2 2003/04/24 06:15:20 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 
@@ -22,8 +22,6 @@ protected:
     
     void getdiskinfo( void );
 private:
-    unsigned long int read_prev_;
-    unsigned long int write_prev_;
     float maxspeed_;
 };
 
