@@ -9,7 +9,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: diskmeter.cc,v 1.19 1999/01/31 20:18:49 bgrayson Exp $
+// $Id: diskmeter.cc,v 1.20 1999/02/01 16:23:01 bgrayson Exp $
 //
 #include <err.h>        //  For err() and warn(), etc.  BCG
 #include <stdlib.h>	//  For use of atoi  BCG
@@ -17,7 +17,7 @@
 #include "diskmeter.h"
 #include "kernel.h"     //  For NetBSD-specific icky (but handy) kvm_ code.  BCG
 
-CVSID("$Id: diskmeter.cc,v 1.19 1999/01/31 20:18:49 bgrayson Exp $");
+CVSID("$Id: diskmeter.cc,v 1.20 1999/02/01 16:23:01 bgrayson Exp $");
 CVSID_DOT_H(DISKMETER_H_CVSID);
 
 DiskMeter::DiskMeter( XOSView *parent, float max )
@@ -101,16 +101,17 @@ void DiskMeter::getstats( void ){
   }
   /*  Adjust this to bytes/second.  */
   fields_[0] = (currBytes-prevBytes)/IntervalTimeInSecs();
+  /*  Adjust in case of first call.  */
+  if (fields_[0] < 0) fields_[0] = 0.0;
 //  Adjust total_ if needed.
   if (fields_[0] > total_)
     total_ = fields_[0];
 
   fields_[1] = total_ - fields_[0];
   if (fields_[0] < 0.0)
-    fprintf (stderr, "fields[0] of %f is < 0!\n", fields_[0]);
+    fprintf (stderr, "diskmeter: fields[0] of %f is < 0!\n", fields_[0]);
   if (fields_[1] < 0.0)
-    fprintf (stderr, "fields[1] of %f is < 0!\n", fields_[1]);
-
+    fprintf (stderr, "diskmeter: fields[1] of %f is < 0!\n", fields_[1]);
     
   setUsed ( fields_[0], total_);
 #ifdef HAVE_DEVSTAT
