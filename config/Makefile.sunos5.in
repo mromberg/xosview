@@ -2,7 +2,7 @@
 # SunOS 5 Makefile template
 #
 #
-# $Id: Makefile.sunos5.in,v 1.1 1998/06/22 16:00:45 bgrayson Exp $
+# $Id: Makefile.sunos5.in,v 1.2 1999/11/12 04:28:45 romberg Exp $
 #
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
@@ -15,6 +15,8 @@ loadmeter.o \
 cpumeter.o \
 memmeter.o \
 pagemeter.o \
+netmeter.o \
+diskmeter.o \
 swapmeter.o
 
 
