@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.13 1997/11/15 03:00:02 bgrayson Exp $
+// $Id: kernel.cc,v 1.14 1997/12/30 09:03:23 bgrayson Exp $
 //
 #include "general.h"
 #include <stdio.h>
@@ -34,9 +34,13 @@
 #include <net/if.h>             /*    NetMeter helper functions.  */
 #endif
 #include <sys/vmmeter.h>	/*  For struct vmmeter.  */
+#ifdef HAVE_SWAPCTL
+#include <unistd.h>
+#include <vm/vm_swap.h>
+#endif
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.13 1997/11/15 03:00:02 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.14 1997/12/30 09:03:23 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
