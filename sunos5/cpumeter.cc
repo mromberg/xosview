@@ -1,5 +1,5 @@
 //  
-// $Id: cpumeter.cc,v 1.5 1999/01/31 20:26:38 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.6 2004/06/15 16:37:10 romberg Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "cpumeter.h"
@@ -91,13 +91,16 @@ const char *CPUMeter::toUpper(const char *str)
 
 const char *CPUMeter::cpuStr(int num)
 {
-	static char buffer[32];
-	ostrstream str(buffer, 32);
+        static char buffer[32];
+	std::ostringstream str;
 
-	str << "cpu";
-	if (num != 0)
-		str << (num - 1);
-	str << ends;
+	        str << "cpu";
+	        if (num != 0)
+	                  str << (num - 1);
+	str << std::ends;
+
+	        strncpy(buffer, str.str().c_str(), 32);
+	        buffer[31] = '\0';
 
 	return buffer;
 }

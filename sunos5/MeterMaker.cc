@@ -1,5 +1,5 @@
 //  
-// $Id: MeterMaker.cc,v 1.3 1999/11/06 23:12:33 romberg Exp $
+// $Id: MeterMaker.cc,v 1.4 2004/06/15 16:37:10 romberg Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "MeterMaker.h"
@@ -43,14 +43,15 @@ void MeterMaker::makeMeters(void)
   if (_xos->isResourceTrue("mem"))
     push(new MemMeter(_xos, kc));
 
+  if (_xos->isResourceTrue("disk"))
+    push(new DiskMeter(_xos, kc, atof(_xos->getResource("diskBandwidth"))));
+
   if (_xos->isResourceTrue("swap"))
     push(new SwapMeter(_xos, kc));
 
   if (_xos->isResourceTrue("page"))
     push(new PageMeter(_xos, kc,
 		       atof(_xos->getResource("pageBandwidth"))));
-  if (_xos->isResourceTrue("disk"))
-    push(new DiskMeter(_xos, kc, atof(_xos->getResource("diskBandwidth"))));
 
   if (_xos->isResourceTrue("net"))
     push(new NetMeter(_xos, kc, atof(_xos->getResource("netBandwidth"))));
