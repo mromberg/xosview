@@ -4,13 +4,18 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.h,v 1.2 1996/08/14 06:20:16 mromberg Exp $
+// $Id: xosview.h,v 1.3 1996/11/19 04:43:41 bgrayson Exp $
 //
 #ifndef _XOSVIEW_H_
 #define _XOSVIEW_H_
 
+#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.3 1996/11/19 04:43:41 bgrayson Exp $"
+
 #include "xwin.h"
 #include "Xrm.h"  //  For Xrm resource manager class.
+
+#define SAMPLE_MSECS	100	/*  Take samples every 100 millisecs,
+				    i.e., 10 times per second.  */
 
 class Meter;
 
@@ -19,6 +24,7 @@ public:
   XOSView( int argc, char *argv[] );
   ~XOSView( void );
 
+  void figureSize ( void );
   void resize( void );
   void draw( void );
   void run( void );
@@ -45,7 +51,7 @@ protected:
   
   int legend_, xoff_, yoff_, nummeters_, usedlabels_;
 
-  void usleep( unsigned long usec );
+  void usleep_via_select( unsigned long usec );
   void addmeter( Meter *fm );
   void checkMeterResources( void );
 
