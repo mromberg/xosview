@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.7 1997/08/09 01:31:09 bgrayson Exp $
+// $Id: memmeter.cc,v 1.8 1997/11/15 03:11:08 bgrayson Exp $
 //
 #include "general.h"
 #include "memmeter.h"
@@ -25,12 +25,11 @@
 #include <sys/sysctl.h>
 #include <vm/vm_param.h>
 #ifdef XOSVIEW_FREEBSD
-#warning "Quick hack for FreeBSD -- fix later."
 #include <sys/vmmeter.h>
 #endif
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: memmeter.cc,v 1.7 1997/08/09 01:31:09 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.8 1997/11/15 03:11:08 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 //  Once we figure out how to get the buffers field, change the next line.
 #define FREE_INDEX 3
@@ -61,7 +60,7 @@ void MemMeter::checkevent( void ){
 }
 
 void MemMeter::getmeminfo (void) {
-//  Begin NetBSD-specific code...
+//  Begin *BSD-specific code...
   struct vmtotal meminfo;
   int params[] = {CTL_VM, VM_METER};
   unsigned meminfosize = sizeof (struct vmtotal);
@@ -73,7 +72,7 @@ void MemMeter::getmeminfo (void) {
   fields_[2] = 4096*meminfo.t_rmshr;
   fields_[1] = 4096*(meminfo.t_rm - meminfo.t_arm - meminfo.t_rmshr);
   fields_[0] = 4096*meminfo.t_arm;
-//  End NetBSD-specific code...
+//  End *BSD-specific code...
 
   setUsed (total_ - fields_[FREE_INDEX], total_);
 }
