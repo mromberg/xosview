@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.h,v 1.13 1998/02/09 11:48:18 bgrayson Exp $
+// $Id: kernel.h,v 1.14 1998/02/12 04:04:49 bgrayson Exp $
 //
 
 #include <stdio.h>
@@ -27,7 +27,8 @@
 //  sys/socket.h???  bgrayson
 //#include <net/if.h>
 
-#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.13 1998/02/09 11:48:18 bgrayson Exp $"
+#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.14 1998/02/12 04:04:49 bgrayson Exp $"
+
 void
 NetBSDInit();
 
@@ -72,7 +73,7 @@ FreeBSDGetBufspace(int* bfsp);
 #endif
 
 
-#define NUM_INTR 16
+#define NUM_INTR	16
 
 int
 NetBSDIntrInit();
