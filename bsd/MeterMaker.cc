@@ -10,7 +10,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: MeterMaker.cc,v 1.12 1998/02/09 11:43:05 bgrayson Exp $
+// $Id: MeterMaker.cc,v 1.13 1998/02/09 11:48:17 bgrayson Exp $
 //
 #include <stdlib.h>
 #include "general.h"
@@ -23,12 +23,13 @@
 #include "loadmeter.h"
 #include "diskmeter.h"
 #include "pagemeter.h"
-//#include "intmeter.h"  //  These two are not yet supported under NetBSD.
+//  These two are not yet supported under NetBSD.
+#include "intmeter.h"  
 //#include "serialmeter.h"
 
 CVSID_DOT_H2(PLLIST_H_CVSID);
 CVSID_DOT_H(METERMAKER_H_CVSID);
-CVSID("$Id: MeterMaker.cc,v 1.12 1998/02/09 11:43:05 bgrayson Exp $");
+CVSID("$Id: MeterMaker.cc,v 1.13 1998/02/09 11:48:17 bgrayson Exp $");
 
 MeterMaker::MeterMaker(XOSView *xos){
   _xos = xos;
@@ -61,4 +62,6 @@ void MeterMaker::makeMeters(void){
 
   //  The serial meters and the interrupt meter are not yet
   //  available for NetBSD.  BCG
+  if (_xos->isResourceTrue("interrupts"))
+      push(new IntMeter(_xos));
 }
