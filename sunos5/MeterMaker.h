@@ -1,5 +1,6 @@
 //  
-// $Id: MeterMaker.h,v 1.1 1998/06/22 14:26:06 bgrayson Exp $
+// $Id: MeterMaker.h,v 1.2 1998/06/22 15:57:28 bgrayson Exp $
+//  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #ifndef _MeterMaker_h
 #define _MeterMaker_h

@@ -1,5 +1,6 @@
 //  
-// $Id: memmeter.cc,v 1.1 1998/06/22 14:26:07 bgrayson Exp $
+// $Id: memmeter.cc,v 1.2 1998/06/22 15:57:29 bgrayson Exp $
+//  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "memmeter.h"
 #include "xosview.h"
@@ -38,12 +39,6 @@ MemMeter::~MemMeter(void)
 
 void MemMeter::checkevent(void)
 {
-	static int pass = 0;
-
-	pass = (pass + 1) % 5;
-	if (pass != 0)
-		return;
-  
 	getmeminfo();
 	drawfields();
 }
