@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.19 1999/01/23 22:20:40 mromberg Exp $
+// $Id: xosview.cc,v 1.20 1999/01/25 20:28:21 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -25,7 +25,7 @@ static const char NAME[] = "xosview@";
 
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.19 1999/01/23 22:20:40 mromberg Exp $");
+CVSID("$Id: xosview.cc,v 1.20 1999/01/25 20:28:21 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -186,15 +186,15 @@ void XOSView::checkOverallResources() {
   setFont();
   
   // use captions
-  if ( !strcmp( getResource("captions"), "True" ) )
+  if ( isResourceTrue("captions") )
       caption_ = 1;
 
   // use labels
-  if ( !strncasecmp( getResource("labels"), "True", 5 ) )
+  if ( isResourceTrue("labels") )
       legend_ = 1;
 
   // use "free" labels
-  if ( !strncasecmp( getResource("usedlabels"), "True", 5 ) )
+  if ( isResourceTrue("usedlabels") )
     usedlabels_ = 1;
 }
 
