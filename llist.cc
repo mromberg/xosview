@@ -4,13 +4,17 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: llist.cc,v 1.4 1999/11/05 05:39:03 romberg Exp $
+// $Id: llist.cc,v 1.5 2003/10/09 03:36:41 bgrayson Exp $
 //
+#ifdef HAVE_IOSTREAM
+#include <iostream>
+#else
 #include <iostream.h>
+#endif
 #include "general.h"
 #include "llist.h"
 
-CVSID("$Id: llist.cc,v 1.4 1999/11/05 05:39:03 romberg Exp $");
+CVSID("$Id: llist.cc,v 1.5 2003/10/09 03:36:41 bgrayson Exp $");
 CVSID_DOT_H(LLIST_H_CVSID);
 
 LList::LNode::LNode( void *data ){
