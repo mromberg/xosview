@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.21 2002/02/24 19:52:01 romberg Exp $
+// $Id: netmeter.cc,v 1.22 2002/02/24 22:55:19 romberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -154,7 +154,7 @@ void NetMeter::checkeventNew(void)
     _timer.stop();
 
     if (_usechains)
-      while (!ifs.eof())
+      while (ifs)
         {
 	ifs >> buf;
 
@@ -170,7 +170,7 @@ void NetMeter::checkeventNew(void)
 	  ifs.ignore(1024, '\n');
 	  ifs.ignore(1024, '\n');
 
-	  while (!ifs.eof())
+	  while (ifs)
 	      {
 	      ifs.ignore(1024, ':');
 	      ifs >> in >> ig >> ig >> ig >> ig >> ig >> ig >> ig >> out;
@@ -235,7 +235,7 @@ void NetMeter::checkeventOld(void)
 
     ifs.ignore(1024, '\n');
 
-    while (!ifs.eof())
+    while (ifs)
         {
         ifs >> hex >> sa >> c >> sm >> c >> c >> da >> c >> dm;
         for (int index = 0 ; index < 7 ; index++)
