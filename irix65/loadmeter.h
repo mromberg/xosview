@@ -1,5 +1,5 @@
 //  
-// $Id: loadmeter.h,v 1.1 2001/10/10 15:58:22 eile Exp $
+// $Id: loadmeter.h,v 1.2 2001/10/17 14:03:55 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 #ifndef _LOADMETER_H_
@@ -18,13 +18,12 @@ class LoadMeter : public FieldMeterGraph {
 
 	void checkResources(void);
 
- protected:
-	void getloadinfo(void);
-	unsigned long procloadcol_;
-	unsigned long warnloadcol_;
-
- private:
-	int alarmThreshold;
+protected:
+    void getloadinfo(void);
+    
+    unsigned long procloadcol_, warnloadcol_, critloadcol_;
+private:
+    int warnThreshold, critThreshold, alarmstate, lastalarmstate;
     char hostname[256];
     struct statstime res;
 };

@@ -1,5 +1,5 @@
 //  
-// $Id: cpumeter.h,v 1.1 2001/10/10 15:58:22 eile Exp $
+// $Id: cpumeter.h,v 1.2 2001/10/17 14:03:55 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 #ifndef _CPUMETER_H_
@@ -11,7 +11,7 @@
 #include <sys/sysmp.h>
 #include <sys/sysinfo.h>
     
-#define USED_CPU_STATES (CPU_STATES-2) // no SXBRK + WAIT
+#define USED_CPU_STATES (CPU_STATES-1) // SXBRK + IDLE merged
 
 class CPUMeter : public FieldMeterGraph {
  public:
