@@ -1,4 +1,4 @@
-  /*  $Id: CHANGES,v 1.1 1996/12/04 04:44:48 bgrayson Exp $  */
+  /*  $Id: CHANGES,v 1.2 1997/07/15 19:34:24 mromberg Exp $  */
 Changes since xosview-1.4.*, in no particular order:
 
 All meters can now be disabled individually.
@@ -23,6 +23,7 @@ Initial support for the -name option for specifying an X resource
 
 New meters:
   PageMeter for Linux
+  BatteryMeter for Linux
   DiskMeter for NetBSD
 
 Improved drawing.  There's still one more known drawing bug...
