@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.9 1997/12/30 08:37:34 bgrayson Exp $
+// $Id: memmeter.cc,v 1.10 1998/01/09 04:58:01 bgrayson Exp $
 //
 #include "general.h"
 #include "memmeter.h"
@@ -28,7 +28,7 @@
 #endif
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: memmeter.cc,v 1.9 1997/12/30 08:37:34 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.10 1998/01/09 04:58:01 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 //  Once we figure out how to get the buffers field, change the next line.
 #define FREE_INDEX 3
@@ -62,7 +62,7 @@ void MemMeter::getmeminfo (void) {
 //  Begin *BSD-specific code...
   struct vmtotal meminfo;
   int params[] = {CTL_VM, VM_METER};
-  unsigned meminfosize = sizeof (struct vmtotal);
+  size_t meminfosize = sizeof (struct vmtotal);
   sysctl (params, 2, &meminfo, &meminfosize, NULL, NULL);
   /*  Note that the numbers are in terms of 4K pages.  */
 
