@@ -1,5 +1,8 @@
-  /*  $Id: CHANGES,v 1.24 1999/11/06 22:48:15 romberg Exp $  */
+  /*  $Id: CHANGES,v 1.25 1999/11/12 05:34:03 romberg Exp $  */
 Changes since xosview-1.7.1
+
+- Linux now has a RAID meter.  See README.linux for how to set it up.
+
   BSDI support, courtesy of Tomer Klainer.
   Fixed memstat module for linux-2.2
 
