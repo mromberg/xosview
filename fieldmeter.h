@@ -4,14 +4,15 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.h,v 1.5 1996/12/02 04:55:28 bgrayson Exp $
+// $Id: fieldmeter.h,v 1.6 1997/07/18 03:33:11 bgrayson Exp $
 //
 #ifndef _FIELDMETER_H_
 #define _FIELDMETER_H_
 
-#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.5 1996/12/02 04:55:28 bgrayson Exp $"
+#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.6 1997/07/18 03:33:11 bgrayson Exp $"
 
 #include "meter.h"
+#include "timer.h"
 
 class FieldMeter : public Meter {
 public:
@@ -53,7 +54,13 @@ protected:
 
   void setNumFields(int n);
 
+
 private:
+  Timer _timer;
+protected:
+  void IntervalTimerStart() { _timer.start(); }
+  void IntervalTimerStop() { _timer.stop(); }
+  long long IntervalTimeInMicrosecs() { return _timer.report(); }
 };
 
 #endif
