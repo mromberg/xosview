@@ -6,7 +6,7 @@
 //  header from the version from which this file was created, are included
 //  below:
 //
-// $Id: swapinternal.cc,v 1.12 1998/02/12 05:04:07 bgrayson Exp $
+// $Id: swapinternal.cc,v 1.13 1998/02/12 05:40:18 bgrayson Exp $
 //
 //  NOTE THAT THIS FILE IS UNDER THE BSD COPYRIGHT, AND NOT GPL!
 //
@@ -198,7 +198,7 @@ BSDInitSwapInfo()
 
 #ifdef XOSVIEW_FREEBSD
 /* Taken verbatim from /usr/src/usr.bin/systat/swap.c (pavel 24-Jan-1998) */
-void
+int
 fetchswap()
 {
 	struct rlist head;
@@ -243,6 +243,7 @@ fetchswap()
 
 		swapptr = head.rl_next;
 	}
+	return 0;
 
 }
 #else /* XOSVIEW_FREEBSD */
