@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netbsd.h,v 1.8 1997/06/28 05:35:16 bgrayson Exp $
+// $Id: netbsd.h,v 1.9 1997/07/18 03:37:33 bgrayson Exp $
 //
 
 #include <stdio.h>
@@ -27,12 +27,18 @@
 //  sys/socket.h???  bgrayson
 //#include <net/if.h>
 
-#define NETBSD_H_CVSID	"$Id: netbsd.h,v 1.8 1997/06/28 05:35:16 bgrayson Exp $"
+#define NETBSD_H_CVSID	"$Id: netbsd.h,v 1.9 1997/07/18 03:37:33 bgrayson Exp $"
 void
 NetBSDInit();
 
 void
 SetKernelName(const char* const kernelName);
+
+void
+NetBSDPageInit();
+
+void
+NetBSDGetPageStats(struct vmmeter* vmp);
 
 void
 NetBSDCPUInit();

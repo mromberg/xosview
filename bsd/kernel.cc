@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.8 1997/06/28 05:35:10 bgrayson Exp $
+// $Id: kernel.cc,v 1.9 1997/07/18 03:37:32 bgrayson Exp $
 //
 #include "general.h"
 #include <stdio.h>
@@ -27,9 +27,10 @@
 
 #include <sys/socket.h>         /*  These two are needed for the  */
 #include <net/if.h>             /*    NetMeter helper functions.  */
+#include <sys/vmmeter.h>	/*  For struct vmmeter.  */
 #include "netbsd.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.8 1997/06/28 05:35:10 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.9 1997/07/18 03:37:32 bgrayson Exp $");
 CVSID_DOT_H(NETBSD_H_CVSID);
 
 
@@ -46,6 +47,8 @@ static struct nlist nlst[] =
 #define IFNET_SYM_INDEX 1
 { "_disklist" },
 #define DISKLIST_SYM_INDEX	2
+{ "_cnt" },
+#define VMMETER_SYM_INDEX	3
   {NULL}
   };
 
@@ -131,6 +134,16 @@ OpenKDIfNeeded()
   }
 }
 
+
+// ------------------------  PageMeter functions  -----------------
+void
+NetBSDPageInit() { OpenKDIfNeeded(); }
+
+void
+NetBSDGetPageStats(struct vmmeter* vmp) {
+  if (!vmp) errx(-1, "NetBSDGetPageStats():  passed pointer was null!\n");
+  safe_kvm_read_symbol(VMMETER_SYM_INDEX, vmp, sizeof(struct vmmeter));
+}
 
 // ------------------------  CPUMeter functions  ------------------
 
