@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.cc,v 1.19 2003/10/09 04:23:10 bgrayson Exp $
+// $Id: netmeter.cc,v 1.20 2003/10/10 04:55:37 bgrayson Exp $
 //
 #include <err.h>		//  For warnx.
 #include <stdlib.h>		//  For atoi().  BCG
@@ -20,14 +20,14 @@
 #include "netmeter.h"
 #include "kernel.h"
 
-CVSID("$Id: netmeter.cc,v 1.19 2003/10/09 04:23:10 bgrayson Exp $");
+CVSID("$Id: netmeter.cc,v 1.20 2003/10/10 04:55:37 bgrayson Exp $");
 CVSID_DOT_H(NETMETER_H_CVSID);
 CVSID_DOT_H2(TIMER_H_CVSID);
 CVSID_DOT_H3(TIMEVAL_H_CVSID);
 
 NetMeter::NetMeter( XOSView *parent, float max )
   : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ){
-  bool kernelHasStats_ = BSDNetInit();
+  kernelHasStats_ = BSDNetInit();
   if (!kernelHasStats_) {
     warnx(
   "!!! The kernel does not seem to have the symbols needed for the NetMeter.");
