@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.cc,v 1.14 2004/05/21 22:26:17 romberg Exp $
+// $Id: cpumeter.cc,v 1.15 2004/06/01 04:21:54 romberg Exp $
 //
 #include "cpumeter.h"
 #include "xosview.h"
@@ -119,13 +119,9 @@ int CPUMeter::countCPUs(void){
 
   int cpuCount = 0;
   std::string buf;
-  while (!stats.eof()){
-    getline(stats, buf);
-    if (!stats.eof()){
+  while (getline(stats, buf))
       if (!strncmp(buf.data(), "cpu", 3) && buf[3] != ' ')
           cpuCount++;
-    }
-  }
 
   return cpuCount;
 }

@@ -1,6 +1,9 @@
-  /*  $Id: CHANGES,v 1.44 2004/06/01 03:29:40 romberg Exp $  */
+  /*  $Id: CHANGES,v 1.45 2004/06/01 04:21:53 romberg Exp $  */
 
 Changes since xosview-1.8.1
+ - Applied a patch similar to the sourceforge patch 586184 submitted
+   by Mark Guertin.
+
  - Linux diskmeter now uses vmstat and thus works with 2.6.
    But the units problem (block size) probably still remains.
 
