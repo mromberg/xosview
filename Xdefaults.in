@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.14 1997/03/15 21:02:57 mromberg Exp $
+!  $Id: Xdefaults.in,v 1.15 1997/03/15 21:04:50 mromberg Exp $
 
 ! General Resources
 
@@ -84,8 +84,8 @@ xosview*pageUsedFormat: autoscale
 
 ! Network Meter Resources
 
-xosview*net:		True
-xosview*netBandwidth: 2000
+xosview*net:		  False
+xosview*netBandwidth:     2000
 xosview*netInColor:       SkyBlue
 xosview*netOutColor:      SlateBlue1
 xosview*netBackground:    aquamarine
