@@ -3,14 +3,14 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.12 1997/11/22 23:03:10 mromberg Exp $
+dnl $Id: aclocal.m4,v 1.13 1997/11/23 22:24:36 mromberg Exp $
 dnl
 
 AC_DEFUN(AC_SYS_LINUX_VERS,[[
 changequote(<<, >>)
 <<
 LVERSION=`uname -r`
-LVERSION=`/bin/expr $LVERSION : '\([0-9]*\.[0-9]*\)'`
+LVERSION=`expr $LVERSION : '\([0-9]*\.[0-9]*\)'`
 >>
 changequote([, ])
 ]])
