@@ -9,8 +9,10 @@
     2.  Make sure CHANGES, the man page, and the list below to
     all be roughly correct.
 */
-static const char * const versionString = "xosview version 1.7.0";
-static const char * const version_cc_cvsID = "$Id: version.cc,v 1.13 1999/02/01 21:45:56 bgrayson Exp $";
+/*  *****  THIS FILE is included by xosview.cc, and is never used
+ *  on its own.  */
+static const char * const versionString = "xosview version "XOSVIEW_VERSION;
+static const char * const version_cc_cvsID = "$Id: version.cc,v 1.14 1999/02/24 23:18:18 bgrayson Exp $";
 
 /*  Version 1.7.0:  has pixmap support, OpenBSD interrupt meter,
  *  NetBSD battery meter, some more Solaris support,
