@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.9 1997/08/09 01:05:22 bgrayson Exp $
+// $Id: xosview.cc,v 1.10 1997/12/07 19:11:09 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -22,7 +22,7 @@
 static const char NAME[] = "xosview@";
 #include "version.cc"
 
-CVSID("$Id: xosview.cc,v 1.9 1997/08/09 01:05:22 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.10 1997/12/07 19:11:09 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -312,6 +312,12 @@ void XOSView::checkArgs (int argc, char** argv) const
 		}
 		break;
 #endif
+      case '-':  /*  Check for --version argument.  */
+              if (!strcmp(*argv, "--version")) {
+	        cerr << versionString << endl;
+		exit(0);
+	      }
+	      /*  Fall through to default/error case.  */
       default:
       		cerr << "Ignoring unknown option '" << argv[0] << "'.\n";
 	  	break;
