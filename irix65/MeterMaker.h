@@ -1,5 +1,5 @@
 //  
-// $Id: MeterMaker.h,v 1.1 2001/10/10 15:58:22 eile Exp $
+// $Id: MeterMaker.h,v 1.2 2002/02/19 07:45:10 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 #ifndef _MeterMaker_h
@@ -19,7 +19,9 @@ public:
 private:
   XOSView *_xos;
 
-    int setupSadc();
+#ifdef USE_SAR
+    int setupSar();
+#endif
 };
 
 #endif
