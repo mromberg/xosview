@@ -12,12 +12,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: loadmeter.h,v 1.8 1998/10/20 19:37:34 bgrayson Exp $
+// $Id: loadmeter.h,v 1.9 1999/11/19 10:38:24 bgrayson Exp $
 //
 #ifndef _LOADMETER_H_
 #define _LOADMETER_H_
 
-#define LOADMETER_H_CVSID "$Id: loadmeter.h,v 1.8 1998/10/20 19:37:34 bgrayson Exp $"
+#define LOADMETER_H_CVSID "$Id: loadmeter.h,v 1.9 1999/11/19 10:38:24 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 
@@ -34,9 +34,9 @@ public:
 protected:
 
   void getloadinfo( void );
-  unsigned long procloadcol_, warnloadcol_;
+  unsigned long procloadcol_, warnloadcol_, critloadcol_;
 private:
-  int alarmThreshold;
+  int warnThreshold, critThreshold, alarmstate, lastalarmstate;
 };
 
 
