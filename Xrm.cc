@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Xrm.cc,v 1.8 1998/09/18 15:10:47 bgrayson Exp $
+// $Id: Xrm.cc,v 1.9 1998/09/18 19:59:03 bgrayson Exp $
 //
 
 #include <string.h>
@@ -17,7 +17,7 @@
 #include "Xrm.h"
 #include "Xrmcommandline.h"
 
-CVSID("$Id: Xrm.cc,v 1.8 1998/09/18 15:10:47 bgrayson Exp $");
+CVSID("$Id: Xrm.cc,v 1.9 1998/09/18 19:59:03 bgrayson Exp $");
 CVSID_DOT_H(XRM_H_CVSID);
 CVSID_DOT_H2(XRMCOMMANDLINE_H_CVSID);
 
@@ -57,7 +57,8 @@ Xrm::getDisplayName (int argc, char** argv)
   //  See if '-display foo:0' is on the command line, and return it if it is.
   char** argp;
 
-  for (argp = argv; (*argp != NULL) && (strcmp (*argp, "-display")); argp++)
+  for (argp = argv; (*argp != NULL) &&
+      (strncasecmp (*argp, "-display", 9)); argp++)
     ;  //  Don't do anything.
 
   //  If we found -display and the next word exists...

@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.15 1998/09/18 15:38:55 bgrayson Exp $
+// $Id: xosview.cc,v 1.16 1998/09/18 19:59:03 bgrayson Exp $
 //
 #include <iostream.h>
 #include <unistd.h>
@@ -24,7 +24,7 @@ static const char NAME[] = "xosview@";
 
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.15 1998/09/18 15:38:55 bgrayson Exp $");
+CVSID("$Id: xosview.cc,v 1.16 1998/09/18 19:59:03 bgrayson Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
@@ -184,11 +184,11 @@ void XOSView::checkOverallResources() {
   setFont();
   
   // use labels
-  if ( !strcmp( getResource("labels"), "True" ) )
+  if ( !strncasecmp( getResource("labels"), "True", 5 ) )
       legend_ = 1;
 
   // use "free" labels
-  if ( !strcmp( getResource("usedlabels"), "True" ) )
+  if ( !strncasecmp( getResource("usedlabels"), "True", 5 ) )
     usedlabels_ = 1;
 }
 
@@ -310,7 +310,7 @@ void XOSView::checkArgs (int argc, char** argv) const
 		exit(0);
       case 'n': //  Check for -name option that was already parsed
 		//  and acted upon by main().
-		if (!strcmp(*argv, "-name"))
+		if (!strncasecmp(*argv, "-name", 6))
 		{
 		  argv++;	//  Skip arg to -name.
 		  argc--;
@@ -328,7 +328,7 @@ void XOSView::checkArgs (int argc, char** argv) const
 		break;
 #endif
       case '-':  /*  Check for --version argument.  */
-              if (!strcmp(*argv, "--version")) {
+              if (!strncasecmp(*argv, "--version", 10)) {
 	        cerr << versionString << endl;
 		exit(0);
 	      }
