@@ -4,7 +4,7 @@
 # The configure script should set up this file for most all cases.
 # One can override compile / link options here if needed.
 #
-# $Id: Makefile.config.in,v 1.4 1996/11/19 05:54:20 bgrayson Exp $
+# $Id: Makefile.config.in,v 1.5 1997/02/14 06:31:57 bgrayson Exp $
 #
 
 #-----------------------------------------------------------------
@@ -17,11 +17,11 @@ CXX           = @CXX@
 #-----------------------------------------------------------------
 
 # Optimized CXXFLAGS
-#CXXFLAGS      += $(CFLAGS) -Wall -O4 -pipe -I@x_includes@ \
-#                -I@top_srcdir@ -I./@host_os@ @DEFS@
-# DEBUG CXXFLAGS
-CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pipe -I@x_includes@ \
+CXXFLAGS      += $(CFLAGS) -Wall -O4 -pipe -I@x_includes@ \
                 -I@top_srcdir@ -I./@host_os@ @DEFS@
+# DEBUG CXXFLAGS
+#CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pipe -I@x_includes@ \
+#                -I@top_srcdir@ -I./@host_os@ @DEFS@
 # PROFILE CXXFLAGS
 #CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pg -pipe -I@x_includes@ \
 #                -I@top_srcdir@ -I./@host_os@ @DEFS@
