@@ -1,12 +1,13 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.24 1998/10/20 20:35:55 bgrayson Exp $
+!  $Id: Xdefaults.in,v 1.25 1999/01/23 18:34:26 mromberg Exp $
 
 ! General Resources
 
 ! xosview*title:
 ! xosview*geometry:         +5+5
 ! xosview*display:
+xosview*captions: True
 xosview*labels: True
 xosview*meterLabelColor:  wheat
 xosview*usedlabels:       True

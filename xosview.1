@@ -1,6 +1,6 @@
 '\" t
 .\" @(#)xosview.1	1.3 7/17/97 "
-.TH XOSVIEW 1.6.2.a "$Date: 1999/01/18 09:50:17 $"
+.TH XOSVIEW 1.6.2.a "$Date: 1999/01/23 18:34:26 $"
 .UC
 .SH NAME
 xosview \- X based system monitor
@@ -243,6 +243,9 @@ Sets the X geometry to \fIgeometry_string\fP.  This option overrides the
 xosview*geometry resource.
 .RE
 
+.\"  Handle -/+captions
+.pm captions
+
 .\"  Handle -/+labels
 .pm labels
 
@@ -356,6 +359,11 @@ xosview*display: \fIname\fP
 .RS
 The name of the display where xosview will contact the X server for drawing
 its window.
+.RE
+
+xosview*captions: (True or False)
+.RS
+If True then xosview will display meter captions.
 .RE
 
 xosview*labels: (True or False)
@@ -722,7 +730,7 @@ as up-to-date.
 
 .SH MAN PAGE REVISION
 
-$Id: xosview.1,v 1.26 1999/01/18 09:50:17 bgrayson Exp $
+$Id: xosview.1,v 1.27 1999/01/23 18:34:26 mromberg Exp $
 
 .SH AUTHORS
 

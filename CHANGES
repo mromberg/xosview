@@ -1,5 +1,7 @@
-  /*  $Id: CHANGES,v 1.15 1998/10/15 21:28:15 mromberg Exp $  */
+  /*  $Id: CHANGES,v 1.16 1999/01/23 18:34:26 mromberg Exp $  */
 Changes since xosview-1.6.1
+  New option to omit the meter captions (+-captions) added by
+    Christian 'Dr. Disk' Hechelmann <drdisk@tc-gruppe.de>
   New graphing meter display mode added.
   Fixes to work with linux/alpha.
   BSD directories merged -- now a single bsd subdir shared by

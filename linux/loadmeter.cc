@@ -6,7 +6,7 @@
 //  Most of this code was written by Werner Fink <werner@suse.de>.
 //  Only small changes were made on my part (M.R.)
 //
-// $Id: loadmeter.cc,v 1.5 1998/10/15 21:28:17 mromberg Exp $
+// $Id: loadmeter.cc,v 1.6 1999/01/23 18:34:27 mromberg Exp $
 //
 #include "loadmeter.h"
 #include "xosview.h"
@@ -16,7 +16,7 @@
 static const char LOADFILENAME[] = "/proc/loadavg";
 
 LoadMeter::LoadMeter( XOSView *parent )
-  : FieldMeterGraph( parent, 2, "LOAD", "PROCS/MIN", 1, 0 ){
+  : FieldMeterGraph( parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0 ){
 
 }
 

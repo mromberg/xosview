@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.h,v 1.7 1998/06/22 14:15:44 bgrayson Exp $
+// $Id: xosview.h,v 1.8 1999/01/23 18:34:26 mromberg Exp $
 //
 #ifndef _XOSVIEW_H_
 #define _XOSVIEW_H_
 
-#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.7 1998/06/22 14:15:44 bgrayson Exp $"
+#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.8 1999/01/23 18:34:26 mromberg Exp $"
 
 #include "xwin.h"
 #include "Xrm.h"  //  For Xrm resource manager class.
@@ -50,7 +50,7 @@ protected:
 
   MeterNode *meters_;
   
-  int legend_, xoff_, yoff_, nummeters_, usedlabels_;
+  int caption_, legend_, xoff_, yoff_, nummeters_, usedlabels_;
   unsigned long sleeptime_, usleeptime_;
 
   void usleep_via_select( unsigned long usec );

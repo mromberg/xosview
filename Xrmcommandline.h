@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.16 1998/06/22 14:20:30 bgrayson Exp $
+// $Id: Xrmcommandline.h,v 1.17 1999/01/23 18:34:26 mromberg Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.16 1998/06/22 14:20:30 bgrayson Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.17 1999/01/23 18:34:26 mromberg Exp $"
 
 #include <X11/Xresource.h>
 
@@ -24,6 +24,8 @@ static XrmOptionDescRec options[] = {
 //  XOSView-specific resources:
 { "-labels", "*labels", XrmoptionNoArg, "False" },
 { "+labels", "*labels", XrmoptionNoArg, "True" },
+{ "-captions", "*captions", XrmoptionNoArg, "False" },
+{ "+captions", "*captions", XrmoptionNoArg, "True" },
 { "-usedlabels", "*usedlabels", XrmoptionNoArg, "False" },
 { "+usedlabels", "*usedlabels", XrmoptionNoArg, "True" },
 { "-samplesPerSec", "*samplesPerSec", XrmoptionSepArg, (caddr_t) NULL },

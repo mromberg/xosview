@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: fieldmeterdecay.cc,v 1.11 1998/10/15 21:28:16 mromberg Exp $
+// $Id: fieldmeterdecay.cc,v 1.12 1999/01/23 18:34:26 mromberg Exp $
 //
 
 // In order to use the FieldMeterDecay class in place of a FieldMeter class in
@@ -33,13 +33,15 @@
 #include "fieldmeterdecay.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeterdecay.cc,v 1.11 1998/10/15 21:28:16 mromberg Exp $");
+CVSID("$Id: fieldmeterdecay.cc,v 1.12 1999/01/23 18:34:26 mromberg Exp $");
 CVSID_DOT_H(FIELDMETERDECAY_H_CVSID);
 
 FieldMeterDecay::FieldMeterDecay( XOSView *parent,
                 int numfields, const char *title,
-                const char *legend, int dolegends, int dousedlegends )
-: FieldMeter (parent, numfields, title, legend, dolegends, dousedlegends)
+                const char *legend, int docaptions, int dolegends,
+                int dousedlegends )
+: FieldMeter (parent, numfields, title, legend, docaptions, dolegends,
+              dousedlegends)
 {
   decay_ = new float[numfields];
   lastDecayval_ = new float[numfields];

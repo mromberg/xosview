@@ -4,22 +4,23 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: meter.cc,v 1.5 1998/10/15 21:28:16 mromberg Exp $
+// $Id: meter.cc,v 1.6 1999/01/23 18:34:26 mromberg Exp $
 //
 #include "general.h"
 #include "meter.h"
 #include "xosview.h"
 #include <strstream.h>
 
-CVSID("$Id: meter.cc,v 1.5 1998/10/15 21:28:16 mromberg Exp $");
+CVSID("$Id: meter.cc,v 1.6 1999/01/23 18:34:26 mromberg Exp $");
 CVSID_DOT_H(METER_H_CVSID);
 
 Meter::Meter( XOSView *parent, const char *title, const char *legend, 
-              int dolegends, int dousedlegends ) {
+              int docaptions, int dolegends, int dousedlegends ) {
   title_ = legend_ = NULL;
   Meter::title( title );
   Meter::legend( legend );
   parent_ = parent;
+  docaptions_ = docaptions;
   dolegends_ = dolegends;
   dousedlegends_ = dousedlegends;
   priority_ = 1;

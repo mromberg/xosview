@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.h,v 1.10 1998/10/15 21:28:16 mromberg Exp $
+// $Id: fieldmeter.h,v 1.11 1999/01/23 18:34:26 mromberg Exp $
 //
 #ifndef _FIELDMETER_H_
 #define _FIELDMETER_H_
 
-#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.10 1998/10/15 21:28:16 mromberg Exp $"
+#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.11 1999/01/23 18:34:26 mromberg Exp $"
 
 #include "meter.h"
 #include "timer.h"
@@ -18,12 +18,13 @@ class FieldMeter : public Meter {
 public:
   FieldMeter( XOSView *parent, int numfields,
 	      const char *title = "", const char *legend = "", 
-	      int dolegends = 0, int dousedlegends = 0 );
+	      int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
   virtual ~FieldMeter( void );
   
   virtual void drawfields( int manditory = 0 );
   void setfieldcolor( int field, const char *color );
   void setfieldcolor( int field, unsigned long color);
+  void docaptions( int val ) { docaptions_ = val; }
   void dolegends( int val ) { dolegends_ = val; }
   void dousedlegends( int val ) { dousedlegends_ = val; }
   void reset( void );

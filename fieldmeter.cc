@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.19 1998/10/15 21:28:15 mromberg Exp $
+// $Id: fieldmeter.cc,v 1.20 1999/01/23 18:34:26 mromberg Exp $
 //
 #include <fstream.h>
 #include <strstream.h>
@@ -13,12 +13,13 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.19 1998/10/15 21:28:15 mromberg Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.20 1999/01/23 18:34:26 mromberg Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
-                        const char *legend, int dolegends, int dousedlegends )
-: Meter(parent, title, legend, dolegends, dousedlegends){
+                        const char *legend, int docaptions, int dolegends,
+                        int dousedlegends )
+: Meter(parent, title, legend, docaptions, dolegends, dousedlegends){
     /*  We need to set print_ to something valid -- the meters
      *  apparently get drawn before the meters have a chance to call
      *  CheckResources() themselves.  */
@@ -127,7 +128,8 @@ void FieldMeter::draw( void ){
       offset = parent_->textWidth( "XXXXX" );
     
     parent_->drawString( x_ - offset, y_ + height_, title_ );
-    drawlegend();
+    if(docaptions_)
+      drawlegend();
   }
 
   drawfields( 1 );

@@ -13,18 +13,18 @@
 //    authors for a copy.
 //
 //
-// $Id: loadmeter.cc,v 1.10 1998/10/20 19:37:34 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.11 1999/01/23 18:34:26 mromberg Exp $
 //
 #include <stdlib.h>  //  for getloadavg()
 #include "general.h"
 #include "loadmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: loadmeter.cc,v 1.10 1998/10/20 19:37:34 bgrayson Exp $");
+CVSID("$Id: loadmeter.cc,v 1.11 1999/01/23 18:34:26 mromberg Exp $");
 CVSID_DOT_H(LOADMETER_H_CVSID);
 
 LoadMeter::LoadMeter( XOSView *parent )
-  : FieldMeterGraph( parent, 2, "LOAD", "PROCS per MIN/IDLE", 1, 0 ){
+  : FieldMeterGraph( parent, 2, "LOAD", "PROCS per MIN/IDLE", 1, 1, 0 ){
 }
 
 LoadMeter::~LoadMeter( void ){

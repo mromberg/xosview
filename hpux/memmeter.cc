@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: memmeter.cc,v 1.8 1998/09/18 18:17:19 bgrayson Exp $
+// $Id: memmeter.cc,v 1.9 1999/01/23 18:34:26 mromberg Exp $
 //
 #include "memmeter.h"
 #include "xosview.h"
@@ -15,7 +15,7 @@ MemMeter::MemMeter( XOSView *parent )
 : FieldMeterDecay( parent, 4, "MEM", "TEXT/USED/OTHER/FREE" ){
   struct pst_static pststatic;
 
-  pstat_getstatic( &pststatic, sizeof( struct pst_static ), 1, 0 );
+  pstat_getstatic( &pststatic, sizeof( struct pst_static ), 1, 1, 0 );
   total_ = pststatic.physical_memory;
   _pageSize = pststatic.page_size;
 

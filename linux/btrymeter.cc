@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: btrymeter.cc,v 1.4 1998/06/24 16:21:50 romberg Exp $
+// $Id: btrymeter.cc,v 1.5 1999/01/23 18:34:26 mromberg Exp $
 //
 #include "btrymeter.h"
 #include "xosview.h"
@@ -14,7 +14,7 @@
 static const char APMFILENAME[] = "/proc/apm";
 
 BtryMeter::BtryMeter( XOSView *parent )
-  : FieldMeter( parent, 2, "BTRY", "AVAIL/USED", 1, 0 ){
+  : FieldMeter( parent, 2, "BTRY", "AVAIL/USED", 1, 1, 0 ){
 }
 
 BtryMeter::~BtryMeter( void ){

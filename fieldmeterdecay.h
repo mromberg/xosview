@@ -16,7 +16,7 @@
 #ifndef _FIELDMETERDECAY_H_
 #define _FIELDMETERDECAY_H_
 
-#define FIELDMETERDECAY_H_CVSID "$Id: fieldmeterdecay.h,v 1.4 1997/02/14 07:22:01 bgrayson Exp $"
+#define FIELDMETERDECAY_H_CVSID "$Id: fieldmeterdecay.h,v 1.5 1999/01/23 18:34:26 mromberg Exp $"
 
 #include "meter.h"
 #include "fieldmeter.h"
@@ -25,7 +25,7 @@ class FieldMeterDecay : public FieldMeter {
 public:
   FieldMeterDecay( XOSView *parent, int numfields,
               const char *title = "", const char *legend = "", 
-              int dolegends = 0, int dousedlegends = 0 );
+              int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
   virtual ~FieldMeterDecay( void );
   
   virtual void drawfields( int manditory = 0 );

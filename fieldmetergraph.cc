@@ -8,7 +8,7 @@
 //  Modifications from FieldMeterDecay class done in Oct. 1998
 //    by Scott McNab ( jedi@tartarus.uwa.edu.au )
 //
-// $Id: fieldmetergraph.cc,v 1.1 1998/10/15 21:28:16 mromberg Exp $
+// $Id: fieldmetergraph.cc,v 1.2 1999/01/23 18:34:26 mromberg Exp $
 //
 
 // In order to use the FieldMeterGraph class in place of a FieldMeter class in
@@ -29,13 +29,15 @@
 #include "fieldmetergraph.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmetergraph.cc,v 1.1 1998/10/15 21:28:16 mromberg Exp $");
+CVSID("$Id: fieldmetergraph.cc,v 1.2 1999/01/23 18:34:26 mromberg Exp $");
 CVSID_DOT_H(FIELDMETERGRAPH_H_CVSID);
 
 FieldMeterGraph::FieldMeterGraph( XOSView *parent,
                 int numfields, const char *title,
-                const char *legend, int dolegends, int dousedlegends )
-: FieldMeterDecay (parent, numfields, title, legend, dolegends, dousedlegends)
+                const char *legend, int docaptions, int dolegends, 
+  int dousedlegends )
+: FieldMeterDecay (parent, numfields, title, legend, docaptions, 
+  dolegends, dousedlegends)
 {
 
 	useGraph_ = 0;
