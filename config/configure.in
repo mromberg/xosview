@@ -1,5 +1,5 @@
 dnl
-dnl $Id: configure.in,v 1.25 1998/06/01 21:15:10 bgrayson Exp $
+dnl $Id: configure.in,v 1.26 1998/06/22 14:24:35 bgrayson Exp $
 dnl
 AC_INIT(xosview.1)
 CF_TOP_SRCDIR
@@ -7,9 +7,13 @@ AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_HOST
 AC_PROG_CXX
 AC_PATH_X
-dnl AC_PREFIX_PROGRAM(X)
 dnl AC_PREFIX_DEFAULT(/usr/X11)	dnl No longer needed with our
 dnl 				x_includes magic in Makefile.top.in.
+AC_PREFIX_DEFAULT(/usr/X11)
+dnl  Ack.  It is needed again, after all.  By default, we
+dnl want to stuff things into /usr/X11.  If we don't specify this,
+dnl configure will shove things into /usr/local by default.
+dnl AC_PREFIX_PROGRAM(X)
 AC_SUBST(x_includes)
 AC_SUBST(x_libraries)
 AC_PROG_INSTALL
