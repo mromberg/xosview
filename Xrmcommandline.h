@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.9 1997/02/26 18:34:44 mromberg Exp $
+// $Id: Xrmcommandline.h,v 1.10 1997/03/15 21:02:59 mromberg Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.9 1997/02/26 18:34:44 mromberg Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.10 1997/03/15 21:02:59 mromberg Exp $"
 
 #include <X11/Xresource.h>
 
@@ -38,6 +38,9 @@ static XrmOptionDescRec options[] = {
 // Swapmeter resources
 { "-swap", "*swap", XrmoptionNoArg, "False" },
 { "+swap", "*swap", XrmoptionNoArg, "True" },
+// Batterymeter resources
+{ "-battery", "*battery", XrmoptionNoArg, "False" },
+{ "+battery", "*battery", XrmoptionNoArg, "True" },
 
 //  Previously, network was overloaded to be the bandwidth and the
 //  on/off flag.  Now, we have -net for on/off, and networkBandwidth

@@ -1,6 +1,6 @@
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.13 1996/12/28 19:31:16 mromberg Exp $
+!  $Id: Xdefaults.in,v 1.14 1997/03/15 21:02:57 mromberg Exp $
 
 ! General Resources
 
@@ -124,6 +124,12 @@ xosview*serialPriority:   1
 xosview*interrupts:       True
 xosview*intOnColor:       red
 xosview*intOffColor:      aquamarine
+
+! Battery meter
+xosview*battery:          False
+xosview*batteryLeftColor: orange
+xosview*batteryUsedColor: aquamarine
+xosview*batteryPriority:  50
 
 !!!
 !!!  NetBSD-only meters
