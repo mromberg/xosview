@@ -4,15 +4,19 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: timeval.h,v 1.4 1999/01/23 22:20:40 mromberg Exp $
+// $Id: timeval.h,v 1.5 2003/10/09 03:42:31 bgrayson Exp $
 //
 #ifndef _TIMEVAL_H_
 #define _TIMEVAL_H_
 
-#define TIMEVAL_H_CVSID "$Id: timeval.h,v 1.4 1999/01/23 22:20:40 mromberg Exp $"
+#define TIMEVAL_H_CVSID "$Id: timeval.h,v 1.5 2003/10/09 03:42:31 bgrayson Exp $"
 
 #include <sys/time.h>
+#ifdef HAVE_IOSTREAM
+#include <iostream>
+#else
 #include <iostream.h>
+#endif
 
 class TimeVal {
 public:
@@ -29,7 +33,7 @@ public:
 
   operator struct timeval(void) const { return _val; }
 
-  ostream &printOn(ostream &os) const {
+  std::ostream &printOn(std::ostream &os) const {
     return os <<"(" <<sec() <<" sec, " <<usec() <<" usec)";
   }
 
@@ -37,7 +41,7 @@ private:
   struct timeval _val;
 };
 
-inline ostream &operator<<(ostream &os, const TimeVal &tv){
+inline std::ostream &operator<<(std::ostream &os, const TimeVal &tv){
   return tv.printOn(os);
 }
 

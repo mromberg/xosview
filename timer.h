@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: timer.h,v 1.6 1999/11/19 09:50:20 bgrayson Exp $
+// $Id: timer.h,v 1.7 2003/10/09 03:37:04 bgrayson Exp $
 //
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
-#define TIMER_H_CVSID "$Id: timer.h,v 1.6 1999/11/19 09:50:20 bgrayson Exp $"
+#define TIMER_H_CVSID "$Id: timer.h,v 1.7 2003/10/09 03:37:04 bgrayson Exp $"
 
 //
 //                 General purpose interval timer class
@@ -49,7 +49,7 @@ public:
       + stoptime_.tv_usec - starttime_.tv_usec;
   }
   
-  ostream &printOn(ostream &os) const {
+  std::ostream &printOn(std::ostream &os) const {
     return os <<"Timer : ["
       <<"starttime_ = " <<TimeVal(starttime_)
       <<", stoptime_ = " <<TimeVal(stoptime_)
@@ -62,7 +62,7 @@ protected:
 private:
 };
 
-inline ostream &operator<<(ostream &os, const Timer &t){
+inline std::ostream &operator<<(std::ostream &os, const Timer &t){
   return t.printOn(os);
 }
 

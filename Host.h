@@ -4,20 +4,24 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Host.h,v 1.4 1999/01/23 22:20:39 mromberg Exp $
+// $Id: Host.h,v 1.5 2003/10/09 03:41:43 bgrayson Exp $
 //
 
 #ifndef _Host_h
 #define _Host_h
 
-#define HOST_H_CVSID "$Id: Host.h,v 1.4 1999/01/23 22:20:39 mromberg Exp $"
+#define HOST_H_CVSID "$Id: Host.h,v 1.5 2003/10/09 03:41:43 bgrayson Exp $"
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#ifdef HAVE_IOSTREAM
+#include <iostream>
+#else
 #include <iostream.h>
+#endif
 #include "bool.h"
 
 class Host {
@@ -66,7 +70,7 @@ public:
 
   // Should not use this under linux for the same reashon as the above
   // function.
-  ostream &print(ostream &os) const;
+  std::ostream &print(std::ostream &os) const;
 
 protected:
 private:
@@ -84,7 +88,7 @@ private:
 };
 
 // Do not use this under linux until inet_ntoa() is fixed.
-inline ostream &operator<<(ostream &os, const Host& host) {
+inline std::ostream &operator<<(std::ostream &os, const Host& host) {
   return host.print(os);
 }
 

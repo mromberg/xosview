@@ -1,5 +1,5 @@
 //
-// $Id: xwin.h,v 1.8 2002/02/24 19:52:00 romberg Exp $
+// $Id: xwin.h,v 1.9 2003/10/09 03:38:24 bgrayson Exp $
 //
 #ifndef _XWIN_H_
 #define _XWIN_H_
@@ -9,10 +9,14 @@
 #ifdef HAVE_XPM
 #include <X11/xpm.h>
 #endif
+#ifdef HAVE_IOSTREAM
+#include <iostream>
+#else
 #include <iostream.h>
+#endif
 #include <string.h>
 
-#define XWIN_H_CVSID "$Id: xwin.h,v 1.8 2002/02/24 19:52:00 romberg Exp $"
+#define XWIN_H_CVSID "$Id: xwin.h,v 1.9 2003/10/09 03:38:24 bgrayson Exp $"
 
 class XWin;
 class Xrm;
@@ -99,8 +103,8 @@ public:
   const char *getResourceOrUseDefault( const char *name, const char* defaultVal );
   const int isResourceTrue( const char* name ) {
     return (!strncasecmp(getResource(name),"True", 5)); }
-  void dumpResources( ostream &os );
-
+  void dumpResources(std::ostream &os );
+  
 protected:
   class Event {
   public:
