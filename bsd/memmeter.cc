@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: memmeter.cc,v 1.8 1997/11/15 03:11:08 bgrayson Exp $
+// $Id: memmeter.cc,v 1.9 1997/12/30 08:37:34 bgrayson Exp $
 //
 #include "general.h"
 #include "memmeter.h"
@@ -23,13 +23,12 @@
 
 #include <sys/param.h>
 #include <sys/sysctl.h>
-#include <vm/vm_param.h>
 #ifdef XOSVIEW_FREEBSD
 #include <sys/vmmeter.h>
 #endif
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: memmeter.cc,v 1.8 1997/11/15 03:11:08 bgrayson Exp $");
+CVSID("$Id: memmeter.cc,v 1.9 1997/12/30 08:37:34 bgrayson Exp $");
 CVSID_DOT_H(MEMMETER_H_CVSID);
 //  Once we figure out how to get the buffers field, change the next line.
 #define FREE_INDEX 3
