@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.cc,v 1.8 1997/06/28 05:35:27 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.9 1997/07/08 22:44:02 bgrayson Exp $
 //
 #include "general.h"
 #include "swapmeter.h"
@@ -23,8 +23,10 @@
 #include <err.h>			//  For warnx.  BCG
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: swapmeter.cc,v 1.8 1997/06/28 05:35:27 bgrayson Exp $");
+CVSID("$Id: swapmeter.cc,v 1.9 1997/07/08 22:44:02 bgrayson Exp $");
 CVSID_DOT_H(SWAPMETER_H_CVSID);
+
+static int doSwap = 1;
 
 SwapMeter::SwapMeter( XOSView *parent )
 : FieldMeterDecay( parent, 2, "SWAP", "USED/FREE" ){
@@ -46,6 +48,7 @@ SwapMeter::SwapMeter( XOSView *parent )
   "running kernel is /netbsd, or use the -N flag for xosview to specify\n"
   "an alternate kernel file.\n"
   "\nThe SwapMeter has been disabled.\n");
+  doSwap = 0;
 #endif
   }
 }
@@ -71,12 +74,18 @@ void SwapMeter::checkevent( void ){
 void SwapMeter::getswapinfo( void ){
   int total_int, free_int;
 
+  if (doSwap) {
 #ifdef HAVE_SWAPCTL
-  if (useSwapCtl)
-    NetBSDGetSwapCtlInfo(&total_int, &free_int);
-  else
+    if (useSwapCtl)
+      NetBSDGetSwapCtlInfo(&total_int, &free_int);
+    else
 #endif
-    NetBSDGetSwapInfo (&total_int, &free_int);
+      NetBSDGetSwapInfo (&total_int, &free_int);
+  }
+  else {
+    total_int = 1;	/*  So the meter looks blank.  */
+    free_int = 1;
+  }
 
   total_ = total_int;
   if ( total_ == 0 )
