@@ -13,10 +13,10 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.h,v 1.18 1998/05/29 21:21:36 bgrayson Exp $
+// $Id: kernel.h,v 1.19 2001/10/09 02:40:51 bgrayson Exp $
 //
 
-#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.18 1998/05/29 21:21:36 bgrayson Exp $"
+#define KERNEL_H_CVSID	"$Id: kernel.h,v 1.19 2001/10/09 02:40:51 bgrayson Exp $"
 
 void
 BSDInit();
@@ -38,8 +38,13 @@ BSDGetPageStats(struct vmmeter* vmp);
 void
 BSDCPUInit();
 
+#if defined(XOSVIEW_NETBSD) && (__NetBSD_Version__ >= 104260000)
+void
+BSDGetCPUTimes(u_int64_t* timesArray);
+#else
 void
 BSDGetCPUTimes(long* timesArray);
+#endif
 
 void
 BSDNetInit();
