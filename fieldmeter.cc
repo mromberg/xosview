@@ -4,12 +4,16 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.3 1996/08/27 03:46:42 mromberg Exp $
+// $Id: fieldmeter.cc,v 1.4 1996/11/19 05:04:06 bgrayson Exp $
 //
-#include "fieldmeter.h"
-#include "xosview.h"
 #include <fstream.h>
 #include <stdio.h>
+#include "general.h"
+#include "fieldmeter.h"
+#include "xosview.h"
+
+CVSID("$Id: fieldmeter.cc,v 1.4 1996/11/19 05:04:06 bgrayson Exp $");
+CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
                         const char *legend, int dolegends, int dousedlegends )
@@ -24,6 +28,15 @@ FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title,
   setNumFields(numfields);
 }
 
+void
+FieldMeter::disableMeter ( )
+{
+  setNumFields(1);
+  setfieldcolor (0, "gray");
+  Meter::legend ("Disabled");
+}
+
+
 FieldMeter::~FieldMeter( void ){
   delete[] fields_;
   delete[] colors_;
@@ -36,6 +49,23 @@ void FieldMeter::checkResources( void ){
   usedcolor_ = parent_->allocColor( parent_->getResource( "usedLabelColor") );
 }
 
+
+void FieldMeter::SetUsedFormat ( const char * const fmt ) {
+    /*  Do case-insensitive compares.  */
+  if (!strcasecmp (fmt, "percent"))
+    print_ = PERCENT;
+  else if (!strcasecmp (fmt, "bytes"))
+    print_ = KBYTES;
+  else if (!strcasecmp (fmt, "float"))
+    print_ = FLOAT;
+  else
+  {
+    fprintf (stderr, "Error:  could not parse format of '%s'\n", fmt);
+    fprintf (stderr, "  I expected one of 'percent', 'bytes', or 'float'\n");
+    fprintf (stderr, "  (Case-insensitive)\n");
+    exit(1);
+  }
+}
 
 void FieldMeter::reset( void ){
   for ( int i = 0 ; i < numfields_ ; i++ )
@@ -51,8 +81,9 @@ void FieldMeter::setfieldcolor( int field, unsigned long color ) {
 }
 
 void FieldMeter::draw( void ){
+    /*  Draw the outline for the fieldmeter.  */
   parent_->setForeground( parent_->foreground() );
-  parent_->drawRectangle( x_ - 1, y_ - 1, width_ + 1, height_ + 1 );
+  parent_->drawRectangle( x_ - 1, y_ - 1, width_ + 2, height_ + 2 );
   if ( dolegends_ ){
     parent_->setForeground( textcolor_ );
     
@@ -107,6 +138,23 @@ void FieldMeter::drawused( int manditory ){
   if (print_ == PERCENT){
     sprintf( buf, "%d", (int)used_ );
     strcat( buf, "%" );
+  }
+  else if (print_ == KBYTES){
+    char scale;
+    float scaled_used;
+    if (used_ > 1024*1024) {scale='M'; scaled_used = used_/1024/1024;}
+    else if (used_ > 1024) {scale='K'; scaled_used = used_/1024;}
+    else {scale=' '; scaled_used = used_;}
+      /*  For now, we can only print 2 digits without overprinting the
+       *  legends.  */
+    if (scaled_used == 0.0)
+      sprintf (buf, "0");
+    else if (scaled_used < 9.995)
+      sprintf (buf, "%.1f%c", scaled_used, scale);
+    else if (scaled_used < 99.95)
+      sprintf (buf, "%.0f%c", scaled_used, scale);
+    else 
+      sprintf (buf, "%.0f%c", scaled_used, scale);
   }
   else {
     sprintf( buf, "%.1f", used_ );
