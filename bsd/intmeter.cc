@@ -4,12 +4,10 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.cc,v 1.3 1998/03/26 20:58:02 bgrayson Exp $
+// $Id: intmeter.cc,v 1.4 1998/05/29 21:20:32 bgrayson Exp $
 //
+#include <stdlib.h>		/*  For atoi().  */
 #include "intmeter.h"
-#include "xosview.h"
-#include <fstream.h>
-#include <stdlib.h>
 #include "kernel.h"
 
 
@@ -46,6 +44,7 @@ void IntMeter::checkResources( void ){
   BitMeter::checkResources();
   onColor_  = parent_->allocColor( parent_->getResource( "intOnColor" ) );
   offColor_ = parent_->allocColor( parent_->getResource( "intOffColor" ) );
+  priority_ = atoi( parent_->getResource( "intPriority" ) );
 }
 
 void 
