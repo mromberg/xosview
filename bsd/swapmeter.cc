@@ -12,18 +12,15 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.cc,v 1.13 1998/02/12 05:04:08 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.14 1998/05/29 20:52:18 bgrayson Exp $
 //
+#include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
 #include "swapmeter.h"
-#include "xosview.h"
+#include "swapinternal.h"	/*  For *SwapInfo() functions.  */
+#include "kernel.h"		/*  For BSDSwapInit().  */
 
-#include "swapinternal.h"
-#include "kernel.h"
-#include <err.h>			//  For warnx.  BCG
-#include <stdlib.h>		//  For atoi().  BCG
-
-CVSID("$Id: swapmeter.cc,v 1.13 1998/02/12 05:04:08 bgrayson Exp $");
+CVSID("$Id: swapmeter.cc,v 1.14 1998/05/29 20:52:18 bgrayson Exp $");
 CVSID_DOT_H(SWAPMETER_H_CVSID);
 
 static int doSwap = 1;
