@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: btrymeter.cc,v 1.7 2004/06/01 04:33:01 romberg Exp $
+// $Id: btrymeter.cc,v 1.8 2004/06/08 17:53:14 romberg Exp $
 //
 #include "btrymeter.h"
 #include "xosview.h"
@@ -82,8 +82,8 @@ bool BtryMeter::getacpiinfo( void ){
   bool found = false;
   std::string abs_battery_dir = ACPIBATTERYDIR;
   for (struct dirent *dirent; (dirent = readdir(dir)) != NULL; ) {
-    if (strcmp(dirent->d_name, ".") == 0
-    	|| strcmp(dirent->d_name, "..") == 0)
+    if (strncmp(dirent->d_name, ".", 1) == 0
+    	|| strncmp(dirent->d_name, "..", 2) == 0)
       continue;
 
     std::string abs_battery_name = abs_battery_dir + "/" + dirent->d_name;
