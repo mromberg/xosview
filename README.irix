@@ -1,12 +1,23 @@
 
-  The IRIX port has support for load, cpu and mem meter. You're welcome
-to send me patches.
+  The IRIX port supports:
 
-  The cpu meter has a new X resource cpuFormat, with the possible values
-of single, all, auto or both. It determines how cpu meters are handled
-for multiprocessors: single displays only meters for each cpu, all
-displays only a cumulative meter for all cpus, both displays both and
-auto behaves like both on mp machines and single on up machines.
+    - load meter
+
+    - cpu meter: The cpu meter has a new X resource cpuFormat, with the
+                 possible values of single, all, auto or both. It
+                 determines how cpu meters are handled for
+                 multiprocessors: single displays only meters for each
+                 cpu, all displays only a cumulative meter for all cpus,
+                 both displays both and auto behaves like both on mp
+                 machines and single on up machines.
+
+    - mem meter
+
+    - gfx meter: Displays swapbuffers/second. It is forking
+                 /usr/lib/sa/sadc to read system accounting data.
+
+
+  Of course, you're welcome to send me patches.
 
   I experienced some errors with the cpu meter on O2.
 
@@ -18,4 +29,4 @@ auto behaves like both on mp machines and single on up machines.
 
   Stefan Eilemann, Feb 02	eile@sgi.com
 
-  $Id: README.irix,v 1.1 2002/02/18 08:19:22 eile Exp $
+  $Id: README.irix,v 1.2 2002/02/20 11:15:03 eile Exp $

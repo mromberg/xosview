@@ -30,7 +30,7 @@
 
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.37 2001/10/17 14:39:22 eile Exp $
+!  $Id: Xdefaults.in,v 1.38 2002/02/20 11:15:03 eile Exp $
 
 ! General Resources
 
@@ -63,7 +63,21 @@ xosview*loadCritThreshold:  5
 xosview*loadWarnThreshold:  2
 xosview*loadDecay:          False
 xosview*loadGraph:          False
-xosview*loadUsedFormat:	    float
+xosview*loadUsedFormat:     float
+
+! Gfx Meter Resources ( Irix )
+
+xosview*gfx:               True
+xosview*gfxCritColor:      red
+xosview*gfxWarnColor:      orange
+xosview*gfxSwapColor:      seagreen
+xosview*gfxIdleColor:      aquamarine
+xosview*gfxPriority:       9    ! dont change, until you know what you do
+xosview*gfxCritThreshold:  120
+xosview*gfxWarnThreshold:  60
+xosview*gfxDecay:          False
+xosview*gfxGraph:          False
+xosview*gfxUsedFormat:	   autoscale
 
 ! CPU Meter Resources
 
