@@ -4,7 +4,7 @@
 # The configure script should set up this file for most all cases.
 # One can override compile / link options here if needed.
 #
-# $Id: Makefile.config.in,v 1.3 1996/08/14 06:20:24 mromberg Exp $
+# $Id: Makefile.config.in,v 1.4 1996/11/19 05:54:20 bgrayson Exp $
 #
 
 #-----------------------------------------------------------------
@@ -17,13 +17,13 @@ CXX           = @CXX@
 #-----------------------------------------------------------------
 
 # Optimized CXXFLAGS
-#CXXFLAGS      = -Wall -O4 -pipe -I@x_includes@ \
+#CXXFLAGS      += $(CFLAGS) -Wall -O4 -pipe -I@x_includes@ \
 #                -I@top_srcdir@ -I./@host_os@ @DEFS@
 # DEBUG CXXFLAGS
-CXXFLAGS      = -Wall -ggdb -pipe -I@x_includes@ \
+CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pipe -I@x_includes@ \
                 -I@top_srcdir@ -I./@host_os@ @DEFS@
 # PROFILE CXXFLAGS
-#CXXFLAGS      = -Wall -ggdb -pg -pipe -I@x_includes@ \
+#CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pg -pipe -I@x_includes@ \
 #                -I@top_srcdir@ -I./@host_os@ @DEFS@
 
 #-----------------------------------------------------------------
@@ -31,16 +31,16 @@ CXXFLAGS      = -Wall -ggdb -pipe -I@x_includes@ \
 #-----------------------------------------------------------------
 
 # NORMAL LIBS
-LFLAGS        = -L./@host_os@ -L@x_libraries@
-LIBS          = -lmeter -lX11 @EXTRALIBS@
+LFLAGS        += -L./@host_os@ -L@x_libraries@
+LIBS          += -lmeter -lX11 @EXTRALIBS@
 
 # DEBUG LIBS
-#LFLAGS        = -L./@host_os@ -L@x_libraries@ -static
-#LIBS          = -lmeter -lX11 @EXTRALIBS@
+#LFLAGS        += -L./@host_os@ -L@x_libraries@ -static
+#LIBS          += -lmeter -lX11 @EXTRALIBS@
 
 # PROFILE LIBS
-#LFLAGS        = -L./@host_os@ -L@x_libraries@ -pg
-#LIBS          = -lmeter -lX11 @EXTRALIBS@ -lgmon
+#LFLAGS        += -L./@host_os@ -L@x_libraries@ -pg
+#LIBS          += -lmeter -lX11 @EXTRALIBS@ -lgmon
 
 #-----------------------------------------------------------------
 # Rules
