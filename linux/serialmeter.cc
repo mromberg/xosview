@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: serialmeter.cc,v 1.10 2002/02/24 19:52:01 romberg Exp $
+// $Id: serialmeter.cc,v 1.11 2002/03/24 22:57:03 zedpobre Exp $
 //
 
 //
@@ -32,9 +32,12 @@ typedef unsigned long long u64;
 
 #include <unistd.h>
 #if defined(GNULIBC) || defined(__GLIBC__)
+#if !defined(__hppa__) && !defined(__mips__)
 #include <sys/io.h>
-#ifndef __alpha__
+#endif
+#if !defined(__alpha__) && !defined(__ia64__) && !defined(__hppa__) && !defined(__arm__) && !defined(__mips__)
 #include <sys/perm.h>
+#define HAVE_IOPERM
 #endif
 #else
 #ifndef __alpha__
@@ -73,16 +76,22 @@ void SerialMeter::checkResources( void ){
 }
 
 bool SerialMeter::getport(unsigned short int port){
+#ifdef HAVE_IOPERM
   return ioperm(port, 1, 1) != -1;
+#else
+  return -1 != -1;
+#endif
 }
 
 void SerialMeter::getserial( void ){
+#ifdef HAVE_IOPERM
   // get the LSR and MSR
   unsigned char lsr = inb(_port + UART_LSR);
   unsigned char msr = inb(_port + UART_MSR);
 
   setBits(0, lsr);
   setBits(8, msr);
+#endif
 }
 
 const char *SerialMeter::getTitle(Device dev) const {
