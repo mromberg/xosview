@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.11 1998/02/09 12:05:55 bgrayson Exp $
+// $Id: fieldmeter.cc,v 1.12 1998/03/30 20:30:21 bgrayson Exp $
 //
 #include <fstream.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.11 1998/02/09 12:05:55 bgrayson Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.12 1998/03/30 20:30:21 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -183,7 +183,7 @@ void FieldMeter::drawused( int manditory ){
        *  999.5 needs to be bumped up.  */
     if (used_ >= 999.5*1000*1000)
 	{scale='G'; scaled_used = used_/1024/1024/1024;}
-    if (used_ >= 999.5*1000)
+    else if (used_ >= 999.5*1000)
 	{scale='M'; scaled_used = used_/1024/1024;}
     else if (used_ >= 999.5)
 	{scale='K'; scaled_used = used_/1024;}
