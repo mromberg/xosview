@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.cc,v 1.7 1999/01/31 20:18:49 bgrayson Exp $
+// $Id: cpumeter.cc,v 1.8 1999/02/02 00:59:30 mromberg Exp $
 //
 #include "cpumeter.h"
 #include "xosview.h"
@@ -32,7 +32,7 @@ void CPUMeter::checkResources( void ){
   setfieldcolor( 4, parent_->getResource( "cpuFreeColor" ) );
   priority_ = atoi (parent_->getResource( "cpuPriority" ) );
   dodecay_ = parent_->isResourceTrue( "cpuDecay" );
-  useGraph_ = parent_->isResourceTrue( "pageGraph" );
+  useGraph_ = parent_->isResourceTrue( "cpuGraph" );
   SetUsedFormat( parent_->getResource( "cpuUsedFormat" ) );
 }
 
