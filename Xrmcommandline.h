@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.11 1997/10/19 20:35:36 mromberg Exp $
+// $Id: Xrmcommandline.h,v 1.12 1998/02/02 16:35:46 bgrayson Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.11 1997/10/19 20:35:36 mromberg Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.12 1998/02/02 16:35:46 bgrayson Exp $"
 
 #include <X11/Xresource.h>
 
@@ -49,9 +49,9 @@ static XrmOptionDescRec options[] = {
 //  on/off flag.  Now, we have -net for on/off, and networkBandwidth
 //  for bandwidth, with the alias networkBW, and network for backwards
 //  compatibility.
-{ "-network", "*networkBandwidth", XrmoptionSepArg, (caddr_t) NULL },
-{ "-networkBW", "*networkBandwidth", XrmoptionSepArg, (caddr_t) NULL },
-{ "-networkBandwidth", "*networkBandwidth", XrmoptionSepArg, (caddr_t) NULL },
+{ "-network", "*netBandwidth", XrmoptionSepArg, (caddr_t) NULL },
+{ "-networkBW", "*netBandwidth", XrmoptionSepArg, (caddr_t) NULL },
+{ "-networkBandwidth", "*netBandwidth", XrmoptionSepArg, (caddr_t) NULL },
 
 // Page Meter
 { "-page", "*page", XrmoptionNoArg, "False" },
