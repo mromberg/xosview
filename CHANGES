@@ -1,4 +1,4 @@
-  /*  $Id: CHANGES,v 1.8 1998/03/30 20:51:57 bgrayson Exp $  */
+  /*  $Id: CHANGES,v 1.9 1998/04/06 03:54:42 bgrayson Exp $  */
 Changes since xosview-1.5.1, in no particular order:
 
   Much better support for FreeBSD, thanks to Tom Pavel!
@@ -9,6 +9,10 @@ Changes since xosview-1.5.1, in no particular order:
 
   Finally found the missing 'else' that was causing the net meter
     in particular to occasionally overwrite the label.
+  
+  Found 32-bit-wrap case that was also causing the netmeter grief.
+
+  Bitmeter class drawing routine tweaked.
 
 Changes since xosview-1.5.0, in no particular order:
 
