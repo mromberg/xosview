@@ -12,17 +12,23 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.h,v 1.3 1998/10/20 19:37:35 bgrayson Exp $
+// $Id: pagemeter.h,v 1.4 2001/10/09 02:41:30 bgrayson Exp $
 //
 #ifndef _PAGEMETER_H_
 #define _PAGEMETER_H_
 
-#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.3 1998/10/20 19:37:35 bgrayson Exp $"
+#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.4 2001/10/09 02:41:30 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 #if defined(UVM)
 #include <sys/param.h>
+#if defined(XOSVIEW_NETBSD) && (__NetBSD_Version__ <= 105010000)
+// Earlier versions of NetBSD still required vm/vm.h to be included.
 #include <vm/vm.h>
+#else
+// No includes needed -- uvm_extern.h is now self-contained.  Noticed
+// by Bernd Ernesti.
+#endif
 #include <uvm/uvm_extern.h>
 #else
 #include <sys/vmmeter.h>
