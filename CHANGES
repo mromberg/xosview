@@ -1,5 +1,6 @@
-  /*  $Id: CHANGES,v 1.13 1998/06/01 21:16:57 bgrayson Exp $  */
+  /*  $Id: CHANGES,v 1.14 1998/10/03 23:04:52 mromberg Exp $  */
 Changes since xosview-1.6.1:
+  Fixes to work with linux/alpha.
   BSD directories merged -- now a single bsd subdir shared by
     NetBSD, FreeBSD, and OpenBSD.
 
