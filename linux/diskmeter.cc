@@ -3,7 +3,7 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-// $Id: diskmeter.cc,v 1.2 1999/01/31 09:12:40 mromberg Exp $
+// $Id: diskmeter.cc,v 1.3 1999/01/31 12:54:30 mcnab Exp $
 //
 
 #include "diskmeter.h"
@@ -67,10 +67,18 @@ void DiskMeter::getdiskinfo( void )
     stats >>one >> two >> three >> four;
     // assume each "unit" is 4k.  This could very well be wrong.
     unsigned long int curr = (one + two + three + four) * 4 * 1024;
-    fields_[0] = (curr - prev_) / 1.0;
-    if (fields_[0] > total_)
-        total_ = fields_[0];
-    fields_[1] = total_ - fields_[0];
+    if( prev_ )
+    {
+    	fields_[0] = (curr - prev_) / 1.0;
+    	if (fields_[0] > total_)
+        	total_ = fields_[0];
+    	fields_[1] = total_ - fields_[0];
+    }
+    else 
+    {
+		fields_[0] = 0;
+		fields_[1] = 0;
+    }
 
     prev_ = curr;
 
