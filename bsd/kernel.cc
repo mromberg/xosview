@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.31 1998/10/13 18:56:30 bgrayson Exp $
+// $Id: kernel.cc,v 1.32 1998/10/20 19:13:49 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -61,7 +61,7 @@
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.31 1998/10/13 18:56:30 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.32 1998/10/20 19:13:49 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -83,8 +83,7 @@ static struct nlist nlst[] =
 #endif
 #define VMMETER_SYM_INDEX	2
 
-#ifndef XOSVIEW_FREEBSD	/*  FreeBSD doesn't have a diskmeter yet.  */
-
+#ifndef XOSVIEW_FREEBSD	/*  NetBSD has a disklist, which FreeBSD doesn't...  */
 { "_disklist" },
 #define DISKLIST_SYM_INDEX	3
 { "_disklist" },
