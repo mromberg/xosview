@@ -13,14 +13,14 @@
 //    authors for a copy.
 //
 //
-// $Id: loadmeter.cc,v 1.15 2002/03/22 03:23:40 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.16 2003/10/09 04:23:40 bgrayson Exp $
 //
 #include <stdlib.h>  //  for getloadavg()
 #include "general.h"
 #include "loadmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: loadmeter.cc,v 1.15 2002/03/22 03:23:40 bgrayson Exp $");
+CVSID("$Id: loadmeter.cc,v 1.16 2003/10/09 04:23:40 bgrayson Exp $");
 CVSID_DOT_H(LOADMETER_H_CVSID);
 
 LoadMeter::LoadMeter( XOSView *parent )
@@ -56,7 +56,7 @@ void LoadMeter::checkResources( void ){
     //  prevent this whole problem, the load meter can not be a decay
     //  meter.  The load is a decaying average kind of thing anyway,
     //  so having a decaying load average is redundant.
-    cerr << "Warning:  The loadmeter can not be configured as a decay\n"
+    std::cerr << "Warning:  The loadmeter can not be configured as a decay\n"
          << "  meter.  See the source code (" << __FILE__ << ") for further\n"
          << "  details.\n";
     dodecay_ = 0;
