@@ -11,7 +11,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.30 1998/09/24 19:21:26 bgrayson Exp $
+// $Id: kernel.cc,v 1.31 1998/10/13 18:56:30 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -34,8 +34,11 @@
 
 #include <sys/socket.h>         /*  These two are needed for the  */
 #include <net/if.h>             /*    NetMeter helper functions.  */
-#if defined(XOSVIEW_FREEBSD) && (__FreeBSD_version >= 300000)
-#include <net/if_var.h>
+#if defined(XOSVIEW_FREEBSD)
+# include <osreldate.h>
+# if (__FreeBSD_version >= 300000)
+#  include <net/if_var.h>
+# endif
 #endif
 
 #include <sys/param.h>	/*  Needed by both UVM and swapctl stuff.  */
@@ -58,7 +61,7 @@
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.30 1998/09/24 19:21:26 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.31 1998/10/13 18:56:30 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
