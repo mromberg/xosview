@@ -2,7 +2,7 @@
 # Top level Makefile Template for xosview.
 #
 #
-# $Id: Makefile.top.in,v 1.21 1998/10/15 21:28:17 mromberg Exp $
+# $Id: Makefile.top.in,v 1.22 1999/01/25 20:44:38 bgrayson Exp $
 #
 include Makefile.config
 
@@ -102,8 +102,9 @@ checksource:
 	@echo "     strncmp, strncasecmp...."
 	@#  If egrep finds no matches, it returns as if it is an
 	@#  error.  Reverse that error code....
+	@#  We also should not check snprintf.cc, which calls vsprintf.
 	@sh -c 'egrep "strcmp|sprintf|strcat|strcmp|strcasecmp" \
-		*.cc *.h */*.cc */*.h; \
+		`echo *.cc *.h */*.cc */*.h | sed -e 's/snprintf.cc//'`; \
 		if [ $$? != 0 ]; then exit 0; else \
 		echo "***  Bad functions found -- error!"; exit 1; fi'
 
