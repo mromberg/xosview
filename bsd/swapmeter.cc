@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: swapmeter.cc,v 1.10 1997/07/10 03:51:03 bgrayson Exp $
+// $Id: swapmeter.cc,v 1.11 1997/07/10 05:15:41 bgrayson Exp $
 //
 #include "general.h"
 #include "swapmeter.h"
@@ -23,7 +23,7 @@
 #include <err.h>			//  For warnx.  BCG
 #include <stdlib.h>		//  For atoi().  BCG
 
-CVSID("$Id: swapmeter.cc,v 1.10 1997/07/10 03:51:03 bgrayson Exp $");
+CVSID("$Id: swapmeter.cc,v 1.11 1997/07/10 05:15:41 bgrayson Exp $");
 CVSID_DOT_H(SWAPMETER_H_CVSID);
 
 static int doSwap = 1;
@@ -42,8 +42,8 @@ SwapMeter::SwapMeter( XOSView *parent )
 #else
   warnx("The kernel does not seem to have the symbols needed for the\n"
   "SwapMeter.  If your kernel is newer than 1.2F, but xosview was\n"
-  "compiled on an older system, then recompile xosview and it \n"
-  "will automatically adjust to using swapctl() when needed.\n"
+  "compiled on an older system, then recompile xosview on a 1.2G or later\n"
+  "system and it will automatically adjust to using swapctl() when needed.\n"
   "\nIf this is not the case (kernel before version 1.2G), make sure the\n"
   "running kernel is /netbsd, or use the -N flag for xosview to specify\n"
   "an alternate kernel file.\n"
