@@ -13,7 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.38 1999/07/06 04:09:30 bgrayson Exp $
+// $Id: kernel.cc,v 1.39 2000/04/10 04:26:35 bgrayson Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -89,7 +89,7 @@ __END_DECLS
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.38 1999/07/06 04:09:30 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.39 2000/04/10 04:26:35 bgrayson Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -378,7 +378,6 @@ BSDGetNetInOut (long long * inbytes, long long * outbytes) {
 
   struct ifnet * ifnetp;
   struct ifnet ifnet;
-  //char ifname[256];
 
 #if (__FreeBSD_version < 300000) //werner May/29/98 quick hack for current
 
@@ -400,11 +399,19 @@ BSDGetNetInOut (long long * inbytes, long long * outbytes) {
     //  Now, dereference the pointer to get the ifnet struct.
     safe_kvm_read ((u_long) ifnetp, &ifnet, sizeof(ifnet));
 #ifdef NET_DEBUG
+    char ifname[256];
+#ifdef NETBSD_64BIT_IFACE_CTRS
+    safe_kvm_read ((u_long) (((char*)ifnetp) + (&ifnet.if_xname[0] - (char*)&ifnet)), ifname, 256);
+    snprintf (ifname, 256, "%s", ifname);
+#else
     safe_kvm_read ((u_long) ifnet.if_name, ifname, 256);
     snprintf (ifname, 256, "%s%d", ifname, ifnet.if_unit);
+#endif
     printf ("Interface name is %s\n", ifname);
-    printf ("Ibytes: %8ld Obytes %8ld\n", ifnet.if_ibytes, ifnet.if_obytes);
-    printf ("Ipackets:  %8ld\n", ifnet.if_ipackets);
+    printf ("Ibytes: %8llu Obytes %8llu\n",
+	(unsigned long long) ifnet.if_ibytes,
+	(unsigned long long) ifnet.if_obytes);
+    printf ("Ipackets:  %8llu\n", (unsigned long long) ifnet.if_ipackets);
 #endif
     *inbytes  += ifnet.if_ibytes;
     *outbytes += ifnet.if_obytes;
