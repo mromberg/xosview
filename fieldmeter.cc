@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.8 1996/12/26 20:18:47 mromberg Exp $
+// $Id: fieldmeter.cc,v 1.9 1997/01/14 17:44:45 bgrayson Exp $
 //
 #include <fstream.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.8 1996/12/26 20:18:47 mromberg Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.9 1997/01/14 17:44:45 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -168,22 +168,29 @@ void FieldMeter::drawused( int manditory ){
        *  being printed as 1020, which is wider than what can fit)  */
       /*  However, we do divide by 1024, so a K really is a K, and not
        *  1000.  */
-    if (used_ >= 1000*1000*1000)
+      /*  In addition, we need to compare against 999.5*1000, because
+       *  999.5, if not rounded up to 1.0 K, will be rounded by the
+       *  %.0f to be 1000, which is too wide.  So anything at or above
+       *  999.5 needs to be bumped up.  */
+    if (used_ >= 999.5*1000*1000)
 	{scale='G'; scaled_used = used_/1024/1024/1024;}
-    if (used_ >= 1000*1000)
+    if (used_ >= 999.5*1000)
 	{scale='M'; scaled_used = used_/1024/1024;}
-    else if (used_ >= 1000)
+    else if (used_ >= 999.5)
 	{scale='K'; scaled_used = used_/1024;}
     else {scale=' '; scaled_used = used_;}
-      /*  For now, we can only print 2 digits without overprinting the
-       *  legends.  */
+      /*  For now, we can only print 3 characters, plus the optional
+       *  suffix, without overprinting the legends.  Thus, we can
+       *  print 965, or we can print 34, but we can't print 34.7 (the
+       *  decimal point takes up one character).  bgrayson   */
     if (scaled_used == 0.0)
       sprintf (buf, "0");
     else if (scaled_used < 9.95)  //  9.95 or above would get
 				  //  rounded to 10.0, which is too wide.
       sprintf (buf, "%.1f%c", scaled_used, scale);
-    else if (scaled_used < 99.5)
-      sprintf (buf, "%.0f%c", scaled_used, scale);
+    /*  We don't need to check against 99.5 -- it all gets %.0f.  */
+    /*else if (scaled_used < 99.5)*/
+      /*sprintf (buf, "%.0f%c", scaled_used, scale);*/
     else 
       sprintf (buf, "%.0f%c", scaled_used, scale);
   }
