@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: fieldmeterdecay.cc,v 1.9 1997/02/14 07:21:58 bgrayson Exp $
+// $Id: fieldmeterdecay.cc,v 1.10 1998/04/06 03:24:17 bgrayson Exp $
 //
 
 // In order to use the FieldMeterDecay class in place of a FieldMeter class in
@@ -34,7 +34,7 @@
 #include "fieldmeterdecay.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeterdecay.cc,v 1.9 1997/02/14 07:21:58 bgrayson Exp $");
+CVSID("$Id: fieldmeterdecay.cc,v 1.10 1998/04/06 03:24:17 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETERDECAY_H_CVSID);
 
 FieldMeterDecay::FieldMeterDecay( XOSView *parent,
@@ -136,13 +136,13 @@ void FieldMeterDecay::drawfields( int manditory ){
       //    Let's correct for that here.
     if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
       if (!checkX(x, twidth))
-        cerr <<"ONE" <<endl;
+        cerr <<__FILE__ << ":" << __LINE__ <<endl;
       parent_->drawFilledRectangle( x, y_, twidth, halfheight );
     }
 
     if ( manditory || (decay_[i] != lastDecayval_[i]) ){
       if (!checkX(decayx, decaytwidth))
-        cerr <<"ONE" <<endl;
+        cerr <<__FILE__ << ":" << __LINE__ <<endl;
       parent_->drawFilledRectangle( decayx, y_+halfheight+1,
             decaytwidth, height_ - halfheight-1);
     }

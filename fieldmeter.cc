@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.cc,v 1.12 1998/03/30 20:30:21 bgrayson Exp $
+// $Id: fieldmeter.cc,v 1.13 1998/04/06 03:24:16 bgrayson Exp $
 //
 #include <fstream.h>
 #include <stdio.h>
@@ -12,7 +12,7 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.12 1998/03/30 20:30:21 bgrayson Exp $");
+CVSID("$Id: fieldmeter.cc,v 1.13 1998/04/06 03:24:16 bgrayson Exp $");
 CVSID_DOT_H(FIELDMETER_H_CVSID);
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title, 
@@ -271,7 +271,7 @@ bool FieldMeter::checkX(int x, int width) const {
     cerr << "FieldMeter::checkX() : bad horiz values for meter : "
          << name() << endl;
 
-    cerr <<"total_ = " <<total_ <<endl;
+    cerr <<"value "<<x<<", width "<<width<<", total_ = "<<total_<<endl;
 
     for (int i = 0 ; i < numfields_ ; i++)
       cerr <<"fields_[" <<i <<"] = " <<fields_[i] <<",";
