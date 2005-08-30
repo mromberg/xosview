@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.24 2004/05/21 23:12:40 romberg Exp $
+// $Id: netmeter.cc,v 1.25 2005/08/30 14:15:54 eile Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -148,8 +148,8 @@ void NetMeter::checkeventNew(void)
         }
 
     std::string str_in;
-    unsigned long in, out, ig;
-    unsigned long totin = 0, totout = 0;
+    unsigned long long in, out, ig;
+    unsigned long long totin = 0, totout = 0;
     char buf[1024];
 
     fields_[2] = maxpackets_;     // assume no
@@ -182,7 +182,7 @@ void NetMeter::checkeventNew(void)
                 continue;
               else
                 {
-                  in = strtoul(str_in.c_str(), NULL, 10);
+                  in = strtoull(str_in.c_str(), NULL, 10);
                   ifs >> ig >> ig >> ig >> ig >> ig >> ig >> ig >> out;
                 }
 
@@ -242,8 +242,8 @@ void NetMeter::checkeventOld(void)
         }
 
     char c;
-    unsigned long sa, da, sm, dm, bytes;
-    unsigned long tot_in = 0, tot_out = 0;
+    unsigned long long sa, da, sm, dm, bytes;
+    unsigned long long tot_in = 0, tot_out = 0;
 
     ifs.ignore(1024, '\n');
 

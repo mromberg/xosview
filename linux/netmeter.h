@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.h,v 1.5 1999/11/07 20:22:11 romberg Exp $
+// $Id: netmeter.h,v 1.6 2005/08/30 14:15:56 eile Exp $
 //
 #ifndef _NETMETER_H_
 #define _NETMETER_H_
@@ -29,7 +29,7 @@ protected:
 private:
   int _ipsock;
   Timer _timer;
-  unsigned long _lastBytesIn, _lastBytesOut;
+  unsigned long long _lastBytesIn, _lastBytesOut;
   char *_netfilename;
   bool _usechains;
   int _bytesInDev;
