@@ -12,7 +12,7 @@
 ! **********************************************************************
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.46 2004/06/15 16:37:09 romberg Exp $
+!  $Id: Xdefaults.in,v 1.47 2005/09/23 09:46:50 eile Exp $
 
 ! General Resources
 
@@ -47,6 +47,7 @@ xosview*loadWarnThreshold:  2
 xosview*loadDecay:          False
 xosview*loadGraph:          False
 xosview*loadUsedFormat:     float
+xosview*loadCpuSpeed:       True
 
 ! Gfx Meter Resources ( Irix )
 
@@ -187,6 +188,12 @@ xosview*batteryLeftColor:   orange
 xosview*batteryUsedColor:   aquamarine
 xosview*batteryPriority:    50
 xosview*batteryUsedFormat:  percent
+xosview*batteryChargeColor: green
+xosview*batteryFullColor:   magenta
+xosview*batteryLowColor:    red
+xosview*batteryCritColor:   red
+xosview*batteryNoneColor:   grey
+
 
 ! Disk Meter Resources
 
