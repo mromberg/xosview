@@ -7,16 +7,19 @@
 //  Only small changes were made on my part (M.R.)
 //  Small changes for Irix 6.5 port Stefan Eilemann <eile@sgi.com>
 //
-// $Id: loadmeter.cc,v 1.3 2002/02/18 08:24:03 eile Exp $
+// $Id: loadmeter.cc,v 1.4 2005/09/23 09:58:44 eile Exp $
 //
 #include "loadmeter.h"
 #include "xosview.h"
 #include <stdlib.h>
 #include <unistd.h>
+#include <iostream>
 
 #ifndef FSCALE
 #define FSCALE  (1 << 8)
 #endif
+
+using namespace std;
 
 LoadMeter::LoadMeter(XOSView *parent)
         : FieldMeterGraph( parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0 )

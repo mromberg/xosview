@@ -1,5 +1,5 @@
 //  
-// $Id: gfxmeter.cc,v 1.4 2003/04/25 14:09:44 eile Exp $
+// $Id: gfxmeter.cc,v 1.5 2005/09/23 09:58:44 eile Exp $
 //  Initial port performed by Stefan Eilemann (eile@sgi.com)
 //
 
@@ -9,6 +9,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <invent.h>
+#include <iostream>
+
+using namespace std;
 
 // GfxMeter display swapbuffers per second. max is base rate for one gfx pipe.
 
