@@ -1,17 +1,17 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Host.cc,v 1.6 2003/10/09 02:48:12 bgrayson Exp $
+// $Id: Host.cc,v 1.7 2006/02/18 04:33:04 romberg Exp $
 //
 #include <stdlib.h>
 #include <string.h>
 #include "general.h"
 #include "Host.h"
 
-CVSID("$Id: Host.cc,v 1.6 2003/10/09 02:48:12 bgrayson Exp $");
+CVSID("$Id: Host.cc,v 1.7 2006/02/18 04:33:04 romberg Exp $");
 CVSID_DOT_H(HOST_H_CVSID);
 
 #if defined(__hpux__) || defined(__hpux)
@@ -38,12 +38,12 @@ Host::Host(unsigned int addr){
 }
 
 bool Host::constuct(const struct in_addr *address){
-  struct hostent *hent = gethostbyaddr((char *)address, sizeof(in_addr), 
+  struct hostent *hent = gethostbyaddr((char *)address, sizeof(in_addr),
                                        AF_INET);
   bool tmp = check(hent);
 
   copy(hent);
-  
+
   return tmp;
 }
 
@@ -194,5 +194,5 @@ std::ostream &Host::print(std::ostream& os) const {
       os <<", ";
   }
 
-  return os;  
+  return os;
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2002, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  Modifications to support dynamic addresses by:
 //    Michael N. Lipp (mnl@dtro.e-technik.th-darmstadt.de)
@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.25 2005/08/30 14:15:54 eile Exp $
+// $Id: netmeter.cc,v 1.26 2006/02/18 04:33:06 romberg Exp $
 //
 
 //-----------------------------------------------------------------------

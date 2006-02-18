@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 1994, 1995, 2004 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2004, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.h,v 1.5 2004/05/22 06:24:15 romberg Exp $
+// $Id: cpumeter.h,v 1.6 2006/02/18 04:33:06 romberg Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_

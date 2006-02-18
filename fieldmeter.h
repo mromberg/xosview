@@ -1,15 +1,15 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: fieldmeter.h,v 1.14 1999/11/19 09:50:20 bgrayson Exp $
+// $Id: fieldmeter.h,v 1.15 2006/02/18 04:33:04 romberg Exp $
 //
 #ifndef _FIELDMETER_H_
 #define _FIELDMETER_H_
 
-#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.14 1999/11/19 09:50:20 bgrayson Exp $"
+#define FIELDMETER_H_CVSID "$Id: fieldmeter.h,v 1.15 2006/02/18 04:33:04 romberg Exp $"
 
 #include "meter.h"
 #include "timer.h"
@@ -17,10 +17,10 @@
 class FieldMeter : public Meter {
 public:
   FieldMeter( XOSView *parent, int numfields,
-	      const char *title = "", const char *legend = "", 
+	      const char *title = "", const char *legend = "",
 	      int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
   virtual ~FieldMeter( void );
-  
+
   virtual void drawfields( int manditory = 0 );
   void setfieldcolor( int field, const char *color );
   void setfieldcolor( int field, unsigned long color);
@@ -36,7 +36,7 @@ public:
   void draw( void );
   void checkevent( void );
   void disableMeter ( void );
-  
+
   virtual void checkResources( void );
 
 protected:

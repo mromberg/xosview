@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 1994, 1995, 2002 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2002, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: MeterMaker.cc,v 1.23 2004/06/15 16:37:10 romberg Exp $
+// $Id: MeterMaker.cc,v 1.24 2006/02/18 04:33:06 romberg Exp $
 //
 #include "MeterMaker.h"
 #include "xosview.h"

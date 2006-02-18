@@ -1,16 +1,16 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Host.h,v 1.5 2003/10/09 03:41:43 bgrayson Exp $
+// $Id: Host.h,v 1.6 2006/02/18 04:33:04 romberg Exp $
 //
 
 #ifndef _Host_h
 #define _Host_h
 
-#define HOST_H_CVSID "$Id: Host.h,v 1.5 2003/10/09 03:41:43 bgrayson Exp $"
+#define HOST_H_CVSID "$Id: Host.h,v 1.6 2006/02/18 04:33:04 romberg Exp $"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -58,8 +58,8 @@ public:
   int addrLength(void) const { return _hent.h_length; }
 
   int numAddresses(void) const { return _numAddresses; }
-  struct in_addr *address(int num) const { 
-    return (in_addr *)_hent.h_addr_list[num]; 
+  struct in_addr *address(int num) const {
+    return (in_addr *)_hent.h_addr_list[num];
   }
 
   // Linux will choke and die inside of inet_ntoa() when

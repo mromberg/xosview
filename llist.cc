@@ -1,10 +1,10 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: llist.cc,v 1.5 2003/10/09 03:36:41 bgrayson Exp $
+// $Id: llist.cc,v 1.6 2006/02/18 04:33:04 romberg Exp $
 //
 #ifdef HAVE_IOSTREAM
 #include <iostream>
@@ -14,7 +14,7 @@
 #include "general.h"
 #include "llist.h"
 
-CVSID("$Id: llist.cc,v 1.5 2003/10/09 03:36:41 bgrayson Exp $");
+CVSID("$Id: llist.cc,v 1.6 2006/02/18 04:33:04 romberg Exp $");
 CVSID_DOT_H(LLIST_H_CVSID);
 
 LList::LNode::LNode( void *data ){

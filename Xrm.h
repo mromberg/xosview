@@ -1,17 +1,17 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Xrm.h,v 1.6 2003/10/09 03:23:58 bgrayson Exp $
+// $Id: Xrm.h,v 1.7 2006/02/18 04:33:04 romberg Exp $
 //
 #ifndef _Xrm_h
 #define _Xrm_h
 
 #include "bool.h"
 
-#define XRM_H_CVSID "$Id: Xrm.h,v 1.6 2003/10/09 03:23:58 bgrayson Exp $"
+#define XRM_H_CVSID "$Id: Xrm.h,v 1.7 2006/02/18 04:33:04 romberg Exp $"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>

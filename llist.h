@@ -1,15 +1,15 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: llist.h,v 1.3 1996/11/19 02:13:30 bgrayson Exp $
+// $Id: llist.h,v 1.4 2006/02/18 04:33:04 romberg Exp $
 //
 #ifndef __LLIST_H__
 #define __LLIST_H__
 
-#define LLIST_H_CVSID "$Id: llist.h,v 1.3 1996/11/19 02:13:30 bgrayson Exp $"
+#define LLIST_H_CVSID "$Id: llist.h,v 1.4 2006/02/18 04:33:04 romberg Exp $"
 
 #include <stdio.h>
 

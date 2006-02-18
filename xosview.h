@@ -1,15 +1,15 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.h,v 1.12 2002/03/24 23:13:54 zedpobre Exp $
+// $Id: xosview.h,v 1.13 2006/02/18 04:33:04 romberg Exp $
 //
 #ifndef _XOSVIEW_H_
 #define _XOSVIEW_H_
 
-#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.12 2002/03/24 23:13:54 zedpobre Exp $"
+#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.13 2006/02/18 04:33:04 romberg Exp $"
 
 #include "xwin.h"
 #include "Xrm.h"  //  For Xrm resource manager class.
@@ -55,7 +55,7 @@ protected:
   };
 
   MeterNode *meters_;
-  
+
   int caption_, legend_, xoff_, yoff_, nummeters_, usedlabels_;
   int hmargin_, vmargin_, vspacing_;
   unsigned long sleeptime_, usleeptime_;

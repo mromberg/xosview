@@ -1,6 +1,6 @@
-//  
-//  The original FieldMeter class is Copyright (c) 1994 by Mike Romberg 
-//    ( romberg@fsl.noaa.gov )
+//
+//  The original FieldMeter class is Copyright (c) 1994, 2006 by Mike Romberg
+//    ( mike.romberg@noaa.gov )
 //
 //  Modifications from FieldMeter class done in Oct. 1995
 //    by Brian Grayson ( bgrayson@netbsd.org )
@@ -8,7 +8,7 @@
 //  Modifications from FieldMeterDecay class done in Oct. 1998
 //    by Scott McNab ( jedi@tartarus.uwa.edu.au )
 //
-// $Id: fieldmetergraph.cc,v 1.8 2003/10/09 03:34:11 bgrayson Exp $
+// $Id: fieldmetergraph.cc,v 1.9 2006/02/18 04:33:04 romberg Exp $
 //
 
 // In order to use the FieldMeterGraph class in place of a FieldMeter class in
@@ -21,7 +21,7 @@
 //       FieldMeter().
 //   4.  Make the meter call FieldMeterGraph::checkResources(),
 //       to pick up graphNumCols resource.
-//   5.  Make the checkResources () function in the meter set the 
+//   5.  Make the checkResources () function in the meter set the
 //	 useGraph_ variable according to the, e.g., xosview*cpuGraph resource.
 
 #ifdef HAVE_FSTREAM
@@ -35,21 +35,21 @@
 #include "fieldmetergraph.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmetergraph.cc,v 1.8 2003/10/09 03:34:11 bgrayson Exp $");
+CVSID("$Id: fieldmetergraph.cc,v 1.9 2006/02/18 04:33:04 romberg Exp $");
 CVSID_DOT_H(FIELDMETERGRAPH_H_CVSID);
 
 FieldMeterGraph::FieldMeterGraph( XOSView *parent,
                 int numfields, const char *title,
-                const char *legend, int docaptions, int dolegends, 
+                const char *legend, int docaptions, int dolegends,
   int dousedlegends )
-: FieldMeterDecay (parent, numfields, title, legend, docaptions, 
+: FieldMeterDecay (parent, numfields, title, legend, docaptions,
   dolegends, dousedlegends)
 {
 
 	useGraph_ = 0;
 	heightfield_ = NULL;
 	firstTimeDrawn_ = 1;
-	
+
 	// set number of columns to a reasonable default in case we can't
 	// find the resource
 	setNumCols( 100 );
@@ -84,7 +84,7 @@ void FieldMeterGraph::drawfields( int manditory )
 		if( numfields_ > 0 && graphNumCols_ > 0 )
 		{
 			heightfield_ = new float [numfields_*graphNumCols_];
-	
+
 			for( i = 0; i < graphNumCols_; i++ )
 			{
 				for( j = 0; j < numfields_; j++ )
@@ -223,4 +223,3 @@ void FieldMeterGraph::setNumCols( int n )
 	heightfield_ = NULL;
 
 }
-

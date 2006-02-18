@@ -1,19 +1,19 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: meter.cc,v 1.10 2005/09/23 09:46:50 eile Exp $
+// $Id: meter.cc,v 1.11 2006/02/18 04:33:04 romberg Exp $
 //
 #include "general.h"
 #include "meter.h"
 #include "xosview.h"
 
-CVSID("$Id: meter.cc,v 1.10 2005/09/23 09:46:50 eile Exp $");
+CVSID("$Id: meter.cc,v 1.11 2006/02/18 04:33:04 romberg Exp $");
 CVSID_DOT_H(METER_H_CVSID);
 
-Meter::Meter( XOSView *parent, const char *title, const char *legend, 
+Meter::Meter( XOSView *parent, const char *title, const char *legend,
               int docaptions, int dolegends, int dousedlegends ) {
   title_ = legend_ = NULL;
   Meter::title( title );
@@ -68,5 +68,3 @@ void Meter::resize( int x, int y, int width, int height ){
   height_ = (height>=0) ? height : 0; // beware of values < 0 !
   width_ &= ~1;                       // only allow even width_ values
 }
-
-

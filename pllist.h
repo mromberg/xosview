@@ -1,15 +1,15 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: pllist.h,v 1.3 1996/11/19 02:13:34 bgrayson Exp $
+// $Id: pllist.h,v 1.4 2006/02/18 04:33:04 romberg Exp $
 //
 #ifndef _pllist_h
 #define _pllist_h
 
-#define PLLIST_H_CVSID "$Id: pllist.h,v 1.3 1996/11/19 02:13:34 bgrayson Exp $"
+#define PLLIST_H_CVSID "$Id: pllist.h,v 1.4 2006/02/18 04:33:04 romberg Exp $"
 
 #include "llist.h"
 
@@ -32,12 +32,12 @@ class PLList : public LList
         int enqueue(const T data) { return LList::enqueue((void *)data); }
         T dequeue(void) { return (T)LList::dequeue(); }
 
-//        int insert(const T data, const K key) 
+//        int insert(const T data, const K key)
 //          { return LList::insert((void *)data, (void *)key); }
 //        T find(const K key) { return (T)LList::find((void *)key); }
-//        T removematch(const K key) 
+//        T removematch(const K key)
 //          { return (T)LList::removematch((void *)key); }
-        
+
         int putontop(const T data) { return LList::putontop((void *)data); }
         void remove(const T data) { LList::remove((void *)data); }
         T findn(int n) { return (T)LList::findn(n); }
@@ -67,12 +67,12 @@ class PSLList : public LList
         int enqueue(const T data) { return LList::enqueue((void *)data); }
         T dequeue(void) { return (T)LList::dequeue(); }
 
-        int insert(const T data, const K key) 
+        int insert(const T data, const K key)
           { return LList::insert((void *)data, (void *)key); }
         T find(const K key) { return (T)LList::find((void *)key); }
-        T removematch(const K key) 
+        T removematch(const K key)
           { return (T)LList::removematch((void *)key); }
-        
+
         int putontop(const T data) { return LList::putontop((void *)data); }
         void remove(const T data) { LList::remove((void *)data); }
         T findn(int n) { return (T)LList::findn(n); }

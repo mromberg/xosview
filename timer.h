@@ -1,15 +1,15 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: timer.h,v 1.7 2003/10/09 03:37:04 bgrayson Exp $
+// $Id: timer.h,v 1.8 2006/02/18 04:33:04 romberg Exp $
 //
 #ifndef _TIMER_H_
 #define _TIMER_H_
 
-#define TIMER_H_CVSID "$Id: timer.h,v 1.7 2003/10/09 03:37:04 bgrayson Exp $"
+#define TIMER_H_CVSID "$Id: timer.h,v 1.8 2006/02/18 04:33:04 romberg Exp $"
 
 //
 //                 General purpose interval timer class
@@ -35,11 +35,11 @@ public:
   //       Once the new function appears to work fine, this whole
   //       region can be removed from the file.    bgrayson, 11/99
 #if 0
-  LONG_LONG report( void ) const { 
+  LONG_LONG report( void ) const {
     err << "This function Timer::report() should no longer be used!\n";
     exit(-1);
     return (stoptime_.tv_sec - starttime_.tv_sec) * 1000000
-           + stoptime_.tv_usec - starttime_.tv_usec; 
+           + stoptime_.tv_usec - starttime_.tv_usec;
   }
 #endif
   //  This one uses doubles as the return value, to avoid
@@ -48,7 +48,7 @@ public:
     return (stoptime_.tv_sec - starttime_.tv_sec) * 1000000.0
       + stoptime_.tv_usec - starttime_.tv_usec;
   }
-  
+
   std::ostream &printOn(std::ostream &os) const {
     return os <<"Timer : ["
       <<"starttime_ = " <<TimeVal(starttime_)

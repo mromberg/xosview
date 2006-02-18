@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
-// $Id: memmeter.cc,v 1.13 2003/10/20 01:37:36 romberg Exp $
+// $Id: memmeter.cc,v 1.14 2006/02/18 04:33:06 romberg Exp $
 //
 #include "memmeter.h"
 #include "xosview.h"

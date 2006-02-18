@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //  Most of this code was written by Werner Fink <werner@suse.de>.
 //  Only small changes were made on my part (M.R.)
 //
-// $Id: loadmeter.cc,v 1.10 2005/09/23 09:46:50 eile Exp $
+// $Id: loadmeter.cc,v 1.11 2006/02/18 04:33:06 romberg Exp $
 //
 #include "loadmeter.h"
 #include "xosview.h"
@@ -155,4 +155,3 @@ void LoadMeter::getspeedinfo( void ){
   speedinfo.close(); speedinfo.clear();
 
 }
-

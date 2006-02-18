@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 1997, 2005 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1997, 2005, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: btrymeter.h,v 1.4 2005/09/23 09:46:50 eile Exp $
+// $Id: btrymeter.h,v 1.5 2006/02/18 04:33:06 romberg Exp $
 //
 #ifndef _BTRYMETER_H_
 #define _BTRYMETER_H_

@@ -1,10 +1,10 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: swapmeter.h,v 1.3 1998/10/15 21:28:18 mromberg Exp $
+// $Id: swapmeter.h,v 1.4 2006/02/18 04:33:06 romberg Exp $
 //
 #ifndef _SWAPMETER_H_
 #define _SWAPMETER_H_
@@ -18,7 +18,7 @@ public:
   SwapMeter( XOSView *parent );
   ~SwapMeter( void );
 
-  const char *name( void ) const { return "SwapMeter"; }  
+  const char *name( void ) const { return "SwapMeter"; }
   void checkevent( void );
 
   void checkResources( void );

@@ -1,15 +1,15 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: timeval.h,v 1.5 2003/10/09 03:42:31 bgrayson Exp $
+// $Id: timeval.h,v 1.6 2006/02/18 04:33:04 romberg Exp $
 //
 #ifndef _TIMEVAL_H_
 #define _TIMEVAL_H_
 
-#define TIMEVAL_H_CVSID "$Id: timeval.h,v 1.5 2003/10/09 03:42:31 bgrayson Exp $"
+#define TIMEVAL_H_CVSID "$Id: timeval.h,v 1.6 2006/02/18 04:33:04 romberg Exp $"
 
 #include <sys/time.h>
 #ifdef HAVE_IOSTREAM

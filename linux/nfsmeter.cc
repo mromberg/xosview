@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2002, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  Modifications to support dynamic addresses by:
 //    Michael N. Lipp (mnl@dtro.e-technik.th-darmstadt.de)
@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: nfsmeter.cc,v 1.3 2004/06/15 16:37:10 romberg Exp $
+// $Id: nfsmeter.cc,v 1.4 2006/02/18 04:33:06 romberg Exp $
 //
 
 #include "nfsmeter.h"
