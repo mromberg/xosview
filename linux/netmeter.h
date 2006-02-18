@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.h,v 1.7 2006/02/18 04:33:06 romberg Exp $
+// $Id: netmeter.h,v 1.8 2006/02/18 05:35:59 romberg Exp $
 //
 #ifndef _NETMETER_H_
 #define _NETMETER_H_
@@ -25,6 +25,7 @@ public:
   void checkResources( void );
 protected:
   float maxpackets_;
+  std::string netIface_;
 
 private:
   int _ipsock;

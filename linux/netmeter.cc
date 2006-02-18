@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.26 2006/02/18 04:33:06 romberg Exp $
+// $Id: netmeter.cc,v 1.27 2006/02/18 05:35:59 romberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -119,6 +119,7 @@ void NetMeter::checkResources( void ){
   useGraph_ = parent_->isResourceTrue( "netGraph" );
   dodecay_ = parent_->isResourceTrue( "netDecay" );
   SetUsedFormat (parent_->getResource("netUsedFormat"));
+  netIface_ = parent_->getResource( "netIface" );
 
   _ipsock = socket(AF_INET, SOCK_DGRAM, 0);
   if (_ipsock == -1) {
@@ -171,13 +172,30 @@ void NetMeter::checkeventNew(void)
         }
     else
         {
+	  std::string ifname;
 	  ifs.ignore(1024, '\n');
 	  ifs.ignore(1024, '\n');
 
 	  while (ifs)
 	      {
-	      ifs.ignore(1024, ':');
-              ifs >> str_in;
+		if (netIface_ == "False" ) 
+		  {
+		    ifs.ignore(1024, ':');
+		  }
+		else
+		  {
+		    ifs.get(buf, 128, ':');
+		    ifname = buf;
+		    ifs.ignore(1, ':');
+		    ifname.erase(0, ifname.find_first_not_of(" ") );
+		    if (ifname != netIface_) 
+		      {
+			ifs.ignore(1024,'\n');
+			continue;
+		      }
+		  }
+
+	      ifs >> str_in;
               if (str_in == "No")
                 continue;
               else

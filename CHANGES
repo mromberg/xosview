@@ -1,4 +1,4 @@
-  /*  $Id: CHANGES,v 1.51 2006/02/18 05:23:27 romberg Exp $  */
+  /*  $Id: CHANGES,v 1.52 2006/02/18 05:35:59 romberg Exp $  */
 
 Changes since xosview-1.8.2
  - NFSDStats ans NFSStats Graph, Decay and UsedMode are now configurable
@@ -11,6 +11,9 @@ Changes since xosview-1.8.2
 
  - Fix battery meter for case where lack of APM report -1%.  Thanks
    to Gunnar Wolf.
+
+ - Allow netmeter to specify, via the Xresource xosview*netIface,
+   which network interface it will monitor.  Patch thanks to Gunnar Wolf.
 
 Changes since xosview-1.8.1
  - Applied sourceforge patch 927112 from Russell Reed which fixes
