@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.49 2003/10/14 01:53:17 bgrayson Exp $
+// $Id: kernel.cc,v 1.50 2006/02/18 07:57:21 romberg Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -120,7 +120,7 @@ __END_DECLS
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
 
-CVSID("$Id: kernel.cc,v 1.49 2003/10/14 01:53:17 bgrayson Exp $");
+CVSID("$Id: kernel.cc,v 1.50 2006/02/18 07:57:21 romberg Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -817,11 +817,11 @@ BSDGetDiskXFerBytes (unsigned long long *bytesXferred) {
 #if defined(NETBSD_1_6A)
   // Use the new sysctl to do this for us.
   int mib[3] = {CTL_HW, HW_DISKSTATS, sizeof(struct disk_sysctl)};
-  size_t sysctl_size = NetBSD_N_Drives * sizeof(struct disk_sysctl);
+  size_t sysctl_sz = NetBSD_N_Drives * sizeof(struct disk_sysctl);
   struct disk_sysctl drive_stats[NetBSD_N_Drives];
 
   // Do the sysctl.
-  if (sysctl(mib, 3, drive_stats, &sysctl_size, NULL, 0) < 0) {
+  if (sysctl(mib, 3, drive_stats, &sysctl_sz, NULL, 0) < 0) {
     err(1, "sysctl hw.diskstats failed");
   }
 

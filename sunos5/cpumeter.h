@@ -1,5 +1,5 @@
 //  
-// $Id: cpumeter.h,v 1.3 1999/01/31 20:26:38 bgrayson Exp $
+// $Id: cpumeter.h,v 1.4 2006/02/18 07:57:21 romberg Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #ifndef _CPUMETER_H_
@@ -12,7 +12,7 @@
 
 class CPUMeter : public FieldMeterGraph {
  public:
-	CPUMeter(XOSView *parent, kstat_ctl_t *kcp, const int cpuid = 0);
+	CPUMeter(XOSView *parent, kstat_ctl_t *kcp, int cpuid = 0);
 	~CPUMeter(void);
 
 	const char *name(void) const { return "CPUMeter"; }

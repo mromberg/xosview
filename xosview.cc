@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.31 2006/02/18 04:33:04 romberg Exp $
+// $Id: xosview.cc,v 1.32 2006/02/18 07:57:21 romberg Exp $
 //
 #include <unistd.h>
 #include <stdlib.h>
@@ -22,7 +22,7 @@ static const char * const versionString = "xosview version: " XOSVIEW_VERSION;
 
 static const char NAME[] = "xosview@";
 
-#ifdef sgi
+#if !defined(__GNUC__)
 
 #define MIN(x,y)		\
 (				\
@@ -60,7 +60,7 @@ static const char NAME[] = "xosview@";
 
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.31 2006/02/18 04:33:04 romberg Exp $");
+CVSID("$Id: xosview.cc,v 1.32 2006/02/18 07:57:21 romberg Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 

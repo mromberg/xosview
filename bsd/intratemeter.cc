@@ -7,7 +7,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: intratemeter.cc,v 1.3 2003/10/09 04:20:06 bgrayson Exp $
+// $Id: intratemeter.cc,v 1.4 2006/02/18 07:57:21 romberg Exp $
 //
 #include <err.h>		//  For warnx.
 #include <stdlib.h>	//  For atoi.
@@ -15,7 +15,7 @@
 #include "intratemeter.h"
 #include "xosview.h"
 
-CVSID("$Id: intratemeter.cc,v 1.3 2003/10/09 04:20:06 bgrayson Exp $");
+CVSID("$Id: intratemeter.cc,v 1.4 2006/02/18 07:57:21 romberg Exp $");
 CVSID_DOT_H(IRQRATEMETER_H_CVSID);
 
 IrqRateMeter::IrqRateMeter( XOSView *parent )
@@ -48,7 +48,7 @@ void IrqRateMeter::checkResources( void ){
   dodecay_ = parent_->isResourceTrue("irqrateDecay");
   useGraph_ = parent_->isResourceTrue("irqrateGraph");
   SetUsedFormat (parent_->getResource("irqrateUsedFormat"));
-  total_ = 100;
+  total_ = 2000;
 
   //  Now, grab a sample.  I don't know if this is needed here.  BCG
   BSDGetIntrStats (lastirqs_);

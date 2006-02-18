@@ -11,13 +11,13 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-#define GENERAL_H_CVSID "$Id: general.h,v 1.6 2005/09/23 09:58:44 eile Exp $"
+#define GENERAL_H_CVSID "$Id: general.h,v 1.7 2006/02/18 07:57:21 romberg Exp $"
 
   /*  This file should be included by every .cc file, after any system
       includes but before any local includes.  It should NOT be included
       by any .h files unless there is a REALLY good reason.  */
 
-#ifndef __GNUC__
+#if !defined(__GNUC__) && !defined(__sun)
   /*  Every GNU system has _G_config.h, I believe, which tells us
       whether or not the bool define exists.  However, for simplicity,
       let's just redefine them all.  The following lines are directly

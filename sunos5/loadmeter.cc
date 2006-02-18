@@ -1,5 +1,5 @@
 //  
-// $Id: loadmeter.cc,v 1.5 1999/01/31 20:26:38 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.6 2006/02/18 07:57:21 romberg Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "loadmeter.h"
@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <kstat.h>
 /*#include <sys/loadavg.h>*/
+
+using std::cerr;
 
 LoadMeter::LoadMeter(XOSView *parent, kstat_ctl_t *_kc)
 	: FieldMeterGraph(parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0)
