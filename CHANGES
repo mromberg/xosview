@@ -1,9 +1,11 @@
-  /*  $Id: CHANGES,v 1.48 2004/06/15 16:37:09 romberg Exp $  */
+  /*  $Id: CHANGES,v 1.49 2006/02/18 05:11:26 romberg Exp $  */
 
 Changes since xosview-1.8.2
  - NFSDStats ans NFSStats Graph, Decay and UsedMode are now configurable
 
  - SunOS updates, compiles now cleanly with gcc 3.3.2
+
+ - Fix for linux intmeter for interrupts > 16 thanks to John Adams
 
 Changes since xosview-1.8.1
  - Applied sourceforge patch 927112 from Russell Reed which fixes
