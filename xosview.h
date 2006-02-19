@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.h,v 1.13 2006/02/18 04:33:04 romberg Exp $
+// $Id: xosview.h,v 1.14 2006/02/19 01:51:42 romberg Exp $
 //
 #ifndef _XOSVIEW_H_
 #define _XOSVIEW_H_
 
-#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.13 2006/02/18 04:33:04 romberg Exp $"
+#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.14 2006/02/19 01:51:42 romberg Exp $"
 
 #include "xwin.h"
 #include "Xrm.h"  //  For Xrm resource manager class.
@@ -76,6 +76,8 @@ protected:
   void keyPressEvent( XKeyEvent &event );
   void visibilityEvent( XVisibilityEvent &event );
   void unmapEvent( XUnmapEvent &event);
+  void checkVersion(int argc, char *argv[]) const;
+
 private:
 
   bool _isvisible;
