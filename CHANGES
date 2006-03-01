@@ -1,4 +1,8 @@
-  /*  $Id: CHANGES,v 1.55 2006/02/19 01:51:42 romberg Exp $  */
+  /*  $Id: CHANGES,v 1.56 2006/03/01 04:55:55 romberg Exp $  */
+
+Changes since xosview-1.8.3
+
+  - netIface support for NetBSD.  Patch from  Bernd Ernesti.
 
 Changes since xosview-1.8.2
  - NFSDStats ans NFSStats Graph, Decay and UsedMode are now configurable

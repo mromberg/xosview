@@ -12,7 +12,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.cc,v 1.20 2003/10/10 04:55:37 bgrayson Exp $
+// $Id: netmeter.cc,v 1.21 2006/03/01 04:55:55 romberg Exp $
 //
 #include <err.h>		//  For warnx.
 #include <stdlib.h>		//  For atoi().  BCG
@@ -20,7 +20,7 @@
 #include "netmeter.h"
 #include "kernel.h"
 
-CVSID("$Id: netmeter.cc,v 1.20 2003/10/10 04:55:37 bgrayson Exp $");
+CVSID("$Id: netmeter.cc,v 1.21 2006/03/01 04:55:55 romberg Exp $");
 CVSID_DOT_H(NETMETER_H_CVSID);
 CVSID_DOT_H2(TIMER_H_CVSID);
 CVSID_DOT_H3(TIMEVAL_H_CVSID);
@@ -38,6 +38,7 @@ NetMeter::NetMeter( XOSView *parent, float max )
     netBandwidth_ = max;
     total_ = netBandwidth_;
     _lastBytesIn = _lastBytesOut = 0;
+    netIface_ = "False";
     BSDGetNetInOut (&_lastBytesIn, &_lastBytesOut);
   }
 }
@@ -56,6 +57,7 @@ void NetMeter::checkResources( void ){
     dodecay_ = parent_->isResourceTrue("netDecay");
     useGraph_ = parent_->isResourceTrue("netGraph");
     SetUsedFormat (parent_->getResource("netUsedFormat"));
+    netIface_ = parent_->getResource( "netIface" );
   }
 }
 

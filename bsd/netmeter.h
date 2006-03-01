@@ -12,12 +12,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.h,v 1.12 2003/10/09 04:23:10 bgrayson Exp $
+// $Id: netmeter.h,v 1.13 2006/03/01 04:55:55 romberg Exp $
 //
 #ifndef _NETMETER_H_
 #define _NETMETER_H_
 
-#define NETMETER_H_CVSID "$Id: netmeter.h,v 1.12 2003/10/09 04:23:10 bgrayson Exp $"
+#define NETMETER_H_CVSID "$Id: netmeter.h,v 1.13 2006/03/01 04:55:55 romberg Exp $"
 
 #include "fieldmetergraph.h"
 #include "timer.h"
@@ -33,8 +33,11 @@ public:
   void checkevent( void );
 
   void checkResources( void );
+
+  void BSDGetNetInOut (long long * inbytes, long long * outbytes);
 protected:
   float netBandwidth_;
+  std::string netIface_;
 
 private:
   //  NetBSD:  Use long long, so we won't run into problems after 4 GB

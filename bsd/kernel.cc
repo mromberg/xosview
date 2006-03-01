@@ -15,7 +15,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: kernel.cc,v 1.50 2006/02/18 07:57:21 romberg Exp $
+// $Id: kernel.cc,v 1.51 2006/03/01 04:55:55 romberg Exp $
 //
 #ifndef XOSVIEW_NETBSD
 /*  NetBSD pulls in stdio.h via one of the other includes, but
@@ -119,8 +119,9 @@ __END_DECLS
 
 #include "general.h"
 #include "kernel.h"		/*  To grab CVSID stuff.  */
+#include "netmeter.h"		/*  For netIface_  */
 
-CVSID("$Id: kernel.cc,v 1.50 2006/02/18 07:57:21 romberg Exp $");
+CVSID("$Id: kernel.cc,v 1.51 2006/03/01 04:55:55 romberg Exp $");
 CVSID_DOT_H(KERNEL_H_CVSID);
 
 
@@ -440,8 +441,7 @@ BSDNetInit() {
 #endif
 }
 
-void
-BSDGetNetInOut (long long * inbytes, long long * outbytes) {
+void NetMeter::BSDGetNetInOut (long long * inbytes, long long * outbytes) {
 
 
   struct ifnet * ifnetp;
@@ -466,7 +466,8 @@ BSDGetNetInOut (long long * inbytes, long long * outbytes) {
   while (ifnetp) {
     //  Now, dereference the pointer to get the ifnet struct.
     safe_kvm_read ((u_long) ifnetp, &ifnet, sizeof(ifnet));
-#ifdef NET_DEBUG
+#ifdef XOSVIEW_NETBSD
+    if (netIface_ != "False" ) {
     char ifname[256];
 #ifdef NETBSD_OLD_IFACE
     //  In pre-1.2A, getting the interface name was more complicated.
@@ -476,15 +477,21 @@ BSDGetNetInOut (long long * inbytes, long long * outbytes) {
     safe_kvm_read ((u_long) (((char*)ifnetp) + (&ifnet.if_xname[0] - (char*)&ifnet)), ifname, 256);
     snprintf (ifname, 256, "%s", ifname);
 #endif
+#ifdef NET_DEBUG
     printf ("Interface name is %s\n", ifname);
     printf ("Ibytes: %8llu Obytes %8llu\n",
 	(unsigned long long) ifnet.if_ibytes,
 	(unsigned long long) ifnet.if_obytes);
     printf ("Ipackets:  %8llu\n", (unsigned long long) ifnet.if_ipackets);
-#endif
+#endif /* NET_DEBUG */
+      if (ifname != netIface_)
+	goto skipif;
+    }
+#endif /* XOSVIEW_NETBSD */
     *inbytes  += ifnet.if_ibytes;
     *outbytes += ifnet.if_obytes;
 
+skipif:
     //  Linked-list step taken from if.c in netstat source, line 120.
 #ifdef XOSVIEW_FREEBSD
 #if (__FreeBSD_version >= 300000) 
