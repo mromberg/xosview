@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: MeterMaker.cc,v 1.24 2006/02/18 04:33:06 romberg Exp $
+// $Id: MeterMaker.cc,v 1.25 2006/03/01 05:36:25 romberg Exp $
 //
 #include "MeterMaker.h"
 #include "xosview.h"
@@ -24,7 +24,7 @@
 #include "nfsmeter.h"
 
 #include <stdlib.h>
-
+#include <sstream>
 
 MeterMaker::MeterMaker(XOSView *xos){
   _xos = xos;
@@ -77,9 +77,22 @@ void MeterMaker::makeMeters(void){
   /* these architectures have no ioperm() */
 #else
   for (int i = 0 ; i < SerialMeter::numDevices() ; i++)
-    if (_xos->isResourceTrue(SerialMeter::getResourceName(
-      (SerialMeter::Device)i)))
-        push(new SerialMeter(_xos, (SerialMeter::Device)i));
+      {
+      bool ok ;  unsigned long val ;
+      const char *res = SerialMeter::getResourceName((SerialMeter::Device)i);
+      if ( !(ok = _xos->isResourceTrue(res)) )
+          {
+          std::istringstream is(_xos->getResource(res));
+          is >> std::hex >> val;
+          if (!is)
+              ok = false;
+          else
+              ok = val & 0xFFFF;
+          }
+
+      if ( ok )
+          push(new SerialMeter(_xos, (SerialMeter::Device)i));
+      }
 #endif
 
   // check for the interrupt meter
