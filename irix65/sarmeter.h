@@ -1,6 +1,6 @@
 //  
-// $Id: sarmeter.h,v 1.6 2003/04/24 06:15:21 eile Exp $
-//  Initial port performed by Stefan Eilemann (eile@sgi.com)
+// $Id: sarmeter.h,v 1.7 2006/10/11 07:30:53 eile Exp $
+//  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
 
 #ifndef _SARMETER_H_

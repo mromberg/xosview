@@ -1,6 +1,6 @@
 //  
-// $Id: diskmeter.h,v 1.2 2003/04/24 06:15:20 eile Exp $
-//  Initial port performed by Stefan Eilemann (eile@sgi.com)
+// $Id: diskmeter.h,v 1.3 2006/10/11 07:30:53 eile Exp $
+//  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
 
 #ifndef _DISKMETER_H_

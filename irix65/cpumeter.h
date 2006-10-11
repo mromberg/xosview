@@ -1,6 +1,6 @@
 //  
-// $Id: cpumeter.h,v 1.3 2003/04/25 14:09:44 eile Exp $
-//  Initial port performed by Stefan Eilemann (eile@sgi.com)
+// $Id: cpumeter.h,v 1.4 2006/10/11 07:30:53 eile Exp $
+//  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_

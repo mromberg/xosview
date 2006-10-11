@@ -1,6 +1,6 @@
 //  
-// $Id: memmeter.h,v 1.1 2001/10/10 15:58:22 eile Exp $
-//  Initial port performed by Stefan Eilemann (eile@sgi.com)
+// $Id: memmeter.h,v 1.2 2006/10/11 07:30:53 eile Exp $
+//  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
 #ifndef _MEMMETER_H_
 #define _MEMMETER_H_

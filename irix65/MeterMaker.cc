@@ -1,6 +1,6 @@
 //  
-// $Id: MeterMaker.cc,v 1.8 2003/04/25 14:09:44 eile Exp $
-//  Initial port performed by Stefan Eilemann (eile@sgi.com)
+// $Id: MeterMaker.cc,v 1.9 2006/10/11 07:30:53 eile Exp $
+//  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
 #include "MeterMaker.h"
 #include "xosview.h"

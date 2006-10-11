@@ -1,6 +1,6 @@
 //  
-// $Id: loadmeter.h,v 1.2 2001/10/17 14:03:55 eile Exp $
-//  Initial port performed by Stefan Eilemann (eile@sgi.com)
+// $Id: loadmeter.h,v 1.3 2006/10/11 07:30:53 eile Exp $
+//  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
 #ifndef _LOADMETER_H_
 #define _LOADMETER_H_

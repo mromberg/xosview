@@ -5,9 +5,9 @@
 //
 //  Most of this code was written by Werner Fink <werner@suse.de>.
 //  Only small changes were made on my part (M.R.)
-//  Small changes for Irix 6.5 port Stefan Eilemann <eile@sgi.com>
+//  Small changes for Irix 6.5 port Stefan Eilemann <eilemann@gmail.com>
 //
-// $Id: loadmeter.cc,v 1.4 2005/09/23 09:58:44 eile Exp $
+// $Id: loadmeter.cc,v 1.5 2006/10/11 07:30:53 eile Exp $
 //
 #include "loadmeter.h"
 #include "xosview.h"
