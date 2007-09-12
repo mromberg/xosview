@@ -1,5 +1,5 @@
 //
-// $Id: xwin.h,v 1.9 2003/10/09 03:38:24 bgrayson Exp $
+// $Id: xwin.h,v 1.10 2007/09/12 22:11:52 romberg Exp $
 //
 #ifndef _XWIN_H_
 #define _XWIN_H_
@@ -16,7 +16,7 @@
 #endif
 #include <string.h>
 
-#define XWIN_H_CVSID "$Id: xwin.h,v 1.9 2003/10/09 03:38:24 bgrayson Exp $"
+#define XWIN_H_CVSID "$Id: xwin.h,v 1.10 2007/09/12 22:11:52 romberg Exp $"
 
 class XWin;
 class Xrm;
@@ -62,9 +62,10 @@ public:
       xgcv.fill_style = FillOpaqueStippled;
       XChangeGC (display_, gc_, GCFillStyle, &xgcv); }
   void setStippleN (int n) {setStipple(stipples_[n]); }
-  Pixmap createPixmap(char* data, unsigned int w, unsigned int h) {
-      return XCreatePixmapFromBitmapData(display_, window_, data, w, h,
-      0, 1, 1); }
+  Pixmap createPixmap(const char* data, unsigned int w, unsigned int h) {
+  return XCreatePixmapFromBitmapData(display_, window_,
+    const_cast<char *>(data), w, h, 0, 1, 1); }
+
   unsigned long foreground( void ) { return fgcolor_; }
   unsigned long background( void ) { return bgcolor_; }
   void resize( int width, int height )
@@ -104,7 +105,7 @@ public:
   const int isResourceTrue( const char* name ) {
     return (!strncasecmp(getResource(name),"True", 5)); }
   void dumpResources(std::ostream &os );
-  
+
 protected:
   class Event {
   public:

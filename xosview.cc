@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.cc,v 1.33 2006/02/19 01:51:42 romberg Exp $
+// $Id: xosview.cc,v 1.34 2007/09/12 22:11:52 romberg Exp $
 //
 #include <unistd.h>
 #include <stdlib.h>
@@ -60,11 +60,11 @@ static const char NAME[] = "xosview@";
 
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.33 2006/02/19 01:51:42 romberg Exp $");
+CVSID("$Id: xosview.cc,v 1.34 2007/09/12 22:11:52 romberg Exp $");
 CVSID_DOT_H(XOSVIEW_H_CVSID);
 
 
-XOSView::XOSView( char * instName, int argc, char *argv[] ) : XWin(),
+XOSView::XOSView( const char * instName, int argc, char *argv[] ) : XWin(),
 						xrm(Xrm("xosview", instName)){
   // Check for version arguments first.  This allows
   // them to work without the need for a connection
@@ -106,7 +106,7 @@ XOSView::XOSView( char * instName, int argc, char *argv[] ) : XWin(),
   yoff_ = 0;
   nummeters_ = 0;
   meters_ = NULL;
-  name_ = "xosview";
+  name_ = const_cast<char *>("xosview");
   _isvisible = false;
   _ispartiallyvisible = false;
   exposed_once_flag_ = 0;

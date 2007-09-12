@@ -4,12 +4,12 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: xosview.h,v 1.14 2006/02/19 01:51:42 romberg Exp $
+// $Id: xosview.h,v 1.15 2007/09/12 22:11:52 romberg Exp $
 //
 #ifndef _XOSVIEW_H_
 #define _XOSVIEW_H_
 
-#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.14 2006/02/19 01:51:42 romberg Exp $"
+#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.15 2007/09/12 22:11:52 romberg Exp $"
 
 #include "xwin.h"
 #include "Xrm.h"  //  For Xrm resource manager class.
@@ -22,7 +22,7 @@ class Meter;
 
 class XOSView : public XWin {
 public:
-  XOSView( char* instName, int argc, char *argv[] );
+  XOSView( const char* instName, int argc, char *argv[] );
   ~XOSView( void );
 
   void figureSize ( void );
