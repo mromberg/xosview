@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: nfsmeter.cc,v 1.4 2006/02/18 04:33:06 romberg Exp $
+// $Id: nfsmeter.cc,v 1.5 2007/09/12 22:11:08 romberg Exp $
 //
 
 #include "nfsmeter.h"
@@ -32,11 +32,11 @@
 #define MAX(_a, _b) ((_a) > (_b) ? (_a) : (_b))
 #endif
 
-#define NFSSVCSTAT  "/proc/net/rpc/nfsd"
-#define NFSCLTSTAT  "/proc/net/rpc/nfs"
+static const char *NFSSVCSTAT = "/proc/net/rpc/nfsd";
+static const char * NFSCLTSTAT = "/proc/net/rpc/nfs";
 
 NFSMeter::NFSMeter(XOSView *parent, const char *name, int nfields,
-		char *fields, const char *statfile)
+		const char *fields, const char *statfile)
   : FieldMeterGraph( parent, nfields, name, fields ){
 	_statfile = statfile;
 	_statname = name;

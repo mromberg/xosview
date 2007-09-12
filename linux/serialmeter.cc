@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: serialmeter.cc,v 1.15 2006/02/18 04:33:06 romberg Exp $
+// $Id: serialmeter.cc,v 1.16 2007/09/12 22:11:08 romberg Exp $
 //
 
 //
@@ -112,7 +112,7 @@ const char *SerialMeter::getResourceName(Device dev){
 }
 
 unsigned short int SerialMeter::getPortBase(Device dev) const {
-  static char *deviceFile[] = { "/dev/ttyS0",
+  static const char *deviceFile[] = { "/dev/ttyS0",
                                 "/dev/ttyS1",
                                 "/dev/ttyS2",
                                 "/dev/ttyS3",
