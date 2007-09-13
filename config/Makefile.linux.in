@@ -2,7 +2,7 @@
 # Linux Makefile template
 #
 #
-# $Id: Makefile.linux.in,v 1.16 2004/05/22 05:10:35 romberg Exp $
+# $Id: Makefile.linux.in,v 1.17 2007/09/13 16:34:47 romberg Exp $
 #
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
@@ -58,14 +58,11 @@ vpath %.cc $(TOP)
 
 #-----------------------------------------------------------------------
 
-all : libmeter.a @MEMSTAT@
+all : libmeter.a
 
-MemStat:
-	$(MAKE) -C memstat
 
 clean :
 	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
-	if test "@MEMSTAT@" = "MemStat"; then $(MAKE) -C memstat clean; fi
 
 libmeter.a : $(OBJS)
 	ar cvr libmeter.a $(OBJS)
