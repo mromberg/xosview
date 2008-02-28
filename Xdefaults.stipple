@@ -1,4 +1,4 @@
-#$Id: Xdefaults.stipple,v 1.5 1999/11/06 22:48:16 romberg Exp $
+#$Id: Xdefaults.stipple,v 1.6 2008/02/28 23:37:24 romberg Exp $
 #  See the README.netbsd file on how to use the stipple options and
 #  these example resources.
 
@@ -10,7 +10,9 @@ xosvstipple*cpuUserColor:       red
 xosvstipple*cpuNiceColor:       red
 xosvstipple*cpuSystemColor:     red
 xosvstipple*cpuInterruptColor:  red
+xosvstipple*cpuSInterruptColor: red
 xosvstipple*cpuFreeColor:       red
+xosvstipple*cpuStolenColor:     red
 xosvstipple*memUsedColor:	orange
 xosvstipple*memSharedColor:	orange
 xosvstipple*memBufferColor:	orange
@@ -47,7 +49,9 @@ xosvstipplebw*cpuUserColor:	black
 xosvstipplebw*cpuNiceColor:	black
 xosvstipplebw*cpuSystemColor:	black
 xosvstipplebw*cpuInterruptColor:black
+xosvstipplebw*cpuSInterruptColor:black
 xosvstipplebw*cpuFreeColor:	black
+xosvstipplebw*cpuStolenColor:	black
 xosvstipplebw*memUsedColor:	black
 xosvstipplebw*memSharedColor:	black
 xosvstipplebw*memBufferColor:	black

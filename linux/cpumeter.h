@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: cpumeter.h,v 1.7 2006/02/18 06:03:46 romberg Exp $
+// $Id: cpumeter.h,v 1.8 2008/02/28 23:37:24 romberg Exp $
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
@@ -25,7 +25,7 @@ public:
   static const char *cpuStr(int num);
 protected:
   int _lineNum;
-  long cputime_[2][7];
+  long cputime_[2][9];
   int cpuindex_;
 
   void getcputime(void);

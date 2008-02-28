@@ -12,7 +12,7 @@
 ! **********************************************************************
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.49 2006/02/18 06:03:46 romberg Exp $
+!  $Id: Xdefaults.in,v 1.50 2008/02/28 23:37:24 romberg Exp $
 
 ! General Resources
 
@@ -70,9 +70,11 @@ xosview*cpuUserColor:       seagreen
 xosview*cpuNiceColor:       yellow
 xosview*cpuSystemColor:     orange
 xosview*cpuInterruptColor:  red
+xosview*cpuSInterruptColor: orange red
 xosview*cpuSoftIntColor:    red
 xosview*cpuWaitColor:       lightblue
 xosview*cpuFreeColor:       aquamarine
+xosview*cpuStolenColor:     blue
 xosview*cpuPriority:        1
 xosview*cpuDecay:           True
 xosview*cpuGraph:           True
