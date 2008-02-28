@@ -4,10 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: serialmeter.h,v 1.5 2006/02/18 04:33:06 romberg Exp $
+// $Id: serialmeter.h,v 1.6 2008/02/28 23:32:48 romberg Exp $
 //
 #ifndef _SERIALMETER_H_
 #define _SERIALMETER_H_
+
+// hack for not having linux/serial_reg.h, (Debian bug #427599)
+#define UART_LSR        5
+#define UART_MSR        6
 
 #include "bitmeter.h"
 

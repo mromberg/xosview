@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: serialmeter.cc,v 1.16 2007/09/12 22:11:08 romberg Exp $
+// $Id: serialmeter.cc,v 1.17 2008/02/28 23:32:48 romberg Exp $
 //
 
 //
@@ -32,7 +32,7 @@ typedef unsigned long long u64;
 
 #include <unistd.h>
 #if defined(GNULIBC) || defined(__GLIBC__)
-#if !defined(__hppa__) && !defined(__mips__)
+#if !defined(__hppa__) && !defined(__mips__) && !defined(__sparc__)
 #include <sys/io.h>
 #endif
 #if !defined(__alpha__) && !defined(__sparc__) && !defined(__powerpc__) && !defined(__ia64__) && !defined(__hppa__) && !defined(__arm__) && !defined(__mips__)
@@ -45,7 +45,6 @@ typedef unsigned long long u64;
 #endif
 #endif
 #include <linux/serial.h>
-#include <linux/serial_reg.h>
 
 SerialMeter::SerialMeter( XOSView *parent, Device device )
   : BitMeter( parent, getTitle(device), "LSR bits(0-7), MSR bits(0-7)", 16){
