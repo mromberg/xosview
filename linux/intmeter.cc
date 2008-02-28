@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.cc,v 1.13 2006/02/18 04:33:06 romberg Exp $
+// $Id: intmeter.cc,v 1.14 2008/02/28 21:31:43 romberg Exp $
 //
 #include "intmeter.h"
 #include "xosview.h"
@@ -65,12 +65,10 @@ float IntMeter::getLinuxVersion(void) {
       exit(1);
     }
 
-    char buffer[128];
-    vfile >> buffer >> buffer >> buffer;
-    *strrchr(buffer, '.') = '\0';
-    std::istringstream is(std::string(buffer, 128));
-    float rval = 0.0;
-    is >> rval;
+    std::string dump;
+    float rval;
+    vfile >> dump >> dump; // Drop the first two words
+    vfile >> rval; // Drops everything but #.# (float regex)
 
     return rval;
 }
