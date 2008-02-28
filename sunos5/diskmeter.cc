@@ -2,12 +2,12 @@
 //  Rewritten for Solaris by Arno Augustin 1999
 //  augustin@informatik.uni-erlangen.de
 //
-// $Id: diskmeter.cc,v 1.1 1999/11/06 23:12:34 romberg Exp $
+// $Id: diskmeter.cc,v 1.2 2008/02/28 21:28:14 romberg Exp $
 //
 
 #include "diskmeter.h"
 #include "xosview.h"
-#include <fstream.h>
+#include <fstream>
 #include <stdlib.h>
 
 
