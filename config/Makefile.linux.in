@@ -2,10 +2,13 @@
 # Linux Makefile template
 #
 #
-# $Id: Makefile.linux.in,v 1.17 2007/09/13 16:34:47 romberg Exp $
+# $Id: Makefile.linux.in,v 1.18 2008/02/28 22:36:13 romberg Exp $
 #
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
+
+#arch=$(shell uname -m)
+#export arch
 
 CXXFLAGS += -I@top_srcdir@
 
