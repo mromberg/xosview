@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: intmeter.cc,v 1.14 2008/02/28 21:31:43 romberg Exp $
+// $Id: intmeter.cc,v 1.15 2008/02/28 23:49:42 romberg Exp $
 //
 #include "intmeter.h"
 #include "xosview.h"
@@ -12,9 +12,6 @@
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>
-#ifdef __alpha__
-#include <asm/irq.h>
-#endif
 
 
 static const char *INTFILE     = "/proc/interrupts";
