@@ -1,5 +1,5 @@
 //  
-// $Id: loadmeter.cc,v 1.6 2006/02/18 07:57:21 romberg Exp $
+// $Id: loadmeter.cc,v 1.7 2008/02/28 19:28:10 romberg Exp $
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "loadmeter.h"
@@ -54,7 +54,7 @@ void LoadMeter::checkResources(void)
 		 * anyway, so having a decaying load average is
 		 * redundant.
 		 */
-		cerr << "Warning:  The loadmeter can not be configured as a decay\n"
+		std::cerr << "Warning:  The loadmeter can not be configured as a decay\n"
 		     << "  meter.  See the source code (" << __FILE__ << ") for further\n"
 		     << "  details.\n";
 		dodecay_ = 0;

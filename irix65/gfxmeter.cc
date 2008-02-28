@@ -1,5 +1,5 @@
 //  
-// $Id: gfxmeter.cc,v 1.6 2006/10/11 07:30:53 eile Exp $
+// $Id: gfxmeter.cc,v 1.7 2008/02/28 19:28:10 romberg Exp $
 //  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
 
@@ -73,7 +73,7 @@ void GfxMeter::checkResources(void)
         //  prevent this whole problem, the gfx meter can not be a decay
         //  meter.  The gfx is a decaying average kind of thing anyway,
         //  so having a decaying gfx average is redundant.
-        cerr << "Warning:  The gfxmeter can not be configured as a decay\n"
+           std::cerr << "Warning:  The gfxmeter can not be configured as a decay\n"
              << "  meter. See the source code (" <<__FILE__<< ") for further\n"
              << "  details.\n";
         dodecay_ = 0;

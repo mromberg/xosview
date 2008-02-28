@@ -1,5 +1,5 @@
 //
-// $Id: cpumeter.cc,v 1.7 2006/10/11 07:30:53 eile Exp $
+// $Id: cpumeter.cc,v 1.8 2008/02/28 19:28:10 romberg Exp $
 //  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
 #include "cpumeter.h"
@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
-#include <strstream.h>
+#include <sstream>
 
 CPUMeter::CPUMeter(XOSView *parent, int cpuid)
     : FieldMeterGraph(parent, USED_CPU_STATES, toUpper(cpuStr(cpuid)),
@@ -19,7 +19,7 @@ CPUMeter::CPUMeter(XOSView *parent, int cpuid)
             cputime_[i][j] = 0;
 
     if ((sinfosz = sysmp(MP_SASZ, MPSA_SINFO)) < 0) {
-        cerr << "sysinfo scall interface not supported" << endl;
+           std::cerr << "sysinfo scall interface not supported" << endl;
         parent_->done(1);
         return;
     }

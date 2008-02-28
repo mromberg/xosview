@@ -4,7 +4,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: loadmeter.cc,v 1.5 1999/01/31 20:18:49 bgrayson Exp $
+// $Id: loadmeter.cc,v 1.6 2008/02/28 19:28:10 romberg Exp $
 //
 #include "loadmeter.h"
 #include "xosview.h"
@@ -39,7 +39,7 @@ void LoadMeter::checkResources( void ){
     //  prevent this whole problem, the load meter can not be a decay
     //  meter.  The load is a decaying average kind of thing anyway,
     //  so having a decaying load average is redundant.
-    cerr << "Warning:  The loadmeter can not be configured as a decay\n"
+         std::cerr << "Warning:  The loadmeter can not be configured as a decay\n"
          << "  meter.  See the source code (" << __FILE__ << ") for further\n"
          << "  details.\n";
     dodecay_ = 0;
