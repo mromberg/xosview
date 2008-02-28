@@ -3,7 +3,7 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.35 2008/02/28 23:20:37 romberg Exp $
+dnl $Id: aclocal.m4,v 1.36 2008/02/28 23:43:06 romberg Exp $
 dnl
 
 dnl Make an absolute symbol for the top of the configuration.
@@ -183,6 +183,10 @@ AC_DEFUN(AC_XOSV_IRIX65, [
 	EXTRALIBS="-lrpcsvc"
     AC_DEFINE(_G_HAVE_BOOL)
     AC_DEFINE(HAVE_SNPRINTF)
+])
+
+AC_DEFUN(AC_XOSV_GNU, [
+EXTRALIBS=$XPMLIB
 ])
 
 dnl MY_C_SWITCH(switch)
