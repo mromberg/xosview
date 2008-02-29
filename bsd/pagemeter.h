@@ -12,12 +12,12 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.h,v 1.6 2003/10/09 04:22:32 bgrayson Exp $
+// $Id: pagemeter.h,v 1.7 2008/02/29 00:06:31 romberg Exp $
 //
 #ifndef _PAGEMETER_H_
 #define _PAGEMETER_H_
 
-#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.6 2003/10/09 04:22:32 bgrayson Exp $"
+#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.7 2008/02/29 00:06:31 romberg Exp $"
 
 #include "fieldmetergraph.h"
 #if defined(UVM)
@@ -48,7 +48,11 @@ protected:
   void getpageinfo( void );
 private:
 #if defined(UVM)
+# ifdef VM_UVMEXP2
+  struct uvmexp_sysctl prev_;
+# else
   struct uvmexp	prev_;
+# endif
 #else
   struct vmmeter prev_;
 #endif

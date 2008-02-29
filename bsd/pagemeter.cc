@@ -13,14 +13,18 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: pagemeter.cc,v 1.16 2002/03/22 03:23:41 bgrayson Exp $
+// $Id: pagemeter.cc,v 1.17 2008/02/29 00:06:31 romberg Exp $
 //
 #include <stdlib.h>		//  For atoi().  BCG
 #include "general.h"
 #include "pagemeter.h"
 #include "kernel.h"		//  For NetBSD Page functions.
 
-CVSID("$Id: pagemeter.cc,v 1.16 2002/03/22 03:23:41 bgrayson Exp $");
+#if defined(UVM) && defined (VM_UVMEXP2)
+#include <sys/sysctl.h>         /*  Needed for uvmexp_sysctl.  */
+#endif
+
+CVSID("$Id: pagemeter.cc,v 1.17 2008/02/29 00:06:31 romberg Exp $");
 CVSID_DOT_H(PAGEMETER_H_CVSID);
 
 PageMeter::PageMeter( XOSView *parent, double total )
@@ -28,7 +32,13 @@ PageMeter::PageMeter( XOSView *parent, double total )
   total_ = total;
   BSDPageInit();
 #ifdef UVM
+# ifdef VM_UVMEXP2
+  int params[] = {CTL_VM, VM_UVMEXP2};
+  size_t prev_size = sizeof (prev_);
+  sysctl (params, 2, &prev_, &prev_size, NULL, 0);
+# else
   BSDGetUVMPageStats(&prev_);
+# endif
 #else
   BSDGetPageStats(&prev_);
 #endif
@@ -57,8 +67,15 @@ void PageMeter::checkevent( void ){
 void PageMeter::getpageinfo (void) {
 //  Begin NetBSD-specific code...
 #if defined(UVM)
+# ifdef VM_UVMEXP2
+  int params[] = {CTL_VM, VM_UVMEXP2};
+  struct uvmexp_sysctl uvm;
+  size_t uvm_size = sizeof (uvm);
+  sysctl (params, 2, &uvm, &uvm_size, NULL, 0);
+# else
   struct uvmexp uvm;
   BSDGetUVMPageStats(&uvm);
+# endif
 #else
   struct vmmeter vm;
   BSDGetPageStats(&vm);
