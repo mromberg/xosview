@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2000, 2006 by Leopold Toetsch <lt@toetsch.at>
+//  Copyright (c) 2000, 2006, 2012 by Leopold Toetsch <lt@toetsch.at>
 //
 //  Read temperature entries from /proc/sys/dev/sensors/*/*
 //  and display actual and high temperature
@@ -34,7 +34,7 @@ LmsTemp::LmsTemp( XOSView *parent, const char *filename, const char *label,
 	}
     }
     char *p;
-    if ((p = strrchr(caption,'/')) != 0)
+    if ((p = strrchr(const_cast<char *>(caption),'/')) != 0)
       _highest = atoi(p+1);
     else
       _highest = 100;
@@ -174,7 +174,7 @@ void LmsTemp::getlmstemp( void ){
 	  return;
       }
       file1 >> fields_[0];
-      
+
       strcpy(p, "_max");
       std::ifstream file2(f);
       if ( !file2 ){
