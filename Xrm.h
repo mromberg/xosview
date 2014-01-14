@@ -4,14 +4,14 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: Xrm.h,v 1.7 2006/02/18 04:33:04 romberg Exp $
+// $Id: Xrm.h,v 1.8 2014/01/14 18:57:57 romberg Exp $
 //
 #ifndef _Xrm_h
 #define _Xrm_h
 
 #include "bool.h"
 
-#define XRM_H_CVSID "$Id: Xrm.h,v 1.7 2006/02/18 04:33:04 romberg Exp $"
+#define XRM_H_CVSID "$Id: Xrm.h,v 1.8 2014/01/14 18:57:57 romberg Exp $"
 
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
@@ -34,7 +34,7 @@ public:
 private:
   XrmDatabase _db;
   XrmClass _class, _instance;
-  char* _display_name;  //  Used solely for getting the display's resources.
+  const char* _display_name;  //  Used solely for getting the display's resources.
 
   //void getArgs(int argc, char **argv);
   static Bool enumCB(XrmDatabase *, XrmBindingList bindings,

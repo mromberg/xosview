@@ -1,5 +1,5 @@
 //
-// $Id: xwin.h,v 1.10 2007/09/12 22:11:52 romberg Exp $
+// $Id: xwin.h,v 1.11 2014/01/14 18:57:57 romberg Exp $
 //
 #ifndef _XWIN_H_
 #define _XWIN_H_
@@ -16,7 +16,7 @@
 #endif
 #include <string.h>
 
-#define XWIN_H_CVSID "$Id: xwin.h,v 1.10 2007/09/12 22:11:52 romberg Exp $"
+#define XWIN_H_CVSID "$Id: xwin.h,v 1.11 2014/01/14 18:57:57 romberg Exp $"
 
 class XWin;
 class Xrm;
@@ -102,7 +102,7 @@ public:
 
   const char *getResource( const char *name );
   const char *getResourceOrUseDefault( const char *name, const char* defaultVal );
-  const int isResourceTrue( const char* name ) {
+  int isResourceTrue( const char* name ) {
     return (!strncasecmp(getResource(name),"True", 5)); }
   void dumpResources(std::ostream &os );
 

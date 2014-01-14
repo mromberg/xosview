@@ -7,7 +7,7 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-// $Id: netmeter.cc,v 1.27 2006/02/18 05:35:59 romberg Exp $
+// $Id: netmeter.cc,v 1.28 2014/01/14 18:57:57 romberg Exp $
 //
 
 //-----------------------------------------------------------------------
@@ -178,7 +178,7 @@ void NetMeter::checkeventNew(void)
 
 	  while (ifs)
 	      {
-		if (netIface_ == "False" ) 
+		if (netIface_ == "False" )
 		  {
 		    ifs.ignore(1024, ':');
 		  }
@@ -188,7 +188,7 @@ void NetMeter::checkeventNew(void)
 		    ifname = buf;
 		    ifs.ignore(1, ':');
 		    ifname.erase(0, ifname.find_first_not_of(" ") );
-		    if (ifname != netIface_) 
+		    if (ifname != netIface_)
 		      {
 			ifs.ignore(1024,'\n');
 			continue;
