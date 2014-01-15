@@ -1,13 +1,17 @@
 //
-// $Id: Xrmcommandline.h,v 1.23 2002/03/24 23:13:54 zedpobre Exp $
+// $Id: Xrmcommandline.h,v 1.24 2014/01/15 01:43:19 romberg Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.23 2002/03/24 23:13:54 zedpobre Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.24 2014/01/15 01:43:19 romberg Exp $"
 
 #include <X11/Xresource.h>
+
+// The XrmOptionDescRec uses char *.  They shouuld
+// probably be const char *.  But we can't do that so...
+#pragma GCC diagnostic ignored "-Wwrite-strings"
 
 static XrmOptionDescRec options[] = {
 //  For these options, try to use '+' to turn them on, and '-' to turn them
