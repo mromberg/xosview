@@ -1,11 +1,11 @@
 //
-// $Id: Xrmcommandline.h,v 1.24 2014/01/15 01:43:19 romberg Exp $
+// $Id: Xrmcommandline.h,v 1.25 2014/01/15 01:46:15 romberg Exp $
 //
 
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
 
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.24 2014/01/15 01:43:19 romberg Exp $"
+#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.25 2014/01/15 01:46:15 romberg Exp $"
 
 #include <X11/Xresource.h>
 
@@ -100,6 +100,8 @@ static XrmOptionDescRec options[] = {
 //    xosview -xrm "*memFreeColor: purple" should work, for example.
 { "-xrm", "*xrm", XrmoptionResArg, (caddr_t) NULL },
 };
+#pragma GCC diagnostic pop
+
 //  This auto-detects changes in the number of options.
 static const int NUM_OPTIONS = sizeof(options) / sizeof(options[0]);
 
