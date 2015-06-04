@@ -139,14 +139,29 @@ int CPUMeter::countCPUs(void){
 const char *CPUMeter::cpuStr(int num){
   static char buffer[32];
   std::ostringstream str;
+  std::ifstream stats( STATFILENAME );
 
-  str << "cpu";
-  if (num != 0)
-    str << (num - 1);
-  str << std::ends;
+  if ( !stats ){
+    std::cerr <<"Can not open file : " <<STATFILENAME << std::endl;
+    exit( 1 );
+  }
 
-  strncpy(buffer, str.str().c_str(), 32);
-  buffer[31] = '\0';
+  int cpuCount = 0;
+  std::string buf;
+  while ( cpuCount<num && getline(stats, buf) )
+      if (!strncmp(buf.data(), "cpu", 3) && buf[3] != ' ')
+          cpuCount++;
+
+  if( cpuCount != num ){
+    return "";
+  }
+  
+  int n = buf.find (" ");
+  if( n > 31 )
+    n=31;
+  
+  strncpy(buffer, buf.data(), n);
+  buffer[n] = '\0';
 
   return buffer;
 }
