@@ -1,0 +1,8 @@
+Makefile
+Makefile.*
+config.*
+configure
+config/autom4te.cache
+defaultstring.cc
+Xdefaults
+xosview

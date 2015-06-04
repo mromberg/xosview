@@ -3,6 +3,9 @@
     Follow the instructions found in README.  In addition please consider
     the following:
 
+      - The old fonts used by xosview can be found in the xorg-x11-fonts-misc
+        on redhat based systems.
+
       - The memory meter can now display shared memory correctly.
         Unfortunatly, it needs more information than a "stock" linux
         kernel provides to do this.  It can get this information with
