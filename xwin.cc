@@ -399,7 +399,8 @@ void XWin::addEvent( Event *event ){
 }
 //-----------------------------------------------------------------------------
 
-const char *XWin::getResourceOrUseDefault( const char *name, const char* defaultVal ){
+const char *XWin::getResourceOrUseDefault( const char *name,
+  const char *defaultVal ){
 
   const char* retval = xrmptr_->getResource (name);
   if (retval)
@@ -410,7 +411,7 @@ const char *XWin::getResourceOrUseDefault( const char *name, const char* default
 
 //-----------------------------------------------------------------------------
 
-const char *XWin::getResource( const char *name ){
+const char *XWin::getResource( const std::string &name ){
   const char* retval = xrmptr_->getResource (name);
   if (retval)
     return retval;
@@ -431,10 +432,10 @@ std::cerr << "Function not implemented!\n";  //  BCG  FIXME  Need to make this.
 }
 //-----------------------------------------------------------------------------
 
-unsigned long XWin::allocColor( const char *name ){
+unsigned long XWin::allocColor( const std::string &name ){
   XColor exact, closest;
 
-  if ( XAllocNamedColor( display_, colormap(), name, &closest, &exact ) == 0 )
+  if ( XAllocNamedColor( display_, colormap(), name.c_str(), &closest, &exact ) == 0 )
     std::cerr <<"XWin::allocColor() : failed to alloc : " <<name <<std::endl;
 
   return exact.pixel;

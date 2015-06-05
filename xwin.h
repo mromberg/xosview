@@ -15,6 +15,7 @@
 #include <iostream.h>
 #endif
 #include <string.h>
+#include <string>
 
 #define XWIN_H_CVSID "$Id: xwin.h,v 1.11 2014/01/14 18:57:57 romberg Exp $"
 
@@ -44,13 +45,15 @@ public:
   Window window( void ) { return window_; }
   int done( void ) { return done_; }
   void done( int val ) { done_ = val; }
-  void title( const char *str ) { XStoreName( display_, window_, str ); }
-  void iconname( const char *str ) { XSetIconName( display_, window_, str ); }
+  void title( const std::string &str )
+        { XStoreName( display_, window_, str.c_str() ); }
+  void iconname( const std::string &str )
+        { XSetIconName( display_, window_, str.c_str() ); }
 
   void clear( void ) { XClearWindow( display_, window_ ); }
   void clear( int x, int y, int width, int height )
     { XClearArea( display_, window_, x, y, width, height, False ); }
-  unsigned long allocColor( const char *name );
+  unsigned long allocColor( const std::string &name );
   void setForeground( unsigned long pixelvalue )
     { XSetForeground( display_, gc_, pixelvalue ); }
   void setBackground( unsigned long pixelvalue )
@@ -82,14 +85,14 @@ public:
     { XDrawRectangle( display_, window_, gc_, x, y, width, height ); }
   void drawFilledRectangle( int x, int y, int width, int height )
     { XFillRectangle( display_, window_, gc_, x, y, width + 1, height + 1 ); }
-  void drawString( int x, int y, const char *str )
-    { XDrawString( display_, window_, gc_, x, y, str, strlen( str ) ); }
+  void drawString( int x, int y, const std::string &str )
+      { XDrawString( display_, window_, gc_, x, y, str.c_str(), str.size() ); }
   void copyArea( int src_x, int src_y, int width, int height, int dest_x, int dest_y )
     { XCopyArea( display_, window_, window_, gc_, src_x, src_y, width, height, dest_x, dest_y ); }
-  int textWidth( const char *str, int n )
-    { return XTextWidth( font_, str, n ); }
-  int textWidth( const char *str )
-    { return textWidth( str, strlen( str ) ); }
+  int textWidth( const std::string &str, int n )
+    { return XTextWidth( font_, str.c_str(), n ); }
+  int textWidth( const std::string &str )
+    { return textWidth( str.c_str(), str.size() ); }
   int textAscent( void ) { return font_->ascent; }
   int textDescent( void ) { return font_->descent; }
   int textHeight( void ) { return textAscent() + textDescent(); }
@@ -100,10 +103,11 @@ public:
   void unmap( void ) { XUnmapWindow( display_, window_ ); }
   void flush( void ) { XFlush( display_ ); }
 
-  const char *getResource( const char *name );
-  const char *getResourceOrUseDefault( const char *name, const char* defaultVal );
-  int isResourceTrue( const char* name ) {
-    return (!strncasecmp(getResource(name),"True", 5)); }
+  const char *getResource( const std::string &name );
+  const char *getResourceOrUseDefault( const char *name,
+    const char *defaultVal );
+  bool isResourceTrue( const std::string &name )
+    { return std::string(getResource(name)) == "True"; }
   void dumpResources(std::ostream &os );
 
 protected:

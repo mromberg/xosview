@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2008 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2008, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -25,17 +25,12 @@
 #include "Xrm.h"
 #include "Xrmcommandline.h"
 
-CVSID("$Id: Xrm.cc,v 1.15 2008/02/28 23:29:39 romberg Exp $");
-CVSID_DOT_H(XRM_H_CVSID);
-CVSID_DOT_H2(XRMCOMMANDLINE_H_CVSID);
-
-
 extern char *defaultXResourceString;
 
 
 bool Xrm::_initialized = false;
 
-Xrm::Xrm(const char *instanceName, int argc, char **argv){
+Xrm::Xrm(const std::string &instanceName, int argc, char **argv){
   std::cerr << " Error:  This constructor is not supported yet." << std::endl;
   exit (-1);
   _db = NULL;
@@ -46,7 +41,7 @@ Xrm::Xrm(const char *instanceName, int argc, char **argv){
   //  End unsupported constructor.  !!!!!!!! BCG
 }
 
-Xrm::Xrm(const char *className, const char *instanceName){
+Xrm::Xrm(const std::string &className, const std::string &instanceName){
   XrmInitialize ();
 
   //  Initialize everything to NULL.
@@ -54,7 +49,7 @@ Xrm::Xrm(const char *className, const char *instanceName){
   _class = _instance = NULLQUARK;
 
   // init the _instance and _class Quarks
-  _instance = XrmStringToQuark(instanceName);
+  _instance = XrmStringToQuark(instanceName.c_str());
   initClassName(className);
 }
 
@@ -74,19 +69,18 @@ Xrm::getDisplayName (int argc, char** argv)
     _display_name = *argp;
   else
     _display_name = "";
-  return _display_name;
+  return _display_name.c_str();
   //  An empty display string means use the DISPLAY environment variable.
 }
 
-const char *Xrm::getResource(const char *rname) const{
-  char frn[1024], fcn[1024];
-  snprintf(frn, 1024, "%s.%s", instanceName(), rname);
-  snprintf(fcn, 1024, "%s.%s", className(), rname);
+const char *Xrm::getResource(const std::string &rname) const{
+  std::string frn = std::string(instanceName()) + std::string(".") + rname;
+  std::string fcn = std::string(className()) + std::string(".") + rname;
 
   XrmValue val;
   val.addr = NULL;
   char *type;
-  XrmGetResource(_db, frn, fcn, &type, &val);
+  XrmGetResource(_db, frn.c_str(), fcn.c_str(), &type, &val);
   //  This case here is a hack, because we are currently moving from
   //  always making the instance name be "xosview" to allowing
   //  user-specified ones.  And unfortunately, the class name is
@@ -95,16 +89,11 @@ const char *Xrm::getResource(const char *rname) const{
   if (!val.addr)
   {
     //  Let's try with a non-uppercased class name.
-    char fcn_lower[1024];
-    strncpy(fcn_lower, className(), 1024);
-    char *p = fcn_lower;
-    while (p && *p)
-      {
-      *p = tolower(*p);
-      p++;
-      }
-    snprintf(fcn, 1024, "%s.%s", fcn_lower, rname);
-    XrmGetResource(_db, frn, fcn, &type, &val);
+    std::string fcn_lower(className());
+    for (unsigned int i = 0 ; i < fcn_lower.size() ; i++)
+        fcn_lower[i] = std::tolower(fcn_lower[i]);
+    fcn = fcn_lower + std::string(".") + rname;
+    XrmGetResource(_db, frn.c_str(), fcn.c_str(), &type, &val);
   }
 
   return val.addr;
@@ -233,15 +222,14 @@ Listed from weakest to strongest:
 //  =========== END X Resource lookup and merging ==========
 }
 
-void Xrm::initClassName(const char* name){
-  char className[256];
-  strncpy(className, name, 255);  //  Avoid evil people out there...
+void Xrm::initClassName(const std::string &name){
+  std::string className(name);
+  className[0] = std::toupper(className[0]);
 
-  className[0] = toupper(className[0]);
   if (className[0] == 'X')
-      className[1] = toupper(className[1]);
+      className[1] = std::toupper(className[1]);
 
-  _class = XrmStringToQuark(className);
+  _class = XrmStringToQuark(className.c_str());
 }
 
 
