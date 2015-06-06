@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006 by Mike Romberg (mike.romberg@noaa.gov)
+//  Copyright (c) 1999, 2006, 2015 by Mike Romberg (mike.romberg@noaa.gov)
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -15,7 +15,7 @@ class DiskMeter : public FieldMeterGraph
         DiskMeter( XOSView *parent, float max );
         ~DiskMeter( void );
 
-        const char *name( void ) const { return "DiskMeter"; }
+        std::string name( void ) const { return "DiskMeter"; }
         void checkevent( void );
 
         void checkResources( void );

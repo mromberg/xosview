@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2004, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2004, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -16,7 +16,7 @@ public:
   CPUMeter(XOSView *parent, const char *cpuID = "cpu");
   ~CPUMeter(void);
 
-  const char *name(void) const { return "CPUMeter"; }
+  std::string name(void) const { return "CPUMeter"; }
   void checkevent(void);
 
   void checkResources(void);

@@ -95,9 +95,9 @@ void FieldMeter::setUsed (float val, float total)
     {
       if (!printedZeroTotalMesg_) {
         printedZeroTotalMesg_ = 1;
-	fprintf(stderr, "Warning:  %s meter had a zero total "
-		"field!  Would have caused a div-by-zero "
-		"exception.\n", name());
+        std::cerr << "Warning: " << name() << " meter had a zero total "
+                  << "field!  Would have caused a div-by-zero "
+                  << "exception." << std::endl;
       }
       used_ = 0.0;
     }
@@ -105,8 +105,8 @@ void FieldMeter::setUsed (float val, float total)
   else if (print_ == AUTOSCALE)
     used_ = val;
   else {
-    fprintf (stderr, "Error in %s:  I can't handle a "
-		     "UsedType enum value of %d!\n", name(), print_);
+  std::cerr << "Error in " << name() << ":  I can't handle a "
+            << "UsedType enum value of " << print_ << "!" << std::endl;
     exit(1);
   }
 }
@@ -251,11 +251,11 @@ void FieldMeter::drawfields( int manditory ){
        *  message about no more warnings.  */
       numWarnings_ ++;
       if (numWarnings_ < 5)
-	fprintf(stderr, "Warning:  meter %s had a negative "
-	  "value of %f for field %d\n", name(), fields_[i], i);
+          std::cerr << "Warning:  meter " << name() <<  " had a negative "
+                    << "value of %f for field " << fields_[i] << std::endl;
       if (numWarnings_ == 5)
-        fprintf(stderr, "Future warnings from the %s meter "
-	  "will not be displayed.\n", name());
+          std::cerr << "Future warnings from the " << name() << " meter "
+                    << "will not be displayed." << std::endl;
     }
 
     twidth = (int) ((width_ * (float) fields_[i]) / total_);

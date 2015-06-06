@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1997, 2005, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1997, 2005, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -19,7 +19,7 @@ public:
   BtryMeter( XOSView *parent );
   ~BtryMeter( void );
 
-  const char *name( void ) const { return "BtryMeter"; }
+  std::string name( void ) const { return "BtryMeter"; }
   void checkevent( void );
 
   void checkResources( void );

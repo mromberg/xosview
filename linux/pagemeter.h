@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1996, 2007 by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
+//  Copyright (c) 1996, 2007, 2015 by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -16,7 +16,7 @@ public:
   PageMeter( XOSView *parent, float max );
   ~PageMeter( void );
 
-  const char *name( void ) const { return "PageMeter"; }
+  std::string name( void ) const { return "PageMeter"; }
   void checkevent( void );
 
   void checkResources( void );

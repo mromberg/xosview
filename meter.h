@@ -19,7 +19,7 @@ public:
     int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
   virtual ~Meter( void );
 
-  virtual const char *name( void ) const { return "Meter"; }
+  virtual std::string name( void ) const { return "Meter"; }
   void resize( int x, int y, int width, int height );
   virtual void checkevent( void ) = 0;
   virtual void draw( void ) = 0;
@@ -32,8 +32,8 @@ public:
   void dousedlegends( int val ) { dousedlegends_ = val; }
   int requestevent( void ){
     if (priority_ == 0) {
-      fprintf(stderr, "Warning:  meter %s had an invalid priority "
-	      "of 0.  Resetting to 1...\n", name());
+    std::cerr << "Warning:  meter " << name() << " had an invalid priority"
+              << " of 0.  Resetting to 1..." << std::endl;
       priority_ = 1;
     }
     int rval = counter_ % priority_;

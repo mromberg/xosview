@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2000, 2006 by Leopold Toetsch <lt@toetsch.at>
+//  Copyright (c) 2000, 2006, 2015 by Leopold Toetsch <lt@toetsch.at>
 //
 //  File based on btrymeter.* by
 //  Copyright (c) 1997 by Mike Romberg ( mike.romberg@noaa.gov )
@@ -21,7 +21,7 @@ public:
 	  const char * caption);
   ~LmsTemp( void );
 
-  const char *name( void ) const { return "LmsTemp"; }
+  std::string name( void ) const { return "LmsTemp"; }
   void checkevent( void );
 
   void checkResources( void );

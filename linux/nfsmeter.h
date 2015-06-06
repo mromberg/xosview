@@ -23,7 +23,7 @@ public:
 		const char *statfile);
   ~NFSMeter( void );
 
-  const char *name( void ) const { return _statname; }
+  std::string name( void ) const { return _statname; }
   void checkResources( void );
   void starttimer(void) { return _timer.start(); };
   void stoptimer(void) { return _timer.stop(); };
