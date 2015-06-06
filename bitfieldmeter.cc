@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006 Thomas Waldmann ( ThomasWaldmann@gmx.de )
+//  Copyright (c) 1999, 2006, 2015 Thomas Waldmann ( ThomasWaldmann@gmx.de )
 //  based on work of Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
@@ -18,10 +18,10 @@
 
 
 BitFieldMeter::BitFieldMeter( XOSView *parent, int numBits, int numfields,
-                        const char *title,
-			const char *bitslegend, const char *FieldLegend,
-			int docaptions, int dolegends, int dousedlegends )
-: Meter(parent, title, bitslegend, docaptions, dolegends, dousedlegends){
+  const std::string &title,
+  const std::string &bitslegend, const std::string &FieldLegend,
+  int docaptions, int dolegends, int dousedlegends )
+  : Meter(parent, title, bitslegend, docaptions, dolegends, dousedlegends){
     /*  We need to set print_ to something valid -- the meters
      *  apparently get drawn before the meters have a chance to call
      *  CheckResources() themselves.  */
@@ -36,7 +36,6 @@ BitFieldMeter::BitFieldMeter( XOSView *parent, int numBits, int numfields,
   lastvals_ = NULL;
   lastx_ = NULL;
   setNumBits(numBits);
-  fieldLegend_ = NULL;
   setfieldlegend(FieldLegend);
   setNumFields(numfields);
 }
@@ -80,17 +79,17 @@ void BitFieldMeter::setNumBits(int n){
       bits_[i] = lastbits_[i] = 0;
 }
 
-void BitFieldMeter::SetUsedFormat ( const char * const fmt ) {
+void BitFieldMeter::SetUsedFormat ( const std::string &fmt ) {
     /*  Do case-insensitive compares.  */
-  if (!strncasecmp (fmt, "percent", 8))
+  if (!strncasecmp (fmt.c_str(), "percent", 8))
     print_ = PERCENT;
-  else if (!strncasecmp (fmt, "autoscale", 10))
+  else if (!strncasecmp (fmt.c_str(), "autoscale", 10))
     print_ = AUTOSCALE;
-  else if (!strncasecmp (fmt, "float", 6))
+  else if (!strncasecmp (fmt.c_str(), "float", 6))
     print_ = FLOAT;
   else
   {
-    fprintf (stderr, "Error:  could not parse format of '%s'\n", fmt);
+    fprintf (stderr, "Error:  could not parse format of '%s'\n", fmt.c_str());
     fprintf (stderr, "  I expected one of 'percent', 'bytes', or 'float'\n");
     fprintf (stderr, "  (Case-insensitive)\n");
     exit(1);
@@ -130,7 +129,7 @@ void BitFieldMeter::reset( void ){
     lastvals_[i] = lastx_[i] = -1;
 }
 
-void BitFieldMeter::setfieldcolor( int field, const char *color ){
+void BitFieldMeter::setfieldcolor( int field, const std::string &color ){
   colors_[field] = parent_->allocColor( color );
 }
 
@@ -170,29 +169,24 @@ void BitFieldMeter::draw( void ){
 }
 
 void BitFieldMeter::drawfieldlegend( void ){
-  char *tmp1, *tmp2, buff[100];
-  int n, x = x_ + width_/2 + 4;
+  size_t pos = 0;
+  int x = x_ + width_/2 + 4;
 
-  tmp1 = tmp2 = fieldLegend_;
-  for ( int i = 0 ; i < numfields_ ; i++ ){
-    n = 0;
-    while ( (*tmp2 != '/') && (*tmp2 != '\0') ){
-      tmp2++;
-      n++;
-    }
-    tmp2++;
-    strncpy( buff, tmp1, n );
-    buff[n] = '\0';
+  for (int i = 0 ; i < numfields_ ; i++) {
+    size_t fpos = fieldLegend_.find("/", pos);  // string::npos if not found
+    std::string li = fieldLegend_.substr(pos, fpos - pos);
+    pos = fpos + 1;
+
     parent_->setStippleN(i%4);
     parent_->setForeground( colors_[i] );
-    parent_->drawString( x, y_ - 5, buff );
-    x += parent_->textWidth( buff, n );
+    parent_->drawString( x, y_ - 5, li );
+    x += parent_->textWidth( li );
     parent_->setForeground( parent_->foreground() );
     if ( i != numfields_ - 1 )
-      parent_->drawString( x, y_ - 5, "/" );
-    x += parent_->textWidth( "/", 1 );
-    tmp1 = tmp2;
+        parent_->drawString( x, y_ - 5, "/" );
+    x += parent_->textWidth( "/" );
   }
+
   parent_->setStippleN(0);	/*  Restore default all-bits stipple.  */
 }
 
@@ -378,13 +372,4 @@ bool BitFieldMeter::checkX(int x, int width) const {
   }
 
   return true;
-}
-
-
-void BitFieldMeter::setfieldlegend( const char *fieldlegend ){
-  delete[] fieldLegend_;
-  int len = strlen(fieldlegend);
-  fieldLegend_ = new char[len + 1];
-  strncpy( fieldLegend_, fieldlegend, len );
-  fieldLegend_[len] = '\0'; // strncpy() will not null terminate if s2 > len
 }

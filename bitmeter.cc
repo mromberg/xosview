@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -10,12 +10,9 @@
 #include "bitmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: bitmeter.cc,v 1.10 2006/02/18 04:33:04 romberg Exp $");
-CVSID_DOT_H(BITMETER_H_CVSID);
-
 BitMeter::BitMeter( XOSView *parent,
-		    const char *title, const char *legend, int numBits,
-		    int docaptions, int, int dousedlegends)
+  const std::string &title, const std::string &legend, int numBits,
+  int docaptions, int, int dousedlegends)
   : Meter( parent, title, legend, docaptions, dousedlegends, dousedlegends ),
   bits_(NULL), lastbits_(NULL), disabled_(false)  {
   setNumBits(numBits);

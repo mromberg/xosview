@@ -1,28 +1,28 @@
 //
-//  Copyright (c) 1999, 2006 Thomas Waldmann (ThomasWaldmann@gmx.de)
+//  Copyright (c) 1999, 2006, 2015 Thomas Waldmann (ThomasWaldmann@gmx.de)
 //  based on work of Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
-//
 //
 #ifndef _BITFIELDMETER_H_
 #define _BITFIELDMETER_H_
 
 #include "meter.h"
 #include "timer.h"
+#include <string>
 
 class BitFieldMeter : public Meter {
 public:
   BitFieldMeter( XOSView *parent, int numBits = 1, int numfields = 1,
-	      const char *title = "",
-	      const char *bitlegend = "", const char *fieldlegend = "",
-	      int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
+    const std::string &title = "",
+    const std::string &bitlegend = "", const std::string &fieldlegend = "",
+    int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
   virtual ~BitFieldMeter( void );
 
   virtual void drawfields( int manditory = 0 );
   void drawBits( int manditory = 0 );
 
-  void setfieldcolor( int field, const char *color );
+  void setfieldcolor( int field, const std::string &color );
   void setfieldcolor( int field, unsigned long color);
   void docaptions( int val ) { docaptions_ = val; }
   void dolegends( int val ) { dolegends_ = val; }
@@ -55,16 +55,17 @@ protected:
   char *bits_, *lastbits_;
   int numbits_;
 
-  void SetUsedFormat ( const char * const str );
+  void SetUsedFormat ( const std::string &str );
   void drawfieldlegend( void );
   void drawused( int manditory );
   bool checkX(int x, int width) const;
 
   void setNumFields(int n);
   void setNumBits(int n);
-  char *fieldLegend_;
+  std::string fieldLegend_;
 
-  void setfieldlegend(const char *fieldlegend);
+  void setfieldlegend(const std::string &fieldlegend)
+        { fieldLegend_ = fieldlegend; }
 
 private:
   Timer _timer;

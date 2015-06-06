@@ -1,25 +1,22 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
-//
-//
-// $Id: bitmeter.h,v 1.7 2006/02/18 04:33:04 romberg Exp $
 //
 #ifndef _BITMETER_H_
 #define _BITMETER_H_
 
-#define BITMETER_H_CVSID "$Id: bitmeter.h,v 1.7 2006/02/18 04:33:04 romberg Exp $"
-
 #include "meter.h"
+#include <string>
 
 class XOSView;
 
 class BitMeter : public Meter {
 public:
   BitMeter( XOSView *parent,
-	    const char *title = "", const char *legend ="",
-	    int numBits = 1, int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
+    const std::string &title = "", const std::string &legend ="",
+    int numBits = 1, int docaptions = 0, int dolegends = 0,
+    int dousedlegends = 0 );
   virtual ~BitMeter( void );
 
   void checkevent( void );
