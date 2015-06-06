@@ -1,17 +1,12 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
-//
-// $Id: Host.h,v 1.6 2006/02/18 04:33:04 romberg Exp $
-//
-
 #ifndef _Host_h
 #define _Host_h
 
-#define HOST_H_CVSID "$Id: Host.h,v 1.6 2006/02/18 04:33:04 romberg Exp $"
-
+#include <string>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -26,7 +21,7 @@
 
 class Host {
 public:
-  Host(const char *hostname);
+  Host(const std::string &hostname);
   Host(const struct in_addr *address);
   Host(unsigned int addr);
   Host(const Host& host) { copy(host); _failure = host._failure; }
@@ -49,10 +44,10 @@ public:
   int reasonForFailure(void) const;  // returns h_errno at time of failure
   bool tryAgain(void) const;         // Ok to try again?
 
-  const char *officialName(void) const { return _hent.h_name; }
+  std::string officialName(void) const { return std::string(_hent.h_name); }
 
   int numAliases(void) const { return _numAliases; }
-  const char *alias(int num) const { return _hent.h_aliases[num]; }
+  std::string alias(int num) const { return std::string(_hent.h_aliases[num]); }
 
   int addrType(void) const { return _hent.h_addrtype; }
   int addrLength(void) const { return _hent.h_length; }

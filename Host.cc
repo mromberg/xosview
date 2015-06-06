@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -11,16 +11,13 @@
 #include "general.h"
 #include "Host.h"
 
-CVSID("$Id: Host.cc,v 1.7 2006/02/18 04:33:04 romberg Exp $");
-CVSID_DOT_H(HOST_H_CVSID);
-
 #if defined(__hpux__) || defined(__hpux)
 extern int h_errno;
 #endif
 
 
-Host::Host(const char *hostname){
-  struct hostent *hent = gethostbyname(hostname);
+Host::Host(const std::string &hostname){
+  struct hostent *hent = gethostbyname(hostname.c_str());
 
   check(hent);
 
