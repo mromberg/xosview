@@ -1,16 +1,12 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
-//
-//
-// $Id: meter.h,v 1.8 2006/02/18 04:33:04 romberg Exp $
 //
 #ifndef _METER_H_
 #define _METER_H_
 
-#define METER_H_CVSID "$Id: meter.h,v 1.8 2006/02/18 04:33:04 romberg Exp $"
-
+#include <string>
 #include <stdio.h>
 #include "xosview.h"	//  To grab MAX_SAMPLES_PER_SECOND.
 
@@ -18,18 +14,19 @@ class XOSView;
 
 class Meter {
 public:
-  Meter( XOSView *parent, const char *title = "", const char *legend ="",
-	 int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
+  Meter( XOSView *parent, const std::string &title = "",
+    const std::string &legend ="",
+    int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
   virtual ~Meter( void );
 
   virtual const char *name( void ) const { return "Meter"; }
   void resize( int x, int y, int width, int height );
   virtual void checkevent( void ) = 0;
   virtual void draw( void ) = 0;
-  void title( const char *title );
-  const char *title( void ) { return title_; }
-  void legend( const char *legend );
-  const char *legend( void ) { return legend_; }
+  void title( const std::string &title ) { title_ = title; }
+  const char *title( void ) { return title_.c_str(); }
+  void legend( const std::string &legend ) { legend_ = legend; }
+  const char *legend( void ) { return legend_.c_str(); }
   void docaptions( int val ) { docaptions_ = val; }
   void dolegends( int val ) { dolegends_ = val; }
   void dousedlegends( int val ) { dousedlegends_ = val; }
@@ -55,7 +52,7 @@ protected:
   XOSView *parent_;
   int x_, y_, width_, height_, docaptions_, dolegends_, dousedlegends_;
   int priority_, counter_;
-  char *title_, *legend_;
+  std::string title_, legend_;
   unsigned long textcolor_;
   double samplesPerSecond() { return 1.0*MAX_SAMPLES_PER_SECOND/priority_; }
   double secondsPerSample() { return 1.0/samplesPerSecond(); }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -148,28 +148,23 @@ void FieldMeter::draw( void ){
 }
 
 void FieldMeter::drawlegend( void ){
-  char *tmp1, *tmp2, buff[100];
-  int n, x = x_;
+  size_t pos = 0;
+  int x = x_;
 
-  tmp1 = tmp2 = legend_;
-  for ( int i = 0 ; i < numfields_ ; i++ ){
-    n = 0;
-    while ( (*tmp2 != '/') && (*tmp2 != '\0') ){
-      tmp2++;
-      n++;
-    }
-    tmp2++;
-    strncpy( buff, tmp1, n );
-    buff[n] = '\0';
+  for (int i = 0 ; i < numfields_ ; i++) {
+    size_t fpos = legend_.find("/", pos); // string::npos if not found
+    std::string li = legend_.substr(pos, fpos - pos);
+    pos = fpos + 1;
+
     parent_->setStippleN(i%4);
     parent_->setForeground( colors_[i] );
-    parent_->drawString( x, y_ - 5, buff );
-    x += parent_->textWidth( buff, n );
+    parent_->drawString( x, y_ - 5, li);
+    x += parent_->textWidth( li );
+
     parent_->setForeground( parent_->foreground() );
     if ( i != numfields_ - 1 )
-      parent_->drawString( x, y_ - 5, "/" );
+        parent_->drawString( x, y_ - 5, "/" );
     x += parent_->textWidth( "/", 1 );
-    tmp1 = tmp2;
   }
   parent_->setStippleN(0);	/*  Restore default all-bits stipple.  */
 }
