@@ -22,13 +22,11 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeter.cc,v 1.26 2006/02/18 04:33:04 romberg Exp $");
-CVSID_DOT_H(FIELDMETER_H_CVSID);
-
-FieldMeter::FieldMeter( XOSView *parent, int numfields, const char *title,
-                        const char *legend, int docaptions, int dolegends,
-                        int dousedlegends )
-: Meter(parent, title, legend, docaptions, dolegends, dousedlegends){
+FieldMeter::FieldMeter( XOSView *parent, int numfields,
+  const std::string &title,
+  const std::string &legend, int docaptions, int dolegends,
+  int dousedlegends )
+  : Meter(parent, title, legend, docaptions, dolegends, dousedlegends){
     /*  We need to set print_ to something valid -- the meters
      *  apparently get drawn before the meters have a chance to call
      *  CheckResources() themselves.  */
@@ -118,7 +116,7 @@ void FieldMeter::reset( void ){
     lastvals_[i] = lastx_[i] = -1;
 }
 
-void FieldMeter::setfieldcolor( int field, const char *color ){
+void FieldMeter::setfieldcolor( int field, const std::string &color ){
   colors_[field] = parent_->allocColor( color );
 }
 
