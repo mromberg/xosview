@@ -1,5 +1,5 @@
 //
-//  The original FieldMeter class is Copyright (c) 1994, 2006 by Mike Romberg
+//  The original FieldMeter class is Copyright (c) 1994, 2006, 2015 by Mike Romberg
 //    ( mike.romberg@noaa.gov )
 //  Modifications from FieldMeter class done in Oct. 1995
 //    by Brian Grayson ( bgrayson@netbsd.org )
@@ -42,13 +42,10 @@
 #include "fieldmeterdecay.h"
 #include "xosview.h"
 
-CVSID("$Id: fieldmeterdecay.cc,v 1.17 2006/02/18 04:33:04 romberg Exp $");
-CVSID_DOT_H(FIELDMETERDECAY_H_CVSID);
-
 FieldMeterDecay::FieldMeterDecay( XOSView *parent,
-                int numfields, const char *title,
-                const char *legend, int docaptions, int dolegends,
-                int dousedlegends )
+  int numfields, const std::string &title,
+  const std::string &legend, int docaptions, int dolegends,
+  int dousedlegends )
 : FieldMeter (parent, numfields, title, legend, docaptions, dolegends,
               dousedlegends)
 {

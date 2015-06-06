@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -60,12 +60,10 @@ static const char NAME[] = "xosview@";
 
 double MAX_SAMPLES_PER_SECOND = 10;
 
-CVSID("$Id: xosview.cc,v 1.34 2007/09/12 22:11:52 romberg Exp $");
-CVSID_DOT_H(XOSVIEW_H_CVSID);
 
+XOSView::XOSView( const std::string &instName,
+  int argc, char *argv[] ) : XWin(), xrm(Xrm("xosview", instName)){
 
-XOSView::XOSView( const char * instName, int argc, char *argv[] ) : XWin(),
-						xrm(Xrm("xosview", instName)){
   // Check for version arguments first.  This allows
   // them to work without the need for a connection
   // to the X server
@@ -260,14 +258,13 @@ void XOSView::checkOverallResources() {
       usedlabels_ = 1;
 }
 
-const char *XOSView::winname( void ){
+std::string XOSView::winname( void ){
   char host[100];
   gethostname( host, 99 );
-  static char name[101];	/*  We return a pointer to this,
-				    so it can't be local.  */
-  snprintf( name, 100, "%s%s", NAME, host);
-  //  Allow overriding of this name through the -title option.
-  return getResourceOrUseDefault ("title", name);
+  std::string hname(host);
+  std::string name = std::string(NAME) + hname;
+  name = getResourceOrUseDefault("title", name.c_str());
+  return name;
 }
 
 
@@ -338,10 +335,6 @@ void XOSView::draw ( void ) {
       XOSDEBUG("Skipping draw:  not visible.\n");
     }
   }
-}
-void XOSView::keyrelease( char *ch ){
-/*  WARNING:  This code is not called by anything.  */
-(void) ch;  /*  To avoid gcc warnings.  */
 }
 
 void XOSView::run( void ){

@@ -1,16 +1,12 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
-//
-//
-// $Id: xosview.h,v 1.15 2007/09/12 22:11:52 romberg Exp $
 //
 #ifndef _XOSVIEW_H_
 #define _XOSVIEW_H_
 
-#define XOSVIEW_H_CVSID	"$Id: xosview.h,v 1.15 2007/09/12 22:11:52 romberg Exp $"
-
+#include <string>
 #include "xwin.h"
 #include "Xrm.h"  //  For Xrm resource manager class.
 
@@ -22,7 +18,7 @@ class Meter;
 
 class XOSView : public XWin {
 public:
-  XOSView( const char* instName, int argc, char *argv[] );
+  XOSView( const std::string &instName, int argc, char *argv[] );
   ~XOSView( void );
 
   void figureSize ( void );
@@ -30,8 +26,8 @@ public:
   void reallydraw( void );
   void draw ( void );
   void run( void );
-  void keyrelease( char *ch );
-  const char *winname( void );
+
+  std::string winname( void );
 
   // used by meter makers
   int xoff(void) const { return xoff_; }
