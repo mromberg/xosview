@@ -1,11 +1,5 @@
-//
-// $Id: Xrmcommandline.h,v 1.25 2014/01/15 01:46:15 romberg Exp $
-//
-
 #ifndef _Xrmcommandline_h
 #define _Xrmcommandline_h
-
-#define XRMCOMMANDLINE_H_CVSID "$Id: Xrmcommandline.h,v 1.25 2014/01/15 01:46:15 romberg Exp $"
 
 #include <X11/Xresource.h>
 

@@ -1,6 +1,3 @@
-//
-// $Id: xwin.h,v 1.11 2014/01/14 18:57:57 romberg Exp $
-//
 #ifndef _XWIN_H_
 #define _XWIN_H_
 

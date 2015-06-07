@@ -61,7 +61,8 @@ public:
   // this function is called.  The Host class has been run
   // through purify and the problem is not in it.  Must be
   // another linux library problem :(.
-  const char *strAddress(int num) const { return inet_ntoa(*address(num)); }
+    std::string strAddress(int num) const
+        { return std::string(inet_ntoa(*address(num))); }
 
   // Should not use this under linux for the same reashon as the above
   // function.
