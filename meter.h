@@ -24,9 +24,9 @@ public:
   virtual void checkevent( void ) = 0;
   virtual void draw( void ) = 0;
   void title( const std::string &title ) { title_ = title; }
-  const char *title( void ) { return title_.c_str(); }
+  const std::string &title( void ) const { return title_; }
   void legend( const std::string &legend ) { legend_ = legend; }
-  const char *legend( void ) { return legend_.c_str(); }
+  const std::string &legend( void ) const { return legend_; }
   void docaptions( int val ) { docaptions_ = val; }
   void dolegends( int val ) { dolegends_ = val; }
   void dousedlegends( int val ) { dousedlegends_ = val; }
