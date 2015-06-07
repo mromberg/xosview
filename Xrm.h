@@ -24,7 +24,7 @@ public:
         { return std::string(XrmQuarkToString(_instance)); }
 
   const char *getResource(const std::string &rname) const;
-  const char* getDisplayName (int argc, char** argv);
+  std::string getDisplayName (int argc, char** argv);
   void loadAndMergeResources(int& argc, char** argv, Display* display);
 
   std::ostream &dump(std::ostream &os) const;

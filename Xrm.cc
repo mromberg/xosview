@@ -53,9 +53,8 @@ Xrm::Xrm(const std::string &className, const std::string &instanceName){
   initClassName(className);
 }
 
-const char*
-Xrm::getDisplayName (int argc, char** argv)
-{
+
+std::string Xrm::getDisplayName (int argc, char** argv) {
   (void) argc;  //  Avoid gcc warnings.
   //  See if '-display foo:0' is on the command line, and return it if it is.
   char** argp;
