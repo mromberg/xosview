@@ -156,9 +156,9 @@ void XWin::setFont( void ){
   // Set up the font
   if ( font_ != NULL )
     return;
-  const char* fontName = getResource("font");
+  std::string fontName = getResource("font");
 
-  if ((font_ = XLoadQueryFont(display_, fontName)) == NULL){
+  if ((font_ = XLoadQueryFont(display_, fontName.c_str())) == NULL){
     std::cerr <<name_ <<": display " <<DisplayString(display_)
       <<" cannot load font " << fontName << std::endl;
     exit(1);
@@ -229,7 +229,8 @@ void XWin::setColors( void ){
   XColor               color;
 
   // Main window's background color
-  if (XParseColor(display_, colormap_, getResource("background"),
+  if (XParseColor(display_, colormap_,
+      getResource("background").c_str(),
 		  &color) == 0 ||
       XAllocColor(display_, colormap_, &color) == 0)
     bgcolor_ = WhitePixel(display_, DefaultScreen(display_));
@@ -237,7 +238,8 @@ void XWin::setColors( void ){
     bgcolor_ = color.pixel;
 
   // Main window's foreground color */
-  if (XParseColor(display_, colormap_, getResource("foreground"),
+  if (XParseColor(display_, colormap_,
+      getResource("foreground").c_str(),
 		  &color) == 0 ||
       XAllocColor(display_, colormap_, &color) == 0)
     fgcolor_ = BlackPixel(display_, DefaultScreen(display_));
@@ -324,8 +326,11 @@ void XWin::getGeometry( void ){
 	  sizehints_->height, sizehints_->x, sizehints_->y);
 
   // Process the geometry specification
-  bitmask =  XGeometry(display_, DefaultScreen(display_),
-		       getResourceOrUseDefault("geometry", geometry_),
+  Xrm::opt gopt = xrmptr_->getResource("geometry");
+  const char *gptr = geometry_;
+  if (gopt.first)
+      gptr = gopt.second.c_str();
+  bitmask =  XGeometry(display_, DefaultScreen(display_), gptr,
                        default_geometry,
 		       0,
 		       1, 1, 0, 0, &(sizehints_->x), &(sizehints_->y),
@@ -404,29 +409,39 @@ void XWin::addEvent( Event *event ){
 }
 //-----------------------------------------------------------------------------
 
-const char *XWin::getResourceOrUseDefault( const char *name,
-  const char *defaultVal ){
+bool XWin::isResourceTrue( const std::string &name )
+    {
+    Xrm::opt val = xrmptr_->getResource(name);
+    if (!val.first)
+        return false;
 
-  const char* retval = xrmptr_->getResource (name);
-  if (retval)
-    return retval;
-  else
-    return defaultVal;
+    return val.second == "True";
+    }
+
+std::string XWin::getResourceOrUseDefault( const std::string &name,
+  const std::string &defaultVal ){
+
+  Xrm::opt retval = xrmptr_->getResource (name);
+  if (retval.first)
+    return retval.second;
+
+  return defaultVal;
 }
 
 //-----------------------------------------------------------------------------
 
-const char *XWin::getResource( const std::string &name ){
-  const char* retval = xrmptr_->getResource (name);
-  if (retval)
-    return retval;
+std::string XWin::getResource( const std::string &name ){
+Xrm::opt retval = xrmptr_->getResource (name);
+  if (retval.first)
+      return retval.second;
   else
-  {
-    std::cerr << "Error:  Couldn't find '" << name << "' resource in the resource database!\n";
-    exit (-1);
+      {
+      std::cerr << "Error:  Couldn't find '" << name
+                << "' resource in the resource database!\n";
+      exit (-1);
       /*  Some compilers aren't smart enough to know that exit() exits.  */
-    return '\0';
-  }
+      return '\0';
+      }
 }
 
 //-----------------------------------------------------------------------------

@@ -9,6 +9,7 @@
 #include "bool.h"
 
 #include <string>
+#include <utility>
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
@@ -23,7 +24,12 @@ public:
   std::string instanceName(void) const
         { return std::string(XrmQuarkToString(_instance)); }
 
-  const char *getResource(const std::string &rname) const;
+  // At some point ISO C++ may adopt std::optional.  At which point
+  // optional would be slightly clearner.  For now, this works ok
+  // to indicate non-existant resources.
+  typedef std::pair<bool, std::string> opt;
+
+  opt getResource(const std::string &rname) const;
   std::string getDisplayName (int argc, char** argv);
   void loadAndMergeResources(int& argc, char** argv, Display* display);
 

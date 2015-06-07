@@ -14,10 +14,11 @@
 #include <string.h>
 #include <string>
 
+#include "Xrm.h"
+
 #define XWIN_H_CVSID "$Id: xwin.h,v 1.11 2014/01/14 18:57:57 romberg Exp $"
 
 class XWin;
-class Xrm;
 
 typedef void (XWin::*EventCallBack)( XEvent &event );
 
@@ -100,11 +101,11 @@ public:
   void unmap( void ) { XUnmapWindow( display_, window_ ); }
   void flush( void ) { XFlush( display_ ); }
 
-  const char *getResource( const std::string &name );
-  const char *getResourceOrUseDefault( const char *name,
-    const char *defaultVal );
-  bool isResourceTrue( const std::string &name )
-    { return std::string(getResource(name)) == "True"; }
+  std::string getResource( const std::string &name ); // exit() if not found
+  std::string getResourceOrUseDefault( const std::string &name,
+    const std::string &defaultVal );
+  bool isResourceTrue( const std::string &name );
+
   void dumpResources(std::ostream &os );
 
 protected:

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006 by Thomas Waldmann ( ThomasWaldmann@gmx.de )
+//  Copyright (c) 1999, 2006, 2015 by Thomas Waldmann ( ThomasWaldmann@gmx.de )
 //  based on work of Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
@@ -59,7 +59,7 @@ void RAIDMeter::checkResources( void ){
   doneColor_ = parent_->allocColor( parent_->getResource( "RAIDresyncdoneColor" ) );
   todoColor_ = parent_->allocColor( parent_->getResource( "RAIDresynctodoColor" ) );
   completeColor_= parent_->allocColor( parent_->getResource( "RAIDresynccompleteColor" ) );
-  priority_  = atoi(parent_->getResource("RAIDPriority"));
+  priority_  = atoi(parent_->getResource("RAIDPriority").c_str());
   setfieldcolor( 0, doneColor_ );
   setfieldcolor( 1, todoColor_ );
   SetUsedFormat(parent_->getResource( "RAIDUsedFormat" ) );

@@ -39,7 +39,7 @@ void SwapMeter::checkResources( void ){
 
   setfieldcolor( 0, parent_->getResource( "swapUsedColor" ) );
   setfieldcolor( 1, parent_->getResource( "swapFreeColor" ) );
-  priority_ = atoi (parent_->getResource( "swapPriority" ) );
+  priority_ = atoi (parent_->getResource( "swapPriority" ).c_str() );
   dodecay_ = parent_->isResourceTrue( "swapDecay" );
   useGraph_ = parent_->isResourceTrue( "swapGraph" );
   setUsedFormat (parent_->getResource("swapUsedFormat"));

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -46,10 +46,11 @@ void MeterMaker::makeMeters(void){
   if (_xos->isResourceTrue("mem"))
     push(new MemMeter(_xos));
   if (_xos->isResourceTrue("disk"))
-      push(new DiskMeter(_xos, atof(_xos->getResource("diskBandwidth"))));
+      push(new DiskMeter(_xos,
+          atof(_xos->getResource("diskBandwidth").c_str())));
   // check for the RAID meter
   if (_xos->isResourceTrue("RAID")){
-    int RAIDCount = atoi(_xos->getResource("RAIDdevicecount"));
+  int RAIDCount = atoi(_xos->getResource("RAIDdevicecount").c_str());
     for (int i = 0 ; i < RAIDCount ; i++)
       push(new RAIDMeter(_xos, i));
   }
@@ -58,11 +59,12 @@ void MeterMaker::makeMeters(void){
     push(new SwapMeter(_xos));
 
   if (_xos->isResourceTrue("page"))
-    push(new PageMeter(_xos, atof(_xos->getResource("pageBandwidth"))));
+      push(new PageMeter(_xos,
+          atof(_xos->getResource("pageBandwidth").c_str())));
 
   // check for the net meter
   if (_xos->isResourceTrue("net"))
-    push(new NetMeter(_xos, atof(_xos->getResource("netBandwidth"))));
+      push(new NetMeter(_xos, atof(_xos->getResource("netBandwidth").c_str())));
 
   // check for the NFS mesters
   if (_xos->isResourceTrue("NFSDStats")){
@@ -112,16 +114,16 @@ void MeterMaker::makeMeters(void){
   if (_xos->isResourceTrue("lmstemp")){
     char caption[80];
     snprintf(caption, 80, "ACT/HIGH/%s",
-      _xos->getResourceOrUseDefault("lmstempHighest", "100"));
+      _xos->getResourceOrUseDefault("lmstempHighest", "100").c_str());
     for (int i = 1 ; ; i++) {
       char s[20];
       snprintf(s, 20, "lmstemp%d", i);
-      const char *res = _xos->getResourceOrUseDefault(s, NULL);
-      if(!res || !*res)
+      std::string res = _xos->getResourceOrUseDefault(s, "<nil>");
+      if(res == "<nil>")
 	break;
       snprintf(s, 20, "lmstempLabel%d", i);
-      const char *lab = _xos->getResourceOrUseDefault(s, "TMP");
-      push(new LmsTemp(_xos, res, lab, caption));
+      std::string lab = _xos->getResourceOrUseDefault(s, "TMP");
+      push(new LmsTemp(_xos, res.c_str(), lab.c_str(), caption));
     }
   }
 }

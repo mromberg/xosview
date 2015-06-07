@@ -105,7 +105,7 @@ void BtryMeter::checkResources( void ){
   setfieldcolor( 0, parent_->getResource( "batteryLeftColor" ) );
   setfieldcolor( 1, parent_->getResource( "batteryUsedColor" ) );
 
-  priority_ = atoi (parent_->getResource( "batteryPriority" ) );
+  priority_ = atoi (parent_->getResource( "batteryPriority" ).c_str() );
   setUsedFormat(parent_->getResource( "batteryUsedFormat" ) );
 }
 

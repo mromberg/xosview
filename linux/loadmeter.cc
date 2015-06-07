@@ -40,13 +40,13 @@ void LoadMeter::checkResources( void ){
 
   setfieldcolor( 0, procloadcol_ );
   setfieldcolor( 1, parent_->getResource( "loadIdleColor" ) );
-  priority_ = atoi (parent_->getResource( "loadPriority" ) );
+  priority_ = atoi (parent_->getResource( "loadPriority" ).c_str() );
   useGraph_ = parent_->isResourceTrue( "loadGraph" );
   dodecay_ = parent_->isResourceTrue( "loadDecay" );
   setUsedFormat (parent_->getResource("loadUsedFormat"));
 
-  warnThreshold = atoi (parent_->getResource("loadWarnThreshold"));
-  critThreshold = atoi (parent_->getResource("loadCritThreshold"));
+  warnThreshold = atoi (parent_->getResource("loadWarnThreshold").c_str());
+  critThreshold = atoi (parent_->getResource("loadCritThreshold").c_str());
 
   do_cpu_speed  = parent_->isResourceTrue( "loadCpuSpeed" );
 

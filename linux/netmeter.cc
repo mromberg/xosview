@@ -115,7 +115,7 @@ void NetMeter::checkResources( void ){
   setfieldcolor( 0, parent_->getResource( "netInColor" ) );
   setfieldcolor( 1, parent_->getResource( "netOutColor" ) );
   setfieldcolor( 2, parent_->getResource( "netBackground" ) );
-  priority_ = atoi (parent_->getResource( "netPriority" ) );
+  priority_ = atoi (parent_->getResource( "netPriority" ).c_str() );
   useGraph_ = parent_->isResourceTrue( "netGraph" );
   dodecay_ = parent_->isResourceTrue( "netDecay" );
   setUsedFormat (parent_->getResource("netUsedFormat"));

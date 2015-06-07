@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -52,7 +52,7 @@ void IntMeter::checkResources( void ){
   BitMeter::checkResources();
   onColor_  = parent_->allocColor( parent_->getResource( "intOnColor" ) );
   offColor_ = parent_->allocColor( parent_->getResource( "intOffColor" ) );
-  priority_ = atoi(parent_->getResource("intPriority"));
+  priority_ = atoi(parent_->getResource("intPriority").c_str());
 }
 
 float IntMeter::getLinuxVersion(void) {

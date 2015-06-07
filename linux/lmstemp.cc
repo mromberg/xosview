@@ -111,7 +111,7 @@ void LmsTemp::checkResources( void ){
   setfieldcolor( 1, parent_->getResource( "lmstempIdleColor") );
   setfieldcolor( 2, parent_->getResource( "lmstempHighColor" ) );
 
-  priority_ = atoi (parent_->getResource( "lmstempPriority" ) );
+  priority_ = atoi (parent_->getResource( "lmstempPriority" ).c_str() );
   setUsedFormat(parent_->getResource( "lmstempUsedFormat" ) );
 }
 

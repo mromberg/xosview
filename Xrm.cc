@@ -72,7 +72,7 @@ std::string Xrm::getDisplayName (int argc, char** argv) {
   //  An empty display string means use the DISPLAY environment variable.
 }
 
-const char *Xrm::getResource(const std::string &rname) const{
+Xrm::opt Xrm::getResource(const std::string &rname) const{
   std::string frn = std::string(instanceName()) + std::string(".") + rname;
   std::string fcn = std::string(className()) + std::string(".") + rname;
 
@@ -95,7 +95,9 @@ const char *Xrm::getResource(const std::string &rname) const{
     XrmGetResource(_db, frn.c_str(), fcn.c_str(), &type, &val);
   }
 
-  return val.addr;
+  if (val.addr)
+      return opt(true, val.addr);
+  return opt(false, "<(Xrm::uninitialized)>");
 }
 
 Xrm::~Xrm(){

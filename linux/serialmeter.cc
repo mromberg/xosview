@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -64,7 +64,7 @@ void SerialMeter::checkResources( void ){
   BitMeter::checkResources();
   onColor_  = parent_->allocColor( parent_->getResource( "serialOnColor" ) );
   offColor_ = parent_->allocColor( parent_->getResource( "serialOffColor" ) );
-  priority_ = atoi (parent_->getResource( "serialPriority" ) );
+  priority_ = atoi (parent_->getResource( "serialPriority" ).c_str() );
 
   _port = getPortBase(_device);
   if (!getport(_port + UART_LSR) || !getport(_port + UART_MSR)){
@@ -122,9 +122,9 @@ unsigned short int SerialMeter::getPortBase(Device dev) const {
                                 "/dev/ttyS8",
                                 "/dev/ttyS9"};
 
-  const char* res = parent_->getResource(getResourceName(dev));
+  std::string res = parent_->getResource(getResourceName(dev));
 
-  if (!strncasecmp(res, "True", 5)){ // Autodetect portbase.
+  if (!strncasecmp(res.c_str(), "True", 5)){ // Autodetect portbase.
     int fd;
     struct serial_struct serinfo;
 

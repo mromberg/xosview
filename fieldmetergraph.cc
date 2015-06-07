@@ -198,18 +198,16 @@ void FieldMeterGraph::checkResources( void )
 {
   FieldMeterDecay::checkResources();
 
-  const char *ptr = parent_->getResource( "graphNumCols" );
-  if( ptr )
-  {
-    int i;
-	if( sscanf( ptr, "%d", &i ) == 1 )
-	{
-		if( i>0 )
-		{
-			setNumCols( i );
-		}
-	}
-  }
+  std::string ptr = parent_->getResource( "graphNumCols" ); // exit(1) if does not exist
+
+  int i;
+  if( sscanf( ptr.c_str(), "%d", &i ) == 1 )
+      {
+      if( i>0 )
+          {
+          setNumCols( i );
+          }
+      }
 }
 void FieldMeterGraph::setNumCols( int n )
 {

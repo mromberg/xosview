@@ -45,7 +45,7 @@ void MemMeter::checkResources( void ){
   setfieldcolor( 2 + _shAdj, parent_->getResource( "memBufferColor" ) );
   setfieldcolor( 3 + _shAdj, parent_->getResource( "memCacheColor" ) );
   setfieldcolor( 4 + _shAdj, parent_->getResource( "memFreeColor" ) );
-  priority_ = atoi (parent_->getResource( "memPriority" ) );
+  priority_ = atoi (parent_->getResource( "memPriority" ).c_str() );
   dodecay_ = parent_->isResourceTrue( "memDecay" );
   useGraph_ = parent_->isResourceTrue( "memGraph" );
   setUsedFormat (parent_->getResource("memUsedFormat"));
