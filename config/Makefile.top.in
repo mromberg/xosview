@@ -20,6 +20,7 @@ bitfieldmeter.o \
 bitmeter.o \
 xosview.o \
 snprintf.o \
+strutil.o \
 main.o
 
 CFILES := $(OBJS:.o=.cc)
