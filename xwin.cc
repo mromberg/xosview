@@ -216,7 +216,7 @@ void XWin::setHints( int argc, char *argv[] ){
 
 void XWin::openDisplay( void ){
   // Open connection to display selected by user
-  if ((display_ = XOpenDisplay (display_name_)) == NULL) {
+if ((display_ = XOpenDisplay (display_name_.c_str())) == NULL) {
     std::cerr <<"Can't open display named " << display_name_ <<std::endl;
     exit(1);
   }

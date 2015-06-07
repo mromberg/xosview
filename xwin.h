@@ -144,7 +144,7 @@ protected:
   int           done_;          //  If true the application is finished.
   Atom          wm_, wmdelete_; //  Used to handle delete Events
   Colormap      colormap_;      //  The colormap
-  char		display_name_[256];  //  Display name string.
+  std::string	display_name_;  //  Display name string.
   char*		geometry_;	//  geometry string.
   Xrm*		xrmptr_;	//  Pointer to the XOSView xrm.  FIXME???
   int		doStippling_;	//  Either 0 or 1.
@@ -154,8 +154,8 @@ protected:
   void getGeometry( void );
   int getPixmap(Pixmap *);
   void setDisplayName (const std::string &new_display_name)
-        { strncpy(display_name_, new_display_name.c_str(), 256); }
-  const char* displayName () { return display_name_; }
+        { display_name_ = new_display_name; }
+  const std::string &displayName() const { return display_name_; }
 
   void addEvent( Event *event );
   void setColors( void );
