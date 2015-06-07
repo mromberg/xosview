@@ -17,6 +17,7 @@
 #if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
 #include "kernel.h"
 #endif
+#include "strutil.h"
 
 static const char * const versionString = "xosview version: " XOSVIEW_VERSION;
 
@@ -77,7 +78,7 @@ XOSView::XOSView( const std::string &instName,
   xrm.loadAndMergeResources (argc, argv, display_);
   XWinInit (argc, argv, NULL, &xrm);
 #if 1	//  Don't enable this yet.
-  MAX_SAMPLES_PER_SECOND = atof(getResource("samplesPerSec").c_str());
+  MAX_SAMPLES_PER_SECOND = util::stof(getResource("samplesPerSec"));
   if (!MAX_SAMPLES_PER_SECOND)
     MAX_SAMPLES_PER_SECOND = 10;
 #endif
@@ -92,9 +93,9 @@ XOSView::XOSView( const std::string &instName,
   BSDInit();	/*  Needs to be done before processing of -N option.  */
 #endif
 
-  hmargin_  = atoi(getResource("horizontalMargin").c_str());
-  vmargin_  = atoi(getResource("verticalMargin").c_str());
-  vspacing_ = atoi(getResource("verticalSpacing").c_str());
+  hmargin_  = util::stoi(getResource("horizontalMargin"));
+  vmargin_  = util::stoi(getResource("verticalMargin"));
+  vspacing_ = util::stoi(getResource("verticalSpacing"));
   hmargin_  = MAX(0, hmargin_);
   vmargin_  = MAX(0, vmargin_);
   vspacing_ = MAX(0, vspacing_);

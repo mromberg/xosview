@@ -47,10 +47,10 @@ void MeterMaker::makeMeters(void){
     push(new MemMeter(_xos));
   if (_xos->isResourceTrue("disk"))
       push(new DiskMeter(_xos,
-          atof(_xos->getResource("diskBandwidth").c_str())));
+          util::stof(_xos->getResource("diskBandwidth"))));
   // check for the RAID meter
   if (_xos->isResourceTrue("RAID")){
-  int RAIDCount = atoi(_xos->getResource("RAIDdevicecount").c_str());
+  int RAIDCount = util::stoi(_xos->getResource("RAIDdevicecount"));
     for (int i = 0 ; i < RAIDCount ; i++)
       push(new RAIDMeter(_xos, i));
   }
@@ -60,11 +60,11 @@ void MeterMaker::makeMeters(void){
 
   if (_xos->isResourceTrue("page"))
       push(new PageMeter(_xos,
-          atof(_xos->getResource("pageBandwidth").c_str())));
+          util::stof(_xos->getResource("pageBandwidth"))));
 
   // check for the net meter
   if (_xos->isResourceTrue("net"))
-      push(new NetMeter(_xos, atof(_xos->getResource("netBandwidth").c_str())));
+      push(new NetMeter(_xos, util::stof(_xos->getResource("netBandwidth"))));
 
   // check for the NFS mesters
   if (_xos->isResourceTrue("NFSDStats")){

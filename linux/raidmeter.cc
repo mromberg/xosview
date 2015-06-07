@@ -59,7 +59,7 @@ void RAIDMeter::checkResources( void ){
   doneColor_ = parent_->allocColor( parent_->getResource( "RAIDresyncdoneColor" ) );
   todoColor_ = parent_->allocColor( parent_->getResource( "RAIDresynctodoColor" ) );
   completeColor_= parent_->allocColor( parent_->getResource( "RAIDresynccompleteColor" ) );
-  priority_  = atoi(parent_->getResource("RAIDPriority").c_str());
+  priority_  = util::stoi(parent_->getResource("RAIDPriority"));
   setfieldcolor( 0, doneColor_ );
   setfieldcolor( 1, todoColor_ );
   SetUsedFormat(parent_->getResource( "RAIDUsedFormat" ) );
@@ -105,7 +105,7 @@ int RAIDMeter::raidparse(char *cp){
     if(val) strcpy(type,val);
   }else
   if(find1(key,"md_disk_count",_raiddev)){
-    if(val) disknum=atoi(val);
+  if(val) disknum=util::stoi(val);
   }else
   if(find1(key,"md_working_disk_map",_raiddev)){
     if(val) strcpy(working_map,val);

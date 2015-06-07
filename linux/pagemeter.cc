@@ -45,7 +45,7 @@ void PageMeter::checkResources( void ){
   setfieldcolor( 0, parent_->getResource( "pageInColor" ) );
   setfieldcolor( 1, parent_->getResource( "pageOutColor" ) );
   setfieldcolor( 2, parent_->getResource( "pageIdleColor" ) );
-  priority_ = atoi (parent_->getResource( "pagePriority" ).c_str() );
+  priority_ = util::stoi (parent_->getResource( "pagePriority" ));
   maxspeed_ *= priority_ / 10.0;
   dodecay_ = parent_->isResourceTrue( "pageDecay" );
   useGraph_ = parent_->isResourceTrue( "pageGraph" );

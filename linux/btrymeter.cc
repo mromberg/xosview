@@ -105,7 +105,7 @@ void BtryMeter::checkResources( void ){
   setfieldcolor( 0, parent_->getResource( "batteryLeftColor" ) );
   setfieldcolor( 1, parent_->getResource( "batteryUsedColor" ) );
 
-  priority_ = atoi (parent_->getResource( "batteryPriority" ).c_str() );
+  priority_ = util::stoi(parent_->getResource( "batteryPriority" ));
   setUsedFormat(parent_->getResource( "batteryUsedFormat" ) );
 }
 
@@ -462,7 +462,7 @@ bool BtryMeter::parse_battery(const std::string& dirname)
 	//XOSDEBUG("alarm: a=\"%s\" v=\"%s\"\n",argname.c_str(),argval.c_str() );
 
 	if ( argname == "alarm:" ) {
-		battery.alarm = atoi(argval.c_str());
+                battery.alarm = util::stoi(argval);
 		break;
 	}
   }
@@ -481,13 +481,13 @@ bool BtryMeter::parse_battery(const std::string& dirname)
 	//XOSDEBUG("info: a=\"%s\" v=\"%s\"\n",argname.c_str(),argval.c_str() );
 
 	if ( argname == "design capacity" ) {
-		battery.design_capacity=atoi(argval.c_str() );
+                battery.design_capacity=util::stoi(argval);
 	}
 	if ( argname == "last full capacity" ) {
-		battery.last_full_capacity=atoi(argval.c_str() );
+                battery.last_full_capacity=util::stoi(argval);
 	}
 	if ( argname == "last full capacity" ) {
-		battery.last_full_capacity=atoi(argval.c_str() );
+                battery.last_full_capacity=util::stoi(argval);
 	}
 
   }
@@ -522,13 +522,13 @@ bool BtryMeter::parse_battery(const std::string& dirname)
 	}
 
 	if ( argname == "last full capacity" ) {
-		battery.last_full_capacity=atoi(argval.c_str() );
+                battery.last_full_capacity=util::stoi(argval);
 	}
 	if ( argname == "last full capacity" ) {
-		battery.last_full_capacity=atoi(argval.c_str() );
+                battery.last_full_capacity=util::stoi(argval);
 	}
 	if ( argname == "remaining capacity" ) {
-		battery.remaining_capacity=atoi(argval.c_str() );
+                battery.remaining_capacity=util::stoi(argval);
 	}
 
   }

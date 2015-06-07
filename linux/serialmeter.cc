@@ -64,7 +64,7 @@ void SerialMeter::checkResources( void ){
   BitMeter::checkResources();
   onColor_  = parent_->allocColor( parent_->getResource( "serialOnColor" ) );
   offColor_ = parent_->allocColor( parent_->getResource( "serialOffColor" ) );
-  priority_ = atoi (parent_->getResource( "serialPriority" ).c_str() );
+  priority_ = util::stoi (parent_->getResource( "serialPriority" ));
 
   _port = getPortBase(_device);
   if (!getport(_port + UART_LSR) || !getport(_port + UART_MSR)){

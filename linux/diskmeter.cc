@@ -66,7 +66,7 @@ void DiskMeter::checkResources( void )
     setfieldcolor( 0, parent_->getResource("diskReadColor") );
     setfieldcolor( 1, parent_->getResource("diskWriteColor") );
     setfieldcolor( 2, parent_->getResource("diskIdleColor") );
-    priority_ = atoi (parent_->getResource( "diskPriority" ).c_str() );
+    priority_ = util::stoi (parent_->getResource( "diskPriority" ));
     dodecay_ = parent_->isResourceTrue("diskDecay" );
     useGraph_ = parent_->isResourceTrue( "diskGraph" );
     setUsedFormat(parent_->getResource("diskUsedFormat"));

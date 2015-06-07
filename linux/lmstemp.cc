@@ -35,7 +35,7 @@ LmsTemp::LmsTemp( XOSView *parent, const char *filename, const char *label,
     }
     char *p;
     if ((p = strrchr(const_cast<char *>(caption),'/')) != 0)
-      _highest = atoi(p+1);
+        _highest = util::stoi(p+1);
     else
       _highest = 100;
 }
@@ -111,7 +111,7 @@ void LmsTemp::checkResources( void ){
   setfieldcolor( 1, parent_->getResource( "lmstempIdleColor") );
   setfieldcolor( 2, parent_->getResource( "lmstempHighColor" ) );
 
-  priority_ = atoi (parent_->getResource( "lmstempPriority" ).c_str() );
+  priority_ = util::stoi (parent_->getResource( "lmstempPriority" ));
   setUsedFormat(parent_->getResource( "lmstempUsedFormat" ) );
 }
 

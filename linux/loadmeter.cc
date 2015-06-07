@@ -40,13 +40,13 @@ void LoadMeter::checkResources( void ){
 
   setfieldcolor( 0, procloadcol_ );
   setfieldcolor( 1, parent_->getResource( "loadIdleColor" ) );
-  priority_ = atoi (parent_->getResource( "loadPriority" ).c_str() );
+  priority_ = util::stoi (parent_->getResource( "loadPriority" ));
   useGraph_ = parent_->isResourceTrue( "loadGraph" );
   dodecay_ = parent_->isResourceTrue( "loadDecay" );
   setUsedFormat (parent_->getResource("loadUsedFormat"));
 
-  warnThreshold = atoi (parent_->getResource("loadWarnThreshold").c_str());
-  critThreshold = atoi (parent_->getResource("loadCritThreshold").c_str());
+  warnThreshold = util::stoi (parent_->getResource("loadWarnThreshold"));
+  critThreshold = util::stoi (parent_->getResource("loadCritThreshold"));
 
   do_cpu_speed  = parent_->isResourceTrue( "loadCpuSpeed" );
 
@@ -149,7 +149,7 @@ void LoadMeter::getspeedinfo( void ){
     if ( argname.substr(0,7) == "cpu MHz" ) {
         //XOSDEBUG("SPEED: %s\n",argval.c_str() );
         old_cpu_speed_ = cur_cpu_speed_;
-        cur_cpu_speed_ = atoi(argval.c_str());
+        cur_cpu_speed_ = util::stoi(argval);
         // Make it a round number
         cur_cpu_speed_ = 100 * (int) nearbyint ( ((double) cur_cpu_speed_ )
           / 100 );
