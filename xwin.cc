@@ -73,8 +73,6 @@ XWin::~XWin( void ){
   XFree( title_.value );
   XFree( iconname_.value );
   XFree( sizehints_ );
-  XFree( wmhints_ );
-  XFree( classhints_ );
   XFreeGC( display_, gc_ );
   XFreeFont( display_, font_ );
   XDestroyWindow( display_, window_ );
@@ -170,22 +168,24 @@ void XWin::setFont( void ){
 
 void XWin::setHints( int argc, char *argv[] ){
   // Set up class hint
-  if((classhints_ = XAllocClassHint()) == NULL){
+  XClassHint    *classhints;   //  Class hint for window manager
+  if((classhints = XAllocClassHint()) == NULL){
     std::cerr <<"Error allocating class hint!" <<std::endl;
     exit(1);
   }
   //  We have to cast away the const's.
-  classhints_->res_name = (char*) xrmptr_->instanceName();
-  classhints_->res_class = (char*) xrmptr_->className();
+  classhints->res_name = (char*) xrmptr_->instanceName();
+  classhints->res_class = (char*) xrmptr_->className();
 
   // Set up the window manager hints
-  if((wmhints_ = XAllocWMHints()) == NULL){
+  XWMHints      *wmhints;      //  Hints for the window manager
+  if((wmhints = XAllocWMHints()) == NULL){
     std::cerr <<"Error allocating Window Manager hints!" <<std::endl;
     exit(1);
   }
-  wmhints_->flags = (InputHint|StateHint);
-  wmhints_->input = True;
-  wmhints_->initial_state = NormalState;
+  wmhints->flags = (InputHint|StateHint);
+  wmhints->input = True;
+  wmhints->initial_state = NormalState;
 
   // Set up XTextProperty for window name and icon name
   char *np = const_cast<char *>(name_.c_str());
@@ -199,13 +199,16 @@ void XWin::setHints( int argc, char *argv[] ){
   }
 
   XSetWMProperties(display_, window_, &title_, &iconname_, argv, argc,
-		   sizehints_, wmhints_, classhints_);
+		   sizehints_, wmhints, classhints);
 
   // Set up the Atoms for delete messages
   wm_ = XInternAtom( display(), "WM_PROTOCOLS", False );
   wmdelete_ = XInternAtom( display(), "WM_DELETE_WINDOW", False );
   XChangeProperty( display(), window(), wm_, XA_ATOM, 32,
 		   PropModeReplace, (unsigned char *)(&wmdelete_), 1 );
+
+  XFree(wmhints);
+  XFree(classhints);
 }
 //-----------------------------------------------------------------------------
 

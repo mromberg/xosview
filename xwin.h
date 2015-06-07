@@ -139,9 +139,7 @@ protected:
   unsigned long fgcolor_;       //  Foreground color of the window
   unsigned long bgcolor_;       //  Background color of the window
   XWindowAttributes attr_;      //  Attributes of the window
-  XWMHints      *wmhints_;      //  Hints for the window manager
   XSizeHints    *sizehints_;    //  Size hints for window manager
-  XClassHint    *classhints_;   //  Class hint for window manager
   Event         *events_;       //  List of Events for this window
   int           done_;          //  If true the application is finished.
   Atom          wm_, wmdelete_; //  Used to handle delete Events
