@@ -48,7 +48,6 @@ void XWin::XWinInit (int argc, char** argv, char* geometry, Xrm* xrm) {
   width_ = height_ = x_ = y_ = 0;
   xrmptr_ = xrm;
 
-  name_ = (char *)malloc(0);
   font_ = NULL;
   done_ = 0;
 
@@ -189,11 +188,12 @@ void XWin::setHints( int argc, char *argv[] ){
   wmhints_->initial_state = NormalState;
 
   // Set up XTextProperty for window name and icon name
-  if(XStringListToTextProperty(&name_, 1, &title_) == 0){
+  char *np = const_cast<char *>(name_.c_str());
+  if(XStringListToTextProperty(&np, 1, &title_) == 0){
     std::cerr <<"Error creating XTextProperty!" <<std::endl;
     exit(1);
   }
-  if(XStringListToTextProperty(&name_, 1, &iconname_) == 0){
+  if(XStringListToTextProperty(&np, 1, &iconname_) == 0){
     std::cerr <<"Error creating XTextProperty!" <<std::endl;
     exit(1);
   }

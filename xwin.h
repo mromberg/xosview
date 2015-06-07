@@ -133,7 +133,7 @@ protected:
   Window        window_;        //  Application's main window
   GC            gc_;            //  The graphics context for the window
   XFontStruct   *font_;         //  Info on the default font
-  char          *name_;         //  Application's name
+  std::string   name_;          //  Application's name
   XTextProperty title_;         //  Window name for title bar
   XTextProperty iconname_;      //  Icon name for icon label
   unsigned long fgcolor_;       //  Foreground color of the window
