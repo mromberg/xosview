@@ -174,8 +174,10 @@ void XWin::setHints( int argc, char *argv[] ){
     exit(1);
   }
   //  We have to cast away the const's.
-  classhints->res_name = (char*) xrmptr_->instanceName();
-  classhints->res_class = (char*) xrmptr_->className();
+  std::string cname = xrmptr_->className();
+  std::string iname = xrmptr_->instanceName();
+  classhints->res_name = const_cast<char *>(iname.c_str());
+  classhints->res_class = const_cast<char *>(cname.c_str());
 
   // Set up the window manager hints
   XWMHints      *wmhints;      //  Hints for the window manager

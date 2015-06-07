@@ -18,8 +18,10 @@ public:
   Xrm(const std::string &instanceName, int argc, char **argv);
   ~Xrm();
 
-  const char *className(void) const { return XrmQuarkToString(_class); }
-  const char *instanceName(void) const { return XrmQuarkToString(_instance); }
+  std::string className(void) const
+        { return std::string(XrmQuarkToString(_class)); }
+  std::string instanceName(void) const
+        { return std::string(XrmQuarkToString(_instance)); }
 
   const char *getResource(const std::string &rname) const;
   const char* getDisplayName (int argc, char** argv);

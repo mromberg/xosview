@@ -171,7 +171,7 @@ Listed from weakest to strongest:
   if (xappdir != NULL)
   {
     char xappfile[1024];
-    snprintf (xappfile, 1024, "%s/%s", xappdir, className());
+    snprintf (xappfile, 1024, "%s/%s", xappdir, className().c_str());
     // this did not work for XAPPLRESDIR
     //if (!access (xappfile, X_OK | R_OK))
     if (!access (xappfile, R_OK))
@@ -216,7 +216,7 @@ Listed from weakest to strongest:
   }
   //  Command-line resources override system and user defaults.
   XrmDatabase cmdlineRdb_ = NULL;
-  XrmParseCommand (&cmdlineRdb_, options, NUM_OPTIONS, instanceName(),
+  XrmParseCommand (&cmdlineRdb_, options, NUM_OPTIONS, instanceName().c_str(),
 		    &argc, argv);
   XrmCombineDatabase (cmdlineRdb_, &_db, 1);  //  Keeps cmdlineRdb_ around.
 //  =========== END X Resource lookup and merging ==========
