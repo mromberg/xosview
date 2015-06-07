@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1996, 2004 by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
+//  Copyright (c) 1996, 2004, 2015 by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -49,7 +49,7 @@ void PageMeter::checkResources( void ){
   maxspeed_ *= priority_ / 10.0;
   dodecay_ = parent_->isResourceTrue( "pageDecay" );
   useGraph_ = parent_->isResourceTrue( "pageGraph" );
-  SetUsedFormat (parent_->getResource("pageUsedFormat"));
+  setUsedFormat (parent_->getResource("pageUsedFormat"));
 }
 
 void PageMeter::checkevent( void ){

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1997, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1997, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -106,7 +106,7 @@ void BtryMeter::checkResources( void ){
   setfieldcolor( 1, parent_->getResource( "batteryUsedColor" ) );
 
   priority_ = atoi (parent_->getResource( "batteryPriority" ) );
-  SetUsedFormat(parent_->getResource( "batteryUsedFormat" ) );
+  setUsedFormat(parent_->getResource( "batteryUsedFormat" ) );
 }
 
 void BtryMeter::checkevent( void ){
@@ -307,7 +307,7 @@ bool BtryMeter::getapminfo( void ){
   // If the battery status is reported as a negative number, it means we are
   // running on AC power and no battery status is available - Report it as
   // completely empty (0). (Refer to Debian bug report #281565)
-  if (fields_[0] < 0) 
+  if (fields_[0] < 0)
     fields_[0] = 0;
 
   total_ = 100;

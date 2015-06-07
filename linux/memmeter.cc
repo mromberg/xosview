@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -48,7 +48,7 @@ void MemMeter::checkResources( void ){
   priority_ = atoi (parent_->getResource( "memPriority" ) );
   dodecay_ = parent_->isResourceTrue( "memDecay" );
   useGraph_ = parent_->isResourceTrue( "memGraph" );
-  SetUsedFormat (parent_->getResource("memUsedFormat"));
+  setUsedFormat (parent_->getResource("memUsedFormat"));
 }
 
 void MemMeter::checkevent( void ){

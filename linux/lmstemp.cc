@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2000, 2006, 2012 by Leopold Toetsch <lt@toetsch.at>
+//  Copyright (c) 2000, 2006, 2012, 2015 by Leopold Toetsch <lt@toetsch.at>
 //
 //  Read temperature entries from /proc/sys/dev/sensors/*/*
 //  and display actual and high temperature
@@ -112,7 +112,7 @@ void LmsTemp::checkResources( void ){
   setfieldcolor( 2, parent_->getResource( "lmstempHighColor" ) );
 
   priority_ = atoi (parent_->getResource( "lmstempPriority" ) );
-  SetUsedFormat(parent_->getResource( "lmstempUsedFormat" ) );
+  setUsedFormat(parent_->getResource( "lmstempUsedFormat" ) );
 }
 
 void LmsTemp::checkevent( void ){

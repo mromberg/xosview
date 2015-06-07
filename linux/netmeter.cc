@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  Modifications to support dynamic addresses by:
 //    Michael N. Lipp (mnl@dtro.e-technik.th-darmstadt.de)
@@ -118,7 +118,7 @@ void NetMeter::checkResources( void ){
   priority_ = atoi (parent_->getResource( "netPriority" ) );
   useGraph_ = parent_->isResourceTrue( "netGraph" );
   dodecay_ = parent_->isResourceTrue( "netDecay" );
-  SetUsedFormat (parent_->getResource("netUsedFormat"));
+  setUsedFormat (parent_->getResource("netUsedFormat"));
   netIface_ = parent_->getResource( "netIface" );
 
   _ipsock = socket(AF_INET, SOCK_DGRAM, 0);

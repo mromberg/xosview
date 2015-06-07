@@ -66,21 +66,21 @@ void FieldMeter::checkResources( void ){
 }
 
 
-void FieldMeter::SetUsedFormat ( const char * const fmt ) {
+void FieldMeter::setUsedFormat ( const std::string &fmt ) {
     /*  Do case-insensitive compares.  */
-  if (!strncasecmp (fmt, "percent", 8))
+  if (!strncasecmp (fmt.c_str(), "percent", 8))
     print_ = PERCENT;
-  else if (!strncasecmp (fmt, "autoscale", 10))
+  else if (!strncasecmp (fmt.c_str(), "autoscale", 10))
     print_ = AUTOSCALE;
-  else if (!strncasecmp (fmt, "float", 6))
+  else if (!strncasecmp (fmt.c_str(), "float", 6))
     print_ = FLOAT;
   else
-  {
-    fprintf (stderr, "Error:  could not parse format of '%s'\n", fmt);
-    fprintf (stderr, "  I expected one of 'percent', 'bytes', or 'float'\n");
-    fprintf (stderr, "  (Case-insensitive)\n");
-    exit(1);
-  }
+      {
+      std::cerr << "Error:  could not parse format of " <<  fmt << "\n"
+                << "  I expected one of 'percent', 'bytes', or 'float' \n"
+                << "  (Case-insensitive)" << std::endl;
+      exit(1);
+      }
 }
 
 void FieldMeter::setUsed (float val, float total)

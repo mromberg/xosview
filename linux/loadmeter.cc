@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2008 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2008, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -43,7 +43,7 @@ void LoadMeter::checkResources( void ){
   priority_ = atoi (parent_->getResource( "loadPriority" ) );
   useGraph_ = parent_->isResourceTrue( "loadGraph" );
   dodecay_ = parent_->isResourceTrue( "loadDecay" );
-  SetUsedFormat (parent_->getResource("loadUsedFormat"));
+  setUsedFormat (parent_->getResource("loadUsedFormat"));
 
   warnThreshold = atoi (parent_->getResource("loadWarnThreshold"));
   critThreshold = atoi (parent_->getResource("loadCritThreshold"));

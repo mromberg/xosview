@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -45,7 +45,7 @@ void CPUMeter::checkResources( void ){
   priority_ = atoi (parent_->getResource( "cpuPriority" ) );
   dodecay_ = parent_->isResourceTrue( "cpuDecay" );
   useGraph_ = parent_->isResourceTrue( "cpuGraph" );
-  SetUsedFormat (parent_->getResource("cpuUsedFormat"));
+  setUsedFormat (parent_->getResource("cpuUsedFormat"));
 }
 
 void CPUMeter::checkevent( void ){
@@ -155,11 +155,11 @@ const char *CPUMeter::cpuStr(int num){
   if( cpuCount != num ){
     return "";
   }
-  
+
   int n = buf.find (" ");
   if( n > 31 )
     n=31;
-  
+
   strncpy(buffer, buf.data(), n);
   buffer[n] = '\0';
 

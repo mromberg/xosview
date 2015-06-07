@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006 by Mike Romberg (mike.romberg@noaa.gov)
+//  Copyright (c) 1999, 2006, 2015 by Mike Romberg (mike.romberg@noaa.gov)
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -69,7 +69,7 @@ void DiskMeter::checkResources( void )
     priority_ = atoi (parent_->getResource( "diskPriority" ) );
     dodecay_ = parent_->isResourceTrue("diskDecay" );
     useGraph_ = parent_->isResourceTrue( "diskGraph" );
-    SetUsedFormat(parent_->getResource("diskUsedFormat"));
+    setUsedFormat(parent_->getResource("diskUsedFormat"));
     }
 
 void DiskMeter::checkevent( void )

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015 by Mike Romberg ( mike.romberg@noaa.gov )
 //
 //  Modifications to support dynamic addresses by:
 //    Michael N. Lipp (mnl@dtro.e-technik.th-darmstadt.de)
@@ -67,7 +67,7 @@ void NFSDStats::checkResources( void ){
 
   useGraph_ = parent_->isResourceTrue( "NFSDStatGraph" );
   dodecay_ = parent_->isResourceTrue( "NFSDStatDecay" );
-  SetUsedFormat (parent_->getResource("NFSDStatUsedFormat"));
+  setUsedFormat (parent_->getResource("NFSDStatUsedFormat"));
   //useGraph_ = 1;
   //dodecay_ = 1;
   //SetUsedFormat ("autoscale");
@@ -158,7 +158,7 @@ void NFSStats::checkResources( void ){
 
   useGraph_ = parent_->isResourceTrue( "NFSStatGraph" );
   dodecay_ = parent_->isResourceTrue( "NFSStatDecay" );
-  SetUsedFormat (parent_->getResource("NFSStatUsedFormat"));
+  setUsedFormat (parent_->getResource("NFSStatUsedFormat"));
   //SetUsedFormat ("autoscale");
   //SetUsedFormat ("percent");
 }

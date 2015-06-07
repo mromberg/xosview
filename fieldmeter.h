@@ -48,7 +48,7 @@ protected:
   int printedZeroTotalMesg_;
   int numWarnings_;
 
-  void SetUsedFormat ( const char * const str );
+  void setUsedFormat ( const std::string &str );
   void drawlegend( void );
   void drawused( int manditory );
   bool checkX(int x, int width) const;
