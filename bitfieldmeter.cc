@@ -25,16 +25,10 @@ BitFieldMeter::BitFieldMeter( XOSView *parent, int numBits, int numfields,
     /*  We need to set print_ to something valid -- the meters
      *  apparently get drawn before the meters have a chance to call
      *  CheckResources() themselves.  */
-  bits_ = NULL;
-  lastbits_ = NULL;
   numWarnings_ = printedZeroTotalMesg_ = 0;
   print_ = PERCENT;
   used_ = 0;
   lastused_ = -1;
-  fields_ = NULL;
-  colors_ = NULL;
-  lastvals_ = NULL;
-  lastx_ = NULL;
   setNumBits(numBits);
   setfieldlegend(FieldLegend);
   setNumFields(numfields);
@@ -53,12 +47,6 @@ BitFieldMeter::disableMeter ( )
 
 
 BitFieldMeter::~BitFieldMeter( void ){
-  delete[] bits_;
-  delete[] lastbits_;
-  delete[] fields_;
-  delete[] colors_;
-  delete[] lastvals_;
-  delete[] lastx_;
 }
 
 void BitFieldMeter::checkResources( void ){
@@ -68,14 +56,10 @@ void BitFieldMeter::checkResources( void ){
 
 
 void BitFieldMeter::setNumBits(int n){
-  numbits_ = n;
-  delete[] bits_;
-  delete[] lastbits_;
+  bits_.resize(n);
+  lastbits_.resize(n);
 
-  bits_ = new char[numbits_];
-  lastbits_ = new char[numbits_];
-
-  for ( int i = 0 ; i < numbits_ ; i++ )
+  for ( unsigned int i = 0 ; i < numbits() ; i++ )
       bits_[i] = lastbits_[i] = 0;
 }
 
@@ -125,7 +109,7 @@ void BitFieldMeter::setUsed (float val, float total)
 }
 
 void BitFieldMeter::reset( void ){
-  for ( int i = 0 ; i < numfields_ ; i++ )
+  for ( unsigned int i = 0 ; i < numfields() ; i++ )
     lastvals_[i] = lastx_[i] = -1;
 }
 
@@ -172,7 +156,7 @@ void BitFieldMeter::drawfieldlegend( void ){
   size_t pos = 0;
   int x = x_ + width_/2 + 4;
 
-  for (int i = 0 ; i < numfields_ ; i++) {
+  for (unsigned int i = 0 ; i < numfields() ; i++) {
     size_t fpos = fieldLegend_.find("/", pos);  // string::npos if not found
     std::string li = fieldLegend_.substr(pos, fpos - pos);
     pos = fpos + 1;
@@ -182,7 +166,7 @@ void BitFieldMeter::drawfieldlegend( void ){
     parent_->drawString( x, y_ - 5, li );
     x += parent_->textWidth( li );
     parent_->setForeground( parent_->foreground() );
-    if ( i != numfields_ - 1 )
+    if ( i != numfields() - 1 )
         parent_->drawString( x, y_ - 5, "/" );
     x += parent_->textWidth( "/" );
   }
@@ -264,9 +248,9 @@ void BitFieldMeter::drawBits( int manditory ){
 
   int x1 = x_, w;
 
-  w = (width_/2 - (numbits_+1)) / numbits_;
+  w = (width_/2 - (numbits()+1)) / numbits();
 
-  for ( int i = 0 ; i < numbits_ ; i++ ){
+  for ( unsigned int i = 0 ; i < numbits() ; i++ ){
     if ( (bits_[i] != lastbits_[i]) || manditory ){
       if ( bits_[i] && pass )
 	parent_->setForeground( onColor_ );
@@ -287,7 +271,7 @@ void BitFieldMeter::drawfields( int manditory ){
   if ( total_ == 0 )
     return;
 
-  for ( int i = 0 ; i < numfields_ ; i++ ){
+  for ( unsigned int i = 0 ; i < numfields() ; i++ ){
     /*  Look for bogus values.  */
     if (fields_[i] < 0.0) {
       /*  Only print a warning 5 times per meter, followed by a
@@ -304,7 +288,7 @@ void BitFieldMeter::drawfields( int manditory ){
 
     twidth = (int) (((width_/2 - 3) * (float) fields_[i]) / total_);
 //    twidth = (int)((fields_[i] * width_) / total_);
-    if ( (i == numfields_ - 1) && ((x + twidth) != (x_ + width_)) )
+    if ( (i == numfields() - 1) && ((x + twidth) != (x_ + width_)) )
       twidth = width_ + x_ - x;
 
     if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
@@ -338,18 +322,13 @@ void BitFieldMeter::setBits(int startbit, unsigned char values){
 }
 
 void BitFieldMeter::setNumFields(int n){
-  numfields_ = n;
-  delete[] fields_;
-  delete[] colors_;
-  delete[] lastvals_;
-  delete[] lastx_;
-  fields_ = new float[numfields_];
-  colors_ = new unsigned long[numfields_];
-  lastvals_ = new int[numfields_];
-  lastx_ = new int[numfields_];
+  fields_.resize(n);
+  colors_.resize(n);
+  lastvals_.resize(n);
+  lastx_.resize(n);
 
   total_ = 0;
-  for ( int i = 0 ; i < numfields_ ; i++ ){
+  for ( unsigned int i = 0 ; i < numfields() ; i++ ){
     fields_[i] = 0.0;             /* egcs 2.91.66 bug !? don't do this and */
     lastvals_[i] = lastx_[i] = 0; /* that in a single statement or it'll   */
                                   /* overwrite too much with 0 ...         */
@@ -365,7 +344,7 @@ bool BitFieldMeter::checkX(int x, int width) const {
 
     std::cerr <<"value "<<x<<", width "<<width<<", total_ = "<<total_<<std::endl;
 
-    for (int i = 0 ; i < numfields_ ; i++)
+    for (unsigned int i = 0 ; i < numfields() ; i++)
       std::cerr <<"fields_[" <<i <<"] = " <<fields_[i] <<",";
     std::cerr <<std::endl;
 
