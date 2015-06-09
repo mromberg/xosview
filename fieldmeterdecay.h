@@ -18,6 +18,7 @@
 
 #include "meter.h"
 #include "fieldmeter.h"
+#include <vector>
 
 class FieldMeterDecay : public FieldMeter {
 public:
@@ -31,8 +32,8 @@ public:
 protected:
   int dodecay_;
   int firsttime_;  //  Used to set up decaying fields right the first time.
-  float *decay_;
-  float *lastDecayval_;
+  std::vector<float> decay_;
+  std::vector<float> lastDecayval_;
 private:
 };
 

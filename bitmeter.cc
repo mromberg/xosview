@@ -11,27 +11,21 @@
 #include "xosview.h"
 
 BitMeter::BitMeter( XOSView *parent,
-  const std::string &title, const std::string &legend, int numBits,
+  const std::string &title, const std::string &legend, size_t numBits,
   int docaptions, int, int dousedlegends)
   : Meter( parent, title, legend, docaptions, dousedlegends, dousedlegends ),
-  bits_(NULL), lastbits_(NULL), disabled_(false)  {
+  disabled_(false)  {
   setNumBits(numBits);
 }
 
 BitMeter::~BitMeter( void ){
-  delete [] bits_;
-  delete [] lastbits_;
 }
 
-void BitMeter::setNumBits(int n){
-  numbits_ = n;
-  delete [] bits_;
-  delete [] lastbits_;
+void BitMeter::setNumBits(size_t n){
+  bits_.resize(n);
+  lastbits_.resize(n);
 
-  bits_ = new char[numbits_];
-  lastbits_ = new char[numbits_];
-
-  for ( int i = 0 ; i < numbits_ ; i++ )
+  for ( unsigned int i = 0 ; i < numbits() ; i++ )
       bits_[i] = lastbits_[i] = 0;
 }
 
@@ -58,9 +52,9 @@ void BitMeter::drawBits( int manditory ){
 
   int x1 = x_ + 0, x2;
 
-  for ( int i = 0 ; i < numbits_ ; i++ ){
-    if ( i != (numbits_ - 1) )
-      x2 = x_ + ((i + 1) * (width_+1)) / numbits_ - 1;
+  for ( unsigned int i = 0 ; i < numbits() ; i++ ){
+    if ( i != (numbits() - 1) )
+      x2 = x_ + ((i + 1) * (width_+1)) / numbits() - 1;
     else
       x2 = x_ + (width_+1) - 1;
 

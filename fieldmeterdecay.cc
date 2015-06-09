@@ -49,8 +49,8 @@ FieldMeterDecay::FieldMeterDecay( XOSView *parent,
 : FieldMeter (parent, numfields, title, legend, docaptions, dolegends,
               dousedlegends)
 {
-  decay_ = new float[numfields];
-  lastDecayval_ = new float[numfields];
+  decay_.resize(numfields);
+  lastDecayval_.resize(numfields);
   for (int decayCtr = 0; decayCtr < numfields; decayCtr++) {
     decay_[decayCtr] = 0.0;
     lastDecayval_[decayCtr] = 0.0;
@@ -61,8 +61,6 @@ FieldMeterDecay::FieldMeterDecay( XOSView *parent,
 }
 
 FieldMeterDecay::~FieldMeterDecay( void ){
-  delete[] decay_;
-  delete[] lastDecayval_;
 }
 
 void FieldMeterDecay::drawfields( int manditory ){

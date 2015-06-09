@@ -40,7 +40,7 @@ IntMeter::~IntMeter( void ){
 void IntMeter::checkevent( void ){
   getirqs();
 
-  for ( int i = 0 ; i < numBits() ; i++ ){
+  for ( unsigned int i = 0 ; i < numBits() ; i++ ){
     bits_[i] = ((irqs_[i] - lastirqs_[i]) != 0);
     lastirqs_[i] = irqs_[i];
   }
@@ -76,7 +76,7 @@ int IntMeter::countCPUs(void) {
 
 void IntMeter::getirqs( void ){
   std::ifstream intfile( INTFILE );
-  int intno, count;
+  unsigned int intno, count;
   int	idx;
 
   if ( !intfile ){
@@ -137,7 +137,7 @@ void IntMeter::updateirqcount( int n, bool init ){
 	   lastirqs_[i]=old_lastirqs_[i];
 	}
 	// zero to the end the irq's that haven't been seen before
-	for( int i=old_bits; i< numBits(); i++) {
+	for( unsigned int i=old_bits; i< numBits(); i++) {
 	   irqs_[i]=lastirqs_[i]=0;
         }
    }

@@ -8,6 +8,7 @@
 
 #include "meter.h"
 #include <string>
+#include <vector>
 
 class XOSView;
 
@@ -15,7 +16,7 @@ class BitMeter : public Meter {
 public:
   BitMeter( XOSView *parent,
     const std::string &title = "", const std::string &legend ="",
-    int numBits = 1, int docaptions = 0, int dolegends = 0,
+    size_t numBits = 1, int docaptions = 0, int dolegends = 0,
     int dousedlegends = 0 );
   virtual ~BitMeter( void );
 
@@ -23,14 +24,15 @@ public:
   void draw( void );
   void disableMeter ( void );
 
-  int numBits(void) const { return numbits_; }
-  void setNumBits(int n);
+  size_t numBits(void) const { return bits_.size(); }
+  void setNumBits(size_t n);
 
   void checkResources( void );
 protected:
   unsigned long onColor_, offColor_;
-  char *bits_, *lastbits_;
-  int numbits_;
+  std::vector<char> bits_;
+  std::vector<char> lastbits_;
+  size_t numbits(void) const { return bits_.size(); }
   bool disabled_;
 
   void setBits(int startbit, unsigned char values);

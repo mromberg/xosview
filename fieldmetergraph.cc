@@ -45,7 +45,6 @@ FieldMeterGraph::FieldMeterGraph( XOSView *parent,
 {
 
 	useGraph_ = 0;
-	heightfield_ = NULL;
 	firstTimeDrawn_ = 1;
 
 	// set number of columns to a reasonable default in case we can't
@@ -56,7 +55,6 @@ FieldMeterGraph::FieldMeterGraph( XOSView *parent,
 
 FieldMeterGraph::~FieldMeterGraph( void )
 {
-	delete [] heightfield_;
 }
 
 void FieldMeterGraph::drawfields( int manditory )
@@ -77,11 +75,11 @@ void FieldMeterGraph::drawfields( int manditory )
 	// allocate memory for height field graph storage
 	// note: this is done here as it is not certain that both
 	// numfields_ and graphNumCols_ are defined in the constructor
-	if( heightfield_ == NULL )
+	if( heightfield_.size() == 0 )
 	{
              if( numfields() > 0 && graphNumCols_ > 0 )
 		{
-                        heightfield_ = new float [numfields()*graphNumCols_];
+                heightfield_.resize(numfields()*graphNumCols_);
 
 			for( i = 0; i < graphNumCols_; i++ )
 			{
@@ -213,8 +211,6 @@ void FieldMeterGraph::setNumCols( int n )
 	graphNumCols_ = n;
 	graphpos_ = graphNumCols_-1;
 
-	if( heightfield_ )
-		delete [] heightfield_;
-	heightfield_ = NULL;
+	heightfield_.resize(0);
 
 }

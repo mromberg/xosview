@@ -14,6 +14,7 @@
 
 #include "meter.h"
 #include "fieldmeterdecay.h"
+#include <vector>
 
 class FieldMeterGraph : public FieldMeterDecay {
 public:
@@ -36,7 +37,7 @@ protected:
   /*  There's some sort of corruption going on -- we can't have
    *  variables after the heightfield_ below, otherwise they get
    *  corrupted???  */
-  float *heightfield_;
+  std::vector<float> heightfield_;
 private:
   void drawBar( int i );
 };
