@@ -89,7 +89,7 @@ void FieldMeterDecay::drawfields( int manditory ){
 
   if (firsttime_) {
     firsttime_ = 0;
-    for (int i = 0; i < numfields_; i++)
+    for (unsigned int i = 0; i < numfields(); i++)
          {
                 decay_[i] = 1.0*fields_[i]/total_;
          }
@@ -114,7 +114,7 @@ void FieldMeterDecay::drawfields( int manditory ){
      *  then turn to ints.  I think this will solve a whole bunch of
      *  our problems with rounding that before we tackled at a whole
      *  lot of places.  BCG */
-  for ( int i = 0 ; i < numfields_ ; i++ ){
+  for ( unsigned int i = 0 ; i < numfields() ; i++ ){
 
     decay_[i] = ALPHA*decay_[i] + (1-ALPHA)*(fields_[i]*1.0/total_);
 
@@ -136,9 +136,9 @@ void FieldMeterDecay::drawfields( int manditory ){
 
     //  Also, due to rounding error, the last field may not go far
     //  enough...
-    if ( (i == numfields_ - 1) && ((x + twidth) != (x_ + width_)) )
+    if ( (i == numfields() - 1) && ((x + twidth) != (x_ + width_)) )
       twidth = width_ + x_ - x;
-    if ( (i == numfields_ - 1) && ((decayx + decaytwidth) != (x_ + width_)))
+    if ( (i == numfields() - 1) && ((decayx + decaytwidth) != (x_ + width_)))
       decaytwidth = width_ + x_ - decayx;
 
     parent_->setForeground( colors_[i] );

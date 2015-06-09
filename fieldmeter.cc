@@ -34,10 +34,6 @@ FieldMeter::FieldMeter( XOSView *parent, int numfields,
   print_ = PERCENT;
   used_ = 0;
   lastused_ = -1;
-  fields_ = NULL;
-  colors_ = NULL;
-  lastvals_ = NULL;
-  lastx_ = NULL;
   setNumFields(numfields);
 }
 
@@ -54,10 +50,6 @@ FieldMeter::disableMeter ( )
 
 
 FieldMeter::~FieldMeter( void ){
-  delete[] fields_;
-  delete[] colors_;
-  delete[] lastvals_;
-  delete[] lastx_;
 }
 
 void FieldMeter::checkResources( void ){
@@ -112,7 +104,7 @@ void FieldMeter::setUsed (float val, float total)
 }
 
 void FieldMeter::reset( void ){
-  for ( int i = 0 ; i < numfields_ ; i++ )
+  for ( unsigned int i = 0 ; i < numfields() ; i++ )
     lastvals_[i] = lastx_[i] = -1;
 }
 
@@ -149,7 +141,7 @@ void FieldMeter::drawlegend( void ){
   size_t pos = 0;
   int x = x_;
 
-  for (int i = 0 ; i < numfields_ ; i++) {
+  for (unsigned int i = 0 ; i < numfields() ; i++) {
     size_t fpos = legend_.find("/", pos); // string::npos if not found
     std::string li = legend_.substr(pos, fpos - pos);
     pos = fpos + 1;
@@ -160,7 +152,7 @@ void FieldMeter::drawlegend( void ){
     x += parent_->textWidth( li );
 
     parent_->setForeground( parent_->foreground() );
-    if ( i != numfields_ - 1 )
+    if ( i != numfields() - 1 )
         parent_->drawString( x, y_ - 5, "/" );
     x += parent_->textWidth( "/", 1 );
   }
@@ -244,7 +236,7 @@ void FieldMeter::drawfields( int manditory ){
   if ( total_ == 0 )
     return;
 
-  for ( int i = 0 ; i < numfields_ ; i++ ){
+  for ( unsigned int i = 0 ; i < numfields() ; i++ ){
     /*  Look for bogus values.  */
     if (fields_[i] < 0.0) {
       /*  Only print a warning 5 times per meter, followed by a
@@ -260,7 +252,7 @@ void FieldMeter::drawfields( int manditory ){
 
     twidth = (int) ((width_ * (float) fields_[i]) / total_);
 //    twidth = (int)((fields_[i] * width_) / total_);
-    if ( (i == numfields_ - 1) && ((x + twidth) != (x_ + width_)) )
+    if ( (i == numfields() - 1) && ((x + twidth) != (x_ + width_)) )
       twidth = width_ + x_ - x;
 
     if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
@@ -285,18 +277,13 @@ void FieldMeter::checkevent( void ){
 }
 
 void FieldMeter::setNumFields(int n){
-  numfields_ = n;
-  delete[] fields_;
-  delete[] colors_;
-  delete[] lastvals_;
-  delete[] lastx_;
-  fields_ = new float[numfields_];
-  colors_ = new unsigned long[numfields_];
-  lastvals_ = new int[numfields_];
-  lastx_ = new int[numfields_];
+  fields_.resize(n);
+  colors_.resize(n);
+  lastvals_.resize(n);
+  lastx_.resize(n);
 
   total_ = 0;
-  for ( int i = 0 ; i < numfields_ ; i++ ){
+  for ( unsigned int i = 0 ; i < numfields() ; i++ ){
     fields_[i] = 0.0;             /* egcs 2.91.66 bug !? don't do this and */
     lastvals_[i] = lastx_[i] = 0; /* that in a single statement or it'll   */
                                   /* overwrite too much with 0 ...         */
@@ -312,7 +299,7 @@ bool FieldMeter::checkX(int x, int width) const {
 
     std::cerr <<"value "<<x<<", width "<<width<<", total_ = "<<total_<<std::endl;
 
-    for (int i = 0 ; i < numfields_ ; i++)
+    for (unsigned int i = 0 ; i < numfields() ; i++)
       std::cerr <<"fields_[" <<i <<"] = " <<fields_[i] <<",";
     std::cerr <<std::endl;
 

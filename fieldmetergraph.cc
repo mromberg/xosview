@@ -61,7 +61,7 @@ FieldMeterGraph::~FieldMeterGraph( void )
 
 void FieldMeterGraph::drawfields( int manditory )
 {
-	int i,j;
+	int i;
 
 	if( !useGraph_ )
 	{
@@ -79,18 +79,18 @@ void FieldMeterGraph::drawfields( int manditory )
 	// numfields_ and graphNumCols_ are defined in the constructor
 	if( heightfield_ == NULL )
 	{
-		if( numfields_ > 0 && graphNumCols_ > 0 )
+             if( numfields() > 0 && graphNumCols_ > 0 )
 		{
-			heightfield_ = new float [numfields_*graphNumCols_];
+                        heightfield_ = new float [numfields()*graphNumCols_];
 
 			for( i = 0; i < graphNumCols_; i++ )
 			{
-				for( j = 0; j < numfields_; j++ )
+                             for( unsigned int j = 0; j < numfields(); j++ )
 				{
-					if( j < numfields_-1 )
-						heightfield_[i*numfields_+j] = 0.0;
+                                      if( j < numfields()-1 )
+                                          heightfield_[i*numfields()+j] = 0.0;
 					else
-						heightfield_[i*numfields_+j] = 1.0;
+                                            heightfield_[i*numfields()+j] = 1.0;
 				}
 			}
 		}
@@ -101,23 +101,23 @@ void FieldMeterGraph::drawfields( int manditory )
 	{
 		for( i = 0; i < graphNumCols_-1; i++ )
 		{
-			for( j = 0; j < numfields_; j++ )
+                for( unsigned int j = 0; j < numfields(); j++ )
 			{
-				heightfield_[i*numfields_+j] = heightfield_[(i+1)*numfields_+j];
+                        heightfield_[i*numfields()+j] = heightfield_[(i+1)*numfields()+j];
 			}
 		}
 		graphpos_ = graphNumCols_ - 1;
 	}
 
 	// get current values to be plotted
-	for( i = 0; i < numfields_; i++ )
+	for( unsigned int i = 0; i < numfields(); i++ )
 	{
 		float a = fields_[i] / total_;
 		if( a <= 0.0 )
 			a = 0.0;
 		if( a >= 1.0 )
 			a = 1.0;
-		heightfield_[graphpos_*numfields_+i] = a;
+		heightfield_[graphpos_*numfields()+i] = a;
 	}
 
 	/*  For the first time, we need to draw everything, so
@@ -164,7 +164,6 @@ void FieldMeterGraph::drawfields( int manditory )
 }
 void FieldMeterGraph::drawBar( int i )
 {
-	int j;
 	int y = y_ + height_;
 	int x = x_ + i*width_/graphNumCols_;
 	int barwidth = (x_ + (i+1)*width_/graphNumCols_)-x;
@@ -172,11 +171,11 @@ void FieldMeterGraph::drawBar( int i )
 	if( barwidth>0 )
 	{
 		int barheight;
-		for( j = 0 ; j < numfields_; j++ )
+		for( unsigned int j = 0 ; j < numfields(); j++ )
 		{
 			/*  Round up, by adding 0.5 before
 		 	*  converting to an int.  */
-			barheight = (int)((heightfield_[i*numfields_+j]*height_)+0.5);
+                barheight = (int)((heightfield_[i*numfields()+j]*height_)+0.5);
 
 			parent_->setForeground( colors_[j] );
   			parent_->setStippleN(j%4);
@@ -185,7 +184,7 @@ void FieldMeterGraph::drawBar( int i )
   				barheight = (y-y_);
 
 			// hack to ensure last field always reaches top of graph area
-			if( j == numfields_-1 )
+			if( j == numfields()-1 )
 				barheight = (y-y_);
 
 			y -= barheight;

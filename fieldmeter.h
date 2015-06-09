@@ -9,6 +9,7 @@
 #include "meter.h"
 #include "timer.h"
 #include <string>
+#include <vector>
 
 class FieldMeter : public Meter {
 public:
@@ -17,6 +18,7 @@ public:
     int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
   virtual ~FieldMeter( void );
 
+  size_t numfields(void) const { return fields_.size() ; }
   virtual void drawfields( int manditory = 0 );
   void setfieldcolor( int field, const std::string &color );
   void setfieldcolor( int field, unsigned long color);
@@ -38,11 +40,11 @@ public:
 protected:
   enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };
 
-  int numfields_;
-  float *fields_;
+  std::vector<float> fields_;
   float total_, used_, lastused_;
-  int *lastvals_, *lastx_;
-  unsigned long *colors_;
+  std::vector<int> lastvals_;
+  std::vector<int> lastx_;
+  std::vector<unsigned long> colors_;
   unsigned long usedcolor_;
   UsedType print_;
   int printedZeroTotalMesg_;
