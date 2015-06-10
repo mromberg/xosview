@@ -1,6 +1,7 @@
 //
-//  The original FieldMeter class is Copyright (c) 1994, 2006, 2015 by Mike Romberg
-//    ( mike-romberg@comcast.net )
+//  The original FieldMeter class is Copyright (c) 1994, 2006, 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
+//
 //  Modifications from FieldMeter class done in Oct. 1995
 //    by Brian Grayson ( bgrayson@netbsd.org )
 //
@@ -12,8 +13,7 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: fieldmeterdecay.cc,v 1.17 2006/02/18 04:33:04 romberg Exp $
-//
+
 
 // In order to use the FieldMeterDecay class in place of a FieldMeter class in
 // a meter file (say, cpumeter.cc), make the following changes:
@@ -46,62 +46,59 @@ FieldMeterDecay::FieldMeterDecay( XOSView *parent,
   int numfields, const std::string &title,
   const std::string &legend, int docaptions, int dolegends,
   int dousedlegends )
-: FieldMeter (parent, numfields, title, legend, docaptions, dolegends,
-              dousedlegends)
-{
-  decay_.resize(numfields);
-  lastDecayval_.resize(numfields);
-  for (int decayCtr = 0; decayCtr < numfields; decayCtr++) {
-    decay_[decayCtr] = 0.0;
-    lastDecayval_[decayCtr] = 0.0;
-  }
-  decay_[numfields-1] = 1.0;  //  Initialize to all free...
-  firsttime_ = 1;
-  dodecay_ = 1;
+    : FieldMeter (parent, numfields, title, legend, docaptions, dolegends,
+      dousedlegends) {
+    decay_.resize(numfields);
+    lastDecayval_.resize(numfields);
+    for (int decayCtr = 0; decayCtr < numfields; decayCtr++) {
+        decay_[decayCtr] = 0.0;
+        lastDecayval_[decayCtr] = 0.0;
+    }
+    decay_[numfields-1] = 1.0;  //  Initialize to all free...
+    firsttime_ = 1;
+    dodecay_ = 1;
 }
 
 FieldMeterDecay::~FieldMeterDecay( void ){
 }
 
 void FieldMeterDecay::drawfields( int manditory ){
-  int twidth, x = x_;
+    int twidth, x = x_;
 
-  if (!dodecay_)
-  {
-    //  If this meter shouldn't be done as a decaying splitmeter,
-    //  call the ordinary fieldmeter code.
-    FieldMeter::drawfields (manditory);
-    return;
-  }
+    if (!dodecay_) {
+        //  If this meter shouldn't be done as a decaying splitmeter,
+        //  call the ordinary fieldmeter code.
+        FieldMeter::drawfields (manditory);
+        return;
+    }
 
-  if ( total_ == 0.0 )
-    return;
+    if ( total_ == 0.0 )
+        return;
 
-  int halfheight = height_ / 2;
-  int decaytwidth, decayx = x_;
+    int halfheight = height_ / 2;
+    int decaytwidth, decayx = x_;
 
-  //  This code is supposed to make the average display look just like
-  //  the ordinary display for the first drawfields, but it doesn't seem
-  //  to work too well.  But it's better than setting all decay_ fields
-  //  to 0.0 initially!
+    //  This code is supposed to make the average display look just like
+    //  the ordinary display for the first drawfields, but it doesn't seem
+    //  to work too well.  But it's better than setting all decay_ fields
+    //  to 0.0 initially!
 
-  if (firsttime_) {
-    firsttime_ = 0;
-    for (unsigned int i = 0; i < numfields(); i++)
-         {
-                decay_[i] = 1.0*fields_[i]/total_;
-         }
-  }
+    if (firsttime_) {
+        firsttime_ = 0;
+        for (unsigned int i = 0; i < numfields(); i++) {
+            decay_[i] = 1.0*fields_[i]/total_;
+        }
+    }
 
-  //  Update the decay fields.  This is not quite accurate, since if
-  //  the screen is refreshed, we will update the decay fields more
-  //  often than we need to.  However, this makes the decay stuff
-  //  TOTALLY independent of the ????Meter methods.
+    //  Update the decay fields.  This is not quite accurate, since if
+    //  the screen is refreshed, we will update the decay fields more
+    //  often than we need to.  However, this makes the decay stuff
+    //  TOTALLY independent of the ????Meter methods.
 
-  //  The constant below can be modified for quicker or slower
-  //  exponential rates for the average.  No fancy math is done to
-  //  set it to correspond to a five-second decay or anything -- I
-  //  just played with it until I thought it looked good!  :)  BCG
+    //  The constant below can be modified for quicker or slower
+    //  exponential rates for the average.  No fancy math is done to
+    //  set it to correspond to a five-second decay or anything -- I
+    //  just played with it until I thought it looked good!  :)  BCG
 #define ALPHA 0.97
 
     /*  This is majorly ugly code.  It needs a rewrite.  BCG  */
@@ -112,63 +109,65 @@ void FieldMeterDecay::drawfields( int manditory ){
      *  then turn to ints.  I think this will solve a whole bunch of
      *  our problems with rounding that before we tackled at a whole
      *  lot of places.  BCG */
-  for ( unsigned int i = 0 ; i < numfields() ; i++ ){
+    for ( unsigned int i = 0 ; i < numfields() ; i++ ){
 
-    decay_[i] = ALPHA*decay_[i] + (1-ALPHA)*(fields_[i]*1.0/total_);
+        decay_[i] = ALPHA*decay_[i] + (1-ALPHA)*(fields_[i]*1.0/total_);
 
-    //  We want to round the widths, rather than truncate.
-    twidth = (int) (0.5 + (width_ * (float) fields_[i]) / total_);
-    decaytwidth = (int) (0.5 + width_ * decay_[i]);
-    if (decaytwidth < 0.0) {
-        std::cerr << "Error:  FieldMeterDecay " << name() << ":  decaytwidth of ";
-        std::cerr << decaytwidth << ", width of " << width_ << ", decay_[" << i;
-        std::cerr << "] of " << decay_[i] << std::endl;
+        //  We want to round the widths, rather than truncate.
+        twidth = (int) (0.5 + (width_ * (float) fields_[i]) / total_);
+        decaytwidth = (int) (0.5 + width_ * decay_[i]);
+        if (decaytwidth < 0.0) {
+            std::cerr << "Error:  FieldMeterDecay " << name()
+                      << ":  decaytwidth of ";
+            std::cerr << decaytwidth << ", width of " << width_
+                      << ", decay_[" << i;
+            std::cerr << "] of " << decay_[i] << std::endl;
+        }
+
+        //  However, due to rounding, we may have gone one
+        //  pixel too far by the time we get to the later fields...
+        if (x + twidth > x_ + width_)
+            twidth = width_ + x_ - x;
+        if (decayx + decaytwidth > x_ + width_)
+            decaytwidth = width_ + x_ - decayx;
+
+        //  Also, due to rounding error, the last field may not go far
+        //  enough...
+        if ( (i == numfields() - 1) && ((x + twidth) != (x_ + width_)) )
+            twidth = width_ + x_ - x;
+        if ( (i == numfields() - 1)
+          && ((decayx + decaytwidth) != (x_ + width_)))
+            decaytwidth = width_ + x_ - decayx;
+
+        parent_->setForeground( colors_[i] );
+        parent_->setStippleN(i%4);
+
+        //  drawFilledRectangle() adds one to its width and height.
+        //    Let's correct for that here.
+        if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
+            if (!checkX(x, twidth))
+                std::cerr <<__FILE__ << ":" << __LINE__ <<std::endl;
+            parent_->drawFilledRectangle( x, y_, twidth, halfheight );
+        }
+
+        if ( manditory || (decay_[i] != lastDecayval_[i]) ){
+            if (!checkX(decayx, decaytwidth))
+                std::cerr <<__FILE__ << ":" << __LINE__ <<std::endl;
+            parent_->drawFilledRectangle( decayx, y_+halfheight+1,
+              decaytwidth, height_ - halfheight-1);
+        }
+
+        lastvals_[i] = twidth;
+        lastx_[i] = x;
+        lastDecayval_[i] = decay_[i];
+
+        parent_->setStippleN(0);	/*  Restore all-bits stipple.  */
+        if ( dousedlegends_ )
+            drawused( manditory );
+        x += twidth;
+
+        decayx += decaytwidth;
     }
 
-    //  However, due to rounding, we may have gone one
-    //  pixel too far by the time we get to the later fields...
-    if (x + twidth > x_ + width_)
-      twidth = width_ + x_ - x;
-    if (decayx + decaytwidth > x_ + width_)
-      decaytwidth = width_ + x_ - decayx;
-
-    //  Also, due to rounding error, the last field may not go far
-    //  enough...
-    if ( (i == numfields() - 1) && ((x + twidth) != (x_ + width_)) )
-      twidth = width_ + x_ - x;
-    if ( (i == numfields() - 1) && ((decayx + decaytwidth) != (x_ + width_)))
-      decaytwidth = width_ + x_ - decayx;
-
-    parent_->setForeground( colors_[i] );
-    parent_->setStippleN(i%4);
-
-      //  drawFilledRectangle() adds one to its width and height.
-      //    Let's correct for that here.
-    if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
-      if (!checkX(x, twidth))
-        std::cerr <<__FILE__ << ":" << __LINE__ <<std::endl;
-      parent_->drawFilledRectangle( x, y_, twidth, halfheight );
-    }
-
-    if ( manditory || (decay_[i] != lastDecayval_[i]) ){
-      if (!checkX(decayx, decaytwidth))
-        std::cerr <<__FILE__ << ":" << __LINE__ <<std::endl;
-      parent_->drawFilledRectangle( decayx, y_+halfheight+1,
-            decaytwidth, height_ - halfheight-1);
-    }
-
-    lastvals_[i] = twidth;
-    lastx_[i] = x;
-    lastDecayval_[i] = decay_[i];
-
-    parent_->setStippleN(0);	/*  Restore all-bits stipple.  */
-    if ( dousedlegends_ )
-      drawused( manditory );
-    x += twidth;
-
-    decayx += decaytwidth;
-
-  }
-
-  //parent_->flush();
+    //parent_->flush();
 }

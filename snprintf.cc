@@ -3,8 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-extern "C" int snprintf ( char *str, int n, const char *format, ...)
-    {
+extern "C" int snprintf ( char *str, int n, const char *format, ...) {
     /* punt the warning */
     n++;
     va_list ap;
@@ -12,6 +11,6 @@ extern "C" int snprintf ( char *str, int n, const char *format, ...)
     int rval = vsprintf(str, format, ap);
     va_end(ap);
     return rval;
-    }
+}
 
 #endif
