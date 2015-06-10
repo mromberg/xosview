@@ -6,7 +6,7 @@
 //  if actual >= high, actual temp changes color to indicate alarm
 //
 //  File based on btrymeter.* by
-//  Copyright (c) 1997 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1997 by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //

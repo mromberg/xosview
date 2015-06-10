@@ -14,34 +14,30 @@ namespace util {
 extern const char *WHITE_SPACE; // = " \f\n\r\t\v";
 
 inline std::string rstrip(const std::string& s,
-  const std::string& delimiters=WHITE_SPACE)
-    {
+  const std::string& delimiters=WHITE_SPACE) {
     if (!s.size())
         return s;
     return s.substr(0, s.find_last_not_of( delimiters ) + 1);
-    }
+}
 
 inline std::string lstrip(const std::string& s,
-  const std::string& delimiters=WHITE_SPACE)
-    {
+  const std::string& delimiters=WHITE_SPACE) {
     if (!s.size())
         return s;
     return s.substr(s.find_first_not_of(delimiters));
-    }
+}
 
 inline std::string strip(const std::string& s,
-  const std::string& delimiters=WHITE_SPACE)
-    {
+  const std::string& delimiters=WHITE_SPACE) {
     return lstrip(rstrip(s, delimiters), delimiters);
-    }
+}
 
 template <class X>
-inline std::string repr(const X &x)
-    {
+inline std::string repr(const X &x) {
     std::stringstream os;
     os << x;
     return os.str();
-    }
+}
 
 // The stoX functions are in the standard.  But gcc wants
 // you to use -std=c++-11 to use them.  And this has made
@@ -55,12 +51,11 @@ extern std::vector<std::string> split(const std::string& s,
 
 
 template <class X>
-inline static bool fstr(const std::string &s, X &x)
-    {
+inline static bool fstr(const std::string &s, X &x) {
     std::stringstream os(s);
     os >> x;
     return os;
-    }
+}
 
 // Deal with those goofy forign characters
 std::wstring s2ws(const std::string& s);

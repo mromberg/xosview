@@ -10,9 +10,6 @@
 #include "xwin.h"
 #include "Xrm.h"
 
-CVSID("$Id: xwin.cc,v 1.18 2007/09/12 22:11:52 romberg Exp $");
-CVSID_DOT_H(XWIN_H_CVSID);
-
 //-----------------------------------------------------------------------------
 
 //  argc is a reference, so that the changes to argc by XrmParseCommand are

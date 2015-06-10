@@ -1,10 +1,8 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
-//
-//
-// $Id: MeterMaker.h,v 1.3 2006/02/18 04:33:06 romberg Exp $
 //
 #ifndef _MeterMaker_h
 #define _MeterMaker_h
@@ -16,12 +14,12 @@ class XOSView;
 
 class MeterMaker : public PLList<Meter *> {
 public:
-  MeterMaker(XOSView *xos);
+    MeterMaker(XOSView *xos);
 
-  void makeMeters(void);
+    void makeMeters(void);
 
 private:
-  XOSView *_xos;
+    XOSView *_xos;
 };
 
 #endif

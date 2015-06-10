@@ -1,6 +1,6 @@
 //
 //  The original FieldMeter class is Copyright (c) 1994, 2006, 2015 by Mike Romberg
-//    ( mike.romberg@noaa.gov )
+//    ( mike-romberg@comcast.net )
 //  Modifications from FieldMeter class done in Oct. 1995
 //    by Brian Grayson ( bgrayson@netbsd.org )
 //

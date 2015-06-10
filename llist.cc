@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015 by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -13,9 +13,6 @@
 #endif
 #include "general.h"
 #include "llist.h"
-
-CVSID("$Id: llist.cc,v 1.6 2006/02/18 04:33:04 romberg Exp $");
-CVSID_DOT_H(LLIST_H_CVSID);
 
 LList::LNode::LNode( void *data ){
   data_ = data;

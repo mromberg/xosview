@@ -1,6 +1,6 @@
 //
-//  Original FieldMeter class is Copyright (c) 1994, 2006, 2015 by Mike Romberg
-//    ( mike.romberg@noaa.gov )
+//  Original FieldMeter class is Copyright (c) 1994, 2006, 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //  Modifications from FieldMeter class done in Oct. 1995
 //    by Brian Grayson ( bgrayson@netbsd.org )
 //
@@ -22,18 +22,18 @@
 
 class FieldMeterDecay : public FieldMeter {
 public:
-  FieldMeterDecay( XOSView *parent, int numfields,
-    const std::string &title = "", const std::string &legend = "",
-    int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
-  virtual ~FieldMeterDecay( void );
+    FieldMeterDecay( XOSView *parent, int numfields,
+      const std::string &title = "", const std::string &legend = "",
+      int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
+    virtual ~FieldMeterDecay( void );
 
-  virtual void drawfields( int manditory = 0 );
+    virtual void drawfields( int manditory = 0 );
 
 protected:
-  int dodecay_;
-  int firsttime_;  //  Used to set up decaying fields right the first time.
-  std::vector<float> decay_;
-  std::vector<float> lastDecayval_;
+    int dodecay_;
+    int firsttime_;  //  Used to set up decaying fields right the first time.
+    std::vector<float> decay_;
+    std::vector<float> lastDecayval_;
 private:
 };
 
