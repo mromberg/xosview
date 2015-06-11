@@ -1,8 +1,10 @@
-Makefile
-Makefile.*
-config.*
 configure
-config/autom4te.cache
-defaultstring.cc
+config.log
+config.status
 Xdefaults
 xosview
+Makefile
+Makefile.config
+Makefile.GNU.autodep
+defaultstring.cc
+autom4te.cache
