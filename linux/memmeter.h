@@ -8,6 +8,9 @@
 #define _MEMMETER_H_
 
 #include "fieldmetergraph.h"
+#include <vector>
+#include <string>
+
 
 class MemMeter : public FieldMeterGraph {
 public:
@@ -30,10 +33,10 @@ private:
             { _line = -1; _id = id; _val = val; _idlen = strlen(_id); }
         LineInfo(void) {};
 
-        int line(void) { return _line; }
+        int line(void) const { return _line; }
         void line(int l) { _line = l; }
-        const char *id(void) { return _id; }
-        int idlen(void) { return _idlen; }
+        const char *id(void) const { return _id; }
+        int idlen(void) const { return _idlen; }
 
         void setVal(double val) { *_val = val; }
 
@@ -44,15 +47,13 @@ private:
         float *_val;
     };
 
-    LineInfo *_MIlineInfos;
-    int _numMIlineInfos;
-
-    LineInfo *_MSlineInfos;
-    int _numMSlineInfos;
+    std::vector<LineInfo> _MIlineInfos;
+    std::vector<LineInfo> _MSlineInfos;
 
     void initLineInfo(void);
-    LineInfo *findLines(LineInfo *tmplate, int len, const char *fname);
-    void getmemstat(const char *fname, LineInfo *infos, int ninfos);
+    std::vector<LineInfo> findLines(const std::vector<LineInfo> &tmplate,
+      const std::string &fname);
+    void getmemstat(const std::string &fname, std::vector<LineInfo> &infos);
 };
 
 #endif

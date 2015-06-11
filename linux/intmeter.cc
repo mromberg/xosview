@@ -24,15 +24,10 @@ IntMeter::IntMeter( XOSView *parent, int cpu)
  	_old = true;
     else
  	_old = false;
-    irqs_=lastirqs_=0;
     initirqcount();
 }
 
 IntMeter::~IntMeter( void ){
-    if(irqs_)
-   	delete [] irqs_;
-    if(lastirqs_)
-   	delete [] lastirqs_;
 }
 
 void IntMeter::checkevent( void ){
@@ -120,9 +115,10 @@ void IntMeter::updateirqcount( int n, bool init ){
     os << ")" << std::ends;
 
     legend(os.str().c_str());
-    unsigned long *old_irqs_=irqs_, *old_lastirqs_=lastirqs_;
-    irqs_=new unsigned long[n+1];
-    lastirqs_=new unsigned long[n+1];
+    std::vector<unsigned long> old_irqs_(irqs_);
+    std::vector<unsigned long> old_lastirqs_(lastirqs_);
+    irqs_.resize(n+1);
+    lastirqs_.resize(n+1);
     /* If we are in init, set it to zero,
      * otherwise copy over the old set */
     if( init ) {
@@ -139,10 +135,6 @@ void IntMeter::updateirqcount( int n, bool init ){
             irqs_[i]=lastirqs_[i]=0;
         }
     }
-    if(old_irqs_)
-   	delete [] old_irqs_;
-    if(old_lastirqs_)
-   	delete [] old_lastirqs_;
 }
 
 /* Find the highest number of interrupts and call updateirqcount to

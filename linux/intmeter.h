@@ -8,6 +8,7 @@
 #define _INTMETER_H_
 
 #include "bitmeter.h"
+#include <vector>
 
 class IntMeter : public BitMeter {
 public:
@@ -22,7 +23,8 @@ public:
     static int countCPUs(void);
 
 protected:
-    unsigned long *irqs_, *lastirqs_;
+    std::vector<unsigned long> irqs_;
+    std::vector<unsigned long> lastirqs_;
 
     int _cpu;
     bool _old;

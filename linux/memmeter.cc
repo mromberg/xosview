@@ -26,14 +26,10 @@ MemMeter::MemMeter( XOSView *parent ) : FieldMeterGraph( parent, 4, "MEM",
         _shAdj = 0;
     }
 
-    _MSlineInfos = NULL;
-    _MIlineInfos = NULL;
     initLineInfo();
 }
 
 MemMeter::~MemMeter( void ){
-    delete[] _MIlineInfos;
-    delete[] _MSlineInfos;
 }
 
 void MemMeter::checkResources( void ){
@@ -67,9 +63,9 @@ void MemMeter::checkevent( void ){
 // maybe it is time to fix this in the kernel and get real infos ...
 
 void MemMeter::getmeminfo( void ){
-    getmemstat(MEMFILENAME, _MIlineInfos, _numMIlineInfos);
+    getmemstat(MEMFILENAME, _MIlineInfos);
     if (_shAdj == 0)
-        getmemstat(MEMSTATFNAME, _MSlineInfos, _numMSlineInfos);
+        getmemstat(MEMSTATFNAME, _MSlineInfos);
 
     if (_shAdj == 0){
         fields_[3] -= fields_[1]; // cache size seems to contain shared size !?
@@ -83,15 +79,15 @@ void MemMeter::getmeminfo( void ){
         FieldMeterDecay::setUsed (total_ - fields_[4 + _shAdj], total_);
 }
 
-MemMeter::LineInfo *MemMeter::findLines(LineInfo *tmplate, int len,
-  const char *fname){
-    std::ifstream meminfo(fname);
+std::vector<MemMeter::LineInfo> MemMeter::findLines(
+    const std::vector<LineInfo> &tmplate, const std::string &fname){
+    std::ifstream meminfo(fname.c_str());
     if (!meminfo){
         std::cerr << "Can not open file : " << fname << std::endl;
         exit(1);
     }
 
-    LineInfo *rval = new LineInfo[len];
+    std::vector<LineInfo> rval(tmplate.size());
 
     char buf[256];
 
@@ -102,7 +98,7 @@ MemMeter::LineInfo *MemMeter::findLines(LineInfo *tmplate, int len,
         meminfo.getline(buf, 256);
         lineNum++;
 
-        for (int i = 0 ; i < len ; i++)
+        for (size_t i = 0 ; i < tmplate.size() ; i++)
             if(!strncmp(tmplate[i].id(), buf, tmplate[i].idlen())){
                 rval[inum] = tmplate[i];
                 rval[inum].line(lineNum);
@@ -114,27 +110,26 @@ MemMeter::LineInfo *MemMeter::findLines(LineInfo *tmplate, int len,
 }
 
 void MemMeter::initLineInfo(void){
-    static LineInfo infos[] = {
-        LineInfo("MemTotal", &total_),
-        LineInfo("MemFree", &fields_[4 + _shAdj]),
-        LineInfo("Buffers", &fields_[2 + _shAdj]),
-        LineInfo("Cached", &fields_[3 + _shAdj])
-    };
-    _numMIlineInfos = sizeof(infos) / sizeof(LineInfo);
+    static std::vector<LineInfo> infos;
+    if (infos.size() == 0) {
+        infos.push_back(LineInfo("MemTotal", &total_));
+        infos.push_back(LineInfo("MemFree", &fields_[4 + _shAdj]));
+        infos.push_back(LineInfo("Buffers", &fields_[2 + _shAdj]));
+        infos.push_back(LineInfo("Cached", &fields_[3 + _shAdj]));
+    }
+    _MIlineInfos = findLines(infos, MEMFILENAME);
 
-    _MIlineInfos = findLines(infos, _numMIlineInfos, MEMFILENAME);
-
-    static LineInfo msinfos[] = {
-        LineInfo("Shared", &fields_[1])
-    };
-    _numMSlineInfos = sizeof(msinfos) / sizeof(LineInfo);
+    static std::vector<LineInfo> msinfos;
+    if (msinfos.size() == 0)
+        msinfos.push_back(LineInfo("Shared", &fields_[1]));
 
     if (_shAdj == 0)
-        _MSlineInfos = findLines(msinfos, _numMSlineInfos, MEMSTATFNAME);
+        _MSlineInfos = findLines(msinfos, MEMSTATFNAME);
 }
 
-void MemMeter::getmemstat(const char *fname, LineInfo *infos, int ninfos){
-    std::ifstream meminfo(fname);
+void MemMeter::getmemstat(const std::string &fname,
+  std::vector<LineInfo> &infos){
+    std::ifstream meminfo(fname.c_str());
     if (!meminfo){
         std::cerr << "Can not open file : " << fname << std::endl;
         exit(1);
@@ -144,7 +139,7 @@ void MemMeter::getmemstat(const char *fname, LineInfo *infos, int ninfos){
 
     // Get the info from the "standard" meminfo file.
     int lineNum = 0;
-    int inum = 0;
+    size_t inum = 0;
     while (!meminfo.eof()){
         meminfo.getline(buf, 256);
         lineNum++;
@@ -160,7 +155,7 @@ void MemMeter::getmemstat(const char *fname, LineInfo *infos, int ninfos){
         infos[inum].setVal(val*1024.0);	/*  Multiply by 1024 bytes per K  */
 
         inum++;
-        if (inum >= ninfos)
+        if (inum >= infos.size())
             break;
     }
 }
