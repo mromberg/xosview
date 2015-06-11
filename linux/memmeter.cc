@@ -99,7 +99,7 @@ std::vector<MemMeter::LineInfo> MemMeter::findLines(
         lineNum++;
 
         for (size_t i = 0 ; i < tmplate.size() ; i++)
-            if(!strncmp(tmplate[i].id(), buf, tmplate[i].idlen())){
+            if(!strncmp(tmplate[i].id().c_str(), buf, tmplate[i].idlen())){
                 rval[inum] = tmplate[i];
                 rval[inum].line(lineNum);
                 inum++;
@@ -110,18 +110,15 @@ std::vector<MemMeter::LineInfo> MemMeter::findLines(
 }
 
 void MemMeter::initLineInfo(void){
-    static std::vector<LineInfo> infos;
-    if (infos.size() == 0) {
-        infos.push_back(LineInfo("MemTotal", &total_));
-        infos.push_back(LineInfo("MemFree", &fields_[4 + _shAdj]));
-        infos.push_back(LineInfo("Buffers", &fields_[2 + _shAdj]));
-        infos.push_back(LineInfo("Cached", &fields_[3 + _shAdj]));
-    }
+    std::vector<LineInfo> infos;
+    infos.push_back(LineInfo("MemTotal", &total_));
+    infos.push_back(LineInfo("MemFree", &fields_[4 + _shAdj]));
+    infos.push_back(LineInfo("Buffers", &fields_[2 + _shAdj]));
+    infos.push_back(LineInfo("Cached", &fields_[3 + _shAdj]));
     _MIlineInfos = findLines(infos, MEMFILENAME);
 
-    static std::vector<LineInfo> msinfos;
-    if (msinfos.size() == 0)
-        msinfos.push_back(LineInfo("Shared", &fields_[1]));
+    std::vector<LineInfo> msinfos;
+    msinfos.push_back(LineInfo("Shared", &fields_[1]));
 
     if (_shAdj == 0)
         _MSlineInfos = findLines(msinfos, MEMSTATFNAME);
