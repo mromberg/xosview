@@ -1,14 +1,13 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006, 2015 by Mike Romberg ( mike-romberg@comcast.net )
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  Modifications to support dynamic addresses by:
 //    Michael N. Lipp (mnl@dtro.e-technik.th-darmstadt.de)
 //
 //  This file may be distributed under terms of the GPL
 //
-//
-// $Id: netmeter.cc,v 1.28 2014/01/14 18:57:57 romberg Exp $
-//
+
 
 //-----------------------------------------------------------------------
 //
@@ -47,28 +46,26 @@
 #include <string>
 
 NetMeter::NetMeter( XOSView *parent, float max )
-  : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ){
-  _timer.start();
-  maxpackets_ = max;
-  _lastBytesIn = _lastBytesOut = 0;
-  _usechains = false;
+    : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ){
+    _timer.start();
+    maxpackets_ = max;
+    _lastBytesIn = _lastBytesOut = 0;
+    _usechains = false;
 
-  checkOSVersion();
+    checkOSVersion();
 }
 
 NetMeter::~NetMeter( void ){
-  close (_ipsock);
+    close (_ipsock);
 }
 
-void NetMeter::checkOSVersion(void)
-    {
+void NetMeter::checkOSVersion(void) {
     std::ifstream ifs("/proc/sys/kernel/osrelease");
-    if (!ifs)
-        {
+    if (!ifs) {
         std::cerr <<"Can not open file : " << "/proc/sys/kernel/osrelease"
-          << std::endl;
+                  << std::endl;
         exit(1);
-        }
+    }
 
     int major, minor;
     _bytesInDev = 0;
@@ -77,15 +74,13 @@ void NetMeter::checkOSVersion(void)
     ifs >> minor;
     ifs.ignore(1);
 
-    if (major > 2 || (major == 2 && minor >= 1))
-        {
+    if (major > 2 || (major == 2 && minor >= 1)) {
 	// check presence of iacct and oacct chains
         std::ifstream chains("/proc/net/ip_fwchains");
 	int n = 0;
 	char buf[1024];
 
-        while (chains && !chains.eof())
-            {
+        while (chains && !chains.eof()) {
             chains >> buf;
             chains.ignore(1024, '\n');
 
@@ -93,60 +88,56 @@ void NetMeter::checkOSVersion(void)
                 n |= 1;
             if (!strncmp(buf, "oacct", 5))
                 n |= 2;
-            }
+        }
 
-	if (n == 3)
-            {
+	if (n == 3) {
             _netfilename = "/proc/net/ip_fwchains";
             _usechains = true;
-            }
+        }
 	else
             _netfilename = "/proc/net/dev";
 
 	_bytesInDev = 1;
-        }
+    }
     else
         _netfilename = "/proc/net/ip_acct";
-    }
-
-void NetMeter::checkResources( void ){
-  FieldMeterGraph::checkResources();
-
-  setfieldcolor( 0, parent_->getResource( "netInColor" ) );
-  setfieldcolor( 1, parent_->getResource( "netOutColor" ) );
-  setfieldcolor( 2, parent_->getResource( "netBackground" ) );
-  priority_ = util::stoi (parent_->getResource( "netPriority" ));
-  useGraph_ = parent_->isResourceTrue( "netGraph" );
-  dodecay_ = parent_->isResourceTrue( "netDecay" );
-  setUsedFormat (parent_->getResource("netUsedFormat"));
-  netIface_ = parent_->getResource( "netIface" );
-
-  _ipsock = socket(AF_INET, SOCK_DGRAM, 0);
-  if (_ipsock == -1) {
-    std::cerr <<"Can not open socket : " <<strerror( errno ) << std::endl;
-    parent_->done(1);
-    return;
-  }
 }
 
-void NetMeter::checkevent(void)
-    {
+void NetMeter::checkResources( void ){
+    FieldMeterGraph::checkResources();
+
+    setfieldcolor( 0, parent_->getResource( "netInColor" ) );
+    setfieldcolor( 1, parent_->getResource( "netOutColor" ) );
+    setfieldcolor( 2, parent_->getResource( "netBackground" ) );
+    priority_ = util::stoi (parent_->getResource( "netPriority" ));
+    useGraph_ = parent_->isResourceTrue( "netGraph" );
+    dodecay_ = parent_->isResourceTrue( "netDecay" );
+    setUsedFormat (parent_->getResource("netUsedFormat"));
+    netIface_ = parent_->getResource( "netIface" );
+
+    _ipsock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (_ipsock == -1) {
+        std::cerr <<"Can not open socket : " <<strerror( errno ) << std::endl;
+        parent_->done(1);
+        return;
+    }
+}
+
+void NetMeter::checkevent(void) {
     if (_bytesInDev)
         checkeventNew();
     else
         checkeventOld();
-    }
+}
 
-void NetMeter::checkeventNew(void)
-    {
+void NetMeter::checkeventNew(void) {
     std::ifstream ifs(_netfilename);
 
-    if (!ifs)
-        {
+    if (!ifs) {
         std::cerr <<"Can not open file : " <<_netfilename << std::endl;
         parent_->done(1);
         return;
-        }
+    }
 
     std::string str_in;
     unsigned long long in, out, ig;
@@ -159,60 +150,52 @@ void NetMeter::checkeventNew(void)
     _timer.stop();
 
     if (_usechains)
-      while (ifs)
-        {
-	ifs >> buf;
+        while (ifs) {
+            ifs >> buf;
 
-	if (!strncmp(buf, "iacct", 5))
-	  ifs >> buf >> buf >> ig >> ig >> ig >> ig >> ig >> ig >> totin;
-	else if (!strncmp(buf, "oacct", 5))
-	  ifs >> buf >> buf >> ig >> ig >> ig >> ig >> ig >> ig >> totout;
+            if (!strncmp(buf, "iacct", 5))
+                ifs >> buf >> buf >> ig >> ig >> ig >> ig >> ig >> ig >> totin;
+            else if (!strncmp(buf, "oacct", 5))
+                ifs >> buf >> buf >> ig >> ig >> ig >> ig >> ig >> ig >> totout;
 
-	ifs.ignore(1024, '\n');
+            ifs.ignore(1024, '\n');
         }
-    else
-        {
-	  std::string ifname;
-	  ifs.ignore(1024, '\n');
-	  ifs.ignore(1024, '\n');
+    else {
+        std::string ifname;
+        ifs.ignore(1024, '\n');
+        ifs.ignore(1024, '\n');
 
-	  while (ifs)
-	      {
-		if (netIface_ == "False" )
-		  {
-		    ifs.ignore(1024, ':');
-		  }
-		else
-		  {
-		    ifs.get(buf, 128, ':');
-		    ifname = buf;
-		    ifs.ignore(1, ':');
-		    ifname.erase(0, ifname.find_first_not_of(" ") );
-		    if (ifname != netIface_)
-		      {
-			ifs.ignore(1024,'\n');
-			continue;
-		      }
-		  }
-
-	      ifs >> str_in;
-              if (str_in == "No")
-                continue;
-              else
-                {
-                  in = strtoull(str_in.c_str(), NULL, 10);
-                  ifs >> ig >> ig >> ig >> ig >> ig >> ig >> ig >> out;
+        while (ifs) {
+            if (netIface_ == "False" ) {
+                ifs.ignore(1024, ':');
+            }
+            else {
+                ifs.get(buf, 128, ':');
+                ifname = buf;
+                ifs.ignore(1, ':');
+                ifname.erase(0, ifname.find_first_not_of(" ") );
+                if (ifname != netIface_) {
+                    ifs.ignore(1024,'\n');
+                    continue;
                 }
+            }
 
-	      if (!ifs.eof())
-		  {
-		  totin += in;
-		  totout += out;
-		  }
+            ifs >> str_in;
+            if (str_in == "No")
+                continue;
+            else {
+                in = strtoull(str_in.c_str(), NULL, 10);
+                ifs >> ig >> ig >> ig >> ig >> ig >> ig >> ig >> out;
+            }
 
-	      ifs.ignore(1024, '\n');
-	      }
-	}
+            if (!ifs.eof()) {
+                totin += in;
+                totout += out;
+            }
+
+            ifs.ignore(1024, '\n');
+        }
+    }
 
     float t = 1000000.0 / _timer.report_usecs();
 
@@ -231,33 +214,30 @@ void NetMeter::checkeventNew(void)
         setUsed(fields_[0] + fields_[1], total_);
     _timer.start();
     drawfields();
-    }
+}
 
-void NetMeter::checkeventOld(void)
-    {
+void NetMeter::checkeventOld(void) {
     _timer.stop();
     fields_[2] = maxpackets_;     // assume no
     fields_[0] = fields_[1] = 0;  // network activity
 
     std::ifstream ifs(_netfilename);
-    if (!ifs)
-        {
+    if (!ifs) {
         std::cerr <<"Can not open file : " << _netfilename << std::endl;
         parent_->done(1);
         return;
-        }
+    }
 
     struct ifconf ifc;
     char buff[1024];
     ifc.ifc_len = sizeof(buff);
     ifc.ifc_buf = buff;
-    if (ioctl(_ipsock, SIOCGIFCONF, &ifc) < 0)
-        {
+    if (ioctl(_ipsock, SIOCGIFCONF, &ifc) < 0) {
         std::cerr <<"Can not get interface list : " <<strerror( errno )
-          << std::endl;
+                  << std::endl;
         parent_->done(1);
         return;
-        }
+    }
 
     char c;
     unsigned long long sa, da, sm, dm, bytes;
@@ -265,8 +245,7 @@ void NetMeter::checkeventOld(void)
 
     ifs.ignore(1024, '\n');
 
-    while (ifs)
-        {
+    while (ifs) {
         ifs >> std::hex >> sa >> c >> sm >> c >> c >> da >> c >> dm;
         for (int index = 0 ; index < 7 ; index++)
             ifs.ignore(9999, ' ');
@@ -274,37 +253,31 @@ void NetMeter::checkeventOld(void)
 
         ifs.ignore(9999, '\n');
 
-        if (!ifs.eof())
-            {
+        if (!ifs.eof()) {
             struct ifreq *ifr = ifc.ifc_req;
             for (int i = ifc.ifc_len / sizeof(struct ifreq);
-                 --i >= 0; ifr++)
-                {
+                 --i >= 0; ifr++) {
                 unsigned long adr = ntohl(
-                  ((struct sockaddr_in *)&ifr->ifr_addr)->sin_addr.s_addr);
-                if (sm == 0 && da == adr)
-                    {
+                    ((struct sockaddr_in *)&ifr->ifr_addr)->sin_addr.s_addr);
+                if (sm == 0 && da == adr) {
                     tot_in += bytes;
                     break;
-                    }
-                if (dm == 0 && sa == adr)
-                    {
+                }
+                if (dm == 0 && sa == adr) {
                     tot_out += bytes;
                     break;
-                    }
                 }
             }
         }
+    }
 
     // This will happen when a dynamic connection (SLIP/PPP) goes down.
-    if ((tot_in < _lastBytesIn) || (tot_out < _lastBytesOut))
-        {
+    if ((tot_in < _lastBytesIn) || (tot_out < _lastBytesOut)) {
         fields_[0] = fields_[1] = 0;
         _lastBytesIn = tot_in;
         _lastBytesOut = tot_out;
-        }
-    else
-        {
+    }
+    else {
         float t = 1000000.0 / _timer.report_usecs();
 
         if (t < 0)  // can happen when system clock is reset. (ntp, timed, etc)
@@ -315,24 +288,22 @@ void NetMeter::checkeventOld(void)
 
         _lastBytesIn = tot_in;
         _lastBytesOut = tot_out;
-        }
+    }
 
     adjust();
     if (total_)
         setUsed(fields_[0] + fields_[1], total_);
     _timer.start();
     drawfields();
-    }
+}
 
-void NetMeter::adjust(void)
-    {
+void NetMeter::adjust(void) {
     total_ = fields_[0] + fields_[1];
 
     if (total_ > maxpackets_)
         fields_[2] = 0;
-    else
-        {
+    else {
         total_ = maxpackets_;
         fields_[2] = total_ - fields_[0] - fields_[1];
-        }
     }
+}
