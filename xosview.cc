@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include "snprintf.h"
 #include "general.h"
 #include "xosview.h"
 #include "meter.h"
@@ -103,7 +102,7 @@ XOSView::XOSView( const std::string &instName,
         addmeter(mm[i]);
 
     if (nummeters_ == 0) {
-        fprintf (stderr, "No meters were enabled!  Exiting...\n");
+        std::cerr << "No meters were enabled!  Exiting..." << std::endl;
         exit (0);
     }
 
