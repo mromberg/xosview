@@ -130,7 +130,7 @@ void LoadMeter::getloadinfo( void ){
         total_ = 1.0;
 
     fields_[1] = (float) (total_ - fields_[0]);
-
+    XOSDEBUG("loadMeter: %f, %f, %f\n", fields_[0], fields_[1], total_);
     setUsed(fields_[0], (float) 1.0);
 }
 

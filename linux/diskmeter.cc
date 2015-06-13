@@ -70,6 +70,7 @@ void DiskMeter::checkResources( void ) {
 }
 
 void DiskMeter::checkevent( void ) {
+    XOSDEBUG("DiskMeter::checkevent: vmstat=%d, sysfs=%d\n", _vmstat, _sysfs);
     if (_vmstat)
         getvmdiskinfo();
     else if ( _sysfs )
@@ -128,6 +129,7 @@ void DiskMeter::updateinfo(unsigned long one, unsigned long two,
 }
 
 void DiskMeter::getvmdiskinfo(void) {
+    XOSDEBUG("getvmdiskinfo()\n");
     IntervalTimerStop();
     total_ = maxspeed_;
     char buf[MAX_PROCSTAT_LENGTH];
@@ -211,6 +213,9 @@ void DiskMeter::update_info(unsigned long long rsum, unsigned long long wsum) {
     fields_[0] = ((rsum - sysfs_read_prev_ ) * 1e6 ) / itim;
     fields_[1] = ((wsum - sysfs_write_prev_) * 1e6 ) / itim;
 
+    XOSDEBUG("itim: %f\n", itim);
+    XOSDEBUG("fields: %f, %f\n", fields_[0], fields_[1]);
+
     // fix overflow (conversion bug?)
     if (fields_[0] < 0.0)
         fields_[0] = 0.0;
@@ -227,7 +232,10 @@ void DiskMeter::update_info(unsigned long long rsum, unsigned long long wsum) {
     sysfs_read_prev_  = rsum;
     sysfs_write_prev_ = wsum;
 
+    XOSDEBUG("setUsed(): %f, %f, %f, %f\n",
+      fields_[0]/total_, fields_[1]/total_, fields_[2]/total_, total_/total_);
     setUsed((fields_[0]+fields_[1]), total_);
+
     IntervalTimerStart();
 }
 
@@ -240,6 +248,7 @@ void DiskMeter::update_info(unsigned long long rsum, unsigned long long wsum) {
 //      (would need a sysfs-val for sect-size)
 
 void DiskMeter::getsysfsdiskinfo( void ) {
+    XOSDEBUG("DiskMeter::getsysfsdiskinfo()\n");
     // field-3: sects read since boot (but can wrap!)
     // field-7: sects written since boot (but can wrap!)
     // just sum up everything in /sys/block/*/stat
@@ -274,22 +283,26 @@ void DiskMeter::getsysfsdiskinfo( void ) {
     // visit every /sys/block/*/stat and sum up the values:
 
     for (struct dirent *dirent; (dirent = readdir(dir)) != NULL; ) {
-        if (strncmp(dirent->d_name, ".", 1) == 0
-          || strncmp(dirent->d_name, "..", 2) == 0)
+        XOSDEBUG("dirent->d_name: %s\n", dirent->d_name);
+        std::string dname(dirent->d_name);
+        if (dname == "." || dname == "..")
             continue;
 
-        disk = sysfs_dir + "/" + dirent->d_name;
+        disk = sysfs_dir + "/" + dname;
+        XOSDEBUG("stat(%s)\n", disk.c_str());
 
         if (stat(disk.c_str(), &buf) == 0 && buf.st_mode & S_IFDIR) {
             // is a dir, locate 'stat' file in it
-            disk = disk + "/stat";
+            disk += "/stat";
             if (stat(disk.c_str(), &buf) == 0 && buf.st_mode & S_IFREG) {
-                //XOSDEBUG("disk stat: %s\n",disk.c_str() );
+                XOSDEBUG("disk stat: %s\n",disk.c_str() );
                 diskstat.open(disk.c_str());
                 if ( diskstat.good() ) {
                     sec_read=sec_written=0L;
                     diskstat >> dummy >> dummy >> sec_read >> dummy
                              >> dummy >> dummy >> sec_written;
+                    XOSDEBUG("read stats from %s %lu %lu\n",
+                      disk.c_str(), sec_read, sec_written);
 
                     sect_size = 512; // XXX: not always true
 
@@ -300,9 +313,10 @@ void DiskMeter::getsysfsdiskinfo( void ) {
                     all_bytes_written += (unsigned long long) sec_written
                         * (unsigned long long) sect_size;
 
-                    //XOSDEBUG("disk stat: %s | read: %ld, written: %ld\n",
-                    //    disk.c_str(),sec_read,sec_written );
-                    diskstat.close(); diskstat.clear();
+                    XOSDEBUG("disk stat: %s | read: %ld, written: %ld\n",
+                      disk.c_str(),sec_read,sec_written );
+                    diskstat.close();
+                    diskstat.clear();
                 }
                 else {
                     XOSDEBUG("disk stat open: %s - errno=%d\n",
@@ -319,7 +333,7 @@ void DiskMeter::getsysfsdiskinfo( void ) {
         }
     } // for
     closedir(dir);
-    //XOSDEBUG("disk: read: %ld, written: %ld\n",
-    //    all_sec_read, all_sec_written );
+    XOSDEBUG("disk: read: %llu, written: %llu\n",
+      all_bytes_read, all_bytes_written );
     update_info(all_bytes_read, all_bytes_written);
 }
