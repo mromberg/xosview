@@ -141,7 +141,7 @@ distclean: clean
 
 
 maintainer-clean: distclean
-	rm -f configure
+	rm -f configure Xdefaults
 	rm -rf config/autom4te.cache/
 
 @AUTODEPEND@
