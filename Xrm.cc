@@ -7,7 +7,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>	//  For snprintf().
 #include <ctype.h>
 #ifdef HAVE_IOSTREAM
 #include <iostream>
@@ -15,7 +14,6 @@
 #include <iostream.h>
 #endif
 #include <unistd.h>  //  for access(), etc.  BCG
-#include "snprintf.h"
 #include "general.h"
 #include <cstddef> // for NULL
 #include "Xrm.h"
@@ -135,42 +133,43 @@ void Xrm::loadAndMergeResources(int& argc, char** argv, Display* display){
     _db = XrmGetStringDatabase (defaultXResourceString);
 
     //  Merge in the system resource database.
-    char rfilename[2048];
-    int result;
+    std::string rfilename;
 
     // Get the app-defaults
-    result = snprintf(rfilename, sizeof rfilename, "/etc/X11/app-defaults/%s",
-      XrmQuarkToString(_class));
-    if (rfilename != NULL)
-        XrmCombineFileDatabase (rfilename, &_db, 1);
-    result = snprintf(rfilename, sizeof rfilename,
-      "/usr/lib/X11/app-defaults/%s", XrmQuarkToString(_class));
+    if (XrmQuarkToString(_class)) {
+        rfilename = std::string("/etc/X11/app-defaults/")
+            + XrmQuarkToString(_class);
+        XrmCombineFileDatabase(rfilename.c_str(), &_db, 1);
 
-    if (result >= 0 && result < (int)sizeof(rfilename))
-        XrmCombineFileDatabase (rfilename, &_db, 1);
-    result = snprintf(rfilename, (int)sizeof rfilename,
-      "/usr/X11R6/lib/X11/app-defaults/%s", XrmQuarkToString(_class));
-    if (result >= 0 && result < (int)sizeof(rfilename))
-        XrmCombineFileDatabase (rfilename, &_db, 1);
-    //  Try a few more, for SunOS/Solaris folks.
-    result = snprintf(rfilename, sizeof rfilename,
-      "/usr/openwin/lib/X11/app-defaults/%s", XrmQuarkToString(_class));
-    if (result >= 0 && result < (int)sizeof(rfilename))
-        XrmCombineFileDatabase (rfilename, &_db, 1);
-    result = snprintf(rfilename, sizeof rfilename,
-      "/usr/local/X11R6/lib/X11/app-defaults/%s", XrmQuarkToString(_class));
-    if (result >= 0 && result < (int)sizeof(rfilename))
-        XrmCombineFileDatabase (rfilename, &_db, 1);
+        rfilename = std::string("/usr/lib/X11/app-defaults/")
+            + XrmQuarkToString(_class);
+        XrmCombineFileDatabase (rfilename.c_str(), &_db, 1);
+
+        rfilename = std::string("/usr/X11R6/lib/X11/app-defaults/")
+            + XrmQuarkToString(_class);
+        XrmCombineFileDatabase (rfilename.c_str(), &_db, 1);
+
+        //  Try a few more, for SunOS/Solaris folks.
+        rfilename = std::string("/usr/openwin/lib/X11/app-defaults/")
+            + XrmQuarkToString(_class);
+        XrmCombineFileDatabase (rfilename.c_str(), &_db, 1);
+
+        rfilename = std::string("/usr/local/X11R6/lib/X11/app-defaults/")
+            + XrmQuarkToString(_class);
+        XrmCombineFileDatabase (rfilename.c_str(), &_db, 1);
+    }
+
+
 
     //  Now, check for an XOSView file in the XAPPLRESDIR directory...
     char* xappdir = getenv ("XAPPLRESDIR");
     if (xappdir != NULL) {
-        char xappfile[1024];
-        snprintf (xappfile, 1024, "%s/%s", xappdir, className().c_str());
+        std::string xappfile;
+        xappfile = std::string(xappdir) + "/" + className();
         // this did not work for XAPPLRESDIR
         //if (!access (xappfile, X_OK | R_OK))
-        if (!access (xappfile, R_OK)) {
-            XrmCombineFileDatabase (xappfile, &_db, 1);
+        if (!access(xappfile.c_str(), R_OK)) {
+            XrmCombineFileDatabase(xappfile.c_str(), &_db, 1);
         }
     }
 
@@ -190,12 +189,12 @@ void Xrm::loadAndMergeResources(int& argc, char** argv, Display* display){
     }
 
     //  Now, check for a user resource file, and merge it in if there is one...
-    if ( getenv( "HOME" ) != NULL ){
-        char userrfilename[1024];
-        char *home = getenv("HOME");
-        snprintf(userrfilename, 1024, "%s/.Xdefaults", home);
+    char *home = getenv("HOME");
+    if (home){
+        std::string userrfilename = std::string(home) + "/.Xdefaults";
+
         //  User file overrides system (_db).
-        XrmCombineFileDatabase (userrfilename, &_db, 1);
+        XrmCombineFileDatabase (userrfilename.c_str(), &_db, 1);
     }
 
     //  Second-to-last, parse any resource file specified in the
