@@ -120,7 +120,7 @@ void MeterMaker::makeMeters(void){
             std::ostringstream s2;
             s2 << "lmstempLabel" << i;
             std::string lab = _xos->getResourceOrUseDefault(s2.str(), "TMP");
-            push(new LmsTemp(_xos, res.c_str(), lab.c_str(), caption.c_str()));
+            push(new LmsTemp(_xos, res, lab, caption));
         }
     }
 }
