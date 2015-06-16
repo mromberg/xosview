@@ -9,7 +9,6 @@
 #include "xosview.h"
 #include <fstream>
 #include <stdlib.h>
-#include <string.h>
 #include <string>
 #include <sstream>
 #include <ctype.h>
@@ -17,8 +16,8 @@
 static const char STATFILENAME[] = "/proc/stat";
 static const size_t MAX_PROCSTAT_LENGTH = 4096;
 
-CPUMeter::CPUMeter(XOSView *parent, const char *cpuID)
-    : FieldMeterGraph( parent, 8, toUpper(cpuID),
+CPUMeter::CPUMeter(XOSView *parent, const std::string &cpuID)
+    : FieldMeterGraph( parent, 8, util::toupper(cpuID),
       "USR/NICE/SYS/SI/HI/WIO/FREE/ST" ) {
     _lineNum = findLine(cpuID);
     for ( int i = 0 ; i < 2 ; i++ )
@@ -92,7 +91,7 @@ void CPUMeter::getcputime( void ){
     }
 }
 
-int CPUMeter::findLine(const char *cpuID){
+int CPUMeter::findLine(const std::string &cpuID){
     std::ifstream stats( STATFILENAME );
 
     if ( !stats ){
@@ -106,8 +105,8 @@ int CPUMeter::findLine(const char *cpuID){
         getline(stats, buf);
         if (!stats.eof()){
             line++;
-            if (!strncmp(cpuID, buf.data(), strlen(cpuID))
-              && buf[strlen(cpuID)] == ' ')
+            if ((cpuID == buf.substr(0, cpuID.size()))
+              && buf[cpuID.size()] == ' ')
                 return line;
         }
     }
@@ -129,14 +128,14 @@ int CPUMeter::countCPUs(void){
     int cpuCount = 0;
     std::string buf;
     while (getline(stats, buf))
-        if (!strncmp(buf.data(), "cpu", 3) && buf[3] != ' ')
+        if ((buf.substr(0, 3) == "cpu") && buf[3] != ' ')
             cpuCount++;
 
     return cpuCount;
 }
 
-const char *CPUMeter::cpuStr(int num){
-    static char buffer[32];
+std::string CPUMeter::cpuStr(int num){
+    std::string buffer;
     std::ostringstream str;
     std::ifstream stats( STATFILENAME );
 
@@ -148,7 +147,7 @@ const char *CPUMeter::cpuStr(int num){
     int cpuCount = 0;
     std::string buf;
     while ( cpuCount<num && getline(stats, buf) )
-        if (!strncmp(buf.data(), "cpu", 3) && buf[3] != ' ')
+        if ((buf.substr(0, 3) == "cpu") && buf[3] != ' ')
             cpuCount++;
 
     if( cpuCount != num ){
@@ -159,17 +158,7 @@ const char *CPUMeter::cpuStr(int num){
     if( n > 31 )
         n=31;
 
-    strncpy(buffer, buf.data(), n);
-    buffer[n] = '\0';
-
-    return buffer;
-}
-
-const char *CPUMeter::toUpper(const char *str){
-    static char buffer[MAX_PROCSTAT_LENGTH];
-    strncpy(buffer, str, MAX_PROCSTAT_LENGTH);
-    for (char *tmp = buffer ; *tmp != '\0' ; tmp++)
-        *tmp = toupper(*tmp);
+    buffer = buf.substr(0, n);
 
     return buffer;
 }

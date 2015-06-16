@@ -28,18 +28,19 @@ protected:
     int _raiddev;
     static int mdnum;
 
-    char state[20],
-        type[20],
-        working_map[20],
-        resync_state[20];
+    std::string state,
+        type,
+        working_map,
+        resync_state;
     int  disknum;
 
     unsigned long doneColor_, todoColor_, completeColor_;
 
-    int find1(const char *key, const char *findwhat, int num1);
-    int find2(const char *key, const char *findwhat, int num1, int num2);
+    int find1(const std::string &key, const std::string &findwhat, int num1);
+    int find2(const std::string &key, const std::string &findwhat, int num1,
+      int num2);
 
-    int raidparse(char *cp);
+    int raidparse(const std::string &cp);
 
     void getRAIDstate( void );
 };

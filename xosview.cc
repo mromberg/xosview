@@ -120,8 +120,8 @@ XOSView::XOSView( const std::string &instName,
 
 void XOSView::checkVersion(int argc, char *argv[]) const {
     for (int i = 0 ; i < argc ; i++)
-        if (!strncasecmp(argv[i], "-v", 2)
-          || !strncasecmp(argv[i], "--version", 10)) {
+        if ((util::tolower(argv[i]) == "-v")
+          || (util::tolower(argv[i]) == "--version")) {
             std::cerr << versionString << std::endl;
             exit(0);
         }
@@ -355,7 +355,7 @@ void XOSView::checkArgs (int argc, char** argv) const {
         switch (argv[0][1]) {
         case 'n': //  Check for -name option that was already parsed
                   //  and acted upon by main().
-            if (!strncasecmp(*argv, "-name", 6)) {
+            if (util::tolower(*argv) == "-name") {
                 argv++;	//  Skip arg to -name.
                 argc--;
             }

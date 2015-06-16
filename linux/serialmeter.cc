@@ -124,7 +124,7 @@ unsigned short int SerialMeter::getPortBase(Device dev) const {
 
     std::string res = parent_->getResource(getResourceName(dev));
 
-    if (!strncasecmp(res.c_str(), "True", 5)){ // Autodetect portbase.
+    if (util::tolower(res) == "true"){ // Autodetect portbase.
         int fd;
         struct serial_struct serinfo;
 

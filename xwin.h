@@ -11,7 +11,7 @@
 #else
 #include <iostream.h>
 #endif
-#include <string.h>
+
 #include <string>
 
 #include "Xrm.h"

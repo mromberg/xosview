@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cerrno>
+#include <cstring>
 #include <cassert>
 #include <stdexcept>
 
@@ -100,6 +101,10 @@ float stof(const std::string &str, size_t *) {
     if (!fstr(str, rval))
         throw std::invalid_argument("error converting " + str + " to float");
     return rval;
+}
+
+std::string strerror(int error) {
+    return std::strerror(error);
 }
 
 }

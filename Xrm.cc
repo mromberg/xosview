@@ -5,7 +5,6 @@
 //  This file may be distributed under terms of the GPL
 //
 
-#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
 #ifdef HAVE_IOSTREAM
@@ -18,6 +17,7 @@
 #include <cstddef> // for NULL
 #include "Xrm.h"
 #include "Xrmcommandline.h"
+#include "strutil.h"
 
 extern char *defaultXResourceString;
 
@@ -53,7 +53,7 @@ std::string Xrm::getDisplayName (int argc, char** argv) {
     char** argp;
 
     for (argp = argv; (*argp != NULL) &&
-             (strncasecmp (*argp, "-display", 9)); argp++)
+             (util::tolower(*argp) != "-display") ; argp++)
         ;  //  Don't do anything.
 
     //  If we found -display and the next word exists...

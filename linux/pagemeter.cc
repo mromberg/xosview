@@ -88,12 +88,12 @@ void PageMeter::getvmpageinfo(void) {
     }
     do {
         stats >> buf;
-    } while (!stats.eof() && strncasecmp(buf, "pswpin", 7));
+    } while (!stats.eof() && (util::tolower(buf) != "pswpin"));
     stats >>pageinfo_[pageindex_][0];
 
     do {
         stats >> buf;
-    } while (!stats.eof() && strncasecmp(buf, "pswpout", 8));
+    } while (!stats.eof() && (util::tolower(buf) != "pswpout"));
     stats >> pageinfo_[pageindex_][1];
 
     updateinfo();
@@ -111,7 +111,7 @@ void PageMeter::getpageinfo( void ){
 
     do {
         stats >>buf;
-    } while (!stats.eof() && strncasecmp(buf, "swap", 5));
+    } while (!stats.eof() && (util::tolower(buf) != "swap"));
 
     stats >>pageinfo_[pageindex_][0] >>pageinfo_[pageindex_][1];
 

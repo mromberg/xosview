@@ -30,7 +30,6 @@
 
 #include <unistd.h>
 #include <fstream>
-#include <string.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
@@ -78,15 +77,15 @@ void NetMeter::checkOSVersion(void) {
 	// check presence of iacct and oacct chains
         std::ifstream chains("/proc/net/ip_fwchains");
 	int n = 0;
-	char buf[1024];
+        std::string buf;
 
         while (chains && !chains.eof()) {
             chains >> buf;
             chains.ignore(1024, '\n');
 
-            if (!strncmp(buf, "iacct", 5))
+            if (buf == "iacct")
                 n |= 1;
-            if (!strncmp(buf, "oacct", 5))
+            if (buf == "oacct")
                 n |= 2;
         }
 
@@ -117,7 +116,8 @@ void NetMeter::checkResources( void ){
 
     _ipsock = socket(AF_INET, SOCK_DGRAM, 0);
     if (_ipsock == -1) {
-        std::cerr <<"Can not open socket : " <<strerror( errno ) << std::endl;
+        std::cerr <<"Can not open socket : " << util::strerror(errno)
+                  << std::endl;
         parent_->done(1);
         return;
     }
@@ -142,7 +142,7 @@ void NetMeter::checkeventNew(void) {
     std::string str_in;
     unsigned long long in, out, ig;
     unsigned long long totin = 0, totout = 0;
-    char buf[1024];
+    std::string buf;
 
     fields_[2] = maxpackets_;     // assume no
     fields_[0] = fields_[1] = 0;  // network activity
@@ -153,9 +153,9 @@ void NetMeter::checkeventNew(void) {
         while (ifs) {
             ifs >> buf;
 
-            if (!strncmp(buf, "iacct", 5))
+            if (buf == "iacct")
                 ifs >> buf >> buf >> ig >> ig >> ig >> ig >> ig >> ig >> totin;
-            else if (!strncmp(buf, "oacct", 5))
+            else if (buf == "oacct")
                 ifs >> buf >> buf >> ig >> ig >> ig >> ig >> ig >> ig >> totout;
 
             ifs.ignore(1024, '\n');
@@ -170,7 +170,8 @@ void NetMeter::checkeventNew(void) {
                 ifs.ignore(1024, ':');
             }
             else {
-                ifs.get(buf, 128, ':');
+                std::getline(ifs, buf, ':');
+                //ifs.get(buf, 128, ':');
                 ifname = buf;
                 ifs.ignore(1, ':');
                 ifname.erase(0, ifname.find_first_not_of(" ") );
@@ -233,7 +234,7 @@ void NetMeter::checkeventOld(void) {
     ifc.ifc_len = sizeof(buff);
     ifc.ifc_buf = buff;
     if (ioctl(_ipsock, SIOCGIFCONF, &ifc) < 0) {
-        std::cerr <<"Can not get interface list : " <<strerror( errno )
+        std::cerr <<"Can not get interface list : " << util::strerror( errno )
                   << std::endl;
         parent_->done(1);
         return;

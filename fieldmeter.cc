@@ -57,12 +57,13 @@ void FieldMeter::checkResources( void ){
 
 
 void FieldMeter::setUsedFormat ( const std::string &fmt ) {
+    std::string lfmt = util::tolower(fmt);
     /*  Do case-insensitive compares.  */
-    if (!strncasecmp (fmt.c_str(), "percent", 8))
+    if (lfmt == "percent")
         print_ = PERCENT;
-    else if (!strncasecmp (fmt.c_str(), "autoscale", 10))
+    else if (lfmt == "autoscale")
         print_ = AUTOSCALE;
-    else if (!strncasecmp (fmt.c_str(), "float", 6))
+    else if (lfmt == "float")
         print_ = FLOAT;
     else {
         std::cerr << "Error:  could not parse format of " <<  fmt << "\n"

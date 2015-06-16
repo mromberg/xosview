@@ -89,17 +89,17 @@ std::vector<MemMeter::LineInfo> MemMeter::findLines(
 
     std::vector<LineInfo> rval(tmplate.size());
 
-    char buf[256];
+    std::string buf;
 
     // Get the info from the "standard" meminfo file.
     int lineNum = 0;
     int inum = 0;  // which info are we going to insert
     while (!meminfo.eof()){
-        meminfo.getline(buf, 256);
+        std::getline(meminfo, buf);
         lineNum++;
 
         for (size_t i = 0 ; i < tmplate.size() ; i++)
-            if(!strncmp(tmplate[i].id().c_str(), buf, tmplate[i].idlen())){
+            if (tmplate[i].id() == buf.substr(0, tmplate[i].id().size())) {
                 rval[inum] = tmplate[i];
                 rval[inum].line(lineNum);
                 inum++;

@@ -61,6 +61,22 @@ inline static bool fstr(const std::string &s, X &x) {
 std::wstring s2ws(const std::string& s);
 std::string ws2s(const std::wstring &s);
 
+inline std::string toupper(const std::string &str) {
+    std::string rval;
+    for (size_t i = 0 ; i < str.size() ; i++)
+        rval.push_back(std::toupper(str[i]));
+    return rval;
+}
+
+inline std::string tolower(const std::string &str) {
+    std::string rval;
+    for (size_t i = 0 ; i < str.size() ; i++)
+        rval.push_back(std::tolower(str[i]));
+    return rval;
+}
+
+std::string strerror(int error);
+
 } // namespace util
 
 #endif

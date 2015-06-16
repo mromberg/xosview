@@ -74,7 +74,7 @@ void NFSDStats::checkResources( void ){
 }
 
 void NFSDStats::checkevent(void) {
-    char buf[4096], name[64];
+    std::string buf, name;
     unsigned long netcnt, netudpcnt, nettcpcnt, nettcpconn;
     unsigned long calls, badcalls;
     int found;
@@ -93,14 +93,15 @@ void NFSDStats::checkevent(void) {
     name[0] = '\0';
     found = 0;
     while (!ifs.eof() && found != 2) {
-        ifs.getline(buf, 4096, '\n');
-        if (strncmp("net", buf, strlen("net")) == 0) {
-            sscanf(buf, "%s %lu %lu %lu %lu\n", name,
-              &netcnt, &netudpcnt, &nettcpcnt, &nettcpconn);
+        std::getline(ifs, buf);
+        if (buf.substr(0, 3) == "net") {
+            std::istringstream iss(buf);
+            iss >> name >> netcnt >> netudpcnt >> nettcpcnt >> nettcpconn;
             found++;
         }
-        if (strncmp("rpc", buf, strlen("rpc")) == 0) {
-            sscanf(buf, "%s %lu %lu\n", name, &calls, &badcalls);
+        if (buf.substr(0, 3) == "rpc") {
+            std::istringstream iss(buf);
+            iss >> name >> calls >> badcalls;
             found++;
         }
     }
@@ -164,7 +165,7 @@ void NFSStats::checkResources( void ){
 }
 
 void NFSStats::checkevent(void) {
-    char buf[4096], name[64];
+    std::string buf, name;
     unsigned long calls, retrns, authrefresh, maxpackets_;
 
     std::ifstream ifs(_statfile);
@@ -180,10 +181,11 @@ void NFSStats::checkevent(void) {
 
     name[0] = '\0';
     while (!ifs.eof()) {
-        ifs.getline(buf, 4096, '\n');
-        if (strncmp("rpc", buf, strlen("rpc")))
+        std::getline(ifs, buf);
+        if (buf.substr(0, 3) != "rpc")
             continue;
-        sscanf(buf, "%s %lu %lu %lu\n", name, &calls, &retrns, &authrefresh);
+        std::istringstream iss(buf);
+        iss >> name >> calls >> retrns >> authrefresh;
         break;
     }
 

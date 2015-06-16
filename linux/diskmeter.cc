@@ -15,6 +15,7 @@
 #include <unistd.h>
 #include <dirent.h>
 #include <cerrno>
+#include <limits>
 
 
 static const size_t MAX_PROCSTAT_LENGTH = 2048;
@@ -132,7 +133,7 @@ void DiskMeter::getvmdiskinfo(void) {
     XOSDEBUG("getvmdiskinfo()\n");
     IntervalTimerStop();
     total_ = maxspeed_;
-    char buf[MAX_PROCSTAT_LENGTH];
+    std::string buf;
     std::ifstream stats(_statFileName);
     unsigned long one, two;
 
@@ -144,7 +145,7 @@ void DiskMeter::getvmdiskinfo(void) {
 
     stats >> buf;
     // kernel >= 2.5
-    while (!stats.eof() && strncmp(buf, "pgpgin", 7)) {
+    while (!stats.eof() && buf != "pgpgin") {
         stats.ignore(1024, '\n');
         stats >> buf;
     }
@@ -152,7 +153,7 @@ void DiskMeter::getvmdiskinfo(void) {
     // read first value
     stats >> one;
 
-    while (!stats.eof() && strncmp(buf, "pgpgout", 7)) {
+    while (!stats.eof() && buf != "pgpgout") {
         stats.ignore(1024, '\n');
         stats >> buf;
     }
@@ -166,7 +167,7 @@ void DiskMeter::getvmdiskinfo(void) {
 void DiskMeter::getdiskinfo( void ) {
     IntervalTimerStop();
     total_ = maxspeed_;
-    char buf[MAX_PROCSTAT_LENGTH];
+    std::string buf;
     std::ifstream stats(_statFileName);
 
     if ( !stats ) {
@@ -176,7 +177,7 @@ void DiskMeter::getdiskinfo( void ) {
 
     // Find the line with 'page'
     stats >> buf;
-    while (strncmp(buf, "disk_io:", 8)) {
+    while (buf.substr(0, 8) != "disk_io:") {
         stats.ignore(MAX_PROCSTAT_LENGTH, '\n');
         stats >> buf;
         if (stats.eof())
@@ -185,13 +186,24 @@ void DiskMeter::getdiskinfo( void ) {
 
     // read values
     unsigned long one=0, two=0;
-    unsigned long junk,read1,write1;
+    unsigned long read1,write1;
     stats >> buf;
-    while (7 == sscanf(buf,"(%lu,%lu):(%lu,%lu,%lu,%lu,%lu)",
-        &junk,&junk,&junk,&junk,&read1,&junk,&write1)) {
-        one += read1;
-        two += write1;
-        stats >> buf;
+    std::istringstream iss(buf);
+    while (iss.good()) {
+        // "(%lu,%lu):(%lu,%lu,%lu,%lu,%lu)"
+        //  these               ^       ^
+        std::streamsize max = std::numeric_limits<std::streamsize>::max();
+        iss.ignore(max, ':');
+        iss.ignore(max, ',');
+        iss.ignore(max, ',');
+        iss >> read1;
+        iss.ignore(max, ',');
+        iss >> write1;
+        if (iss.good()) {
+            one += read1;
+            two += write1;
+            stats >> buf;
+        }
     }
 
     updateinfo(one, two, 1);

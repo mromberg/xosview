@@ -18,7 +18,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <string.h>
 #include <cerrno>
 
 
@@ -350,8 +349,8 @@ bool BtryMeter::getacpiinfo( void ){
 
     std::string abs_battery_dir = ACPIBATTERYDIR;
     for (struct dirent *dirent; (dirent = readdir(dir)) != NULL; ) {
-        if (strncmp(dirent->d_name, ".", 1) == 0
-          || strncmp(dirent->d_name, "..", 2) == 0)
+        if (std::string(dirent->d_name) == "."
+          || std::string(dirent->d_name) == "..")
             continue;
 
         std::string abs_battery_name = abs_battery_dir + "/" + dirent->d_name;

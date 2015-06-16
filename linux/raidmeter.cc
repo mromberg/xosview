@@ -12,7 +12,7 @@
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+
 
 RAIDMeter::RAIDMeter( XOSView *parent, int raiddev)
     : BitFieldMeter( parent, 1, 2, "RAID") {
@@ -41,7 +41,7 @@ void RAIDMeter::checkevent( void ){
         bits_[i] = (working_map[i]=='+');
     }
     fields_[0]=100.0;
-    sscanf(resync_state, "resync=%f", &fields_[0] );
+    util::fstr(resync_state.substr(resync_state.find('=')+1), fields_[0]);
     fields_[1] = total_ - fields_[1];
     if(fields_[0]<100.0){
         setfieldcolor(0,doneColor_);
@@ -72,56 +72,55 @@ void RAIDMeter::checkResources( void ){
 
 // parser for /proc/mdstat
 
-int RAIDMeter::find1(const char *key, const char *findwhat, int num1){
-    char buf[80];
-    int rc;
+int RAIDMeter::find1(const std::string &key, const std::string &findwhat,
+  int num1){
+    std::string buf;
     std::ostringstream os;
     os << findwhat << "." << num1 << std::ends;
-    strncpy(buf, os.str().c_str(), 80);
-    buf[79] = '\0';
-    rc=!strncmp(buf,key, 80);
-    return rc;
+
+    return os.str() == key;
 }
 
-int RAIDMeter::find2(const char *key, const char *findwhat,
+int RAIDMeter::find2(const std::string &key, const std::string &findwhat,
   int num1, int num2){
-    char buf[80];
-    int rc;
+    std::string buf;
     std::ostringstream os;
     os << findwhat << "." << num1 << "." << num2 << std::ends;
-    strncpy(buf, os.str().c_str(), 80);
-    buf[79] = '\0';
-    rc=!strncmp(buf,key, 80);
-    return rc;
+
+    return os.str() == key;
 }
 
 static const char *RAIDFILE    = "/proc/mdstat";
 
-int RAIDMeter::raidparse(char *cp){
-    char *key, *val;
-    key=strtok(cp," \n");
-    val=strtok(NULL," \n");
-    if(key==NULL)
+int RAIDMeter::raidparse(const std::string &cp){
+    std::vector<std::string> tokens = util::split(cp, " \n");
+    if(tokens.size() == 0)
         return 1;
+    bool bval = (tokens.size() >= 2);
+    std::string key = tokens[0];
+    std::string val;
+    if (bval)
+        val = tokens[1];
 
     if(find1(key,"md_state",_raiddev)){
-        if(val) strcpy(state,val);
+        if(bval)
+            state = val;
     }
     else if(find1(key,"md_type",_raiddev)){
-        if(val)
-            strcpy(type,val);
+        if(bval)
+            type = val;
     }
     else if(find1(key,"md_disk_count",_raiddev)){
-        if(val)
+        if(bval)
             disknum=util::stoi(val);
     }
     else if(find1(key,"md_working_disk_map",_raiddev)){
-        if(val)
-            strcpy(working_map,val);
+        if(bval)
+            working_map = val;
     }
     else if(find1(key,"md_resync_status",_raiddev)){
-        if(val)
-            strcpy(resync_state,val);
+        if(bval)
+            resync_state = val;
     }
     return 0;
 }

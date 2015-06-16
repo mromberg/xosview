@@ -13,7 +13,7 @@ int main( int argc, char *argv[] ) {
     char** argp = argv;
     const char* instanceName = "xosview";	// Default value.
     while (argp && *argp) {
-        if (!strncmp(*argp, "-name", 6))
+        if (std::string(*argp) == "-name")
             instanceName = argp[1];
         argp++;
     }  //  instanceName will end up pointing to the last such -name option.

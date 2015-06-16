@@ -60,9 +60,8 @@ int  LmsTemp::checksensors(int isproc, const std::string &dir,
         std::string dirname;
 
         while(!found && (ent1=readdir(d1))) {
-            if(!strncmp(ent1->d_name,".", 1))
-                continue;
-            if(!strncmp(ent1->d_name,"..", 2))
+            if((std::string(".") == ent1->d_name) ||
+              (std::string("..") == ent1->d_name))
                 continue;
 
             dirname = std::string(dir) + "/" + ent1->d_name;
