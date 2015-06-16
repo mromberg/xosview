@@ -85,18 +85,18 @@ void SwapMeter::getswapinfo( void ){
 
     total_ = fields_[0] = fields_[1] = 0;
 
-    char buf[256];
-    string ignore;
+    std::string ignore;
 
     // Get the info from the "standard" meminfo file.
     while (!meminfo.eof()){
-        meminfo.getline(buf, 256);
-        std::istringstream line(std::string(buf, 256));
+        std::string buf;
+        std::getline(meminfo, buf);
+        std::istringstream line(buf);
 
-        if(!strncmp("SwapTotal", buf, strlen("SwapTotal")))
+        if (buf.substr(0, 9) == "SwapTotal")
             line >> ignore >> total_;
 
-        if(!strncmp("SwapFree", buf, strlen("SwapFree")))
+        if (buf.substr(0, 8) == "SwapFree")
             line >> ignore >> fields_[1];
     }
 
