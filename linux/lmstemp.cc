@@ -55,7 +55,7 @@ int  LmsTemp::checksensors(int isproc, const char *dir, const char* filename) {
     if(!d1)
         return false;
     else {
-        char dirname[64];
+        std::string dirname;
 
         while(!found && (ent1=readdir(d1))) {
             if(!strncmp(ent1->d_name,".", 1))
@@ -63,19 +63,18 @@ int  LmsTemp::checksensors(int isproc, const char *dir, const char* filename) {
             if(!strncmp(ent1->d_name,"..", 2))
                 continue;
 
-            snprintf(dirname, 64, "%s/%s",dir ,ent1->d_name);
+            dirname = std::string(dir) + "/" + ent1->d_name;
             if (!isproc)
-                strncat(dirname, "/device", sizeof("/device"));
-            if(stat(dirname,&buf)==0 && S_ISDIR(buf.st_mode)) {
-                d2=opendir(dirname);
+                dirname += "/device";
+            if(stat(dirname.c_str(), &buf)==0 && S_ISDIR(buf.st_mode)) {
+                d2=opendir(dirname.c_str());
                 if(!d2)
                     std::cerr << "The directory " <<dirname
                               <<"exists but cannot be read.\n";
                 else {
                     while((ent2=readdir(d2))) {
-                        char f[80];
-                        snprintf(f, 80, "%s/%s",dirname,ent2->d_name);
-                        if(stat(f,&buf)!=0 || !S_ISREG(buf.st_mode))
+                        std::string f = dirname + "/" + ent2->d_name;
+                        if(stat(f.c_str(), &buf)!=0 || !S_ISREG(buf.st_mode))
                             continue;
 
                         if((isproc && !strncmp(ent2->d_name, filename,
@@ -85,8 +84,8 @@ int  LmsTemp::checksensors(int isproc, const char *dir, const char* filename) {
                             !strncmp(ent2->d_name+strlen(filename), "_input",
                               sizeof("_input")))) {
                             if (!isproc)
-                                f[strlen(f)-6] = '\0';
-                            strcpy(_filename, f);
+                                f.resize(f.size()-6);
+                            strcpy(_filename, f.c_str());
                             _isproc = isproc;
                             found = true;
                             break;

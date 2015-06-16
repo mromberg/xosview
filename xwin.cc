@@ -1,10 +1,11 @@
 #include <X11/Xatom.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "snprintf.h"
+#include <sstream>
 #include "general.h"
 #include "xwin.h"
 #include "Xrm.h"
+
 
 //-----------------------------------------------------------------------------
 //  argc is a reference, so that the changes to argc by XrmParseCommand are
@@ -285,7 +286,6 @@ int XWin::getPixmap(Pixmap *pixmap) {
 }
 
 void XWin::getGeometry( void ){
-    char                 default_geometry[80];
     int                  bitmask;
 
     // Fill out a XsizeHints structure to inform the window manager
@@ -303,8 +303,9 @@ void XWin::getGeometry( void ){
     sizehints_->y = y_;
 
     // Construct a default geometry string
-    snprintf(default_geometry, 80, "%dx%d+%d+%d", sizehints_->width,
-      sizehints_->height, sizehints_->x, sizehints_->y);
+    std::ostringstream defgs;
+    defgs << sizehints_->width << "x" << sizehints_->height << "+"
+          << sizehints_->x << "+" << sizehints_->y;
 
     // Process the geometry specification
     Xrm::opt gopt = xrmptr_->getResource("geometry");
@@ -312,7 +313,7 @@ void XWin::getGeometry( void ){
     if (gopt.first)
         gptr = gopt.second.c_str();
     bitmask =  XGeometry(display_, DefaultScreen(display_), gptr,
-      default_geometry,
+      defgs.str().c_str(),
       0,
       1, 1, 0, 0, &(sizehints_->x), &(sizehints_->y),
       &(sizehints_->width), &(sizehints_->height));

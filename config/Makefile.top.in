@@ -19,7 +19,6 @@ fieldmetergraph.o \
 bitfieldmeter.o \
 bitmeter.o \
 xosview.o \
-snprintf.o \
 strutil.o \
 main.o
 

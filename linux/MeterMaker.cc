@@ -109,18 +109,18 @@ void MeterMaker::makeMeters(void){
 
     // check for the LmsTemp meter
     if (_xos->isResourceTrue("lmstemp")){
-        char caption[80];
-        snprintf(caption, 80, "ACT/HIGH/%s",
-          _xos->getResourceOrUseDefault("lmstempHighest", "100").c_str());
+        std::string caption = "ACT/HIGH/"
+            + _xos->getResourceOrUseDefault("lmstempHighest", "100");
         for (int i = 1 ; ; i++) {
-            char s[20];
-            snprintf(s, 20, "lmstemp%d", i);
-            std::string res = _xos->getResourceOrUseDefault(s, "<nil>");
+            std::ostringstream s;
+            s << "lmstemp" << i;
+            std::string res = _xos->getResourceOrUseDefault(s.str(), "<nil>");
             if(res == "<nil>")
                 break;
-            snprintf(s, 20, "lmstempLabel%d", i);
-            std::string lab = _xos->getResourceOrUseDefault(s, "TMP");
-            push(new LmsTemp(_xos, res.c_str(), lab.c_str(), caption));
+            std::ostringstream s2;
+            s2 << "lmstempLabel" << i;
+            std::string lab = _xos->getResourceOrUseDefault(s2.str(), "TMP");
+            push(new LmsTemp(_xos, res.c_str(), lab.c_str(), caption.c_str()));
         }
     }
 }

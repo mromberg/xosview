@@ -11,8 +11,9 @@
 #else
 #include <fstream.h>
 #endif
+#include <sstream>
+#include <iomanip>
 #include <stdlib.h>
-#include "snprintf.h"
 #include "general.h"
 #include "bitfieldmeter.h"
 #include "xosview.h"
@@ -179,10 +180,11 @@ void BitFieldMeter::drawused( int manditory ){
     static const int onechar = parent_->textWidth( "X" );
     static int xoffset = parent_->textWidth( "XXXXX" );
 
-    char buf[10];
+    std::ostringstream bufs;
+    bufs << std::fixed;
 
     if (print_ == PERCENT){
-        snprintf( buf, 10, "%d%%", (int)used_ );
+        bufs << (int)used_ << "%";
     }
     else if (print_ == AUTOSCALE){
         char scale;
@@ -222,24 +224,25 @@ void BitFieldMeter::drawused( int manditory ){
          *  print 965, or we can print 34, but we can't print 34.7 (the
          *  decimal point takes up one character).  bgrayson   */
         if (scaled_used == 0.0)
-            snprintf (buf, 10, "0");
+            bufs << "0";
         else if (scaled_used < 9.95)  //  9.95 or above would get
                                       //  rounded to 10.0, which is too wide.
-            snprintf (buf, 10, "%.1f%c", scaled_used, scale);
+            bufs << std::setprecision(1) << scaled_used << scale;
         /*  We don't need to check against 99.5 -- it all gets %.0f.  */
         /*else if (scaled_used < 99.5)*/
-        /*snprintf (buf, 10, "%.0f%c", scaled_used, scale);*/
+        /* bufs << std::setprecision(0) << scaled_used << scale; */
         else
-            snprintf (buf, 10, "%.0f%c", scaled_used, scale);
+            bufs << std::setprecision(0) << scaled_used << scale;
     }
     else {
-        snprintf( buf, 10, "%.1f", used_ );
+        bufs << std::setprecision(1) << used_;
     }
 
     parent_->clear( x_ - xoffset, y_ + height_ - parent_->textHeight(),
       xoffset - onechar / 2, parent_->textHeight() + 1 );
     parent_->setForeground( usedcolor_ );
-    parent_->drawString( x_ - (strlen( buf ) + 1 ) * onechar + 2,
+    std::string buf = bufs.str();
+    parent_->drawString( x_ - (buf.size() + 1 ) * onechar + 2,
       y_ + height_, buf );
 
     lastused_ = used_;
