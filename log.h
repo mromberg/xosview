@@ -37,6 +37,21 @@
 //
 // logFatal will display it's message and then exit(1);
 //
+// The flags of the real underlying stream (std::cerr) are saved
+//    and reset after each call.
+//  So for example this works:
+//
+// logEvent << "hex    : " << std::hex << 42 << std::endl;
+// logEvent << "not hex: " << 42 << std::endl;
+// logEvent << "prec(3): " << std::setprecision(3) << 42.12345 << std::endl;
+// logEvent << "normp  : " << 42.12345 << std::endl;
+//
+// Output:
+//EVENT: main.cc:16: hex    : 2a
+//EVENT: main.cc:17: not hex: 42
+//EVENT: main.cc:18: prec(3): 42.1
+//EVENT: main.cc:19: normp  : 42.1234
+//
 // At some point this could be extended to log to files (or elsewhere)
 // and supress messages based on file/linenumber from some
 // sort of config file.  For now this is good enough.
@@ -61,12 +76,42 @@ public:
         exit(1);
     }
 };
+
+// manipulator/object "thing" to save the state
+// of a stream and restore it.  Inserted
+// as first object into the real stream
+// If C++ would ever add a "reset defaults" this
+// kludge would not be necessary.
+class ssave {
+public:
+    ssave(void) : _os(0), _state(0) {}
+    ~ssave(void) { if (_os) _os->copyfmt(_state); }
+    void sets(std::ostream &os) const {
+        // operator<<(ostream, ssave) explodes if ssave is not const.
+        // So... lie
+        const_cast<ssave*>(this)->_os = &os;
+        const_cast<ssave*>(this)->_state.copyfmt(os);
+    }
+private:
+    std::ostream *_os;
+    std::ios _state;   // May wanna make a global one
+                       // to set the stream to default always
+};
+
+std::ostream &operator<<(std::ostream &os, const ssave &fs){
+    fs.sets(os);
+    return os;
+}
+
 } // end namespace util
 
 
 #define logMsg(category,enabled,ostr) \
     if (enabled)                      \
-        ostr << category << ": " << __FILE__ << ":" << __LINE__ << ": "
+        ostr << util::ssave()         \
+             << category << ": "      \
+             << __FILE__ << ":"       \
+             << __LINE__ << ": "
 
 #define logDebug logMsg("DEBUG",XOSVLOGIT,std::cerr)
 #define logProblem logMsg("PROBLEM",true,std::cerr)
