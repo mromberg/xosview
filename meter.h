@@ -8,7 +8,6 @@
 #define _METER_H_
 
 #include <string>
-#include <stdio.h>
 #include "strutil.h"
 #include "xosview.h"	//  To grab MAX_SAMPLES_PER_SECOND.
 
