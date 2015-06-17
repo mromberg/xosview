@@ -1,0 +1,77 @@
+#ifndef LOG_H
+#define LOG_H
+//
+//  Copyright (c) 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
+//
+//  This file may be distributed under terms of the GPL
+//
+
+//
+// iostream based loging for xosview.
+//
+// These macros log the file and line number along with the
+// message provided in ostream format.
+//
+// Example useage:
+//
+// logEvent << "Good morning Vietnam!" << std::endl;
+// logDebug << "2 + 2 = " << 2 + 2 << std::endl;
+// logProblem << "I'm sorry, Dave. I'm afraid I can't do that." << std::endl;
+// logBug << "I've just picked up a fault in the AE35 unit.\n"
+//        << "It's going to go 100% failure in 72 hours." << std::endl;
+// logFatal << "warp core breach imminent" << std::endl;
+//
+// Output:
+//
+//EVENT: main.cc:13: Good morning Vietnam!
+//DEBUG: main.cc:14: 2 + 2 = 4
+//PROBLEM: main.cc:15: I'm sorry, Dave. I'm afraid I can't do that.
+//BUG: main.cc:16: I've just picked up a fault in the AE35 unit.
+//It's going to go 100% failure in 72 hours.
+//FATAL: main.cc:18: warp core breach imminent
+//
+// The configure script enables and defines XOSVDEBUG.  If not
+// defined logDebug messages are disabled and the optimizer *should*
+// remove the code from the executable entirely.
+//
+// logFatal will display it's message and then exit(1);
+//
+// At some point this could be extended to log to files (or elsewhere)
+// and supress messages based on file/linenumber from some
+// sort of config file.  For now this is good enough.
+//
+#include <iostream>
+#include <cstdlib>
+
+#ifdef XOSVDEBUG
+#define XOSVLOGIT true
+#else
+#define XOSVLOGIT false
+#endif
+
+namespace util {
+// The operator <<= is used here because
+// it's precedence is lower than <<.  So, the stream will
+// be filled first.  We can then flush it and exit.
+class Fatal {
+public:
+    void operator <<=(std::ostream &os) {
+        os.flush();
+        exit(1);
+    }
+};
+} // end namespace util
+
+
+#define logMsg(category,enabled,ostr) \
+    if (enabled)                      \
+        ostr << category << ": " << __FILE__ << ":" << __LINE__ << ": "
+
+#define logDebug logMsg("DEBUG",XOSVLOGIT,std::cerr)
+#define logProblem logMsg("PROBLEM",true,std::cerr)
+#define logBug logMsg("BUG",true,std::cerr)
+#define logEvent logMsg("EVENT",true,std::cerr)
+#define logFatal logMsg("FATAL",true,util::Fatal()<<=std::cerr)
+
+#endif
