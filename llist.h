@@ -81,20 +81,6 @@ public:
     void decc( int which = 0 );
     void *findc( int which = 0 );
 
-    //	This function will save a linked list to the file pointed to
-    //  by *fp.  The file should be binary.  n is saved first and then
-    //  each item on the list is saved.  size is the number of bytes of
-    //  each item on the list.  The list will remain intact after this
-    //  function is called.
-    void save( int size, FILE *fp );
-
-    //	This function reads a linked list from the file pointed to
-    //  by *fp ( previously saved by the above function ).  Space is
-    //  allocated for each item, and it is placed into the list in it's
-    //  old position.  size is the number of bytes each item occupies.
-    //  This function will return 1 upon sucess and 0 upon failure.
-    int restore( int size, FILE *fp );
-
     //	This function will remaove all of the elements in the linked
     //  list pointed to by L and free the memory each element occupied.
     void kill( void );

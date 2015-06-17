@@ -247,35 +247,6 @@ void *LList::findc( int which ){
     return ( curr_[which]->data_ );
 }
 
-void LList::save( int size, FILE *fp ){
-    int i;
-    void *buf;
-
-    fwrite( &n_, sizeof( int ), 1, fp );	/*  save n  */
-
-    setc( 1 );
-    for ( i = 1 ; i <= n_ ; i ++ ) {
-        buf = findc();
-        fwrite ( buf, size, 1, fp );
-        incc();
-    }
-}
-
-int LList::restore( int size, FILE *fp ){
-    int i;
-    void *buf;
-
-    fread ( &i, sizeof ( int ), 1, fp );
-
-    for ( ; i > 0 ; i-- ) {
-        if ( ( buf = new char[size] ) == NULL ) return ( 0 );
-        if ( ! push( buf ) )
-            return ( 0 );
-    }
-
-    return ( 1 );
-}
-
 void LList::kill( void ){
 //  while ( n_ ) {
 //    delete pop();
