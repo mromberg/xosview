@@ -49,13 +49,13 @@ void MemMeter::checkResources( void ){
 
 void MemMeter::checkevent( void ){
     getmeminfo();
-    /* for debugging (see below)
-       printf("t %4.1f used %4.1f shr %4.1f buf %4.1f cache %4.1f free %4.1f\n",
-       total_/1024.0/1024.0,
-       fields_[0]/1024.0/1024.0, fields_[1]/1024.0/1024.0,
-       fields_[2]/1024.0/1024.0, fields_[3]/1024.0/1024.0,
-       fields_[4]/1024.0/1024.0);
-    */
+    /* for debugging (see below) */
+    XOSDEBUG("t %4.1f used %4.1f shr %4.1f buf %4.1f cache %4.1f free %4.1f\n",
+      total_/1024.0/1024.0,
+      fields_[0]/1024.0/1024.0, fields_[1]/1024.0/1024.0,
+      fields_[2]/1024.0/1024.0, fields_[3]/1024.0/1024.0,
+      fields_[4]/1024.0/1024.0);
+
     drawfields();
 }
 
