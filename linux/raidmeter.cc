@@ -10,7 +10,6 @@
 #include "xosview.h"
 #include <fstream>
 #include <sstream>
-#include <stdio.h>
 #include <stdlib.h>
 
 

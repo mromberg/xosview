@@ -7,7 +7,6 @@
 #ifndef __LLIST_H__
 #define __LLIST_H__
 
-#include <stdio.h>
 
 #define MAXCURR 4    //  number of 'current' pointers
 
@@ -39,13 +38,13 @@ public:
     virtual ~LList( void );  //  frees nodes but not data
 
     //	Stack like functions.
-    //  pop returns NULL if the list is empty.
+    //  pop returns 0 if the list is empty.
     //  push returns 1 on sucess and 0 upon failure.
     int push( void *data );
     void *pop( void );
 
     //	Queue like functions
-    //  dequeue returns NULL if the list is empty.
+    //  dequeue returns 0 if the list is empty.
     //  enqueue returns 1 on sucess and 0 upon failure.
     int enqueue( void *data ) { return( push( data ) ); }
     void *dequeue( void );
@@ -55,7 +54,7 @@ public:
     //  for find and removematch *key points to the "search" key.
     //  - insert returns 1 on sucess and 0 on failure
     //  - find and removematch return a pointer to the data stored
-    //    in the list if sucessful and NULL if not.
+    //    in the list if sucessful and 0 if not.
     int insert( void *data, void *key );
     void *find( void *key );
     void *removematch( void *key );
@@ -63,8 +62,8 @@ public:
     //	Misc. llist functions
     int putontop( void *data );  //  oposite of push
     void remove( void *data );   //  removes *data from the list if it's there
-    void *findn( int n ); //  returns nth element if found or NULL if not
-    void *operator[](int n)  //  returns nth element if found or NULL if not
+    void *findn( int n ); //  returns nth element if found or 0 if not
+    void *operator[](int n)  //  returns nth element if found or 0 if not
         { return findn(n); }
     int index( void *data );  //  returns the index of *data or 0 if not there
 
@@ -75,7 +74,7 @@ public:
     //  to the next element in the list.	decc sets it to the previous
     //  element in the list.  findc returns a pointer to the element
     //  curr_ is "currently" pointing to. If n is not valid for the list
-    //  curr_ is set to NULL.
+    //  curr_ is set to 0.
     void setc( int n, int which = 0 );
     void incc( int which = 0 );
     void decc( int which = 0 );
@@ -90,7 +89,7 @@ protected:
 
     class LNode {
     public:
-        LNode( void *data = NULL );
+        LNode( void *data = 0 );
 
         void *data_;
         LNode *next_;
