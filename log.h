@@ -98,7 +98,7 @@ private:
                        // to set the stream to default always
 };
 
-std::ostream &operator<<(std::ostream &os, const ssave &fs){
+inline std::ostream &operator<<(std::ostream &os, const ssave &fs){
     fs.sets(os);
     return os;
 }

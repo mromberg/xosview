@@ -72,7 +72,7 @@ void LoadMeter::checkevent( void ){
         if ( old_cpu_speed_ != cur_cpu_speed_ ) {
             // update the legend:
             std::ostringstream legnd;
-            XOSDEBUG("SPEED: %d\n",cur_cpu_speed_);
+            logDebug << "SPEED: " << cur_cpu_speed_ << std::endl;
             legnd << "PROCS/MIN" << " " << cur_cpu_speed_ << " MHz"<< std::ends;
             legend( legnd.str().c_str() );
             if (dolegends_) {
@@ -130,7 +130,8 @@ void LoadMeter::getloadinfo( void ){
         total_ = 1.0;
 
     fields_[1] = (float) (total_ - fields_[0]);
-    XOSDEBUG("loadMeter: %f, %f, %f\n", fields_[0], fields_[1], total_);
+    logDebug << "loadMeter: " << fields_[0] << ", " << fields_[1] << ", "
+             << total_ << std::endl;
     setUsed(fields_[0], (float) 1.0);
 }
 

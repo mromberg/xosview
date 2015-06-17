@@ -10,6 +10,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>
+#include <iomanip>
 
 static const char MEMFILENAME[] = "/proc/meminfo";
 static const char MEMSTATFNAME[] = "/proc/memstat";
@@ -50,11 +51,14 @@ void MemMeter::checkResources( void ){
 void MemMeter::checkevent( void ){
     getmeminfo();
     /* for debugging (see below) */
-    XOSDEBUG("t %4.1f used %4.1f shr %4.1f buf %4.1f cache %4.1f free %4.1f\n",
-      total_/1024.0/1024.0,
-      fields_[0]/1024.0/1024.0, fields_[1]/1024.0/1024.0,
-      fields_[2]/1024.0/1024.0, fields_[3]/1024.0/1024.0,
-      fields_[4]/1024.0/1024.0);
+    logDebug << std::setprecision(1)
+             << "t " << std::setw(4) << total_/1024.0/1024.0 << " "
+             << "used " << std::setw(4) << fields_[0]/1024.0/1024.0 << " "
+             << "shr " << std::setw(4) << fields_[1]/1024.0/1024.0 << " "
+             << "buf " << std::setw(4) << fields_[2]/1024.0/1024.0 << " "
+             << "cache " << std::setw(4) << fields_[3]/1024.0/1024.0 << " "
+             << "free " << std::setw(4) << fields_[4]/1024.0/1024.0
+             << std::endl;
 
     drawfields();
 }

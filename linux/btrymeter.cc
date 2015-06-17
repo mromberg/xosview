@@ -50,18 +50,21 @@ bool BtryMeter::has_apm( void ){
     int fd;
 
     if ( stat(APMFILENAME, &stbuf) != 0 ) {
-        XOSDEBUG("APM: stat failed: %d - not APM ?\n",errno);
+        logDebug << "APM: stat failed: " << errno << " - not APM ?"
+                 << std::endl;
         return false;
     }
     if ( S_ISREG(stbuf.st_mode) ) {
-        XOSDEBUG("apm: %s exists and is a file\n",APMFILENAME);
+        logDebug << "apm: " << APMFILENAME << " exists and is a file"
+                 << std::endl;
     } else {
-        XOSDEBUG("no APM file\n");
+        logDebug << "no APM file" << std::endl;
         return false;
     }
     fd=open(APMFILENAME,O_RDONLY);
     if ( fd < 0 ) {
-        XOSDEBUG("open failed on %s: with errno=%d\n",APMFILENAME,errno);
+        logDebug << "open failed on " << APMFILENAME
+                 << ": with errno=" << errno << std::endl;
         return false;
     } else
         close(fd); // good enough ...
@@ -78,13 +81,13 @@ bool BtryMeter::has_acpi( void ){
     struct stat stbuf;
 
     if ( stat(ACPIBATTERYDIR, &stbuf) != 0 ) {
-        XOSDEBUG("has_acpi(): stat failed: %d\n",errno);
+        logDebug << "has_acpi(): stat failed: " << errno << std::endl;
         return false;
     }
     if ( S_ISDIR(stbuf.st_mode) ) {
-        XOSDEBUG("exists and is a DIR.\n");
+        logDebug << "exists and is a DIR." << std::endl;
     } else {
-        XOSDEBUG("no ACPI dir\n");
+        logDebug << "no ACPI dir" << std::endl;
         return false;
     }
 
@@ -120,32 +123,32 @@ void BtryMeter::checkevent( void ){
 	switch ( apm_battery_state ) {
 
 	case 0: /* high (e.g. over 25% on my box) */
-            XOSDEBUG("battery_status HIGH\n");
+            logDebug << "battery_status HIGH" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryLeftColor"));
             legend("High AVAIL/USED");
             break;
 
 	case 1: /* low  ( e.g. under 25% on my box ) */
-            XOSDEBUG("battery_status LOW\n");
+            logDebug << "battery_status LOW" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryLowColor"));
             legend("LOW avail/used");
             break;
 
 	case 2: /* critical ( less than  5% on my box ) */
-            XOSDEBUG("battery_status CRITICAL\n");
+            logDebug << "battery_status CRITICAL" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryCritColor"));
             legend( "Crit LOW/Used");
             break;
 
 	case 3: /* Charging */
-            XOSDEBUG("battery_status CHARGING\n");
+            logDebug << "battery_status CHARGING" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryChargeColor"));
             legend( "AC/Charging");
             break;
 
 	case 4: /* selected batt not present */
 		/* no idea how this state ever could happen with APM */
-            XOSDEBUG("battery_status not present\n");
+            logDebug << "battery_status not present" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryNoneColor"));
             legend( "Not Present/N.A.");
             break;
@@ -153,7 +156,7 @@ void BtryMeter::checkevent( void ){
 	case 255: /* unknown - do nothing - maybe not APM */
             // on my system this state comes if you pull both batteries
             // ( while on AC of course :-)) )
-            XOSDEBUG("apm battery_state not known\n");
+            logDebug << "apm battery_state not known" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryNoneColor"));
             legend( "Unknown/N.A.");
             break;
@@ -173,34 +176,35 @@ void BtryMeter::checkevent( void ){
     */
 
     if ( old_acpi_charge_state != acpi_charge_state ) {
-  	XOSDEBUG("ACPI: charge_state: old=%d, now=%d\n",
-          old_acpi_charge_state,acpi_charge_state);
+        logDebug << "ACPI: charge_state: "
+                 << "old=" << old_acpi_charge_state << ", "
+                 << "now=" << acpi_charge_state << std::endl;
 
 	/* so let's eval the apm_battery_state in some more detail: */
 
 	switch ( acpi_charge_state ) {
 	case 0:  // charged
-            XOSDEBUG("battery_status CHARGED\n");
+            logDebug << "battery_status CHARGED" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryFullColor"));
             legend( "CHARGED/FULL");
             break;
 	case -1: // discharging
-            XOSDEBUG("battery_status DISCHARGING\n");
+            logDebug << "battery_status DISCHARGING" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryLeftColor"));
             legend( "AVAIL/USED");
             break;
 	case -2: // discharging - below alarm
-            XOSDEBUG("battery_status ALARM DISCHARGING\n");
+            logDebug << "battery_status ALARM DISCHARGING" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryCritColor"));
             legend( "LOW/ALARM");
             break;
 	case -3: // not present
-            XOSDEBUG("battery_status NOT PRESENT\n");
+            logDebug << "battery_status NOT PRESENT" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryNoneColor"));
             legend( "NONE/NONE");
             break;
 	case 1:  // charging
-            XOSDEBUG("battery_status CHARGING\n");
+            logDebug << "battery_status CHARGING" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryChargeColor"));
             legend( "AC/Charging");
             break;
@@ -281,7 +285,7 @@ bool BtryMeter::getapminfo( void ){
 */
 
     if ( !loadinfo.good() ){
-        XOSDEBUG("Can not open file : %s\n", APMFILENAME);
+        logDebug << "Can not open file : " <<  APMFILENAME << std::endl;
         return false;
     }
 
@@ -330,7 +334,8 @@ bool BtryMeter::getacpiinfo( void ){
 
     DIR *dir = opendir(ACPIBATTERYDIR);
     if (dir==NULL) {
-        XOSDEBUG("ACPI: Cannot open directory : %s\n", ACPIBATTERYDIR);
+        logDebug << "ACPI: Cannot open directory : " <<  ACPIBATTERYDIR
+                 << std::endl;
         return false;
     }
 
@@ -355,7 +360,7 @@ bool BtryMeter::getacpiinfo( void ){
 
         std::string abs_battery_name = abs_battery_dir + "/" + dirent->d_name;
 
-        XOSDEBUG("ACPI Batt: %s\n", dirent->d_name);
+        logDebug << "ACPI Batt: " <<  dirent->d_name << std::endl;
 
         // still can happen that it's not present:
         if ( battery_present( abs_battery_name + "/info" ) ) {
@@ -430,7 +435,7 @@ bool BtryMeter::battery_present(const std::string& filename) {
             if ( argval == "yes" )
 		return true;
     }
-    XOSDEBUG("batt %s not present\n",filename.c_str() );
+    logDebug << "batt " << filename << " not present" << std::endl;
     return false;
 }
 

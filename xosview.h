@@ -10,6 +10,7 @@
 #include <string>
 #include "xwin.h"
 #include "Xrm.h"  //  For Xrm resource manager class.
+#include "log.h"
 
 
 /*  Take at most n samples per second (default of 10)  */
@@ -81,9 +82,4 @@ private:
     bool _ispartiallyvisible;
 };
 
-/*  Make XOSDEBUG("This is a format string.  %d %d\n", a, b); look
- *  like if (0) printf("This ..."...);.  Change the 0 to a 1, to
- *  enable these debugging outputs.
- */
-#define XOSDEBUG	if (0) printf
 #endif

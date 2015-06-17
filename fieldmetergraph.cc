@@ -127,13 +127,15 @@ void FieldMeterGraph::drawfields( int manditory ){
         if (firstTimeDrawn_ &&
           parent_->isAtLeastPartiallyVisible() &&
           parent_->hasBeenExposedAtLeastOnce()) {
-            XOSDEBUG("True exposure! %d\n", firstTimeDrawn_);
+            logDebug << "True exposure! " << firstTimeDrawn_ << std::endl;
             firstTimeDrawn_ = 0;
         }
         else
-            XOSDEBUG("Full draw:  isAtLeastPart %d, hasBeenExposed %d\n",
-              parent_->isAtLeastPartiallyVisible(),
-              parent_->hasBeenExposedAtLeastOnce());
+            logDebug << "Full draw:  isAtLeastPart "
+                     << parent_->isAtLeastPartiallyVisible()
+                     << ", hasBeenExposed "
+                     << parent_->hasBeenExposedAtLeastOnce() << std::endl;
+
         // need to draw entire graph on expose event
         for( i = 0; i < graphNumCols_; i++ ) {
             drawBar( i );

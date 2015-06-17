@@ -138,6 +138,6 @@ void RAIDMeter::getRAIDstate( void ){
         raidfile.getline(l,256);
     }while((raidparse(l)==0) && (!raidfile.eof()));
 
-    XOSDEBUG("md0 %s %s %s resync: %s\n",type.c_str(),state.c_str(),
-      working_map.c_str(),resync_state.c_str());
+    logDebug << "md0 " << type << " " << state << " " << working_map << " "
+             << "resync: " << resync_state << std::endl;
 }

@@ -265,7 +265,7 @@ XOSView::~XOSView( void ){
 }
 
 void XOSView::reallydraw( void ){
-    XOSDEBUG("Doing draw.\n");
+    logDebug << "Doing draw." << std::endl;
     clear();
     MeterNode *tmp = meters_;
 
@@ -283,9 +283,9 @@ void XOSView::draw ( void ) {
         reallydraw();
     else {
         if (!hasBeenExposedAtLeastOnce()) {
-            XOSDEBUG("Skipping draw:  not yet exposed.\n");
+            logDebug << "Skipping draw:  not yet exposed." << std::endl;
         } else if (!isAtLeastPartiallyVisible()) {
-            XOSDEBUG("Skipping draw:  not visible.\n");
+            logDebug << "Skipping draw:  not visible." << std::endl;
         }
     }
 }
@@ -387,7 +387,7 @@ void XOSView::exposeEvent( XExposeEvent &event ) {
         expose_flag_++;
         draw();
     }
-    XOSDEBUG("Got expose event.\n");
+    logDebug << "Got expose event." << std::endl;
     if (!exposed_once_flag_) {
         exposed_once_flag_ = 1;
         draw();
@@ -413,8 +413,8 @@ void XOSView::visibilityEvent( XVisibilityEvent &event ){
     else {
         _isvisible = true;
     }
-    XOSDEBUG("Got visibility event; %d and %d\n",
-      _ispartiallyvisible, _isvisible);
+    logDebug << "Got visibility event; " << _ispartiallyvisible
+             << " and " << _isvisible << std::endl;
 }
 
 void XOSView::unmapEvent( XUnmapEvent & ){
