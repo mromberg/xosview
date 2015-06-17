@@ -77,13 +77,18 @@ void CPUMeter::getcputime( void ){
           >>cputime_[cpuindex_][6]
           >>cputime_[cpuindex_][7];
 
+    static int cputime_to_field[8] = { 0, 1, 2, 6, 5, 4, 3, 7 };
     int oldindex = (cpuindex_+1)%2;
     for ( int i = 0 ; i < 8 ; i++ ){
-        static int cputime_to_field[8] = { 0, 1, 2, 6, 5, 4, 3, 7 };
         int field = cputime_to_field[i];
         fields_[field] = cputime_[cpuindex_][i] - cputime_[oldindex][i];
         total_ += fields_[field];
     }
+
+    // funny things happen after sleep/hibernate
+    if (total_ < 0)
+        for (int i = 0 ; i < 8 ; i++)
+            total_ = fields_[i] = 0;
 
     if (total_){
         setUsed (total_ - (fields_[5] + fields_[6] + fields_[7]), total_);
