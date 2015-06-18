@@ -102,8 +102,7 @@ XOSView::XOSView( const std::string &instName,
         addmeter(mm[i]);
 
     if (nummeters_ == 0) {
-        std::cerr << "No meters were enabled!  Exiting..." << std::endl;
-        exit (0);
+        logFatal << "No meters were enabled!  Exiting..." << std::endl;
     }
 
     //  Have the meters re-check the resources.
@@ -122,7 +121,7 @@ void XOSView::checkVersion(int argc, char *argv[]) const {
     for (int i = 0 ; i < argc ; i++)
         if ((util::tolower(argv[i]) == "-v")
           || (util::tolower(argv[i]) == "--version")) {
-            std::cerr << versionString << std::endl;
+            std::cout << versionString << std::endl;
             exit(0);
         }
 }
@@ -373,7 +372,7 @@ void XOSView::checkArgs (int argc, char** argv) const {
 #endif
             /*  Fall through to default/error case.  */
         default:
-            std::cerr << "Ignoring unknown option '" << argv[0] << "'.\n";
+            logEvent << "Ignoring unknown option '" << argv[0] << "'.\n";
             break;
         }
         argc--;

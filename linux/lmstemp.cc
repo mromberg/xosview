@@ -28,10 +28,10 @@ LmsTemp::LmsTemp( XOSView *parent, const std::string &filename,
     3, label, caption, 1, 1, 0 ) {
     if(!checksensors(1, PROC_SENSORS_24, filename)) {
 	if(!checksensors(0, PROC_SENSORS_26, filename)) {
-	    std::cerr <<"Can not find file : " <<PROC_SENSORS_24 <<"/*/"
-                      << filename
-		      << " or " <<PROC_SENSORS_26 <<"/*/device/" << filename
-		      << std::endl;
+	    logProblem << "Can not find file : " << PROC_SENSORS_24 << "/*/"
+                       << filename
+                       << " or " << PROC_SENSORS_26 << "/*/device/" << filename
+                       << std::endl;
 	    parent_->done(1);
 	}
     }
@@ -69,9 +69,10 @@ int  LmsTemp::checksensors(int isproc, const std::string &dir,
                 dirname += "/device";
             if(stat(dirname.c_str(), &buf)==0 && S_ISDIR(buf.st_mode)) {
                 d2=opendir(dirname.c_str());
-                if(!d2)
-                    std::cerr << "The directory " <<dirname
-                              <<"exists but cannot be read.\n";
+                if(!d2) {
+                    logProblem << "The directory " << dirname
+                               << "exists but cannot be read.\n";
+                }
                 else {
                     while((ent2=readdir(d2))) {
                         std::string e2dn(ent2->d_name);
@@ -150,7 +151,7 @@ void LmsTemp::getlmstemp( void ){
         std::ifstream file( _filename.c_str() );
 
         if ( !file ){
-            std::cerr <<"Can not open file : " <<file << std::endl;
+            logProblem << "Can not open file : " << file << std::endl;
             parent_->done(1);
             return;
         }
@@ -161,7 +162,7 @@ void LmsTemp::getlmstemp( void ){
         std::string f = _filename + "_input";
         std::ifstream file1(f.c_str());
         if ( !file1 ){
-            std::cerr <<"Can not open file : " <<file1 << std::endl;
+            logProblem << "Can not open file : " << file1 << std::endl;
             parent_->done(1);
             return;
         }
@@ -170,7 +171,7 @@ void LmsTemp::getlmstemp( void ){
         f = _filename + "_max";
         std::ifstream file2(f.c_str());
         if ( !file2 ){
-            std::cerr <<"Can not open file : " <<file2 << std::endl;
+            logProblem << "Can not open file : " << file2 << std::endl;
             parent_->done(1);
             return;
         }

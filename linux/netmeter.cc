@@ -61,9 +61,8 @@ NetMeter::~NetMeter( void ){
 void NetMeter::checkOSVersion(void) {
     std::ifstream ifs("/proc/sys/kernel/osrelease");
     if (!ifs) {
-        std::cerr <<"Can not open file : " << "/proc/sys/kernel/osrelease"
-                  << std::endl;
-        exit(1);
+        logFatal << "Can not open file : " << "/proc/sys/kernel/osrelease"
+                 << std::endl;
     }
 
     int major, minor;
@@ -116,8 +115,8 @@ void NetMeter::checkResources( void ){
 
     _ipsock = socket(AF_INET, SOCK_DGRAM, 0);
     if (_ipsock == -1) {
-        std::cerr <<"Can not open socket : " << util::strerror(errno)
-                  << std::endl;
+        logProblem << "Can not open socket : " << util::strerror(errno)
+                   << std::endl;
         parent_->done(1);
         return;
     }
@@ -134,7 +133,7 @@ void NetMeter::checkeventNew(void) {
     std::ifstream ifs(_netfilename);
 
     if (!ifs) {
-        std::cerr <<"Can not open file : " <<_netfilename << std::endl;
+        logProblem << "Can not open file : " << _netfilename << std::endl;
         parent_->done(1);
         return;
     }
@@ -224,7 +223,7 @@ void NetMeter::checkeventOld(void) {
 
     std::ifstream ifs(_netfilename);
     if (!ifs) {
-        std::cerr <<"Can not open file : " << _netfilename << std::endl;
+        logProblem << "Can not open file : " << _netfilename << std::endl;
         parent_->done(1);
         return;
     }
@@ -234,8 +233,8 @@ void NetMeter::checkeventOld(void) {
     ifc.ifc_len = sizeof(buff);
     ifc.ifc_buf = buff;
     if (ioctl(_ipsock, SIOCGIFCONF, &ifc) < 0) {
-        std::cerr <<"Can not get interface list : " << util::strerror( errno )
-                  << std::endl;
+        logProblem << "Can not get interface list : " << util::strerror( errno )
+                   << std::endl;
         parent_->done(1);
         return;
     }

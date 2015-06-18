@@ -117,11 +117,11 @@ void FieldMeterDecay::drawfields( int manditory ){
         twidth = (int) (0.5 + (width_ * (float) fields_[i]) / total_);
         decaytwidth = (int) (0.5 + width_ * decay_[i]);
         if (decaytwidth < 0.0) {
-            std::cerr << "Error:  FieldMeterDecay " << name()
-                      << ":  decaytwidth of ";
-            std::cerr << decaytwidth << ", width of " << width_
-                      << ", decay_[" << i;
-            std::cerr << "] of " << decay_[i] << std::endl;
+            logProblem << "FieldMeterDecay " << name()
+                       << ":  decaytwidth of " << std::endl
+                       << decaytwidth << ", width of " << width_
+                       << ", decay_[" << i << std::endl
+                       << "] of " << decay_[i] << std::endl;
         }
 
         //  However, due to rounding, we may have gone one
@@ -146,13 +146,15 @@ void FieldMeterDecay::drawfields( int manditory ){
         //    Let's correct for that here.
         if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
             if (!checkX(x, twidth))
-                std::cerr <<__FILE__ << ":" << __LINE__ <<std::endl;
+                logProblem << "!checkX(" << x << ", " << twidth << ")"
+                           << std::endl;
             parent_->drawFilledRectangle( x, y_, twidth, halfheight );
         }
 
         if ( manditory || (decay_[i] != lastDecayval_[i]) ){
             if (!checkX(decayx, decaytwidth))
-                std::cerr <<__FILE__ << ":" << __LINE__ <<std::endl;
+                logProblem << "!checkX(" << decayx << ", " << decaytwidth << ")"
+                           << std::endl;
             parent_->drawFilledRectangle( decayx, y_+halfheight+1,
               decaytwidth, height_ - halfheight-1);
         }

@@ -51,8 +51,7 @@ void IntMeter::checkResources( void ){
 float IntMeter::getLinuxVersion(void) {
     std::ifstream vfile(VERSIONFILE);
     if (!vfile) {
-        std::cerr << "Can not open file : " << VERSIONFILE << std::endl;
-        exit(1);
+        logFatal << "Can not open file : " << VERSIONFILE << std::endl;
     }
 
     std::string dump;
@@ -73,8 +72,7 @@ void IntMeter::getirqs( void ){
     int	idx;
 
     if ( !intfile ){
-        std::cerr <<"Can not open file : " <<INTFILE << std::endl;
-        exit( 1 );
+        logFatal << "Can not open file : " <<INTFILE << std::endl;
     }
 
     if (!_old)
@@ -146,8 +144,7 @@ void IntMeter::initirqcount( void ){
     int i, idx;
 
     if ( !intfile ){
-        std::cerr <<"Can not open file : " <<INTFILE << std::endl;
-        exit( 1 );
+        logFatal << "Can not open file : " << INTFILE << std::endl;
     }
 
     if (!_old) {

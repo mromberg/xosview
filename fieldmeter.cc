@@ -66,10 +66,9 @@ void FieldMeter::setUsedFormat ( const std::string &fmt ) {
     else if (lfmt == "float")
         print_ = FLOAT;
     else {
-        std::cerr << "Error:  could not parse format of " <<  fmt << "\n"
-                  << "  I expected one of 'percent', 'bytes', or 'float' \n"
-                  << "  (Case-insensitive)" << std::endl;
-        exit(1);
+        logFatal << "could not parse format of " <<  fmt << "\n"
+                 << "  I expected one of 'percent', 'bytes', or 'float' \n"
+                 << "  (Case-insensitive)" << std::endl;
     }
 }
 
@@ -82,9 +81,9 @@ void FieldMeter::setUsed (float val, float total) {
         else {
             if (!printedZeroTotalMesg_) {
                 printedZeroTotalMesg_ = 1;
-                std::cerr << "Warning: " << name() << " meter had a zero total "
-                          << "field!  Would have caused a div-by-zero "
-                          << "exception." << std::endl;
+                logProblem << name() << " meter had a zero total "
+                           << "field!  Would have caused a div-by-zero "
+                           << "exception." << std::endl;
             }
             used_ = 0.0;
         }
@@ -92,9 +91,8 @@ void FieldMeter::setUsed (float val, float total) {
     else if (print_ == AUTOSCALE)
         used_ = val;
     else {
-        std::cerr << "Error in " << name() << ":  I can't handle a "
-                  << "UsedType enum value of " << print_ << "!" << std::endl;
-        exit(1);
+        logFatal << "Error in " << name() << ":  I can't handle a "
+                 << "UsedType enum value of " << print_ << "!" << std::endl;
     }
 }
 
@@ -248,12 +246,12 @@ void FieldMeter::drawfields( int manditory ){
              *  message about no more warnings.  */
             numWarnings_ ++;
             if (numWarnings_ < 5)
-                std::cerr << "Warning:  meter " << name() <<  " had a negative "
-                          << "value of %f for field " << fields_[i]
-                          << std::endl;
+                logProblem << "meter " << name() <<  " had a negative "
+                           << "value of %f for field " << fields_[i]
+                           << std::endl;
             if (numWarnings_ == 5)
-                std::cerr << "Future warnings from the " << name() << " meter "
-                          << "will not be displayed." << std::endl;
+                logProblem << "Future warnings from the " << name() << " meter "
+                           << "will not be displayed." << std::endl;
         }
 
         twidth = (int) ((width_ * (float) fields_[i]) / total_);
@@ -298,15 +296,13 @@ void FieldMeter::setNumFields(int n){
 bool FieldMeter::checkX(int x, int width) const {
     if ((x < x_) || (x + width < x_)
       || (x > x_ + width_) || (x + width > x_ + width_)){
-        std::cerr << "FieldMeter::checkX() : bad horiz values for meter : "
-                  << name() << std::endl;
-
-        std::cerr <<"value "<<x<<", width "<<width<<", total_ = "
-                  <<total_<<std::endl;
+        logProblem << "FieldMeter::checkX() : bad horiz values for meter : "
+                   << name() << std::endl
+                   << "value " << x << ", width " << width << ", total_ = "
+                   << total_ << std::endl;
 
         for (unsigned int i = 0 ; i < numfields() ; i++)
-            std::cerr <<"fields_[" <<i <<"] = " <<fields_[i] <<",";
-        std::cerr <<std::endl;
+            logProblem << "fields_[" << i << "] = " << fields_[i] << std::endl;
 
         return false;
     }

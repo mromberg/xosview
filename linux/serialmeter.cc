@@ -67,9 +67,9 @@ void SerialMeter::checkResources( void ){
 
     _port = getPortBase(_device);
     if (!getport(_port + UART_LSR) || !getport(_port + UART_MSR)){
-        std::cerr << "SerialMeter::SerialMeter() : "
-                  << "xosview must be suid root to use the serial meter."
-                  << std::endl;
+        logProblem << "SerialMeter::SerialMeter() : "
+                   << "xosview must be suid root to use the serial meter."
+                   << std::endl;
         parent_->done(1);
     }
 }
@@ -130,15 +130,13 @@ unsigned short int SerialMeter::getPortBase(Device dev) const {
 
         // get the real serial port (code stolen from setserial 2.11)
         if ((fd = open(deviceFile[dev], O_RDONLY|O_NONBLOCK)) < 0) {
-            std::cerr << "SerialMeter::SerialMeter() : "
-                      << "failed to open " << deviceFile[dev] <<"." <<std::endl;
-            exit(1);
-    }
+            logFatal << "SerialMeter::SerialMeter() : "
+                     << "failed to open " << deviceFile[dev] <<"." <<std::endl;
+        }
         if (ioctl(fd, TIOCGSERIAL, &serinfo) < 0) {
-            std::cerr << "Failed to detect port base for " << deviceFile[dev]
-                      << std::endl;
             close(fd);
-            exit(1);
+            logFatal << "Failed to detect port base for " << deviceFile[dev]
+                     << std::endl;
         }
 
         close(fd);

@@ -87,8 +87,7 @@ std::vector<MemMeter::LineInfo> MemMeter::findLines(
     const std::vector<LineInfo> &tmplate, const std::string &fname){
     std::ifstream meminfo(fname.c_str());
     if (!meminfo){
-        std::cerr << "Can not open file : " << fname << std::endl;
-        exit(1);
+        logFatal << "Can not open file : " << fname << std::endl;
     }
 
     std::vector<LineInfo> rval(tmplate.size());
@@ -132,8 +131,7 @@ void MemMeter::getmemstat(const std::string &fname,
   std::vector<LineInfo> &infos){
     std::ifstream meminfo(fname.c_str());
     if (!meminfo){
-        std::cerr << "Can not open file : " << fname << std::endl;
-        exit(1);
+        logFatal << "Can not open file : " << fname << std::endl;
     }
 
     char buf[256];

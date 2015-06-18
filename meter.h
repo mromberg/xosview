@@ -33,9 +33,9 @@ public:
     void dousedlegends( int val ) { dousedlegends_ = val; }
     int requestevent( void ){
         if (priority_ == 0) {
-            std::cerr << "Warning:  meter " << name()
-                      << " had an invalid priority"
-                      << " of 0.  Resetting to 1..." << std::endl;
+            logBug << "meter " << name()
+                   << " had an invalid priority"
+                   << " of 0.  Resetting to 1..." << std::endl;
             priority_ = 1;
         }
         int rval = counter_ % priority_;

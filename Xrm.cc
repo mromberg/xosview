@@ -18,14 +18,14 @@
 #include "Xrm.h"
 #include "Xrmcommandline.h"
 #include "strutil.h"
+#include "log.h"
 
 extern char *defaultXResourceString;
 
 bool Xrm::_initialized = false;
 
 Xrm::Xrm(const std::string &instanceName, int argc, char **argv){
-    std::cerr << " Error:  This constructor is not supported yet." << std::endl;
-    exit (-1);
+    logFatal << " Error:  This constructor is not supported yet." << std::endl;
     _db = NULL;
     _class = _instance = NULLQUARK;
     getDisplayName(argc, argv);
@@ -106,9 +106,8 @@ void Xrm::loadAndMergeResources(int& argc, char** argv, Display* display){
         _initialized = true;
     }
     else {
-        std::cerr << "Error:  Xrm:loadAndMergeResources() called twice!"
-                  << std::endl;
-        exit (-1);
+        logFatal << "Xrm:loadAndMergeResources() called twice!"
+                 << std::endl;
     }
     //  This is ugly code.  According to X and Xt rules, many files need
     //  to be checked for resource settings.  Since we aren't (yet) using
@@ -232,9 +231,9 @@ inline std::ostream &operator<<(std::ostream &os, const XrmBinding &b){
     case XrmBindLoosely:
         return os << "*";
     default:
-        std::cerr <<"std::ostream operator<<(std::ostream &, "
-                  << "const XrmBinding &) : "
-                  <<"Unknown XrmBinding!";
+        logBug << "std::ostream operator<<(std::ostream &, "
+               << "const XrmBinding &) : "
+               << "Unknown XrmBinding!";
         return os;
     }
 
@@ -260,8 +259,6 @@ Bool Xrm::enumCB(XrmDatabase *, XrmBindingList bindings,
 
     std::ostream *os = (std::ostream *)closure;
     (void) type;  //  Avoid gcc warnings.
-
-    //std::cerr <<"type = " <<XrmQuarkToString(*type) <<std::endl;
 
     int i = 0;
     while (quarks[i] != NULLQUARK){

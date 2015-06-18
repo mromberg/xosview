@@ -82,8 +82,6 @@ void NFSDStats::checkevent(void) {
     std::ifstream ifs(_statfile);
 
     if (!ifs) {
-        // cerr <<"Can not open file : " <<_statfile <<endl;
-        // parent_->done(1);
         return;
     }
 
@@ -171,8 +169,6 @@ void NFSStats::checkevent(void) {
     std::ifstream ifs(_statfile);
 
     if (!ifs) {
-        // cerr <<"Can not open file : " <<_statfile <<endl;
-        // parent_->done(1);
         return;
     }
 

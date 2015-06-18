@@ -5,6 +5,7 @@
 #include "general.h"
 #include "xwin.h"
 #include "Xrm.h"
+#include "log.h"
 
 
 //-----------------------------------------------------------------------------
@@ -15,9 +16,8 @@ XWin::XWin() {
 
 XWin::XWin( int argc, char *argv[], int x, int y, int width, int height ) {
 
-    std::cerr << "This constructor call is not supported! (" << __FILE__
-              << ":" << __LINE__ << ")" << std::endl;
-    exit (-1);
+    logFatal << "This constructor call is not supported! (" << __FILE__
+             << ":" << __LINE__ << ")" << std::endl;
     //  FIXME BCG  This constructor needs to do much of the work of the above
     //  one.  Or, we need to drop this as a constructor.  As it is, it is
     //  VERY MUCH out of date.
@@ -128,8 +128,7 @@ void XWin::init( int argc, char **argv ){
     map();
     flush();
     if(XGetWindowAttributes(display_, window_, &attr_) == 0){
-        std::cerr <<"Error getting attributes of Main." <<std::endl;
-        exit(2);
+        logFatal << "Error getting attributes of Main." << std::endl;
     }
 
     //  Create stipple pixmaps.
@@ -147,9 +146,8 @@ void XWin::setFont( void ){
     std::string fontName = getResource("font");
 
     if ((font_ = XLoadQueryFont(display_, fontName.c_str())) == NULL){
-        std::cerr <<name_ <<": display " <<DisplayString(display_)
-                  <<" cannot load font " << fontName << std::endl;
-        exit(1);
+        logFatal << name_ << ": display " << DisplayString(display_)
+                 << " cannot load font " << fontName << std::endl;
     }
 }
 
@@ -157,8 +155,7 @@ void XWin::setHints( int argc, char *argv[] ){
     // Set up class hint
     XClassHint    *classhints;   //  Class hint for window manager
     if((classhints = XAllocClassHint()) == NULL){
-        std::cerr <<"Error allocating class hint!" <<std::endl;
-        exit(1);
+        logFatal << "Error allocating class hint!" << std::endl;
     }
     //  We have to cast away the const's.
     std::string cname = xrmptr_->className();
@@ -169,8 +166,7 @@ void XWin::setHints( int argc, char *argv[] ){
     // Set up the window manager hints
     XWMHints      *wmhints;      //  Hints for the window manager
     if((wmhints = XAllocWMHints()) == NULL){
-        std::cerr <<"Error allocating Window Manager hints!" <<std::endl;
-        exit(1);
+        logFatal << "Error allocating Window Manager hints!" << std::endl;
     }
     wmhints->flags = (InputHint|StateHint);
     wmhints->input = True;
@@ -179,12 +175,10 @@ void XWin::setHints( int argc, char *argv[] ){
     // Set up XTextProperty for window name and icon name
     char *np = const_cast<char *>(name_.c_str());
     if(XStringListToTextProperty(&np, 1, &title_) == 0){
-        std::cerr <<"Error creating XTextProperty!" <<std::endl;
-        exit(1);
+        logFatal << "Error creating XTextProperty!" << std::endl;
     }
     if(XStringListToTextProperty(&np, 1, &iconname_) == 0){
-        std::cerr <<"Error creating XTextProperty!" <<std::endl;
-        exit(1);
+        logFatal << "Error creating XTextProperty!" << std::endl;
     }
 
     XSetWMProperties(display_, window_, &title_, &iconname_, argv, argc,
@@ -203,8 +197,7 @@ void XWin::setHints( int argc, char *argv[] ){
 void XWin::openDisplay( void ){
     // Open connection to display selected by user
     if ((display_ = XOpenDisplay (display_name_.c_str())) == NULL) {
-        std::cerr <<"Can't open display named " << display_name_ <<std::endl;
-        exit(1);
+        logFatal << "Can't open display named " << display_name_ << std::endl;
     }
 
     colormap_ = DefaultColormap( display_, screen() );
@@ -238,29 +231,6 @@ int XWin::getPixmap(Pixmap *pixmap) {
     XWindowAttributes    root_att;
     XpmAttributes        pixmap_att;
 
-//	if (isResourceTrue("transparent"))
-//	{
-//		Atom act_type;
-//		int act_format;
-//		unsigned long nitems, bytes_after;
-//		unsigned char *prop = NULL;
-//
-//		if (XGetWindowProperty(display_, window_,
-//		                       XInternAtom (display_, "_XROOTPMAP_ID", True),
-//		                       0, 1, False, XA_PIXMAP, &act_type, &act_format,
-//		                       &nitems, &bytes_after, &prop) != Success)
-//		{
-//			cerr << "Unable to get root window pixmap" << endl;
-//			cerr << "Defaulting to blank" << endl;
-//			pixmap=NULL;
-//			return 0; // OOps
-//		}
-//
-//		pixmap = (Pixmap *) prop;
-//		XFree (prop);
-//		return 1;  // Good, got the pixmap of the root window
-//	}
-
     pixmap_file = (char*) getResourceOrUseDefault("pixmapName",NULL);
 
     if (pixmap_file) {
@@ -270,8 +240,9 @@ int XWin::getPixmap(Pixmap *pixmap) {
         pixmap_att.valuemask=XpmSize|XpmReturnPixels|XpmColormap|XpmCloseness;
         if(XpmReadFileToPixmap(display_,DefaultRootWindow(display_),
             pixmap_file, pixmap, NULL, &pixmap_att)) {
-            std::cerr << "Pixmap " << pixmap_file  << " not found" << std::endl;
-            std::cerr << "Defaulting to blank" << std::endl;
+            logProblem << "Pixmap " << pixmap_file  << " not found"
+                       << std::endl
+                       << "Defaulting to blank" << std::endl;
             pixmap=NULL;
             return 0; // OOps
         }
@@ -280,7 +251,7 @@ int XWin::getPixmap(Pixmap *pixmap) {
     return 0; // No file specified, none used
 #else
     (void) pixmap;
-    std::cerr << "Error:  getPixmap called, when Xpm is not enabled!\n" ;
+    logBug << "getPixmap called, when Xpm is not enabled!\n" ;
     return 0;
 #endif
 }
@@ -291,8 +262,7 @@ void XWin::getGeometry( void ){
     // Fill out a XsizeHints structure to inform the window manager
     // of desired size and location of main window.
     if((sizehints_ = XAllocSizeHints()) == NULL){
-        std::cerr <<"Error allocating size hints!" <<std::endl;
-        exit(1);
+        logFatal << "Error allocating size hints!" << std::endl;
     }
     sizehints_->flags = PSize;
     sizehints_->height = height_;
@@ -369,8 +339,8 @@ void XWin::checkevent( void ){
 
 #if 0
 void XWin::usage( void ){
-  //  FIXME  We need to update this.  BCG
-  std::cerr <<name_ <<" [-display name] [-geometry geom]" <<std::endl;
+    //  FIXME  We need to update this.  BCG
+    std::cout << name_ << " [-display name] [-geometry geom]" << std::endl;
 //    exit (1);
 }
 #endif
@@ -411,16 +381,15 @@ std::string XWin::getResource( const std::string &name ){
     if (retval.first)
         return retval.second;
     else {
-        std::cerr << "Error:  Couldn't find '" << name
-                  << "' resource in the resource database!\n";
-        exit (-1);
+        logFatal << "Couldn't find '" << name
+                 << "' resource in the resource database!\n";
         /*  Some compilers aren't smart enough to know that exit() exits.  */
         return '\0';
     }
 }
 
 void XWin::dumpResources( std::ostream &os ){
-    std::cerr << "Function not implemented!\n";  //BCG FIXME  Need to make this.
+    logProblem << "Function not implemented!\n";  //BCG FIXME Need to make this.
     (void) os;  //  Keep gcc happy.
 }
 
@@ -429,8 +398,8 @@ unsigned long XWin::allocColor( const std::string &name ){
 
     if ( XAllocNamedColor( display_, colormap(), name.c_str(), &closest,
         &exact ) == 0 )
-        std::cerr <<"XWin::allocColor() : failed to alloc : "
-                  << name <<std::endl;
+        logProblem << "XWin::allocColor() : failed to alloc : "
+                   << name << std::endl;
 
     return exact.pixel;
 }
@@ -526,8 +495,8 @@ XWin::Event::Event( XWin *parent, int event, EventCallBack callBack ){
         mask_ = ResizeRedirectMask;
         break;
     default:
-        std::cerr <<"XWin::Event::Event() : unknown event type : "
-                  << event_ <<std::endl;
+        logBug << "XWin::Event::Event() : unknown event type : "
+               << event_ << std::endl;
         mask_ = NoEventMask;
         break;
     }

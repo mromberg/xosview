@@ -79,8 +79,7 @@ void SwapMeter::getswapinfo( void ){
 void SwapMeter::getswapinfo( void ){
     std::ifstream meminfo( MEMFILENAME );
     if ( !meminfo ){
-        std::cerr <<"Cannot open file : " <<MEMFILENAME << std::endl;
-        exit( 1 );
+        logFatal << "Cannot open file : " << MEMFILENAME << std::endl;
     }
 
     total_ = fields_[0] = fields_[1] = 0;

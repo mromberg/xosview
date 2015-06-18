@@ -57,8 +57,7 @@ void CPUMeter::getcputime( void ){
     std::ifstream stats( STATFILENAME );
 
     if ( !stats ){
-        std::cerr <<"Can not open file : " <<STATFILENAME << std::endl;
-        exit( 1 );
+        logFatal << "Can not open file : " << STATFILENAME << std::endl;
     }
 
     // read until we are at the right line.
@@ -100,8 +99,7 @@ int CPUMeter::findLine(const std::string &cpuID){
     std::ifstream stats( STATFILENAME );
 
     if ( !stats ){
-        std::cerr <<"Can not open file : " <<STATFILENAME << std::endl;
-        exit( 1 );
+        logFatal << "Can not open file : " << STATFILENAME << std::endl;
     }
 
     int line = -1;
@@ -126,8 +124,7 @@ int CPUMeter::countCPUs(void){
     std::ifstream stats( STATFILENAME );
 
     if ( !stats ){
-        std::cerr <<"Can not open file : " <<STATFILENAME << std::endl;
-        exit( 1 );
+        logFatal << "Can not open file : " << STATFILENAME << std::endl;
     }
 
     int cpuCount = 0;
@@ -145,8 +142,7 @@ std::string CPUMeter::cpuStr(int num){
     std::ifstream stats( STATFILENAME );
 
     if ( !stats ){
-        std::cerr <<"Can not open file : " <<STATFILENAME << std::endl;
-        exit( 1 );
+        logFatal << "Can not open file : " << STATFILENAME << std::endl;
     }
 
     int cpuCount = 0;

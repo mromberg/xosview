@@ -1,4 +1,5 @@
 #include "strutil.h"
+#include "log.h"
 #include <algorithm>
 #include <iostream>
 #include <cerrno>
@@ -46,8 +47,8 @@ std::wstring s2ws(const std::string& s) {
     const size_t wn = std::mbsrtowcs(NULL, &cs, 0, NULL);
 
     if (wn == size_t(-1)) {
-        std::cerr << "Error in mbsrtowcs(): errno=" << errno
-                  << ", str=" << s << std::endl;
+        logBug << "Error in mbsrtowcs(): errno=" << errno
+               << ", str=" << s << std::endl;
         return L"";
     }
 
@@ -55,8 +56,8 @@ std::wstring s2ws(const std::string& s) {
     const size_t wn_again = std::mbsrtowcs(buf.data(), &cs, wn + 1, NULL);
 
     if (wn_again == size_t(-1)) {
-        std::cerr << "Error in mbsrtowcs(): errno=" << errno
-                  << ", str=" << s << std::endl;
+        logBug << "Error in mbsrtowcs(): errno=" << errno
+               << ", str=" << s << std::endl;
         return L"";
     }
 
@@ -71,7 +72,7 @@ std::string ws2s(const std::wstring &s) {
     const size_t wn = std::wcsrtombs(NULL, &cs, 0, NULL);
 
     if (wn == size_t(-1)) {
-        std::cerr << "Error in wcsrtombs(): errno=" << errno << std::endl;
+        logBug << "Error in wcsrtombs(): errno=" << errno << std::endl;
         return "";
     }
 
@@ -79,7 +80,7 @@ std::string ws2s(const std::wstring &s) {
     const size_t wn_again = std::wcsrtombs(buf.data(), &cs, wn + 1, NULL);
 
     if (wn_again == size_t(-1)) {
-        std::cerr << "Error in wcsrtombs(): errno=" << errno << std::endl;
+        logBug << "Error in wcsrtombs(): errno=" << errno << std::endl;
         return "";
     }
 

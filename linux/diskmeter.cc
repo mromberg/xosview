@@ -139,8 +139,7 @@ void DiskMeter::getvmdiskinfo(void) {
     unsigned long one, two;
 
     if ( !stats ) {
-        std::cerr <<"Can not open file : " << _statFileName << std::endl;
-        exit( 1 );
+        logFatal << "Can not open file : " << _statFileName << std::endl;
     }
 
 
@@ -172,8 +171,7 @@ void DiskMeter::getdiskinfo( void ) {
     std::ifstream stats(_statFileName);
 
     if ( !stats ) {
-        std::cerr <<"Can not open file : " << _statFileName << std::endl;
-        exit( 1 );
+        logFatal << "Can not open file : " << _statFileName << std::endl;
     }
 
     // Find the line with 'page'

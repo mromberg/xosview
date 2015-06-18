@@ -129,8 +129,7 @@ void RAIDMeter::getRAIDstate( void ){
     char l[256];
 
     if ( !raidfile ){
-        std::cerr <<"Can not open file : " <<RAIDFILE << std::endl;
-        exit( 1 );
+        logFatal << "Can not open file : " <<RAIDFILE << std::endl;
     }
 
     do{
