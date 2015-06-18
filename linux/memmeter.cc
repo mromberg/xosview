@@ -134,19 +134,18 @@ void MemMeter::getmemstat(const std::string &fname,
         logFatal << "Can not open file : " << fname << std::endl;
     }
 
-    char buf[256];
+    std::string buf;
 
     // Get the info from the "standard" meminfo file.
     int lineNum = 0;
     size_t inum = 0;
     while (!meminfo.eof()){
-        meminfo.getline(buf, 256);
+        std::getline(meminfo, buf);
         lineNum++;
         if (lineNum != infos[inum].line())
             continue;
 
-        std::string sline(buf, 256);
-        std::istringstream line(sline);
+        std::istringstream line(buf);
         unsigned long val;
         std::string ignore;
         line >> ignore >> val;

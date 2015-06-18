@@ -221,8 +221,9 @@ void XOSView::checkOverallResources() {
 std::string XOSView::winname( void ){
     char host[100];
     std::string hname("unknown");
-    if (gethostname( host, 99 ))
+    if (gethostname( host, 99 )) {
         logProblem << "gethostname() failed" << std::endl;
+    }
     else {
         host[99] = '\0';  // POSIX.1-2001 says truncated names not terminated
         hname = std::string(host);

@@ -80,7 +80,7 @@ void PageMeter::updateinfo(void) {
 
 void PageMeter::getvmpageinfo(void) {
     total_ = 0;
-    char buf[MAX_PROCSTAT_LENGTH];
+    std::string buf;
     std::ifstream stats(_statFileName);
     if (!stats) {
         logFatal << "Cannot open file : " << _statFileName << std::endl;
@@ -100,7 +100,7 @@ void PageMeter::getvmpageinfo(void) {
 
 void PageMeter::getpageinfo( void ){
     total_ = 0;
-    char buf[MAX_PROCSTAT_LENGTH];
+    std::string buf;
     std::ifstream stats(_statFileName);
 
     if ( !stats ){

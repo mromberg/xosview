@@ -126,15 +126,15 @@ int RAIDMeter::raidparse(const std::string &cp){
 
 void RAIDMeter::getRAIDstate( void ){
     std::ifstream raidfile( RAIDFILE );
-    char l[256];
+    std::string l;
 
     if ( !raidfile ){
         logFatal << "Can not open file : " <<RAIDFILE << std::endl;
     }
 
     do{
-        raidfile.getline(l,256);
-    }while((raidparse(l)==0) && (!raidfile.eof()));
+        std::getline(raidfile, l);
+    } while((raidparse(l)==0) && (!raidfile.eof()));
 
     logDebug << "md0 " << type << " " << state << " " << working_map << " "
              << "resync: " << resync_state << std::endl;

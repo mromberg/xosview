@@ -229,9 +229,9 @@ void NetMeter::checkeventOld(void) {
     }
 
     struct ifconf ifc;
-    char buff[1024];
-    ifc.ifc_len = sizeof(buff);
-    ifc.ifc_buf = buff;
+    std::vector<char> buff(1024);
+    ifc.ifc_len = buff.size();
+    ifc.ifc_buf = &buff[0];
     if (ioctl(_ipsock, SIOCGIFCONF, &ifc) < 0) {
         logProblem << "Can not get interface list : " << util::strerror( errno )
                    << std::endl;

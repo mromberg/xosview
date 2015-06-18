@@ -290,7 +290,7 @@ bool BtryMeter::getapminfo( void ){
     }
 
     int battery_status=0xff; // assume unknown as default
-    char buff[256];
+    std::string buff;
 
     loadinfo >> buff >> buff >> buff >> buff >> std::hex
              >> battery_status >> buff >> fields_[0];
