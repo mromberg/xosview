@@ -120,18 +120,22 @@ int CPUMeter::findLine(const std::string &cpuID){
 // http://www-isia.cma.fr/~forissie/smp_kernel_patch/
 // If it finds that this patch has been applied to the current kernel
 // then returns the number of cpus that are on this machine.
-int CPUMeter::countCPUs(void){
-    std::ifstream stats( STATFILENAME );
+size_t CPUMeter::countCPUs(void){
+    static size_t cpuCount = 0;
+    static bool first = true;
 
-    if ( !stats ){
-        logFatal << "Can not open file : " << STATFILENAME << std::endl;
+    if (first) {
+        first = false;
+        std::ifstream stats( STATFILENAME );
+
+        if ( !stats )
+            logFatal << "Can not open file : " << STATFILENAME << std::endl;
+
+        std::string buf;
+        while (getline(stats, buf))
+            if ((buf.substr(0, 3) == "cpu") && buf[3] != ' ')
+                cpuCount++;
     }
-
-    int cpuCount = 0;
-    std::string buf;
-    while (getline(stats, buf))
-        if ((buf.substr(0, 3) == "cpu") && buf[3] != ' ')
-            cpuCount++;
 
     return cpuCount;
 }

@@ -19,7 +19,7 @@ public:
 
     void checkResources(void);
 
-    static int countCPUs(void);
+    static size_t countCPUs(void);
     static std::string cpuStr(int num);
 protected:
     int _lineNum;
