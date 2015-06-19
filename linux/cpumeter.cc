@@ -140,30 +140,8 @@ size_t CPUMeter::countCPUs(void){
     return cpuCount;
 }
 
-std::string CPUMeter::cpuStr(int num){
-    std::string buffer;
-    std::ostringstream str;
-    std::ifstream stats( STATFILENAME );
-
-    if ( !stats ){
-        logFatal << "Can not open file : " << STATFILENAME << std::endl;
-    }
-
-    int cpuCount = 0;
-    std::string buf;
-    while ( cpuCount<num && getline(stats, buf) )
-        if ((buf.substr(0, 3) == "cpu") && buf[3] != ' ')
-            cpuCount++;
-
-    if( cpuCount != num ){
-        return "";
-    }
-
-    int n = buf.find (" ");
-    if( n > 31 )
-        n=31;
-
-    buffer = buf.substr(0, n);
-
-    return buffer;
+std::string CPUMeter::cpuStr(size_t num){
+    if (CPUMeter::countCPUs() <= 1)
+        return "cpu";
+    return std::string("cpu") + util::repr(num-1);
 }

@@ -20,6 +20,8 @@ public:
 
 private:
     XOSView *_xos;
+
+    void cpuFactory(void);
 };
 
 #endif

@@ -20,7 +20,7 @@ public:
     void checkResources(void);
 
     static size_t countCPUs(void);
-    static std::string cpuStr(int num);
+    static std::string cpuStr(size_t num);
 protected:
     int _lineNum;
     long long cputime_[2][9];

@@ -36,12 +36,9 @@ void MeterMaker::makeMeters(void){
         push(new LoadMeter(_xos));
 
     // Standard meters (usually added, but users could turn them off)
-    if (_xos->isResourceTrue("cpu")){
-        int cpuCount = CPUMeter::countCPUs();
-        int start = (cpuCount == 0) ? 0 : 1;
-        for (int i = start ; i <= cpuCount ; i++)
-            push(new CPUMeter(_xos, CPUMeter::cpuStr(i)));
-  }
+    if (_xos->isResourceTrue("cpu"))
+        cpuFactory();
+
     if (_xos->isResourceTrue("mem"))
         push(new MemMeter(_xos));
     if (_xos->isResourceTrue("disk"))
@@ -123,4 +120,12 @@ void MeterMaker::makeMeters(void){
             push(new LmsTemp(_xos, res, lab, caption));
         }
     }
+}
+
+
+void MeterMaker::cpuFactory(void) {
+    size_t cpuCount = CPUMeter::countCPUs();
+    size_t start = (cpuCount == 0) ? 0 : 1;
+    for (size_t i = start ; i <= cpuCount ; i++)
+        push(new CPUMeter(_xos, CPUMeter::cpuStr(i)));
 }
