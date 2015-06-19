@@ -63,18 +63,19 @@ xosview*gfxDecay:          False
 xosview*gfxGraph:          False
 xosview*gfxUsedFormat:	   autoscale
 
-! CPU Meter Resources
 
+! CPU Meter Resources
 xosview*cpu:                True
 xosview*cpuUserColor:       seagreen
 xosview*cpuNiceColor:       yellow
 xosview*cpuSystemColor:     orange
-xosview*cpuInterruptColor:  red
-xosview*cpuSInterruptColor: orange red
-xosview*cpuSoftIntColor:    red
 xosview*cpuWaitColor:       lightblue
-xosview*cpuFreeColor:       aquamarine
+xosview*cpuInterruptColor:  red
+xosview*cpuSoftIntColor:    red
 xosview*cpuStolenColor:     blue
+xosview*cpuGuestColor:      purple
+xosview*cpuNiceGuestColor:  green
+xosview*cpuFreeColor:       aquamarine
 xosview*cpuPriority:        1
 xosview*cpuDecay:           True
 xosview*cpuGraph:           False

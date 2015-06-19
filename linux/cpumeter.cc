@@ -5,6 +5,32 @@
 //  This file may be distributed under terms of the GPL
 //
 
+//  From the man page.  Listed here for reference.
+//         user
+//             (1) Time spent in user mode.
+//         nice
+//             (2) Time spent in user mode with low priority (nice).
+//         system
+//             (3) Time spent in system mode.
+//         idle
+//             (4) Time spent in the idle task.
+//         iowait (since Linux 2.5.41)
+//             (5) Time waiting for I/O to complete.
+//         irq (since Linux 2.6.0-test4)
+//             (6) Time servicing interrupts.
+//         softirq (since Linux 2.6.0-test4)
+//             (7) Time servicing softirqs.
+//         steal (since Linux 2.6.11)
+//             (8) Stolen time, which is the time spent in other
+//                 operating systems when running in a virtualized environment
+//         guest (since Linux 2.6.24)
+//             (9) Time spent running a virtual CPU for guest operating
+//                 systems under the control of the Linux kernel.
+//         guest_nice (since Linux 2.6.33)
+//             (10) Time spent running a niced guest (virtual CPU for guest
+//                  operating systems under the control of the Linux kernel).
+
+
 #include "cpumeter.h"
 #include "xosview.h"
 #include <fstream>
@@ -16,15 +42,13 @@
 static const char STATFILENAME[] = "/proc/stat";
 static const size_t MAX_PROCSTAT_LENGTH = 4096;
 
+
 CPUMeter::CPUMeter(XOSView *parent, unsigned int cpu)
-    : FieldMeterGraph( parent, 8, util::toupper(CPUMeter::cpuStr(cpu)),
-      "USR/NICE/SYS/SI/HI/WIO/FREE/ST" ), cpuindex_(0), _cpu(cpu) {
-
-    for ( unsigned int i = 0 ; i < 2 ; i++ )
-        for ( unsigned int j = 0 ; j < 8 ; j++ )
-            cputime_[i][j] = 0;
-
+    : FieldMeterGraph( parent, 10, util::toupper(CPUMeter::cpuStr(cpu)),
+      "USR/NI/SYS/IO/I/SI/ST/GST/NGST/IDL"), _cpu(cpu) {
+    _oldStats.resize(numfields());
     _lineNum = findLine();
+    getStats(_oldStats);
 }
 
 CPUMeter::~CPUMeter( void ){
@@ -36,11 +60,14 @@ void CPUMeter::checkResources( void ){
     setfieldcolor( 0, parent_->getResource( "cpuUserColor" ) );
     setfieldcolor( 1, parent_->getResource( "cpuNiceColor" ) );
     setfieldcolor( 2, parent_->getResource( "cpuSystemColor" ) );
-    setfieldcolor( 3, parent_->getResource( "cpuSInterruptColor" ) );
+    setfieldcolor( 3, parent_->getResource( "cpuWaitColor" ) );
     setfieldcolor( 4, parent_->getResource( "cpuInterruptColor" ) );
-    setfieldcolor( 5, parent_->getResource( "cpuWaitColor" ) );
-    setfieldcolor( 6, parent_->getResource( "cpuFreeColor" ) );
-    setfieldcolor( 7, parent_->getResource( "cpuStolenColor" ) );
+    setfieldcolor( 5, parent_->getResource( "cpuSoftIntColor" ) );
+    setfieldcolor( 6, parent_->getResource( "cpuStolenColor" ) );
+    setfieldcolor( 7, parent_->getResource( "cpuGuestColor" ) );
+    setfieldcolor( 8, parent_->getResource( "cpuNiceGuestColor" ) );
+    setfieldcolor( 9, parent_->getResource( "cpuFreeColor" ) );
+
     priority_ = util::stoi (parent_->getResource( "cpuPriority" ));
     dodecay_ = parent_->isResourceTrue( "cpuDecay" );
     useGraph_ = parent_->isResourceTrue( "cpuGraph" );
@@ -53,46 +80,34 @@ void CPUMeter::checkevent( void ){
 }
 
 void CPUMeter::getcputime( void ){
+    std::vector<unsigned long long> cstats(numfields(), 0);
+    getStats(cstats);
+
     total_ = 0;
-    std::string tmp;
-    std::ifstream stats( STATFILENAME );
+    float used = 0;          // for setUsed
+    unsigned int sindex = 0; // index into cstats
+    float idle = 0;          // temp storage for idle field
 
-    if ( !stats ){
-        logFatal << "Can not open file : " << STATFILENAME << std::endl;
+    for (unsigned int i = 0 ; i < numfields() - 1; i++) {
+        if (sindex == 3) { // idle field
+            idle = cstats[sindex] - _oldStats[sindex]; // save for later
+            total_ += idle;
+            sindex++;  // offset
+        }
+
+        fields_[i] = cstats[sindex] - _oldStats[sindex];
+        total_ += fields_[i];
+        used += fields_[i];
+
+        sindex++; // normal move ahead
     }
+    fields_[numfields()-1] = idle;  // fill in the idle
 
-    // read until we are at the right line.
-    for (unsigned int i = 0 ; i < _lineNum ; i++) {
-        if (stats.eof())
-            break;
-        getline(stats, tmp);
-    }
-
-    stats >>tmp >>cputime_[cpuindex_][0]
-          >>cputime_[cpuindex_][1]
-          >>cputime_[cpuindex_][2]
-          >>cputime_[cpuindex_][3]
-          >>cputime_[cpuindex_][4]
-          >>cputime_[cpuindex_][5]
-          >>cputime_[cpuindex_][6]
-          >>cputime_[cpuindex_][7];
-
-    static int cputime_to_field[8] = { 0, 1, 2, 6, 5, 4, 3, 7 };
-    int oldindex = (cpuindex_+1)%2;
-    for ( int i = 0 ; i < 8 ; i++ ){
-        int field = cputime_to_field[i];
-        fields_[field] = cputime_[cpuindex_][i] - cputime_[oldindex][i];
-        total_ += fields_[field];
-    }
-
-    // funny things happen after sleep/hibernate
-    if (total_ < 0)
-        for (int i = 0 ; i < 8 ; i++)
-            total_ = fields_[i] = 0;
+    _oldStats = cstats;
 
     if (total_){
-        setUsed (total_ - (fields_[5] + fields_[6] + fields_[7]), total_);
-        cpuindex_ = (cpuindex_ + 1) % 2;
+        setUsed(used, total_);
+        //setUsed (total_ - (fields_[5] + fields_[6] + fields_[7]), total_);
     }
 }
 
@@ -149,4 +164,27 @@ std::string CPUMeter::cpuStr(size_t num){
     if (num == 0)  // The cumulative meter
         return "cpu";
     return std::string("cpu") + util::repr(num-1);
+}
+
+void CPUMeter::getStats(std::vector<unsigned long long> &v) const {
+    std::ifstream stats( STATFILENAME );
+    if ( !stats )
+        logFatal << "Can not open file : " << STATFILENAME << std::endl;
+
+    std::string tmp;
+
+    // read until we are at the right line.
+    for (unsigned int i = 0 ; i < _lineNum ; i++) {
+        if (stats.eof())
+            break;
+        getline(stats, tmp);
+    }
+
+    // FIXME: need to stop if vals aren't there.
+    stats >> tmp;
+    for (size_t i = 0 ; i < v.size() ; i++)
+        stats >> v[i];
+
+    if (!stats)
+        logBug << "error parsing: " << STATFILENAME << std::endl;
 }

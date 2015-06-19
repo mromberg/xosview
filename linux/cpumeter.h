@@ -23,12 +23,12 @@ public:
     static std::string cpuStr(size_t num);
 protected:
     size_t _lineNum;
-    long long cputime_[2][9];
-    int cpuindex_;
+    std::vector<unsigned long long> _oldStats;
     unsigned int _cpu;
 
     void getcputime(void);
     size_t findLine(void);
+    void getStats(std::vector<unsigned long long> &stats) const;
 private:
 };
 

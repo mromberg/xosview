@@ -125,7 +125,8 @@ an abbreviation for all three of the free BSD operating systems
    all platforms  :  load
 
 \fBCPU Usage\fP
-   Linux  : user | nice | system | si | hi | wio | idle | st
+   Linux  : user | nice | system | iowat | irq | softirq |
+            stolen | guest | nice guest | idle
    *BSD   : user | nice | system | interrupt | idle
    IRIX   : user | system | interrupt | wait | idle
    HPUX   : user | nice | system | interrupt | idle
@@ -503,11 +504,16 @@ SMP machines, the resource cpuFormat decides which meters are
 created for multiple CPUs.
 .RE
 
-.\"  cpuUserColor, cpuNiceColor, cpuSystemColor, cpuInterruptColor, cpuFreeColor
+.\"  cpuUserColor, cpuNiceColor, cpuSystemColor, cpuWaitColor, cpuInterruptColor, cpuSoftIntColor, cpuStolenColor, cpuGuestColor, cpuNiceGuestColor, cpuFreeColor
 .cc cpu User "cpu user time"
 .cc cpu Nice "cpu nice time"
 .cc cpu System "cpu system time"
-.cc cpu Interrupt "cpu interrupt time"
+.cc cpu Wait "cpu IO wait time"
+.cc cpu Interrupt "cpu IRQ time"
+.cc cpu SoftInt   "cpu soft IRQ time"
+.cc cpu Stolen    "cpu time spent in host OS"
+.cc cpu Guest     "cpu time spent on guest cpu"
+.cc cpu NiceGuest  "cpu time spent on niced guest cpu"
 .cc cpu Free "cpu idle time"
 
 .\"  Priority, decay, usedFormat resources:
