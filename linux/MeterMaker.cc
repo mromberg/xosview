@@ -125,7 +125,30 @@ void MeterMaker::makeMeters(void){
 
 void MeterMaker::cpuFactory(void) {
     size_t cpuCount = CPUMeter::countCPUs();
-    size_t start = (cpuCount == 0) ? 0 : 1;
-    for (size_t i = start ; i <= cpuCount ; i++)
-        push(new CPUMeter(_xos, CPUMeter::cpuStr(i)));
+    size_t start = 0, end = 0;
+
+    // check the cpuFormat resource if multi-procesor system
+    if (cpuCount > 1) {
+        std::string format(_xos->getResource("cpuFormat"));
+        logDebug << "cpuFormat: " << format << std::endl;
+        if (format == "single") // single meter for all cpus
+            end = 0;
+        else if (format == "all"){ // seperate but no cumulative
+            start = 1;
+            end = cpuCount;
+        }
+        else if (format == "both") // seperate + cumulative
+            end = cpuCount;
+        else if (format == "auto") // if(cpuCount==1) single else both
+            end = cpuCount;
+        else {
+            logProblem << "Unknown cpuFormat: " << format << ".  "
+                       << "Using auto" << std::endl;
+            end = cpuCount;
+        }
+    }
+    logDebug << "start=" << start << ", end=" << end << std::endl;
+
+    for (size_t i = start ; i <= end ; i++)
+        push(new CPUMeter(_xos, i));
 }

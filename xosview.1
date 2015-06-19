@@ -125,7 +125,7 @@ an abbreviation for all three of the free BSD operating systems
    all platforms  :  load
 
 \fBCPU Usage\fP
-   Linux  : user | nice | system | idle
+   Linux  : user | nice | system | si | hi | wio | idle | st
    *BSD   : user | nice | system | interrupt | idle
    IRIX   : user | system | interrupt | wait | idle
    HPUX   : user | nice | system | interrupt | idle
@@ -498,10 +498,8 @@ Display the current CPU speed in the load meter.
 
 xosview*cpu: (True or False)
 .RS
-If True then xosview will display a cpu meter.  On linux SMP machines this
-will cause a seperate meter to be displayed for each cpu if Jerome Forissier's
-kernel patch has been applied.  See the 'README.linux' file for more
-details. On IRIX 6.5, the resource cpuFormat decides which meters are
+If True then xosview will display a cpu meter.  On linux or IRIX 6.5
+SMP machines, the resource cpuFormat decides which meters are
 created for multiple CPUs.
 .RE
 
@@ -520,7 +518,7 @@ created for multiple CPUs.
 
 xosview*cpuFormat: (single, all, both or auto)
 .RS
-IRIX only.
+Linux and IRIX only.
 .RE
 .RS
 If single, only a cumulative meter for all CPU is created. All creates a

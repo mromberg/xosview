@@ -11,7 +11,7 @@
 
 class CPUMeter : public FieldMeterGraph {
 public:
-    CPUMeter(XOSView *parent, const std::string &cpuID = "cpu");
+    CPUMeter(XOSView *parent, unsigned int cpu=0);
     ~CPUMeter(void);
 
     std::string name(void) const { return "CPUMeter"; }
@@ -22,12 +22,13 @@ public:
     static size_t countCPUs(void);
     static std::string cpuStr(size_t num);
 protected:
-    int _lineNum;
+    size_t _lineNum;
     long long cputime_[2][9];
     int cpuindex_;
+    unsigned int _cpu;
 
     void getcputime(void);
-    int findLine(const std::string &cpuID);
+    size_t findLine(void);
 private:
 };
 

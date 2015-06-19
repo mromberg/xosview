@@ -16,14 +16,15 @@
 static const char STATFILENAME[] = "/proc/stat";
 static const size_t MAX_PROCSTAT_LENGTH = 4096;
 
-CPUMeter::CPUMeter(XOSView *parent, const std::string &cpuID)
-    : FieldMeterGraph( parent, 8, util::toupper(cpuID),
-      "USR/NICE/SYS/SI/HI/WIO/FREE/ST" ) {
-    _lineNum = findLine(cpuID);
-    for ( int i = 0 ; i < 2 ; i++ )
-        for ( int j = 0 ; j < 8 ; j++ )
+CPUMeter::CPUMeter(XOSView *parent, unsigned int cpu)
+    : FieldMeterGraph( parent, 8, util::toupper(CPUMeter::cpuStr(cpu)),
+      "USR/NICE/SYS/SI/HI/WIO/FREE/ST" ), cpuindex_(0), _cpu(cpu) {
+
+    for ( unsigned int i = 0 ; i < 2 ; i++ )
+        for ( unsigned int j = 0 ; j < 8 ; j++ )
             cputime_[i][j] = 0;
-    cpuindex_ = 0;
+
+    _lineNum = findLine();
 }
 
 CPUMeter::~CPUMeter( void ){
@@ -61,7 +62,7 @@ void CPUMeter::getcputime( void ){
     }
 
     // read until we are at the right line.
-    for (int i = 0 ; i < _lineNum ; i++) {
+    for (unsigned int i = 0 ; i < _lineNum ; i++) {
         if (stats.eof())
             break;
         getline(stats, tmp);
@@ -95,25 +96,29 @@ void CPUMeter::getcputime( void ){
     }
 }
 
-int CPUMeter::findLine(const std::string &cpuID){
-    std::ifstream stats( STATFILENAME );
+size_t CPUMeter::findLine(void) {
+    std::ifstream stats(STATFILENAME);
 
-    if ( !stats ){
+    if ( !stats )
         logFatal << "Can not open file : " << STATFILENAME << std::endl;
-    }
 
-    int line = -1;
+    std::string cpuID(CPUMeter::cpuStr(_cpu));
+    // make the ws part of the id to tell cpu1 from cpu11
+    cpuID += " ";
+    size_t line = 0;
     std::string buf;
     while (!stats.eof()){
         getline(stats, buf);
         if (!stats.eof()){
-            line++;
-            if ((cpuID == buf.substr(0, cpuID.size()))
-              && buf[cpuID.size()] == ' ')
+            if ((cpuID == buf.substr(0, cpuID.size()))) {
                 return line;
+            }
         }
+        line++;
     }
-    return -1;
+    logFatal << "Failed to find " << cpuID
+             << " in " << STATFILENAME << std::endl;
+    return 0;
 }
 
 // Checks for the SMP kernel patch by forissier@isia.cma.fr.
@@ -141,7 +146,7 @@ size_t CPUMeter::countCPUs(void){
 }
 
 std::string CPUMeter::cpuStr(size_t num){
-    if (CPUMeter::countCPUs() <= 1)
+    if (num == 0)  // The cumulative meter
         return "cpu";
     return std::string("cpu") + util::repr(num-1);
 }
