@@ -3,8 +3,6 @@
 # from an X resource file.
 #
 #
-# "$Id: defresources.awk,v 1.7 2014/01/14 18:57:57 romberg Exp $"
-#
 
 #
 # insert the "header" for defaultstring.cc
@@ -16,25 +14,17 @@ BEGIN {
   print "// using the awk program found in defresources.awk.";
   print "// This file will be rebuilt when Xdefaults is modified.";
   print "//";
-  print "// $Id: defresources.awk,v 1.7 2014/01/14 18:57:57 romberg Exp $";
-  print "//";
   print "//\n\n";
-  print "#include \"general.h\"\n";
-  print "\n";
-  print "CVSID(\"$Id: defresources.awk,v 1.7 2014/01/14 18:57:57 romberg Exp $\");\n";
-  #  By including all of the Xdefaults file below, we also pick up the
-  #    CVS Id from the Xdefaults file.
-  #  However, it'd be nice if some file had the CVS Id for the
-  #    general.h file.  Let's let this .cc file do that, since it doesn't
-  #    have an associated header file.
-  print "CVSID_DOT_H(GENERAL_H_CVSID);\n";
   printf "const char *defaultXResourceString = \"";
 }
 
 #
 # Echo each line of input (that is not a comment or empty) to stdout.
 #
-(! /^!/) && (NF != 0) { printf "%s\\n\\\n", $0 }
+(! /^!/) && (NF != 0) {
+    split($0, a, "!")
+    printf "%s\\n\\\n", a[1]
+}
 
 #
 # Insert the "tail" for defresources.cc
