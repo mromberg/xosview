@@ -37,7 +37,7 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
-#include <ctype.h>
+#include <limits>
 
 static const char STATFILENAME[] = "/proc/stat";
 static const size_t MAX_PROCSTAT_LENGTH = 4096;
@@ -171,19 +171,28 @@ void CPUMeter::getStats(std::vector<unsigned long long> &v) const {
     if ( !stats )
         logFatal << "Can not open file : " << STATFILENAME << std::endl;
 
-    std::string tmp;
-
     // read until we are at the right line.
     for (unsigned int i = 0 ; i < _lineNum ; i++) {
         if (stats.eof())
             break;
-        getline(stats, tmp);
+        stats.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
 
-    // FIXME: need to stop if vals aren't there.
+    // Parse the line for this cpu
+    std::string tmp; // The cpuID
     stats >> tmp;
-    for (size_t i = 0 ; i < v.size() ; i++)
+    for (size_t i = 0 ; i < v.size() ; i++) {
         stats >> v[i];
+        if (stats.fail()) {
+            // kernels up to 2.5.41 (not including) have usr/ni/sys/idle
+            // Die if we don't have all of these
+            if (i < 4)
+                logFatal << "error reading cpu stats from: " << STATFILENAME
+                         << std::endl;
+            // Stats added in 2.5.41 (and later).  Just use zero fields
+            break;
+        }
+    }
 
     if (!stats)
         logBug << "error parsing: " << STATFILENAME << std::endl;
