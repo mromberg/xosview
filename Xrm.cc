@@ -88,7 +88,7 @@ Xrm::opt Xrm::getResource(const std::string &rname) const{
     }
 
     if (val.addr)
-        return opt(true, val.addr);
+        return opt(true, util::strip(val.addr));
     return opt(false, "<(Xrm::uninitialized)>");
 }
 
