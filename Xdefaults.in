@@ -22,32 +22,149 @@
 xosview*captions:           True
 xosview*labels:             True
 xosview*transparent:        False
-xosview*meterLabelColor:    wheat
+xosview*meterLabelColor:    #EEEEEE
 xosview*usedlabels:         True
-xosview*usedLabelColor:     wheat
+xosview*usedLabelColor:     #EEEEEE
 xosview*borderwidth:        0
 xosview*font:               7x13bold
-xosview*background:         navy
-xosview*foreground:         wheat
+xosview*background:         #352E37
+xosview*foreground:         #FFFFFF
 xosview*enableStipple:	    False ! Change to true to try beta stipple support.
 xosview*samplesPerSec:      10    ! not yet supported
 xosview*graphNumCols:       128   ! number of samples shown in a graph
+
 
 ! Load Meter Resources
 ! We don't need to enable the Decay option, as it is already time-averaged.
 
 xosview*load:               True
-xosview*loadCritColor:      red
-xosview*loadWarnColor:      orange
-xosview*loadProcColor:      seagreen
-xosview*loadIdleColor:      aquamarine
+xosview*loadCritColor:      #FC842B
+xosview*loadWarnColor:      #F2EF44
+xosview*loadProcColor:      #56E67B
+xosview*loadIdleColor:      #03315E
 xosview*loadPriority:       20
-xosview*loadCritThreshold:  5
-xosview*loadWarnThreshold:  2
+xosview*loadWarnThreshold:  4     !  4 core system pretty common
+xosview*loadCritThreshold:  6
 xosview*loadDecay:          False
 xosview*loadGraph:          False
 xosview*loadUsedFormat:     float
 xosview*loadCpuSpeed:       True
+
+! CPU Meter Resources
+xosview*cpu:                True
+xosview*cpuUserColor:       #56E67B
+xosview*cpuNiceColor:       #F2EF44
+xosview*cpuSystemColor:     #FC842B
+xosview*cpuWaitColor:       #0ABBDA
+xosview*cpuInterruptColor:  #0DA707
+xosview*cpuSoftIntColor:    #AF0BEB
+xosview*cpuStolenColor:     #D31B4C
+xosview*cpuGuestColor:      #F90B53
+xosview*cpuNiceGuestColor:  #F9608E
+xosview*cpuFreeColor:       #03315E
+xosview*cpuPriority:        1
+xosview*cpuDecay:           True
+xosview*cpuGraph:           False
+xosview*cpuUsedFormat:	    percent
+xosview*cpuFormat:          auto   ! single, all, auto or both
+
+
+
+! Memory Meter Resources
+! Not all of these are used by a specific platform.
+
+xosview*mem:                True
+xosview*memKernelColor:     yellow
+xosview*memUsedColor:       #56E67B
+xosview*memSharedColor:     #56E67B
+xosview*memBufferColor:     #F2EF44
+xosview*memCacheColor:      #FC842B
+xosview*memFreeColor:       #03315E
+xosview*memTextColor:       blue
+xosview*memOtherColor:      orange
+xosview*memActiveColor:	    blue
+xosview*memInactiveColor:   lightblue
+xosview*memPriority:        10
+xosview*memDecay:           False
+xosview*memGraph:           False
+xosview*memUsedFormat:	    autoscale
+
+
+! Disk Meter Resources
+
+xosview*disk:		    True
+xosview*diskUsedColor:	    seagreen
+xosview*diskIdleColor:	    #03315E
+xosview*diskWriteColor:     #F2EF44
+xosview*diskReadColor:      #56E67B
+xosview*diskBandwidth:      30000000  ! 30MB/s should be reasonable today for
+                                      ! both IDE and SCSI
+xosview*diskPriority:	    10
+xosview*diskDecay:	    True
+xosview*diskUsedFormat:     autoscale
+xosview*diskGraph:	    False
+
+
+! Swap Meter Resources
+
+xosview*swap:               True
+xosview*swapUsedColor:      #56E67B
+xosview*swapFreeColor:      #03315E
+xosview*swapReservedColor:  yellow
+xosview*swapPriority:       10
+xosview*swapDecay:          False
+xosview*swapGraph:          False
+xosview*swapUsedFormat:	    autoscale
+
+
+! Page Meter Resources
+
+xosview*page:               True
+xosview*pageBandwidth:      120
+xosview*pageInColor:        #56E67B
+xosview*pageOutColor:       #F2EF44
+xosview*pageIdleColor:      #03315E
+xosview*pagePriority:       5
+xosview*pageDecay:          False
+xosview*pageGraph:          False
+xosview*pageUsedFormat:     autoscale
+
+! Network Meter Resources
+
+xosview*net:                 True
+!xosview*netBandwidth:       7500  ! for 64kbps ISDN
+!xosview*netBandwidth:       5000  ! for up to 57.6kbps modems
+!xosview*netBandwidth:       2000  ! for 28.8kbps modems (no compression)
+!                                  ! or  14.4kbps modems (with compression)
+xosview*netBandwidth:    1000000  ! for 10Mbit/s Ethernet (could be 1250000)
+!xosview*netBandwidth:   10000000  ! for 100Mbit/s Ethernet (could be 12500000)
+xosview*netInColor:         #56E67B
+xosview*netOutColor:        #F2EF44
+xosview*netBackground:      #03315E
+xosview*netPriority:        5
+xosview*netDecay:           True
+xosview*netGraph:           False
+xosview*netUsedFormat:	    autoscale
+xosview*netIface:           False
+
+! Interrupt Meter Resources
+
+xosview*interrupts:         True
+xosview*intOnColor:         #F2EF44
+xosview*intOffColor:        #03315E
+xosview*intPriority:	    1
+
+
+
+! Interrupt Rate Meter Resources
+xosview*irqrate:	True
+xosview*irqrateUsedColor:	red
+xosview*irqrateIdleColor:	black
+xosview*irqratePriority:	1
+xosview*irqrateUsedFormat:  autoscale
+xosview*irqrateDecay:	True
+xosview*irqrateGraph:	False
+
 
 ! Gfx Meter Resources ( Irix )
 
@@ -64,85 +181,17 @@ xosview*gfxGraph:          False
 xosview*gfxUsedFormat:	   autoscale
 
 
-! CPU Meter Resources
-xosview*cpu:                True
-xosview*cpuUserColor:       seagreen
-xosview*cpuNiceColor:       yellow
-xosview*cpuSystemColor:     orange
-xosview*cpuWaitColor:       lightblue
-xosview*cpuInterruptColor:  red
-xosview*cpuSoftIntColor:    red
-xosview*cpuStolenColor:     blue
-xosview*cpuGuestColor:      purple
-xosview*cpuNiceGuestColor:  green
-xosview*cpuFreeColor:       aquamarine
-xosview*cpuPriority:        1
-xosview*cpuDecay:           True
-xosview*cpuGraph:           False
-xosview*cpuUsedFormat:	    percent
-xosview*cpuFormat:          auto   ! single, all, auto or both
-
-! Memory Meter Resources
-! Not all of these are used by a specific platform.
-
-xosview*mem:                True
-xosview*memKernelColor:     yellow
-xosview*memUsedColor:       seagreen
-xosview*memSharedColor:     SkyBlue
-xosview*memBufferColor:     orange
-xosview*memCacheColor:      red
-xosview*memFreeColor:       aquamarine
-xosview*memTextColor:       blue
-xosview*memOtherColor:      orange
-xosview*memActiveColor:	    blue
-xosview*memInactiveColor:   lightblue
-xosview*memPriority:        10
-xosview*memDecay:           False
-xosview*memGraph:           False
-xosview*memUsedFormat:	    autoscale
-
-! Swap Meter Resources
-
-xosview*swap:               True
-xosview*swapUsedColor:      seagreen
-xosview*swapFreeColor:      aquamarine
-xosview*swapReservedColor:  yellow
-xosview*swapPriority:       10
-xosview*swapDecay:          False
-xosview*swapGraph:          False
-xosview*swapUsedFormat:	    autoscale
 
 
-! Page Meter Resources
-
-xosview*page:               True
-xosview*pageBandwidth:      120
-xosview*pageInColor:        SkyBlue
-xosview*pageOutColor:       SlateBlue1
-xosview*pageIdleColor:      aquamarine
-xosview*pagePriority:       5
-xosview*pageDecay:          False
-xosview*pageGraph:          False
-xosview*pageUsedFormat:     autoscale
 
 
-! Network Meter Resources
 
-xosview*net:		    @NetMeter_Default_Setting@
-!xosview*netBandwidth:       7500  ! for 64kbps ISDN
-!xosview*netBandwidth:       5000  ! for up to 57.6kbps modems
-!xosview*netBandwidth:       2000  ! for 28.8kbps modems (no compression)
-!                                  ! or  14.4kbps modems (with compression)
-xosview*netBandwidth:    1000000  ! for 10Mbit/s Ethernet (could be 1250000)
-!xosview*netBandwidth:   10000000  ! for 100Mbit/s Ethernet (could be 12500000)
-xosview*netInColor:         blue
-xosview*netOutColor:        green
-xosview*netBackground:      aquamarine
-xosview*netPriority:        5
-xosview*netDecay:           True
-xosview*netGraph:           False
-xosview*netUsedFormat:	    autoscale
-xosview*netIface:           False
+
+
+
+
+
+
 
 ! Linux-only resources:
 
@@ -170,49 +219,23 @@ xosview*serialOnColor:      red
 xosview*serialOffColor:     aquamarine
 xosview*serialPriority:     1
 
-! Interrupt Meter Resources
 
-xosview*interrupts:         True
-xosview*intOnColor:         red
-xosview*intOffColor:        aquamarine
-xosview*intPriority:	    1
-
-! Interrupt Rate Meter Resources
-xosview*irqrate:	True
-xosview*irqrateUsedColor:	red
-xosview*irqrateIdleColor:	black
-xosview*irqratePriority:	1
-xosview*irqrateUsedFormat:  autoscale
-xosview*irqrateDecay:	True
-xosview*irqrateGraph:	False
 
 ! Battery Meter Resources
 
 xosview*battery:            False
-xosview*batteryLeftColor:   orange
-xosview*batteryUsedColor:   aquamarine
+xosview*batteryLeftColor:   #56E67B
+xosview*batteryUsedColor:   #03315E
 xosview*batteryPriority:    50
 xosview*batteryUsedFormat:  percent
 xosview*batteryChargeColor: green
 xosview*batteryFullColor:   magenta
-xosview*batteryLowColor:    red
+xosview*batteryLowColor:    #F2EF44
 xosview*batteryCritColor:   red
 xosview*batteryNoneColor:   grey
 
 
-! Disk Meter Resources
 
-xosview*disk:		    True
-xosview*diskUsedColor:	    seagreen
-xosview*diskIdleColor:	    aquamarine
-xosview*diskWriteColor:     yellow
-xosview*diskReadColor:      seagreen
-xosview*diskBandwidth:      30000000  ! 30MB/s should be reasonable today for
-                                      ! both IDE and SCSI
-xosview*diskPriority:	    10
-xosview*diskDecay:	    True
-xosview*diskUsedFormat:     autoscale
-xosview*diskGraph:	    False
 
 
 xosview*RAID:                 False

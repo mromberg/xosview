@@ -1,3 +1,15 @@
+- Look into some kind of decay option for the used labels
+
+- Look into a decay only option on the field meter.
+
+- Load meter is doing some kind (perhaps intentional) of scaling.
+
+- Do something with Linux int meter to reduce it's size
+
+- Add Xft support for new fangled (and installed by default) fuzzy fonts
+
+- Linux batter meter inoperative
+
 - Graph meter appears to reset too soon.  String changes may have
   busted it.
 
