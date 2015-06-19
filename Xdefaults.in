@@ -77,7 +77,7 @@ xosview*cpuFreeColor:       aquamarine
 xosview*cpuStolenColor:     blue
 xosview*cpuPriority:        1
 xosview*cpuDecay:           True
-xosview*cpuGraph:           True
+xosview*cpuGraph:           False
 xosview*cpuUsedFormat:	    percent
 xosview*cpuFormat:          auto   ! single, all, auto or both
 
