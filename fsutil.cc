@@ -52,6 +52,14 @@ bool FS::isdir(const std::string &path) {
     return false;
 }
 
+bool FS::isfile(const std::string &path) {
+    struct stat sb;
+    if (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode))
+        return true;
+
+    return false;
+}
+
 bool FS::readAll(const std::string &file, std::string &str) {
     str = "";
     std::ifstream ifs(file.c_str());

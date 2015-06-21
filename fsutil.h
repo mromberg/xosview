@@ -27,6 +27,9 @@ public:
     // returns true if path exists and is a directory
     static bool isdir(const std::string &path);
 
+    // returns true if path exists and is a regular file
+    static bool isfile(const std::string &path);
+
     // reads the entire file into str.  Returns false on failure.
     static bool readAll(const std::string &file, std::string &str);
 

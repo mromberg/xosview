@@ -14,16 +14,7 @@
 #include <iomanip>
 #include <sstream>
 #include <algorithm>
-#include <cerrno>
-
-#include <stdlib.h>
-#include <sys/types.h>
-#include <dirent.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>
-
+#include <cmath>
 
 
 static const char LEGEND[] = "CAP/USED";
@@ -284,28 +275,20 @@ static const char APMFILENAME[] = "/proc/apm";
 // determine if /proc/apm exists and is readable
 bool BtryMeter::has_apm( void ){
 
-    struct stat stbuf;
-    int fd;
-
-    if ( stat(APMFILENAME, &stbuf) != 0 ) {
-        logDebug << "APM: stat failed: " << errno << " - not APM ?"
-                 << std::endl;
-        return false;
-    }
-    if ( S_ISREG(stbuf.st_mode) ) {
-        logDebug << "apm: " << APMFILENAME << " exists and is a file"
-                 << std::endl;
-    } else {
+    if (!util::FS::isfile(APMFILENAME)) {
         logDebug << "no APM file" << std::endl;
         return false;
     }
-    fd=open(APMFILENAME,O_RDONLY);
-    if ( fd < 0 ) {
+
+    logDebug << "apm: " << APMFILENAME << " exists and is a file"
+             << std::endl;
+
+    std::ifstream ifs(APMFILENAME);
+    if (!ifs) {
         logDebug << "open failed on " << APMFILENAME
-                 << ": with errno=" << errno << std::endl;
+                 << std::endl;
         return false;
-    } else
-        close(fd); // good enough ...
+    }
 
     // all our tests succeeded - apm seems usable
     return true;
@@ -462,18 +445,12 @@ static const char ACPIBATTERYDIR[] = "/proc/acpi/battery";
 // (XXX: too lazy -  no tests for actual readability is done)
 bool BtryMeter::has_acpi( void ){
 
-    struct stat stbuf;
-
-    if ( stat(ACPIBATTERYDIR, &stbuf) != 0 ) {
-        logDebug << "has_acpi(): stat failed: " << errno << std::endl;
+    if (!util::FS::isdir(ACPIBATTERYDIR)) {
+        logDebug << "has_acpi(): stat failed: " << ACPIBATTERYDIR
+                 << std::endl;
         return false;
     }
-    if ( S_ISDIR(stbuf.st_mode) ) {
-        logDebug << "exists and is a DIR." << std::endl;
-    } else {
-        logDebug << "no ACPI dir" << std::endl;
-        return false;
-    }
+    logDebug << "exists and is a DIR." << std::endl;
 
     // declare ACPI as usable
     return true;
@@ -486,8 +463,7 @@ bool BtryMeter::has_acpi( void ){
 
 bool BtryMeter::getacpiinfo( void ){
 
-    DIR *dir = opendir(ACPIBATTERYDIR);
-    if (dir==NULL) {
+    if (!util::FS::isdir(ACPIBATTERYDIR)) {
         logDebug << "ACPI: Cannot open directory : " <<  ACPIBATTERYDIR
                  << std::endl;
         return false;
@@ -507,14 +483,11 @@ bool BtryMeter::getacpiinfo( void ){
     acpi_charge_state=0; // assume charged
 
     std::string abs_battery_dir = ACPIBATTERYDIR;
-    for (struct dirent *dirent; (dirent = readdir(dir)) != NULL; ) {
-        if (std::string(dirent->d_name) == "."
-          || std::string(dirent->d_name) == "..")
-            continue;
+    std::vector<std::string> dir = util::FS::listdir(ACPIBATTERYDIR);
+    for (size_t di = 0 ; di < dir.size(); di++) {
+        std::string abs_battery_name = abs_battery_dir + "/" + dir[di];
 
-        std::string abs_battery_name = abs_battery_dir + "/" + dirent->d_name;
-
-        logDebug << "ACPI Batt: " <<  dirent->d_name << std::endl;
+        logDebug << "ACPI Batt: " <<  dir[di] << std::endl;
 
         // still can happen that it's not present:
         if ( battery_present( abs_battery_name + "/info" ) ) {
@@ -541,8 +514,6 @@ bool BtryMeter::getacpiinfo( void ){
             }
         }
     }
-
-    closedir(dir);
 
     total_ = 100;
 
