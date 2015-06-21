@@ -22,6 +22,41 @@ public:
 
     void checkResources( void );
 
+protected:
+    bool getpwrinfo( void );
+
+private:
+    // Reading battery stats is a mess
+    // SYS is the "new" way.  Keep the others
+    // for a while
+    enum StatType { NONE, SYS, APM, ACPI };
+    StatType _stype;
+
+    StatType statType(void);
+
+    bool has_sys(void);
+    bool getsysinfo(void);
+    float getHoursLeft(const std::string &batDir,
+      const std::vector<std::string> &dir) const;
+    std::string getBatDir(void) const;
+    std::string timeStr(float &hours) const;
+
+    //--------------------------------------------------
+    // Depricated APM and ACPI members beyond this point
+    //--------------------------------------------------
+private:
+    int apm_battery_state;
+    int old_apm_battery_state;
+
+    bool has_apm(void);
+    bool getapminfo( void );
+
+    int acpi_charge_state;
+    int old_acpi_charge_state;
+    int acpi_sum_cap;
+    int acpi_sum_remain;
+    int acpi_sum_rate;
+    int acpi_sum_alarm;
     // some basic fields of 'info','alarm','state'
     // XXX: should be private
     struct acpi_batt {
@@ -34,49 +69,11 @@ public:
     };
     acpi_batt battery;
 
-
-
-protected:
-    bool getpwrinfo( void );
-
-
-
-private:
-    bool getapminfo( void );
-    bool getacpiinfo( void );
-
-    bool has_sys(void);
-    bool getsysinfo(void);
-    float getHoursLeft(const std::string &batDir,
-      const std::vector<std::string> &dir) const;
-    std::string getBatDir(void) const;
-
-    // Reading battery stats is a mess
-    // SYS is the "new" way.  Keep the others
-    // for a while
-    enum StatType { NONE, SYS, APM, ACPI };
-    StatType _stype;
-
-    bool battery_present(const std::string& filename);
-    bool parse_battery(const std::string& filename);
-
-    StatType statType(void);
-
     bool has_acpi(void);
-    bool has_apm(void);
+    bool getacpiinfo( void );
+    bool battery_present(const std::string& filename);
 
-    int apm_battery_state;
-    int old_apm_battery_state;
-
-    int acpi_charge_state;
-    int old_acpi_charge_state;
-
-    int acpi_sum_cap;
-    int acpi_sum_remain;
-    int acpi_sum_rate;
-    int acpi_sum_alarm;
-
-    std::string timeStr(float &hours) const;
+    bool parse_battery(const std::string& filename);
 };
 
 
