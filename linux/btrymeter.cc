@@ -601,6 +601,11 @@ bool BtryMeter::getsysinfo(void) {
         timeLeft = timeStr(hl);
     }
 
+    // And... the capacity can go higher than 100 (129 for me)
+    // at Full
+    if (status == "Full")
+        capacity = 100;
+
 
     // set UI components to report our findings
     fields_[0] = capacity;
