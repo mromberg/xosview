@@ -22,6 +22,9 @@ private:
     XOSView *_xos;
 
     void cpuFactory(void);
+    void serialFactory(void);
+    void intFactory(void);
+    void lmsTempFactory(void);
 };
 
 #endif
