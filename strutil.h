@@ -79,4 +79,18 @@ std::string strerror(int error);
 
 } // namespace util
 
+// print vectors in the form: [a,b,c,d]
+template<class X>
+std::ostream &operator<<(std::ostream &os, const std::vector<X> &x) {
+    os << "[";
+    for (size_t i = 0 ; i < x.size() ; i++) {
+        os << x[i];
+        if (i < x.size() - 1)
+            os << ",";
+    }
+    os << "]";
+
+    return os;
+}
+
 #endif

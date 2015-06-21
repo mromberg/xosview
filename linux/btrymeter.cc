@@ -7,13 +7,17 @@
 
 #include "btrymeter.h"
 #include "xosview.h"
+#include "fsutil.h"
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
+#include <algorithm>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <dirent.h>
 
+#include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -21,20 +25,16 @@
 #include <cerrno>
 
 
+static const char LEGEND[] = "AVAIL/USED";
+static const char SYSDIRNAME[] = "/sys/class/power_supply/";
 static const char APMFILENAME[] = "/proc/apm";
 static const char ACPIBATTERYDIR[] = "/proc/acpi/battery";
 
 BtryMeter::BtryMeter( XOSView *parent )
-    : FieldMeter( parent, 2, "BTRY", "AVAIL/USED", 1, 1, 0 ){
+    : FieldMeter( parent, 2, "BTRY", LEGEND, 1, 1, 0 ), _stype(NONE) {
 
-    // find out ONCE whether to use ACPI or APM
-    use_acpi = use_apm = false;
-    if ( has_apm() ) {
-	use_apm=true; use_acpi=false;
-    }
-    if ( has_acpi() ) {
-	use_acpi=true; use_apm=false;
-    }
+    _stype = statType();
+    logDebug << "Battery state type: " << _stype << std::endl;
 
     old_apm_battery_state = apm_battery_state = 0xFF;
     old_acpi_charge_state = acpi_charge_state = -2;
@@ -109,7 +109,18 @@ void BtryMeter::checkResources( void ){
 
 void BtryMeter::checkevent( void ){
 
-    getpwrinfo();
+    if (!getpwrinfo()) {
+        // We can hit this spot in any of two cases:
+        // - We have an ACPI system and the battery is removed
+        // - We have neither ACPI nor APM in the system
+        // We report an empty battery (i.e., we are running off AC power)
+        // instead of original behavior of just exiting the program.
+        // (Refer to Debian bug report #281565)
+        total_ = 100;
+        fields_[0] = 0;
+        fields_[1] = 100;
+        setUsed(fields_[0], total_);
+    }
 
 
     /* if the APM state changed - we need to update the colors,
@@ -217,25 +228,23 @@ void BtryMeter::checkevent( void ){
 }
 
 
-void BtryMeter::getpwrinfo( void ){
 
-    if ( use_acpi ) {
-	getacpiinfo(); return;
-    }
-    if ( use_apm ) {
-	getapminfo(); return;
-    }
 
-    // We can hit this spot in any of two cases:
-    // - We have an ACPI system and the battery is removed
-    // - We have neither ACPI nor APM in the system
-    // We report an empty battery (i.e., we are running off AC power) instead of
-    // original behavior of just exiting the program.
-    // (Refer to Debian bug report #281565)
-    total_ = 100;
-    fields_[0] = 0;
-    fields_[1] = 100;
-    setUsed(fields_[0], total_);
+
+bool BtryMeter::getpwrinfo( void ){
+
+    switch (_stype) {
+    case ACPI:
+        return getacpiinfo();
+    case APM:
+        return getapminfo();
+    case SYS:
+        return getsysinfo();
+    default:
+        logBug << "Unknown or NONE StatType: " << _stype << std::endl;
+    };
+
+    return false;
 }
 
 
@@ -534,4 +543,184 @@ bool BtryMeter::parse_battery(const std::string& dirname) {
     }
 
     return true;
+}
+
+
+BtryMeter::StatType BtryMeter::statType(void) {
+    // In order of preference
+    if ( has_sys() )
+        return SYS;
+    if ( has_acpi() )
+        return ACPI;
+    if ( has_apm() )
+	return APM;
+
+    return NONE;
+}
+
+bool BtryMeter::has_sys(void) {
+    // If the directory is there we assume
+    // the new sysfs way is supported.
+    // There still may or may not be a battery
+    return util::FS::isdir(SYSDIRNAME);
+}
+
+
+// More words of wisdom from the interwebs:
+// current_now: uA
+// voltage_now: uV
+// temp: 0,125 * value = real degrees celcius
+// capacity: %
+// health: good, dead, Overheat, over voltage, unknown
+// status: Full, Discharging, Charging
+// present: 0/1
+bool BtryMeter::getsysinfo(void) {
+
+    std::string batDir = getBatDir();
+    if (batDir == "") // have sys but no bat dirs
+        return false;
+
+    std::vector<std::string> dir = util::FS::listdir(batDir);
+
+    // The star of the show (capacity)
+    unsigned int capacity;
+    if (!util::FS::readFirst(batDir + "capacity", capacity)) {
+        logProblem << "error reading : " << batDir + "capacity\n";
+        return false;
+    }
+
+    std::string status;
+    if (!util::FS::readFirst(batDir + "status", status)) {
+        logProblem << "Error reading: " << batDir + "status\n";
+    }
+
+    // The hours left looks off when charging and nearing full charge
+    std::string timeLeft;
+    if (status == "Discharging") {
+        float hl = getHoursLeft(batDir, dir);
+        timeLeft = timeStr(hl);
+    }
+
+
+    // set UI components to report our findings
+    fields_[0] = capacity;
+    fields_[1] = 100 - capacity;
+    total_ = 100;
+
+    // I just makde these numbers up.  Perhaps
+    // another resource?
+    if (capacity <= 10)
+        setfieldcolor( 0, parent_->getResource("batteryCritColor"));
+    else if (capacity <= 35)
+        setfieldcolor( 0, parent_->getResource("batteryLowColor"));
+    else
+        setfieldcolor( 0, parent_->getResource("batteryLeftColor"));
+
+
+    setUsed(fields_[0], total_);
+
+    legend(std::string(std::string("CAP ") + timeLeft
+        + "(" + status + ")/USED"));
+
+
+    return true;
+}
+
+// Apparently the following is the current state of the documentation
+// for the new /sys/ way of getting this info.  You have to get lucky
+// on an internet search to find this post.  Snippet copied
+// for reference.
+//
+// > Yves-Alexis Perez wrote:
+// > Currently, sysfs interface repeats brokenness of /proc/acpi/battery
+// > interface.
+// > ...
+// > The proper way to handle it is to check for 'energy_now' and if it is
+// > present, look for 'power_now'. It should be
+// > present in 2.6.30 and later kernels (remaining time
+// > energy_now/power_now). If it is not present (as in 2.6.29), then you
+// > should assume that 'current_now' has value in uW, and remaining time is
+// > energy_now/current_now.
+// > If you have 'charge_now', remaining time is charge_now/current_now
+// > without any complications.
+//
+float BtryMeter::getHoursLeft(const std::string &batDir,
+  const std::vector<std::string> &dir) const {
+
+    if (std::find(dir.begin(), dir.end(), "energy_now") != dir.end()) {
+        unsigned long long energy_now;
+        if (!util::FS::readFirst(batDir + "energy_now", energy_now)) {
+            logProblem << "error reading: " << batDir + "energy_now\n";
+            return 0.0;
+        }
+        if (std::find(dir.begin(), dir.end(), "power_now") != dir.end()) {
+            // remaining time (energy_now/power_now)
+            unsigned long long power_now;
+            if (!util::FS::readFirst(batDir + "power_now", power_now)) {
+                logProblem << "error reading: " << batDir + "power_now\n";
+                return 0.0;
+            }
+            return (double)energy_now / (double)power_now;
+        }
+        else {
+            // remaining time is (energy_now/current_now)
+            unsigned long long current_now;
+            if (!util::FS::readFirst(batDir + "current_now", current_now)) {
+                logProblem << "error reading: " << batDir + "current_now\n";
+                return 0.0;
+            }
+            return (double)energy_now / (double)current_now;
+        }
+    }
+    else if (std::find(dir.begin(), dir.end(), "charge_now") != dir.end()) {
+        // remaining time is charge_now/current_now
+        unsigned long long charge_now, current_now;
+
+        if (!util::FS::readFirst(batDir + "charge_now", charge_now) ||
+          !util::FS::readFirst(batDir + "current_now", current_now)) {
+            logProblem << "error reading: " << batDir << "["
+                       << "charge_now|current_now]" << std::endl;
+            return 0.0;
+        }
+        return (double)charge_now / (double)current_now;
+    }
+    else {
+        logProblem << "Can't find charge_now or energy_now in: "
+                   << batDir << std::endl;
+    }
+
+    return 0.0;
+}
+
+std::string BtryMeter::timeStr(float &hours) const {
+    float intHours, fracHours;
+    fracHours = modff(hours, &intHours);
+
+    std::ostringstream mins;
+    mins << std::setfill('0') << std::setw(2) << (unsigned int)(fracHours * 60);
+
+    std::string rval = util::repr(intHours) + ":" + mins.str();
+
+    return rval;
+}
+
+std::string BtryMeter::getBatDir(void) const {
+
+// See if a BAT subdirectory is there
+    std::vector<std::string> bats;
+    std::vector<std::string> dir = util::FS::listdir(SYSDIRNAME);
+    for (size_t i = 0 ; i < dir.size() ; i++)
+        if (dir[i].substr(0, 3) == "BAT")
+            bats.push_back(dir[i]);
+    std::sort(bats.begin(), bats.end());
+
+
+    if (bats.size() == 0) // No batteries found
+        return "";
+
+    if (bats.size() > 1)
+        logEvent << "Multiple batteries found: " << bats << std::endl
+                 << "Only using: " << bats[0] << " for now" << std::endl;
+
+    return std::string(SYSDIRNAME) + bats[0] + "/";
 }

@@ -226,7 +226,7 @@ xosview*serialPriority:     1
 xosview*battery:            False
 xosview*batteryLeftColor:   #56E67B
 xosview*batteryUsedColor:   #03315E
-xosview*batteryPriority:    50
+xosview*batteryPriority:    150      ! every 15 seconds
 xosview*batteryUsedFormat:  percent
 xosview*batteryChargeColor: green
 xosview*batteryFullColor:   magenta
