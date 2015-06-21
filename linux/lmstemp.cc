@@ -12,13 +12,12 @@
 //  This file may be distributed under terms of the GPL
 //
 
-
 #include "lmstemp.h"
-#include "xosview.h"
+#include "fsutil.h"
+
 #include <fstream>
-#include <stdlib.h>
-#include <dirent.h>
-#include <sys/stat.h>
+
+
 
 static const char PROC_SENSORS_24[] = "/proc/sys/dev/sensors";
 static const char PROC_SENSORS_26[] = "/sys/class/hwmon";
@@ -49,35 +48,30 @@ LmsTemp::~LmsTemp( void ){
 int  LmsTemp::checksensors(int isproc, const std::string &dir,
   const std::string &filename) {
     bool found = false;
-    DIR *d1, *d2;
-    struct dirent *ent1, *ent2;
-    struct stat buf;
 
-    d1=opendir(dir.c_str());
-    if(!d1)
+    if (!util::FS::isdir(dir))
         return false;
     else {
+        std::vector<std::string> d1 = util::FS::listdir(dir);
         std::string dirname;
 
-        while(!found && (ent1=readdir(d1))) {
-            if((std::string(".") == ent1->d_name) ||
-              (std::string("..") == ent1->d_name))
-                continue;
+        for (size_t d1i = 0 ; !found && d1i < d1.size(); d1i++) {
+            const std::string &ent1 = d1[d1i];
 
-            dirname = std::string(dir) + "/" + ent1->d_name;
+            dirname = dir + "/" + ent1;
             if (!isproc)
                 dirname += "/device";
-            if(stat(dirname.c_str(), &buf)==0 && S_ISDIR(buf.st_mode)) {
-                d2=opendir(dirname.c_str());
-                if(!d2) {
+            if (util::FS::isdir(dirname)) {
+                if (!util::FS::isdir(dirname)) {
                     logProblem << "The directory " << dirname
                                << "exists but cannot be read.\n";
                 }
                 else {
-                    while((ent2=readdir(d2))) {
-                        std::string e2dn(ent2->d_name);
+                    std::vector<std::string> d2 = util::FS::listdir(dirname);
+                    for (size_t d2i = 0 ; d2i < d2.size() ; d2i++) {
+                        const std::string &e2dn = d2[d2i];
                         std::string f = dirname + "/" + e2dn;
-                        if(stat(f.c_str(), &buf)!=0 || !S_ISREG(buf.st_mode))
+                        if (!util::FS::isfile(f))
                             continue;
 
                         if((isproc && filename == e2dn) ||
@@ -91,13 +85,11 @@ int  LmsTemp::checksensors(int isproc, const std::string &dir,
                             break;
 			}
 		    }
-                    closedir(d2);
 		}
 	    }
 
 	}
     }
-    closedir(d1);
     return found;
 }
 

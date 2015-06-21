@@ -8,14 +8,12 @@
 
 #include "diskmeter.h"
 #include "xosview.h"
+#include "fsutil.h"
+
 #include <fstream>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <cerrno>
 #include <limits>
+
+
 
 
 static const size_t MAX_PROCSTAT_LENGTH = 2048;
@@ -30,12 +28,9 @@ DiskMeter::DiskMeter( XOSView *parent, float max ) : FieldMeterGraph(
 
     _sysfs=_vmstat=false;
     sysfs_read_prev_=sysfs_write_prev_=0L;
-    struct stat buf;
 
     // first - try sysfs:
-    if (stat("/sys/block", &buf) == 0
-      && buf.st_mode & S_IFDIR) {
-
+    if (util::FS::isdir("/sys/block")) {
         _sysfs = true;
         _statFileName = "/sys/block";
         logDebug << "diskmeter: using sysfs /sys/block" << std::endl;
@@ -43,13 +38,11 @@ DiskMeter::DiskMeter( XOSView *parent, float max ) : FieldMeterGraph(
 
     }
     // try vmstat:
-    else if (stat("/proc/vmstat", &buf) == 0
-      && buf.st_mode & S_IFREG) {
+    else if (util::FS::isfile("/proc/vmstat")) {
         _vmstat = true;
         _sysfs  = false;
         _statFileName = "/proc/vmstat";
         getvmdiskinfo();
-
     }
     else // fall back to stat
         getdiskinfo();
@@ -269,7 +262,6 @@ void DiskMeter::getsysfsdiskinfo( void ) {
 
     std::string sysfs_dir = _statFileName;
     std::string disk;
-    struct stat buf;
     std::ifstream diskstat;
 
     // the sum of all disks:
@@ -284,9 +276,8 @@ void DiskMeter::getsysfsdiskinfo( void ) {
     IntervalTimerStop();
     total_ = maxspeed_;
 
-    DIR *dir = opendir(_statFileName);
-    if (dir==NULL) {
-        logDebug << "sysfs: Cannot open directory : "
+    if (!util::FS::isdir(_statFileName)) {
+        logDebug << "sysfs: Cannot find directory : "
                  << _statFileName << std::endl;
         return;
     }
@@ -296,20 +287,20 @@ void DiskMeter::getsysfsdiskinfo( void ) {
     sect_size=0L;
 
     // visit every /sys/block/*/stat and sum up the values:
-
-    for (struct dirent *dirent; (dirent = readdir(dir)) != NULL; ) {
-        logDebug << "dirent->d_name: " << dirent->d_name << std::endl;
-        std::string dname(dirent->d_name);
+    std::vector<std::string> dir = util::FS::listdir(_statFileName);
+    for (size_t di = 0 ; di < dir.size(); di++) {
+        logDebug << "dirent->d_name: " << dir[di] << std::endl;
+        std::string dname(dir[di]);
         if (dname == "." || dname == "..")
             continue;
 
         disk = sysfs_dir + "/" + dname;
         logDebug << "stat(" << disk << ")" << std::endl;
 
-        if (stat(disk.c_str(), &buf) == 0 && buf.st_mode & S_IFDIR) {
+        if (util::FS::isdir(disk)) {
             // is a dir, locate 'stat' file in it
             disk += "/stat";
-            if (stat(disk.c_str(), &buf) == 0 && buf.st_mode & S_IFREG) {
+            if (util::FS::isfile(disk)) {
                 logDebug << "disk stat: " << disk << std::endl;
                 diskstat.open(disk.c_str());
                 if ( diskstat.good() ) {
@@ -335,21 +326,17 @@ void DiskMeter::getsysfsdiskinfo( void ) {
                     diskstat.clear();
                 }
                 else {
-                    logDebug << "disk stat open: " << disk
-                             << " - errno=" << errno << std::endl;
+                    logDebug << "disk stat open: " << disk << std::endl;
                 }
             }
             else {
-                logDebug << "disk stat is not file: " << disk
-                         << " - errno=" << errno << std::endl;
+                logDebug << "disk stat is not file: " << disk << std::endl;
             }
         }
         else {
-            logDebug << "disk is not dir: " << disk
-                     << " - errno=" << errno << std::endl;
+            logDebug << "disk is not dir: " << disk << std::endl;
         }
     } // for
-    closedir(dir);
     logDebug << "disk: read: " << all_bytes_read << ", "
              << "written: " << all_bytes_written << std::endl;
     update_info(all_bytes_read, all_bytes_written);

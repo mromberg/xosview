@@ -6,14 +6,9 @@
 //
 
 #include "pagemeter.h"
-#include "xosview.h"
-#include <fstream>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "fsutil.h"
 
-#define MAX_PROCSTAT_LENGTH 2048
+#include <fstream>
 
 
 PageMeter::PageMeter( XOSView *parent, float max ) : FieldMeterGraph( parent,
@@ -25,9 +20,7 @@ PageMeter::PageMeter( XOSView *parent, float max ) : FieldMeterGraph( parent,
     maxspeed_ = max;
     pageindex_ = 0;
 
-    struct stat buf;
-    if (stat("/proc/vmstat", &buf) == 0
-      && buf.st_mode & S_IFREG) {
+    if (util::FS::isfile("/proc/vmstat")) {
         _vmstat = true;
         _statFileName = "/proc/vmstat";
     }
