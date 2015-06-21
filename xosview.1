@@ -456,13 +456,19 @@ graph columns. This is only used by meters which have graph mode enabled.
 xosview*loadWarnColor: \fIcolor\fP
 .RS
 This is the color that the load meter will use once the load average is
-greater than 1.
+greater than the loadWarnThreshold.
+.RE
+
+xosview*loadCritColor: \fIcolor\fP
+.RS
+This is the color that the load meter will use once the load average is
+greater than the loadCritThreshold (peaked).
 .RE
 
 xosview*loadProcColor: \fIcolor\fP
 .RS
 This is the color that the load meter will use to display the load average
-when it is less than or equal to 1.
+when it is less than the loadWarnThreshold.
 .RE
 
 .\"  loadIdleColor
@@ -476,6 +482,14 @@ xosview*loadWarnThreshold: \fIint\fP
 This number (which must be an integer >= 1) sets the value at which
 the loadmeter changes its status and color from "normal" to "alarm".
 The default value is 2.
+.RE
+
+xosview*loadCritThreshold: \fIint\fP
+.RS
+This number (which must be an integer >= 1) sets the value at which
+the loadmeter changes its status and color from "normal" to "alarm".
+It is also the value that will be used for the peak of the meter.  The
+meter will still show the total load in the used level when peaked.
 .RE
 
 xosview*loadDecay: (True or False)

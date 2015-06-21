@@ -23,16 +23,19 @@ public:
     void checkevent( void );
 
     void checkResources( void );
-protected:
 
+protected:
     void getloadinfo( void );
-    unsigned long procloadcol_, warnloadcol_, critloadcol_;
     void getspeedinfo( void );
 
 private:
-    int warnThreshold, critThreshold, alarmstate, lastalarmstate;
-    int old_cpu_speed_, cur_cpu_speed_;
-    int do_cpu_speed;
+    unsigned long _procloadcol, _warnloadcol, _critloadcol;
+
+    int _warnThreshold, _critThreshold;
+    enum AlarmState { NORM, WARN, CRIT };
+    AlarmState _alarmstate, _lastalarmstate;
+    size_t _old_cpu_speed, _cur_cpu_speed;
+    bool _do_cpu_speed;
 };
 
 #endif
