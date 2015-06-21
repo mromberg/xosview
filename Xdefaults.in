@@ -1,21 +1,20 @@
-! **********************************************************************
-! **********************************************************************
-! **  DO NOT EDIT Xdefaults!!!!
-! **
-! **  Only make changes to the file Xdefaults.in, and re-run ./configure
-! **  to regenerate Xdefaults.
-! **
-! **  Thanks,
-! **    the Management :)    (bgrayson)
-! **
-! **********************************************************************
-! **********************************************************************
+! ######################################################################
+! ######################################################################
+! ##  DO NOT EDIT Xdefaults!!!!
+! ##
+! ##  Only make changes to the file Xdefaults.in, and re-run ./configure
+! ##  to regenerate Xdefaults.
+! ##
+! ##  Thanks,
+! ##    the Management :)    (bgrayson)
+! ##
+! ######################################################################
+! ######################################################################
 !
 !  xosview resources (override into your .Xdefaults file)
-!  $Id: Xdefaults.in,v 1.50 2008/02/28 23:37:24 romberg Exp $
+!
 
-! General Resources
-
+! **General Resources
 !xosview*title:
 !xosview*geometry:           +5+5
 !xosview*display:
@@ -34,9 +33,8 @@ xosview*samplesPerSec:      10    ! not yet supported
 xosview*graphNumCols:       128   ! number of samples shown in a graph
 
 
-! Load Meter Resources
-! We don't need to enable the Decay option, as it is already time-averaged.
-
+! **Load Meter Resources
+!   We don't need to enable the Decay option, as it is already time-averaged.
 xosview*load:               True
 xosview*loadCritColor:      #FC842B
 xosview*loadWarnColor:      #F2EF44
@@ -50,7 +48,8 @@ xosview*loadGraph:          False
 xosview*loadUsedFormat:     float
 xosview*loadCpuSpeed:       True
 
-! CPU Meter Resources
+
+! ** CPU Meter Resources
 xosview*cpu:                True
 xosview*cpuUserColor:       #56E67B
 xosview*cpuNiceColor:       #F2EF44
@@ -69,10 +68,8 @@ xosview*cpuUsedFormat:	    percent
 xosview*cpuFormat:          auto   ! single, all, auto or both
 
 
-
-! Memory Meter Resources
-! Not all of these are used by a specific platform.
-
+! ** Memory Meter Resources
+!    Not all of these are used by a specific platform.
 xosview*mem:                True
 xosview*memKernelColor:     yellow
 xosview*memUsedColor:       #56E67B
@@ -90,35 +87,31 @@ xosview*memGraph:           False
 xosview*memUsedFormat:	    autoscale
 
 
-! Disk Meter Resources
-
+! ** Disk Meter Resources
 xosview*disk:		    True
 xosview*diskUsedColor:	    seagreen
 xosview*diskIdleColor:	    #03315E
 xosview*diskWriteColor:     #F2EF44
 xosview*diskReadColor:      #56E67B
-xosview*diskBandwidth:      30000000  ! 30MB/s should be reasonable today for
-                                      ! both IDE and SCSI
+xosview*diskBandwidth:      30000000  ! 30MB/s reasonable for IDE and SCSI
 xosview*diskPriority:	    10
 xosview*diskDecay:	    True
 xosview*diskUsedFormat:     autoscale
 xosview*diskGraph:	    False
 
 
-! Swap Meter Resources
-
+! ** Swap Meter Resources
 xosview*swap:               True
 xosview*swapUsedColor:      #56E67B
 xosview*swapFreeColor:      #03315E
-xosview*swapReservedColor:  yellow
+xosview*swapReservedColor:  #F2EF44
 xosview*swapPriority:       10
 xosview*swapDecay:          False
 xosview*swapGraph:          False
 xosview*swapUsedFormat:	    autoscale
 
 
-! Page Meter Resources
-
+! ** Page Meter Resources
 xosview*page:               True
 xosview*pageBandwidth:      120
 xosview*pageInColor:        #56E67B
@@ -129,13 +122,12 @@ xosview*pageDecay:          False
 xosview*pageGraph:          False
 xosview*pageUsedFormat:     autoscale
 
-! Network Meter Resources
 
+! ** Network Meter Resources
 xosview*net:                 True
 !xosview*netBandwidth:       7500  ! for 64kbps ISDN
 !xosview*netBandwidth:       5000  ! for up to 57.6kbps modems
-!xosview*netBandwidth:       2000  ! for 28.8kbps modems (no compression)
-!                                  ! or  14.4kbps modems (with compression)
+!xosview*netBandwidth:       2000  ! for 28.8kbps modems (no comp) 14.4 (with)
 xosview*netBandwidth:    1000000  ! for 10Mbit/s Ethernet (could be 1250000)
 !xosview*netBandwidth:   10000000  ! for 100Mbit/s Ethernet (could be 12500000)
 xosview*netInColor:         #56E67B
@@ -154,9 +146,20 @@ xosview*intOnColor:         #F2EF44
 xosview*intOffColor:        #03315E
 xosview*intPriority:	    1
 
+! ** Battery Meter Resources
+xosview*battery:            False
+xosview*batteryLeftColor:   #56E67B
+xosview*batteryUsedColor:   #03315E
+xosview*batteryPriority:    100      ! every 10 seconds
+xosview*batteryUsedFormat:  percent
+xosview*batteryChargeColor: #56E67B
+xosview*batteryFullColor:   #AF0BEB
+xosview*batteryLowColor:    #F2EF44
+xosview*batteryCritColor:   #FF0000
+xosview*batteryNoneColor:   #352E37
 
 
-! Interrupt Rate Meter Resources
+! ** Interrupt Rate Meter Resources
 xosview*irqrate:	True
 xosview*irqrateUsedColor:	red
 xosview*irqrateIdleColor:	black
@@ -166,8 +169,7 @@ xosview*irqrateDecay:	True
 xosview*irqrateGraph:	False
 
 
-! Gfx Meter Resources ( Irix )
-
+! ** Gfx Meter Resources ( Irix )
 xosview*gfx:               True
 xosview*gfxCritColor:      red
 xosview*gfxWarnColor:      orange
@@ -181,26 +183,14 @@ xosview*gfxGraph:          False
 xosview*gfxUsedFormat:	   autoscale
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 ! Linux-only resources:
 
-! Serial Meter Resources
+
+! ** Serial Meter Resources
 !
 ! set 'True' for autodetection or give the baseaddress
 ! (autodetection may fail sometimes, if the port is
 ! locked by ppp/slip for example)
-
 !xosview*serial0:            0x3f8
 !xosview*serial1:            0x2f8
 !xosview*serial2:            0x3e8
@@ -220,24 +210,7 @@ xosview*serialOffColor:     aquamarine
 xosview*serialPriority:     1
 
 
-
-! Battery Meter Resources
-
-xosview*battery:            False
-xosview*batteryLeftColor:   #56E67B
-xosview*batteryUsedColor:   #03315E
-xosview*batteryPriority:    150      ! every 15 seconds
-xosview*batteryUsedFormat:  percent
-xosview*batteryChargeColor: green
-xosview*batteryFullColor:   magenta
-xosview*batteryLowColor:    #F2EF44
-xosview*batteryCritColor:   red
-xosview*batteryNoneColor:   grey
-
-
-
-
-
+! ** RAID
 xosview*RAID:                 False
 xosview*RAIDdevicecount:      1
 xosview*RAIDdiskOnlineColor:  green
@@ -247,12 +220,12 @@ xosview*RAIDresynctodoColor:  red
 xosview*RAIDresynccompleteColor:  green
 xosview*RAIDPriority:         20
 xosview*RAIDUsedFormat:       percent
+xosview*horizontalMargin:      5  !
+xosview*verticalMargin:        5  ! FIXME: no meter in name
+xosview*verticalSpacing:       5  !
 
-xosview*horizontalMargin:      5
-xosview*verticalMargin:        5
-xosview*verticalSpacing:       5
 
-! Lms Temp
+! ** Lms Temp
 xosview*lmstemp:	False
 xosview*lmstempActColor:	blue
 xosview*lmstempHighColor:	red
@@ -270,6 +243,8 @@ xosview*lmstempLabel2:	RTMP
 xosview*lmstempPriority: 20
 xosview*lmstempUsedFormat: autoscale
 
+
+! ** NFSD meter resources
 xosview*NFSDStats:       False
 xosview*NFSDStatCallsColor:     green
 xosview*NFSDStatBadCallsColor: red
@@ -280,6 +255,8 @@ xosview*NFSDStatDecay:		True
 xosview*NFSDStatGraph:		False
 xosview*NFSDStatUsedFormat:	percent
 
+
+! ** NFS meter resources
 xosview*NFSStats:       False
 xosview*NFSStatReTransColor:    red
 xosview*NFSStatAuthRefrshColor: yellow

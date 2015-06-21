@@ -7,6 +7,7 @@
 - Do something with Linux int meter to reduce it's size
 
 - Add Xft support for new fangled (and installed by default) fuzzy fonts
+  (http://www.keithp.com/~keithp/render/Xft.tutorial)
 
 - Linux batter meter inoperative
 
