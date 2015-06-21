@@ -137,8 +137,8 @@ bool BtryMeter::getsysinfo(void) {
     }
 
     // And... the capacity can go higher than 100 (129 for me)
-    // at Full
-    if (status == "Full")
+    // at Full (and briefly going in bat power).  Clamp it.
+    if (capacity > 100)
         capacity = 100;
 
     // set UI components to report our findings
