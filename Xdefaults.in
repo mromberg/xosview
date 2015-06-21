@@ -139,8 +139,8 @@ xosview*netGraph:           False
 xosview*netUsedFormat:	    autoscale
 xosview*netIface:           False
 
-! Interrupt Meter Resources
 
+! Interrupt Meter Resources
 xosview*interrupts:         True
 xosview*intOnColor:         #F2EF44
 xosview*intOffColor:        #03315E
