@@ -8,6 +8,7 @@
 #define _INTMETER_H_
 
 #include "bitmeter.h"
+
 #include <vector>
 
 class IntMeter : public BitMeter {
@@ -27,7 +28,6 @@ protected:
     std::vector<unsigned long> lastirqs_;
 
     int _cpu;
-    bool _old;
 
     void getirqs( void );
     void updateirqcount( int n, bool init );

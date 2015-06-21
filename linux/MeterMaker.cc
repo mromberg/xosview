@@ -28,11 +28,11 @@ MeterMaker::MeterMaker(XOSView *xos){
 }
 
 void MeterMaker::makeMeters(void){
-    // check for the load meter
+    // Standard meters (usually added, but users could turn them off)
+
     if (_xos->isResourceTrue("load"))
         push(new LoadMeter(_xos));
 
-    // Standard meters (usually added, but users could turn them off)
     if (_xos->isResourceTrue("cpu"))
         cpuFactory();
 

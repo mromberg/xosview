@@ -6,24 +6,19 @@
 //
 
 #include "intmeter.h"
-#include "xosview.h"
 #include "cpumeter.h"
+
 #include <fstream>
 #include <sstream>
-#include <stdlib.h>
+
 
 static const char *INTFILE     = "/proc/interrupts";
-static const char *VERSIONFILE = "/proc/version";
+static 	int realintnum[1024]; // FIXME: global var
 
-static 	int realintnum[1024];
 
 IntMeter::IntMeter( XOSView *parent, int cpu)
-    : BitMeter( parent, "INTS", "", 1, 0, 0 ), _cpu(cpu), _old(true) {
+    : BitMeter( parent, "INTS", "", 1, 0, 0 ), _cpu(cpu) {
 
-    if (getLinuxVersion() <= 2.0)
- 	_old = true;
-    else
- 	_old = false;
     initirqcount();
 }
 
@@ -48,20 +43,6 @@ void IntMeter::checkResources( void ){
     priority_ = util::stoi(parent_->getResource("intPriority"));
 }
 
-float IntMeter::getLinuxVersion(void) {
-    std::ifstream vfile(VERSIONFILE);
-    if (!vfile) {
-        logFatal << "Can not open file : " << VERSIONFILE << std::endl;
-    }
-
-    std::string dump;
-    float rval;
-    vfile >> dump >> dump; // Drop the first two words
-    vfile >> rval; // Drops everything but #.# (float regex)
-
-    return rval;
-}
-
 int IntMeter::countCPUs(void) {
     return CPUMeter::countCPUs();
 }
@@ -74,9 +55,6 @@ void IntMeter::getirqs( void ){
     if ( !intfile ){
         logFatal << "Can not open file : " <<INTFILE << std::endl;
     }
-
-    if (!_old)
-        intfile.ignore(1024, '\n');
 
     while ( !intfile.eof() ){
         intfile >> idx;
@@ -147,14 +125,13 @@ void IntMeter::initirqcount( void ){
         logFatal << "Can not open file : " << INTFILE << std::endl;
     }
 
-    if (!_old) {
-        for (i=0; i<1024; i++)	// init index into int array
-            if (i < 16)		// first 16 map directly
-                realintnum[i] = i;
-            else
-                realintnum[i] = 0;
-        intfile.ignore(1024, '\n');
-    }
+    for (i=0; i<1024; i++)	// init index into int array
+        if (i < 16)		// first 16 map directly
+            realintnum[i] = i;
+        else
+            realintnum[i] = 0;
+    intfile.ignore(1024, '\n');
+
 
     /* just looking for the highest number interrupt that
      * is in use, ignore the rest of the data
