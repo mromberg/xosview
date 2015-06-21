@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <map>
 
 namespace util {
 
@@ -89,6 +90,22 @@ std::ostream &operator<<(std::ostream &os, const std::vector<X> &x) {
             os << ",";
     }
     os << "]";
+
+    return os;
+}
+
+// print maps in the form: {key1:value1,key2:value2}
+template<class X,class Y>
+std::ostream &operator<<(std::ostream &os, const std::map<X,Y> &m) {
+    os << "{";
+    typename std::map<X,Y>::const_iterator it;
+    for (it = m.begin(); it != m.end(); ) {
+        os << it->first << ":" << it->second;
+        ++it;
+        if (it != m.end())
+            os << ",";
+    }
+    os << "}";
 
     return os;
 }

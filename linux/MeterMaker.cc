@@ -132,16 +132,15 @@ void MeterMaker::serialFactory(void) {
 }
 
 void MeterMaker::intFactory(void) {
-    int cpuCount = IntMeter::countCPUs();
-    cpuCount = cpuCount == 0 ? 1 : cpuCount;
-    for (int i = 0 ; i < cpuCount ; i++)
-        push(new IntMeter(_xos, i));
+    int cpuCount = CPUMeter::countCPUs();
+    for (int i = 0 ; i <= cpuCount ; i++)
+        push(new IntMeter(_xos, i, cpuCount));
 }
 
 void MeterMaker::lmsTempFactory(void) {
     std::string caption = "ACT/HIGH/"
         + _xos->getResourceOrUseDefault("lmstempHighest", "100");
-    for (int i = 1 ; ; i++) {
+    for (int i = 0 ; ; i++) {
         std::ostringstream s;
         s << "lmstemp" << i;
         std::string res = _xos->getResourceOrUseDefault(s.str(), "<nil>");

@@ -10,28 +10,43 @@
 #include "bitmeter.h"
 
 #include <vector>
+#include <map>
 
 class IntMeter : public BitMeter {
 public:
-    IntMeter( XOSView *parent, int cpu = 0);
+    IntMeter( XOSView *parent, unsigned int cpu = 0, unsigned int cpuTot=1);
     ~IntMeter( void );
 
     void checkevent( void );
 
     void checkResources( void );
 
-    static float getLinuxVersion(void);
-    static int countCPUs(void);
-
 protected:
     std::vector<unsigned long> irqs_;
     std::vector<unsigned long> lastirqs_;
 
-    int _cpu;
+    unsigned int _cpu;     // which cpu are we displaying
+
 
     void getirqs( void );
     void updateirqcount( int n, bool init );
-    void initirqcount( void );
+    unsigned int irqcount( void );
+
+private:
+    unsigned int _cpuTot;  // total cpus on system
+
+    // key: line number (in proc file), value: irq number
+    // lines and irqs start at 0
+    static std::map<size_t,unsigned int> _irqmap;
+    size_t _maxIRQ;
+
+    // irq counts
+    std::vector<unsigned long long> _last;
+
+    std::vector<unsigned long long> readCounts(void) const;
+    unsigned long long parseLine(const std::string &line) const;
+    int loadIRQMap(void);
+    void initUI(void);
 };
 
 #endif

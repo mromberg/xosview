@@ -144,7 +144,7 @@ xosview*netIface:           False
 xosview*interrupts:         True
 xosview*intOnColor:         #F2EF44
 xosview*intOffColor:        #03315E
-xosview*intPriority:	    1
+xosview*intPriority:	    4
 
 ! ** Battery Meter Resources
 xosview*battery:            False
