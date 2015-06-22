@@ -105,10 +105,15 @@ void CPUMeter::getcputime( void ){
 
     _oldStats = cstats;
 
-    if (total_){
-        setUsed(used, total_);
-        //setUsed (total_ - (fields_[5] + fields_[6] + fields_[7]), total_);
-    }
+    // Convert fields_ to percent
+    if (total_ == 0.0)
+        total_ = 1.0;
+    used = used / total_;
+    for (size_t i = 0 ; i < numfields() ; i++)
+        fields_[i] = fields_[i] / total_;
+    total_ = 1.0;
+
+    setUsed(used, total_);
 }
 
 size_t CPUMeter::findLine(void) {
