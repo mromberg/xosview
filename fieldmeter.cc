@@ -281,16 +281,16 @@ void FieldMeter::checkevent( void ){
 }
 
 void FieldMeter::setNumFields(int n){
-    fields_.resize(n);
-    colors_.resize(n);
-    lastvals_.resize(n);
-    lastx_.resize(n);
+    fields_.clear();
+    fields_.resize(n, 0);
+    colors_.clear();
+    colors_.resize(n, 0);
+    lastvals_.clear();
+    lastvals_.resize(n, 0);
+    lastx_.clear();
+    lastx_.resize(n, 0);
 
-    total_ = 0;
-    for ( unsigned int i = 0 ; i < numfields() ; i++ ){
-        fields_[i] = 0.0;
-        lastvals_[i] = lastx_[i] = 0;
-    }
+    total_ = 1.0;
 }
 
 bool FieldMeter::checkX(int x, int width) const {
