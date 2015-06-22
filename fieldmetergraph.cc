@@ -186,7 +186,7 @@ void FieldMeterGraph::checkResources( void ) {
     std::string ptr = parent_->getResource( "graphNumCols" );
 
     int i;
-    if( sscanf( ptr.c_str(), "%d", &i ) == 1 ) {
+    if (util::fstr(ptr, i)) {
         if( i>0 ) {
             setNumCols( i );
         }
