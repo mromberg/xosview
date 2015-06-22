@@ -1,18 +1,30 @@
+- Update the install scripts for X11R7 locations (or just where distros
+  now dump stuff.
+
+- Create an rpm spec file (as an example) to hold build package deps if
+  nothing else.
+
+- Fix any other ports for the new C++ update.  Should
+  be simple.  Mostly char * -> std::string conversion.
+
 - Look into some kind of decay option for the used labels
 
 - Look into a decay only option on the field meter.
 
-- Load meter is doing some kind (perhaps intentional) of scaling.
-
-- Do something with Linux int meter to reduce it's size
-
 - Add Xft support for new fangled (and installed by default) fuzzy fonts
   (http://www.keithp.com/~keithp/render/Xft.tutorial)
 
-- Linux batter meter inoperative
+- Look into seperating the X11 drawing interface into a more abstracted layer.
+  Make it easier to support other drawing systems Wayland etc.
 
 - Graph meter appears to reset too soon.  String changes may have
   busted it.
+
+- Add a "scripting" interface so new meters (for non rapidly updating)
+  things could be written in python/ruby/shell?
+
+- Add a clickable button(s) to add, remove, reconfigure (int/cpu format) on the
+  fly?
 
 - FIXME ? : "xosview*borderwidth" seems to be unused !?
 
@@ -27,6 +39,7 @@
     events to reduce X traffic.
 
 * Do if(dolegends_) fix for loadmeter.cc for all ports.
+   - Fixed on linux.  Loadmeter peaks at critical level (no re-scaling)
 
 * Make xosview re-check resources when the resources are changed,
     or when a signal is sent to it, or a key is pressed in it?
