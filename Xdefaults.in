@@ -145,6 +145,7 @@ xosview*interrupts:         True
 xosview*intOnColor:         #F2EF44
 xosview*intOffColor:        #03315E
 xosview*intPriority:	    4
+xosview*intFormat:          auto    ! single, all, auto or both
 
 ! ** Battery Meter Resources
 xosview*battery:            False

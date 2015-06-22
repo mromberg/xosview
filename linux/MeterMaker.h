@@ -9,6 +9,9 @@
 
 #include "pllist.h"
 
+#include <string>
+
+
 class Meter;
 class XOSView;
 
@@ -25,6 +28,8 @@ private:
     void serialFactory(void);
     void intFactory(void);
     void lmsTempFactory(void);
+    void getRange(const std::string &resource, size_t cpuCount,
+      size_t &start, size_t &end) const;
 };
 
 #endif

@@ -78,15 +78,14 @@ void MeterMaker::makeMeters(void){
         lmsTempFactory();
 }
 
+void MeterMaker::getRange(const std::string &resource, size_t cpuCount,
+  size_t &start, size_t &end) const {
+    // check the *Format resource if multi-procesor system
+    start = end = 0;
 
-void MeterMaker::cpuFactory(void) {
-    size_t cpuCount = CPUMeter::countCPUs();
-    size_t start = 0, end = 0;
-
-    // check the cpuFormat resource if multi-procesor system
     if (cpuCount > 1) {
-        std::string format(_xos->getResource("cpuFormat"));
-        logDebug << "cpuFormat: " << format << std::endl;
+        std::string format(_xos->getResource(resource));
+        logDebug << resource << ": " << format << std::endl;
         if (format == "single") // single meter for all cpus
             end = 0;
         else if (format == "all"){ // seperate but no cumulative
@@ -98,11 +97,18 @@ void MeterMaker::cpuFactory(void) {
         else if (format == "auto") // if(cpuCount==1) single else both
             end = cpuCount;
         else {
-            logProblem << "Unknown cpuFormat: " << format << ".  "
+            logProblem << "Unknown " << resource << ": " << format << ".  "
                        << "Using auto" << std::endl;
             end = cpuCount;
         }
     }
+}
+
+
+void MeterMaker::cpuFactory(void) {
+    size_t start = 0, end = 0;
+    getRange("cpuFormat", CPUMeter::countCPUs(), start, end);
+
     logDebug << "start=" << start << ", end=" << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
@@ -132,8 +138,13 @@ void MeterMaker::serialFactory(void) {
 }
 
 void MeterMaker::intFactory(void) {
-    int cpuCount = CPUMeter::countCPUs();
-    for (int i = 0 ; i <= cpuCount ; i++)
+    size_t start = 0, end = 0;
+    size_t cpuCount = CPUMeter::countCPUs();
+    getRange("intFormat", cpuCount, start, end);
+
+    logDebug << "int range: " << start << ", " << end << std::endl;
+
+    for (size_t i = start ; i <= end ; i++)
         push(new IntMeter(_xos, i, cpuCount));
 }
 
