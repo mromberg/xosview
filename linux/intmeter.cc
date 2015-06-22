@@ -12,9 +12,7 @@
 #include <limits>
 
 
-static const char *INTFILE     = "/proc/interrupts";
-static 	int realintnum[1024]; // FIXME: global var
-
+static const char INTFILE[] = "/proc/interrupts";
 std::map<size_t,unsigned int> IntMeter::_irqmap; // linenum -> irq
 
 IntMeter::IntMeter( XOSView *parent, unsigned int cpu, unsigned int cpuTot)
@@ -51,72 +49,6 @@ void IntMeter::checkResources( void ){
     onColor_  = parent_->allocColor( parent_->getResource( "intOnColor" ) );
     offColor_ = parent_->allocColor( parent_->getResource( "intOffColor" ) );
     priority_ = util::stoi(parent_->getResource("intPriority"));
-}
-
-void IntMeter::getirqs( void ){
-    std::ifstream intfile( INTFILE );
-    unsigned int intno, count;
-    int	idx;
-
-    if ( !intfile ){
-        logFatal << "Can not open file : " <<INTFILE << std::endl;
-    }
-
-    while ( !intfile.eof() ){
-        intfile >> idx;
-        intno = realintnum[idx];
-        if(intno>=numBits())
-            updateirqcount(intno,false);
-        if (!intfile) break;
-        intfile.ignore(1);
-        if ( !intfile.eof() ){
-            for (unsigned int i = 0 ; i <= _cpu ; i++)
-                intfile >>count;
-            intfile.ignore(1024, '\n');
-
-            irqs_[intno] = count;
-        }
-    }
-}
-
-/* The highest numbered interrupts, the number of interrupts
- * is going to be at least +1 (for int 0) and probably higher
- * if interrupts numbered more than this one just aren't active.
- * Must call with init = true the first time.
- */
-void IntMeter::updateirqcount( int n, bool init ){
-    int old_bits=numBits();
-    setNumBits(n+1);
-    std::ostringstream os;
-
-    os << "INTs (0-16" ;
-    for (int i=16; i<1024; i++) {
-	if (realintnum[i])
-            os << ", " << (i) ;
-    }
-    os << ")" << std::ends;
-
-    legend(os.str().c_str());
-    std::vector<unsigned long> old_irqs_(irqs_);
-    std::vector<unsigned long> old_lastirqs_(lastirqs_);
-    irqs_.resize(n+1);
-    lastirqs_.resize(n+1);
-    /* If we are in init, set it to zero,
-     * otherwise copy over the old set */
-    if( init ) {
-        for( int i=0; i < n; i++)
-            irqs_[i]=lastirqs_[i]=0;
-    }
-    else {
-   	for( int i=0; i < old_bits; i++) {
-            irqs_[i]=old_irqs_[i];
-            lastirqs_[i]=old_lastirqs_[i];
-	}
-	// zero to the end the irq's that haven't been seen before
-	for( unsigned int i=old_bits; i< numBits(); i++) {
-            irqs_[i]=lastirqs_[i]=0;
-        }
-    }
 }
 
 unsigned int IntMeter::irqcount( void ){
