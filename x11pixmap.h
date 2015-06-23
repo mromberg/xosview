@@ -19,6 +19,8 @@ public:
       const std::string &bgColor, int width, int height, int depth);
     ~X11Pixmap(void);
 
+    X11Graphics &g(void) { return *_g; }
+
     int width(void) const { return _width; }
     int height(void) const { return _height; }
 

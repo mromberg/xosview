@@ -8,27 +8,12 @@
 #include "log.h"
 
 
+
 //-----------------------------------------------------------------------------
 //  argc is a reference, so that the changes to argc by XrmParseCommand are
 //  noticed by the caller (XOSView, in this case).  BCG
-XWin::XWin() {
+XWin::XWin() : _graphics(0) {
 }
-
-XWin::XWin( int argc, char *argv[], int x, int y, int width, int height ) {
-
-    logFatal << "This constructor call is not supported! (" << __FILE__
-             << ":" << __LINE__ << ")" << std::endl;
-    //  FIXME BCG  This constructor needs to do much of the work of the above
-    //  one.  Or, we need to drop this as a constructor.  As it is, it is
-    //  VERY MUCH out of date.
-    x_ = x;
-    y_ = y;
-    width_ = width;
-    height_ = height;
-    (void) argc;
-    (void) argv;
-}
-
 
 void XWin::XWinInit (int argc, char** argv, char* geometry, Xrm* xrm) {
     (void) argc;
@@ -53,6 +38,9 @@ void XWin::XWinInit (int argc, char** argv, char* geometry, Xrm* xrm) {
 }
 
 XWin::~XWin( void ){
+    // remove the Graphics interface
+    delete _graphics;
+    _graphics = 0;
 
     // delete the events
     Event *event = events_;
@@ -137,6 +125,17 @@ void XWin::init( int argc, char **argv ){
     stipples_[2] = createPixmap("\002\001", 2, 2);
     stipples_[3] = createPixmap("\002\003\001\003", 2, 4);
     doStippling_ = isResourceTrue("enableStipple");
+
+    // Create new Graphics interface.
+    _graphics = new X11Graphics(display_, window_, colormap_);
+    g().setBG(bgcolor_);
+    g().setFG(fgcolor_);
+    // C++11
+    // g().setStipples(std::vector<Pixmap>(std::begin(stipples_),
+    //     std::end(stipples_));
+    g().setStipples(std::vector<Pixmap>(stipples_,
+        &stipples_[sizeof(stipples_)]));
+    g().setStippleMode(doStippling_);
 }
 
 void XWin::setFont( void ){

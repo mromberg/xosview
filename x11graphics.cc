@@ -10,7 +10,7 @@
 X11Graphics::X11Graphics(Display *dsp, Drawable d, Colormap cmap,
   const std::string &bgColor)
     : _dsp(dsp), _drawable(d), _cmap(cmap), _gc(0), _depth(0),
-      _fgPixel(0), _bgPixel(0) {
+      _fgPixel(0), _bgPixel(0), _doStippling(false) {
 
     _gc = XCreateGC(_dsp, _drawable, 0, NULL);
     _depth = getDepth(_dsp, _drawable);

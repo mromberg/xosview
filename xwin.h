@@ -1,20 +1,19 @@
 #ifndef _XWIN_H_
 #define _XWIN_H_
 
+#include "Xrm.h"
+#include "x11graphics.h"
+
+#include <iostream>
+#include <string>
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #ifdef HAVE_XPM
 #include <X11/xpm.h>
 #endif
-#ifdef HAVE_IOSTREAM
-#include <iostream>
-#else
-#include <iostream.h>
-#endif
 
-#include <string>
 
-#include "Xrm.h"
 
 class XWin;
 
@@ -24,7 +23,6 @@ typedef void (XWin::*EventCallBack)( XEvent &event );
 class XWin {
 public:
     XWin ();
-    XWin( int argc, char *argv[], int x, int y, int width, int height );
     virtual ~XWin( void );
     void XWinInit ( int argc, char* argv[], char* geometry, Xrm* xrmp );
 
@@ -44,6 +42,9 @@ public:
         { XStoreName( display_, window_, str.c_str() ); }
     void iconname( const std::string &str )
         { XSetIconName( display_, window_, str.c_str() ); }
+
+    // New Graphics interface (in progress)
+    X11Graphics &g(void) { return *_graphics; }
 
     void clear( void ) { XClearWindow( display_, window_ ); }
     void clear( int x, int y, int width, int height )
@@ -132,6 +133,7 @@ protected:
     Xrm*		xrmptr_;	//  Pointer to the XOSView xrm.  FIXME???
     int		doStippling_;	//  Either 0 or 1.
     Pixmap	stipples_[4];	//  Array of Stipple masks.
+    X11Graphics *_graphics;            //  New graphics interface
 
     void init( int argc, char *argv[] );
     void getGeometry( void );
