@@ -24,6 +24,11 @@ public:
     int width(void) const { return _width; }
     int height(void) const { return _height; }
 
+    void copyTo(X11Graphics &g, int src_x, int src_y,
+      unsigned int width, unsigned int height, int dst_x, int dst_y);
+    void copyTo(X11Graphics &g, int dst_x, int dst_y)
+        { copyTo(g, 0, 0, _width, _height, dst_x, dst_y); }
+
 private:
     Pixmap _pmap;
     Display *_dsp;

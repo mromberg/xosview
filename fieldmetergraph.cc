@@ -50,32 +50,44 @@ FieldMeterGraph::~FieldMeterGraph( void ){
 }
 
 void FieldMeterGraph::drawfields( int manditory ){
-    drawBars(parent_->g(), manditory);
-}
-
-void FieldMeterGraph::checkBackBuffer(void) {
-    // Create a new Pixmap to match our area if needed
-    bool allocNew = false;
-    if (!_pmap || _pmap->width() != width_ || _pmap->height() != height_)
-        allocNew = true;
-
-    if (allocNew) {
-        delete _pmap;
-        _pmap = 0;
-
-        _pmap = parent_->newX11Pixmap(width_, height_);
-    }
-}
-
-void FieldMeterGraph::drawBars(X11Graphics &g, int manditory) {
-    int i;
-
     if( !useGraph_ ) {
         // Call FieldMeterDecay code if this meter should not be
         // drawn as a graph
         FieldMeterDecay::drawfields( manditory );
         return;
     }
+
+    checkBackBuffer();
+    drawBars(_pmap->g(), manditory);
+    //drawBars(parent_->g(), manditory);
+//    logDebug << "x_=" << x_ << ",y_=" << y_
+//             << ",width_=" << width_ <<",height_=" << height_ << std::endl;
+    //_pmap->g().setFG("red");
+    //_pmap->g().drawFilledRectangle(x_, y_, width_+1, height_+1);
+    _pmap->copyTo(parent_->g(), x_, y_, width_+1, height_+1, x_, y_);
+}
+
+void FieldMeterGraph::checkBackBuffer(void) {
+    // Create a new Pixmap to match our area if needed
+    bool allocNew = false;
+    if (!_pmap
+      || _pmap->width() != parent_->width()
+      || _pmap->height() != parent_->height())
+        allocNew = true;
+
+    if (allocNew) {
+        delete _pmap;
+        _pmap = 0;
+
+        _pmap = parent_->newX11Pixmap(parent_->width(), parent_->height());
+        _pmap->g().setBG(colors_[numfields()-1]);
+        _pmap->g().setFG(colors_[numfields()-1]);
+        _pmap->g().drawFilledRectangle(0, 0, _pmap->width(), _pmap->height());
+    }
+}
+
+void FieldMeterGraph::drawBars(X11Graphics &g, int manditory) {
+    int i;
 
     if( total_ <= 0.0 )
         return;

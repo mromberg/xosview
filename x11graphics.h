@@ -12,6 +12,8 @@
 
 #include <X11/Xlib.h>
 
+class X11Pixmap;
+
 class X11Graphics {
 public:
     X11Graphics(Display *dsp, Drawable d, Colormap cmap,
@@ -59,6 +61,8 @@ private:
     bool _doStippling;
     std::vector<Pixmap>	_stipples;	//  Array of Stipple masks.
     //---End Depricated-------------------------------------------
+
+    friend class X11Pixmap;
 };
 
 inline void X11Graphics::drawRectangle(int x, int y,
