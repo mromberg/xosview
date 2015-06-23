@@ -54,6 +54,10 @@ FieldMeterGraph::~FieldMeterGraph( void ){
 }
 
 void FieldMeterGraph::drawfields( int manditory ){
+    drawBars(parent_->g(), manditory);
+}
+
+void FieldMeterGraph::drawBars(X11Graphics &g, int manditory) {
     int i;
 
     if( !useGraph_ ) {
@@ -121,8 +125,8 @@ void FieldMeterGraph::drawfields( int manditory ){
         int swidth = width_ - col_width;
         int sheight = height_ + 1;
         if( sx > x_ && swidth > 0 && sheight > 0 )
-            parent_->copyArea( sx, y_, swidth, sheight, x_, y_ );
-        drawBar( graphNumCols_ - 1 );
+            g.copyArea( sx, y_, swidth, sheight, x_, y_ );
+        drawBar(g, graphNumCols_ - 1);
     } else {
         if (firstTimeDrawn_ &&
           parent_->isAtLeastPartiallyVisible() &&
@@ -138,19 +142,19 @@ void FieldMeterGraph::drawfields( int manditory ){
 
         // need to draw entire graph on expose event
         for( i = 0; i < graphNumCols_; i++ ) {
-            drawBar( i );
+            drawBar(g, i);
         }
     }
 
     graphpos_++;
-    parent_->setStippleN(0);	//  Restore all-bits stipple.
+    g.setStippleN(0);	//  Restore all-bits stipple.
     if ( dousedlegends_ ) {
     	drawused( manditory );
     }
 }
 
 
-void FieldMeterGraph::drawBar( int i ) {
+void FieldMeterGraph::drawBar(X11Graphics &g, int i) {
     int y = y_ + height_;
     int x = x_ + i*width_/graphNumCols_;
     int barwidth = (x_ + (i+1)*width_/graphNumCols_)-x;
@@ -162,8 +166,8 @@ void FieldMeterGraph::drawBar( int i ) {
              *  converting to an int.  */
             barheight = (int)((heightfield_[i*numfields()+j]*height_)+0.5);
 
-            parent_->setForeground( colors_[j] );
-            parent_->setStippleN(j%4);
+            g.setForeground( colors_[j] );
+            g.setStippleN(j%4);
 
             if( barheight > (y-y_) )
                 barheight = (y-y_);
@@ -174,7 +178,7 @@ void FieldMeterGraph::drawBar( int i ) {
 
             y -= barheight;
             if( barheight>0 )
-                parent_->drawFilledRectangle( x, y, barwidth, barheight );
+                g.drawFilledRectangle( x, y, barwidth, barheight );
         }
     }
 }

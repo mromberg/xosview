@@ -40,7 +40,8 @@ protected:
      */
     std::vector<float> heightfield_;
 private:
-    void drawBar( int i );
+    void drawBars(X11Graphics &g, int manditory);
+    void drawBar(X11Graphics &g, int i);
 };
 
 #endif
