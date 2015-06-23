@@ -1,3 +1,8 @@
+- look into an auto-conf way to turn on --enable-debug and --enable-auto-depend
+  and possibly more.
+
+- Linux netmeter's peak does not seem to relate to resource setting
+
 - Add a linux interrupt rate meter (int/sec)
 
 - Update the install scripts for X11R7 locations (or just where distros
@@ -18,9 +23,6 @@
 
 - Look into seperating the X11 drawing interface into a more abstracted layer.
   Make it easier to support other drawing systems Wayland etc.
-
-- Graph meter appears to reset too soon.  String changes may have
-  busted it.
 
 - Add a "scripting" interface so new meters (for non rapidly updating)
   things could be written in python/ruby/shell?

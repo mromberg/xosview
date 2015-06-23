@@ -58,28 +58,42 @@ void FieldMeterGraph::drawfields( int manditory ){
     }
 
     checkBackBuffer();
+    // Repositon x_ and y_ relative to the pixmap
+    int oldx = x_, oldy = y_;
+    x_ = y_ = 0;
+
+    // Draw the graph in the pixmap
     drawBars(_pmap->g(), manditory);
-    //drawBars(parent_->g(), manditory);
-//    logDebug << "x_=" << x_ << ",y_=" << y_
-//             << ",width_=" << width_ <<",height_=" << height_ << std::endl;
-    //_pmap->g().setFG("red");
-    //_pmap->g().drawFilledRectangle(x_, y_, width_+1, height_+1);
-    _pmap->copyTo(parent_->g(), x_, y_, width_+1, height_+1, x_, y_);
+
+    // put x_ and y_ back to window coords
+    x_ = oldx; y_ = oldy;
+
+    // and finally copy the pixmap into the window
+    _pmap->copyTo(parent_->g(), 0, 0, width_, height_, x_, y_);
+
+    if ( dousedlegends_ )
+    	drawused( manditory );
 }
 
 void FieldMeterGraph::checkBackBuffer(void) {
     // Create a new Pixmap to match our area if needed
     bool allocNew = false;
     if (!_pmap
-      || _pmap->width() != parent_->width()
-      || _pmap->height() != parent_->height())
+      || _pmap->width() != width_
+      || _pmap->height() != height_)
         allocNew = true;
 
     if (allocNew) {
         delete _pmap;
         _pmap = 0;
 
-        _pmap = parent_->newX11Pixmap(parent_->width(), parent_->height());
+        // the x_ and x_ if a FieldMeter are relative to
+        // the parent window.  The width_ and height_ are for
+        // the actual meter graphic display (where x_ and y_ are upper left
+        _pmap = parent_->newX11Pixmap(width_, height_);
+        logDebug << "new X11Pixmap: " << width_ <<", " << height_ << std::endl;
+
+        // Fill is with the last "idle" color
         _pmap->g().setBG(colors_[numfields()-1]);
         _pmap->g().setFG(colors_[numfields()-1]);
         _pmap->g().drawFilledRectangle(0, 0, _pmap->width(), _pmap->height());
@@ -139,17 +153,18 @@ void FieldMeterGraph::drawBars(X11Graphics &g, int manditory) {
       && !parent_->isExposed() && parent_->isFullyVisible() ) {
         // scroll area
         int col_width = width_/graphNumCols_;
-        if( col_width < 1 ) {
+        if( col_width < 1 )
             col_width = 1;
-        }
 
         int sx = x_ + col_width;
         int swidth = width_ - col_width;
-        int sheight = height_ + 1;
-        if( sx > x_ && swidth > 0 && sheight > 0 )
+        int sheight = height_;
+        if( swidth > 0 && sheight > 0 ) {
             g.copyArea( sx, y_, swidth, sheight, x_, y_ );
+        }
         drawBar(g, graphNumCols_ - 1);
-    } else {
+    }
+    else {
         if (firstTimeDrawn_ &&
           parent_->isAtLeastPartiallyVisible() &&
           parent_->hasBeenExposedAtLeastOnce()) {
@@ -170,9 +185,7 @@ void FieldMeterGraph::drawBars(X11Graphics &g, int manditory) {
 
     graphpos_++;
     g.setStippleN(0);	//  Restore all-bits stipple.
-    if ( dousedlegends_ ) {
-    	drawused( manditory );
-    }
+
 }
 
 
