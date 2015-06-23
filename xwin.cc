@@ -6,6 +6,7 @@
 #include "xwin.h"
 #include "Xrm.h"
 #include "log.h"
+#include "x11pixmap.h"
 
 
 
@@ -499,4 +500,9 @@ XWin::Event::Event( XWin *parent, int event, EventCallBack callBack ){
         mask_ = NoEventMask;
         break;
     }
+}
+
+X11Pixmap *XWin::newX11Pixmap(unsigned int width, unsigned int height) {
+    return new X11Pixmap(display_, window_,
+      colormap_, bgcolor_, width, height, g().depth());
 }

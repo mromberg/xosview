@@ -8,13 +8,13 @@
 #include "log.h"
 
 X11Graphics::X11Graphics(Display *dsp, Drawable d, Colormap cmap,
-  const std::string &bgColor)
+  unsigned long bgPixVal)
     : _dsp(dsp), _drawable(d), _cmap(cmap), _gc(0), _depth(0),
-      _fgPixel(0), _bgPixel(0), _doStippling(false) {
+      _fgPixel(0), _bgPixel(bgPixVal), _doStippling(false) {
 
     _gc = XCreateGC(_dsp, _drawable, 0, NULL);
     _depth = getDepth(_dsp, _drawable);
-    setBG(bgColor);
+    setBG(_bgPixel);
     setFG("white");
 }
 
@@ -85,4 +85,15 @@ void X11Graphics::setBG(const std::string &color) {
 void X11Graphics::setBG(unsigned long pixVal) {
     _bgPixel = pixVal;
     XSetBackground(_dsp, _gc, _bgPixel);
+}
+
+unsigned int X11Graphics::depth(void) {
+    Window root;
+    int x, y;
+    unsigned int width, height, border, depth;
+
+    XGetGeometry(_dsp, _drawable, &root, &x, &y,
+      &width, &height, &border, &depth);
+
+    return depth;
 }

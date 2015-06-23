@@ -22,17 +22,12 @@
 //       to pick up graphNumCols resource.
 //   5.  Make the checkResources () function in the meter set the
 //	 useGraph_ variable according to the, e.g., xosview*cpuGraph resource.
-
-#ifdef HAVE_FSTREAM
-#include <fstream>
-#else
-#include <fstream.h>
-#endif
-#include <math.h>		//  For fabs()
-#include "general.h"
-#include "fieldmeter.h"
 #include "fieldmetergraph.h"
-#include "xosview.h"
+#include "x11pixmap.h"
+
+#include <fstream>
+
+#include <math.h>		//  For fabs()
 
 
 FieldMeterGraph::FieldMeterGraph( XOSView *parent,
@@ -40,7 +35,7 @@ FieldMeterGraph::FieldMeterGraph( XOSView *parent,
   const std::string &legend, int docaptions, int dolegends,
   int dousedlegends )
     : FieldMeterDecay (parent, numfields, title, legend, docaptions,
-      dolegends, dousedlegends) {
+      dolegends, dousedlegends), _pmap(0) {
 
     useGraph_ = 0;
     firstTimeDrawn_ = 1;
@@ -51,10 +46,25 @@ FieldMeterGraph::FieldMeterGraph( XOSView *parent,
 }
 
 FieldMeterGraph::~FieldMeterGraph( void ){
+    delete _pmap;
 }
 
 void FieldMeterGraph::drawfields( int manditory ){
     drawBars(parent_->g(), manditory);
+}
+
+void FieldMeterGraph::checkBackBuffer(void) {
+    // Create a new Pixmap to match our area if needed
+    bool allocNew = false;
+    if (!_pmap || _pmap->width() != width_ || _pmap->height() != height_)
+        allocNew = true;
+
+    if (allocNew) {
+        delete _pmap;
+        _pmap = 0;
+
+        _pmap = parent_->newX11Pixmap(width_, height_);
+    }
 }
 
 void FieldMeterGraph::drawBars(X11Graphics &g, int manditory) {

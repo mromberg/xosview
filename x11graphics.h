@@ -15,8 +15,10 @@
 class X11Graphics {
 public:
     X11Graphics(Display *dsp, Drawable d, Colormap cmap,
-      const std::string &bgColor="black");
+      unsigned long bgPixVal = 0);
     ~X11Graphics(void);
+
+    unsigned int depth(void);
 
     void setFG(const std::string &color);
     void setFG(unsigned long pixVal);

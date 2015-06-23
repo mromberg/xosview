@@ -16,7 +16,7 @@
 class X11Pixmap {
 public:
     X11Pixmap(Display *dsp, Drawable parent, Colormap cmap,
-      const std::string &bgColor, int width, int height, int depth);
+      unsigned long bgPixVal, int width, int height, int depth);
     ~X11Pixmap(void);
 
     X11Graphics &g(void) { return *_g; }

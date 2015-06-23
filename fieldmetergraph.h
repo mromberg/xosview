@@ -16,6 +16,8 @@
 #include "fieldmeterdecay.h"
 #include <vector>
 
+class X11Pixmap;
+
 class FieldMeterGraph : public FieldMeterDecay {
 public:
     FieldMeterGraph( XOSView *parent, int numfields,
@@ -40,8 +42,11 @@ protected:
      */
     std::vector<float> heightfield_;
 private:
+    X11Pixmap *_pmap;  // backbuffer
+
     void drawBars(X11Graphics &g, int manditory);
     void drawBar(X11Graphics &g, int i);
+    void checkBackBuffer(void);
 };
 
 #endif

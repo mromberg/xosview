@@ -7,12 +7,12 @@
 #include "x11pixmap.h"
 
 X11Pixmap::X11Pixmap(Display *dsp, Drawable parent, Colormap cmap,
-  const std::string &bgColor, int width, int height, int depth)
+  unsigned long bgPixVal, int width, int height, int depth)
     : _pmap(0), _dsp(dsp), _parent(parent), _g(0),
       _width(width), _height(height) {
 
     _pmap = XCreatePixmap(dsp, parent, _width, _height, depth);
-    _g = new X11Graphics(_dsp, _pmap, cmap, bgColor);
+    _g = new X11Graphics(_dsp, _pmap, cmap, bgPixVal);
 
     _g->clear(0, 0, _width, _height);
 }

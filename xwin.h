@@ -16,6 +16,7 @@
 
 
 class XWin;
+class X11Pixmap;
 
 typedef void (XWin::*EventCallBack)( XEvent &event );
 
@@ -43,8 +44,12 @@ public:
     void iconname( const std::string &str )
         { XSetIconName( display_, window_, str.c_str() ); }
 
+    //-----------------------------------------------
     // New Graphics interface (in progress)
+    //-----------------------------------------------
     X11Graphics &g(void) { return *_graphics; }
+    X11Pixmap *newX11Pixmap(unsigned int width, unsigned int height);
+    //-----------------------------------------------
 
     void clear( void ) { XClearWindow( display_, window_ ); }
     void clear( int x, int y, int width, int height )
