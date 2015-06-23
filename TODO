@@ -1,3 +1,5 @@
+- Add a linux interrupt rate meter (int/sec)
+
 - Update the install scripts for X11R7 locations (or just where distros
   now dump stuff.
 

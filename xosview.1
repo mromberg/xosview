@@ -163,7 +163,7 @@ an abbreviation for all three of the free BSD operating systems
 
 \fBInterrupts\fP
     "leds" which blink when an interrupt occurs.
-    Linux  : IRQs 0 - 15
+    Linux  : IRQs 0 - 64 (per cpu if configured)
     *BSD   : IRQs 0 - 15 (or fewer, depending on architecture)
     HPUX   : < Not Supported >
 
@@ -821,6 +821,17 @@ This is the color that will be used to show "active" interrupts.
 xosview*intOffColor: \fIcolor\fP
 .RS
 This is the color that will be used to show "inactive" interrupts.
+.RE
+
+xosview*intFormat: (single, all, both or auto)
+.RS
+Linux only.
+.RE
+.RS
+If single, only a cumulative meter for all CPU is created. All creates a
+meter for each CPU, but no cumulative meter. Both creates one cumulative
+meter and one per cpu. auto behaves like single on uniprocessor system,
+and like both on multiprocessor systems.
 .RE
 
 .\"  Do the priority resource
