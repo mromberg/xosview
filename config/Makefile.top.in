@@ -9,6 +9,8 @@ include Makefile.config
 OBJS = \
 llist.o \
 xwin.o \
+x11graphics.o \
+x11pixmap.o \
 Xrm.o \
 defaultstring.o \
 meter.o \
