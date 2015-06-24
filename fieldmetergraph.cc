@@ -100,7 +100,7 @@ void FieldMeterGraph::checkBackBuffer(void) {
     }
 }
 
-void FieldMeterGraph::drawBars(X11Graphics &g, int manditory) {
+void FieldMeterGraph::drawBars(X11Graphics &g, int ) {
     int i;
 
     if( total_ <= 0.0 )

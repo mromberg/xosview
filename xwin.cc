@@ -65,13 +65,13 @@ XWin::~XWin( void ){
 void XWin::init( int argc, char **argv ){
     XGCValues            gcv;
     XSetWindowAttributes xswa;
-    Pixmap	       background_pixmap;
-    int		       doPixmap = 0;
 
     setFont();
     setColors();
     getGeometry();
 #ifdef HAVE_XPM
+    int		       doPixmap = 0;
+    Pixmap	       background_pixmap;
     doPixmap=getPixmap(&background_pixmap);
 #endif
 
@@ -96,10 +96,12 @@ void XWin::init( int argc, char **argv ){
     XChangeWindowAttributes(display_, window_,
       (CWColormap | CWBitGravity), &xswa);
 
+#ifdef HAVE_XPM
     // If there is a pixmap file, set it as the background
     if(doPixmap) {
 	XSetWindowBackgroundPixmap(display_,window_,background_pixmap);
     }
+#endif
 
     // Do transparency if requested
     if(isResourceTrue("transparent")) {
