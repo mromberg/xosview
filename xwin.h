@@ -51,31 +51,15 @@ public:
     X11Pixmap *newX11Pixmap(unsigned int width, unsigned int height);
     //-----------------------------------------------
 
-    void clear( void ) { XClearWindow( display_, window_ ); }
-    void clear( int x, int y, int width, int height )
-        { XClearArea( display_, window_, x, y, width, height, False ); }
-    unsigned long allocColor( const std::string &name );
-    void setForeground( unsigned long pixelvalue )
-        { XSetForeground( display_, gc_, pixelvalue ); }
-    void setBackground( unsigned long pixelvalue )
-        { XSetBackground( display_, gc_, pixelvalue ); }
-    void setStipple( Pixmap stipple);
-    void setStippleN (int n) {setStipple(stipples_[n]); }
-    Pixmap createPixmap(const char* data, unsigned int w, unsigned int h);
-
-    unsigned long foreground( void ) { return fgcolor_; }
-    unsigned long background( void ) { return bgcolor_; }
     void resize( int width, int height )
         { XResizeWindow( display_, window_, width, height ); }
-    void lineWidth( int width );
-    void drawLine( int x1, int y1, int x2, int y2 )
-        { XDrawLine( display_, window_, gc_, x1, y1, x2, y2 ); }
-    void drawRectangle( int x, int y, int width, int height )
-        { XDrawRectangle( display_, window_, gc_, x, y, width, height ); }
-    void drawFilledRectangle( int x, int y, int width, int height );
-    void drawString( int x, int y, const std::string &str );
-    void copyArea( int src_x, int src_y, int width, int height,
-      int dest_x, int dest_y );
+
+
+
+
+    //----------------------------------------
+    // TODO
+    //----------------------------------------
     int textWidth( const std::string &str, int n )
         { return XTextWidth( font_, str.c_str(), n ); }
     int textWidth( const std::string &str )
@@ -83,18 +67,51 @@ public:
     int textAscent( void ) { return font_->ascent; }
     int textDescent( void ) { return font_->descent; }
     int textHeight( void ) { return textAscent() + textDescent(); }
+    //----------------------------------------
 
     virtual void checkevent( void );
     void map( void ) { XMapWindow( display_, window_ ); }
     void unmap( void ) { XUnmapWindow( display_, window_ ); }
-    void flush( void ) { XFlush( display_ ); }
-
     std::string getResource( const std::string &name ); // exit() if not found
     std::string getResourceOrUseDefault( const std::string &name,
       const std::string &defaultVal );
     bool isResourceTrue( const std::string &name );
 
     void dumpResources(std::ostream &os );
+
+    //-------------------------------------------------
+    // Depricated API
+    //-------------------------------------------------
+    void lineWidth( unsigned int width ) { g().lineWidth(width); }
+    unsigned long allocColor( const std::string &name )
+        { return g().allocColor(name); }
+    unsigned long foreground( void ) { return g().fgPixel(); }
+    unsigned long background( void ) { return g().bgPixel(); }
+    void drawString( int x, int y, const std::string &str )
+        { g().drawString(x, y, str); }
+    void drawLine( int x1, int y1, int x2, int y2 )
+        { g().drawLine(x1, y1, x2, y2); }
+    void flush( void ) { g().flush(); }
+    void clear( void ) { g().clear(); }
+    void clear( int x, int y, unsigned int width, unsigned int height )
+        { g().clear(x, y, width, height); }
+    void drawRectangle(int x, int y, unsigned int width, unsigned int height)
+        { g().drawRectangle(x, y, width, height); }
+    void drawFilledRectangle( int x, int y,
+      unsigned int width, unsigned int height )
+        { g().drawFilledRectangle(x, y, width, height); }
+    void copyArea( int src_x, int src_y,
+      unsigned int width, unsigned int height, int dest_x, int dest_y )
+        { g().copyArea(src_x, src_y, width, height, dest_x, dest_y); }
+    void setStipple( Pixmap stipple) { g().setStipple(stipple); }
+    void setStippleN (int n) { g().setStippleN(n); }
+    Pixmap createPixmap(const std::string &data,
+      unsigned int w, unsigned int h) { return g().createPixmap(data, w, h); }
+    void setForeground( unsigned long pixelvalue )
+        { g().setForeground(pixelvalue); }
+    void setBackground( unsigned long pixelvalue )
+        { g().setBackground(pixelvalue); }
+    //-End Depricated----------------------------------
 
 protected:
     class Event {
@@ -125,20 +142,21 @@ protected:
     std::string   name_;          //  Application's name
     XTextProperty title_;         //  Window name for title bar
     XTextProperty iconname_;      //  Icon name for icon label
+private:
     unsigned long fgcolor_;       //  Foreground color of the window
     unsigned long bgcolor_;       //  Background color of the window
+    Colormap      colormap_;      //  The colormap
+protected:
     XWindowAttributes attr_;      //  Attributes of the window
     XSizeHints    *sizehints_;    //  Size hints for window manager
     Event         *events_;       //  List of Events for this window
     int           done_;          //  If true the application is finished.
     Atom          wm_, wmdelete_; //  Used to handle delete Events
-    Colormap      colormap_;      //  The colormap
+
     std::string	display_name_;  //  Display name string.
     char*		geometry_;	//  geometry string.
-    Xrm*		xrmptr_;	//  Pointer to the XOSView xrm.  FIXME???
-    int		doStippling_;	//  Either 0 or 1.
-    Pixmap	stipples_[4];	//  Array of Stipple masks.
-    X11Graphics *_graphics;            //  New graphics interface
+    Xrm*		xrmptr_;	//  Pointer to the XOSView xrm.  FIXME??
+
 
     void init( int argc, char *argv[] );
     void getGeometry( void );
@@ -162,41 +180,7 @@ protected:
     Colormap colormap( void ) { return colormap_; }
     int screen( void ) { return DefaultScreen( display_ ); }
 private:
+    X11Graphics *_graphics;            //  New graphics interface
 };
-
-inline void XWin::setStipple( Pixmap stipple) {
-    if (!doStippling_)
-        return;
-    XSetStipple(display_, gc_, stipple);
-    XGCValues xgcv;
-    xgcv.fill_style = FillOpaqueStippled;
-    XChangeGC (display_, gc_, GCFillStyle, &xgcv);
-}
-
-inline Pixmap XWin::createPixmap(const char* data, unsigned int w,
-  unsigned int h) {
-    return XCreatePixmapFromBitmapData(display_, window_,
-      const_cast<char *>(data), w, h, 0, 1, 1);
-}
-
-inline void XWin::lineWidth( int width ) {
-    XGCValues xgcv;
-    xgcv.line_width = width;
-    XChangeGC( display_, gc_, GCLineWidth, &xgcv );
-}
-
-inline void XWin::drawFilledRectangle( int x, int y, int width, int height ) {
-    XFillRectangle( display_, window_, gc_, x, y, width + 1, height + 1 );
-}
-
-inline void XWin::drawString( int x, int y, const std::string &str ) {
-    XDrawString( display_, window_, gc_, x, y, str.c_str(), str.size() );
-}
-
-inline void XWin::copyArea( int src_x, int src_y, int width, int height,
-  int dest_x, int dest_y ) {
-    XCopyArea( display_, window_, window_, gc_, src_x, src_y,
-      width, height, dest_x, dest_y );
-}
 
 #endif

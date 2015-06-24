@@ -105,12 +105,17 @@ XOSView::XOSView( const std::string &instName,
         logFatal << "No meters were enabled!  Exiting..." << std::endl;
     }
 
+    // determine the width and height of the window then create it
+    // These *HAVE* to come before the resource checking
+    // because checking resources alloc colors
+    // And there is no display set in the graphics
+    // until init() does it's thing.
+    figureSize();
+    init( argc, argv );
+
     //  Have the meters re-check the resources.
     checkMeterResources();
 
-    // determine the width and height of the window then create it
-    figureSize();
-    init( argc, argv );
     title( winname() );
     iconname( winname() );
     dolegends();
@@ -271,7 +276,7 @@ XOSView::~XOSView( void ){
 
 void XOSView::reallydraw( void ){
     logDebug << "Doing draw." << std::endl;
-    clear();
+    g().clear();
     MeterNode *tmp = meters_;
 
     while ( tmp != NULL ){
@@ -399,7 +404,8 @@ void XOSView::exposeEvent( XExposeEvent &event ) {
     }
 }
 
-void XOSView::resizeEvent( XEvent & ) {
+void XOSView::resizeEvent( XEvent &e ) {
+    g().resize(e.xconfigure.width, e.xconfigure.height);
     resize();
     expose_flag_++;
     draw();

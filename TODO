@@ -1,3 +1,5 @@
+- make the network meter on by default for linux
+
 - look into an auto-conf way to turn on --enable-debug and --enable-auto-depend
   and possibly more.
 

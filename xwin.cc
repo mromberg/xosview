@@ -115,30 +115,19 @@ void XWin::init( int argc, char **argv ){
         tmp = tmp->next_;
     }
 
+    // Create new Graphics interface.
+    _graphics = new X11Graphics(display_, window_, true, colormap_, gc_,
+      bgcolor_);
+    g().setBG(bgcolor_);
+    g().setFG(fgcolor_);
+    g().setStippleMode(isResourceTrue("enableStipple"));
+
     // Map the main window
     map();
     flush();
     if(XGetWindowAttributes(display_, window_, &attr_) == 0){
         logFatal << "Error getting attributes of Main." << std::endl;
     }
-
-    //  Create stipple pixmaps.
-    stipples_[0] = createPixmap("\000\000", 2, 2);
-    stipples_[1] = createPixmap("\002\000\001\000", 2, 4);
-    stipples_[2] = createPixmap("\002\001", 2, 2);
-    stipples_[3] = createPixmap("\002\003\001\003", 2, 4);
-    doStippling_ = isResourceTrue("enableStipple");
-
-    // Create new Graphics interface.
-    _graphics = new X11Graphics(display_, window_, colormap_);
-    g().setBG(bgcolor_);
-    g().setFG(fgcolor_);
-    // C++11
-    // g().setStipples(std::vector<Pixmap>(std::begin(stipples_),
-    //     std::end(stipples_));
-    g().setStipples(std::vector<Pixmap>(stipples_,
-        &stipples_[sizeof(stipples_)]));
-    g().setStippleMode(doStippling_);
 }
 
 void XWin::setFont( void ){
@@ -394,16 +383,6 @@ void XWin::dumpResources( std::ostream &os ){
     (void) os;  //  Keep gcc happy.
 }
 
-unsigned long XWin::allocColor( const std::string &name ){
-    XColor exact, closest;
-
-    if ( XAllocNamedColor( display_, colormap(), name.c_str(), &closest,
-        &exact ) == 0 )
-        logProblem << "XWin::allocColor() : failed to alloc : "
-                   << name << std::endl;
-
-    return exact.pixel;
-}
 
 void XWin::configureEvent( XEvent &event ){
     x( event.xconfigure.x );

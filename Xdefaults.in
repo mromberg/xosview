@@ -124,7 +124,7 @@ xosview*pageUsedFormat:     autoscale
 
 
 ! ** Network Meter Resources
-xosview*net:                 True
+xosview*net:                 @NetMeter_Default_Setting@
 !xosview*netBandwidth:       7500  ! for 64kbps ISDN
 !xosview*netBandwidth:       5000  ! for up to 57.6kbps modems
 !xosview*netBandwidth:       2000  ! for 28.8kbps modems (no comp) 14.4 (with)
