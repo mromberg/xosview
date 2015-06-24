@@ -229,20 +229,19 @@ void XWin::setColors( void ){
 
 int XWin::getPixmap(Pixmap *pixmap) {
 #ifdef HAVE_XPM
-    char	*pixmap_file;
     XWindowAttributes    root_att;
     XpmAttributes        pixmap_att;
 
-    pixmap_file = (char*) getResourceOrUseDefault("pixmapName",NULL);
+    Xrm::opt pixmap_file = xrmptr_->getResource("pixmapName");
 
-    if (pixmap_file) {
+    if (pixmap_file.first) {
         XGetWindowAttributes(display_, DefaultRootWindow(display_),&root_att);
         pixmap_att.closeness=30000;
         pixmap_att.colormap=root_att.colormap;
         pixmap_att.valuemask=XpmSize|XpmReturnPixels|XpmColormap|XpmCloseness;
         if(XpmReadFileToPixmap(display_,DefaultRootWindow(display_),
-            pixmap_file, pixmap, NULL, &pixmap_att)) {
-            logProblem << "Pixmap " << pixmap_file  << " not found"
+            pixmap_file.second.c_str(), pixmap, NULL, &pixmap_att)) {
+            logProblem << "Pixmap " << pixmap_file.second  << " not found"
                        << std::endl
                        << "Defaulting to blank" << std::endl;
             pixmap=NULL;

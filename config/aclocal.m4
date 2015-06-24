@@ -55,7 +55,12 @@ fi
 
 dnl	For gcc-based (or primarily-gcc) OS's, set EXTRA_CXXFLAGS to -Wall -O4
 AC_DEFUN(AC_GCC_EXTRA_CXXFLAGS, [
+if test "$xosvdebug" = no; then
 	EXTRA_CXXFLAGS="-W -Wall -O3"
+else
+      	EXTRA_CXXFLAGS="-W -Wall -g"
+fi
+AC_MSG_NOTICE([EXTRA_CXXFLAGS=$EXTRA_CXXFLAGS])
 ])
 
 AC_DEFUN(SMP_LINUX,

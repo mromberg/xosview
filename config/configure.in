@@ -5,7 +5,7 @@ AC_INIT(xosview.1)
 CF_TOP_SRCDIR
 AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_HOST
-AC_PROG_CXX
+AC_PROG_CXX([c++ g++])
 ICE_CXX_BOOL
 ICE_CXX_LONG_LONG
 AC_PATH_X
@@ -16,7 +16,9 @@ fi
 
 case "$host_os" in
 linux*|gnu*)
+if test -n "$x_libraries"; then
   LIBS="-L$x_libraries $LIBS"
+fi
   ELF_LINK_FLAGS="" ;;
 *)
   LIBS="-L$x_libraries -R$x_libraries $LIBS"
@@ -52,20 +54,42 @@ AC_PROG_RANLIB
 
 
 dnl
-dnl Enable DEBUG output at compile time
+dnl Enable DEBUG info and messagess at compile time
 dnl
-AC_ARG_ENABLE([debug],
-[  --enable-debug          generate debug messages],
+AC_ARG_ENABLE([devel],
+[  --enable-devel          same as --enable-debug --enable-auto-depend],
 
 if test "$enableval" = "no"
 then
-        echo "disabled debug messages"
+        echo "disabled devel"
 else
-        AC_DEFINE(XOSVDEBUG)
-        echo "enabled  debug messages"
+        echo "enabled  devel"
+        enable_debug="yes"
+        enable_auto_depend="yes"
 fi
 ,
-echo "disabled debug messages by default"
+echo "disabled devel by default"
+)
+
+
+dnl
+dnl Enable DEBUG info and messagess at compile time
+dnl
+AC_ARG_ENABLE([debug],
+[  --enable-debug          generate debug info and messages],
+
+if test "$enableval" = "no"
+then
+        echo "disabled debug info and messages"
+        xosvdebug="no"
+else
+        AC_DEFINE(XOSVDEBUG)
+        xosvdebug="yes"
+        echo "enabled  debug info and messages"
+fi
+,
+xosvdebug="no"
+echo "disabled debug info and messages by default"
 )
 
 dnl
