@@ -6,6 +6,7 @@
 //
 #ifndef X11FONT_H
 #define X11FONT_H
+#include "log.h"
 
 #include <string>
 
@@ -38,18 +39,26 @@ private:
 };
 
 inline unsigned int X11Font::textWidth(const std::string &str) {
+    if (!good())
+        logFatal << "can't use an uninitialized font." << std::endl;
     return XTextWidth(_font, str.c_str(), str.size());
 }
 
 inline int X11Font::textAscent(void) const {
+    if (!good())
+        logFatal << "can't use an uninitialized font." << std::endl;
     return _font->ascent;
 }
 
 inline int X11Font::textDescent(void) const {
+    if (!good())
+        logFatal << "can't use an uninitialized font." << std::endl;
     return _font->descent;
 }
 
 inline unsigned int X11Font::textHeight(void) const {
+    if (!good())
+        logFatal << "can't use an uninitialized font." << std::endl;
     return textAscent() + textDescent();
 }
 

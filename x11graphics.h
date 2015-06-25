@@ -8,6 +8,7 @@
 #define X11GRAPHICS_H
 
 #include "log.h"
+#include "x11font.h"
 
 #include <string>
 #include <vector>
@@ -85,7 +86,7 @@ private:
     unsigned long _bgPixel;
     unsigned int _width;
     unsigned int _height;
-    XFontStruct *_font;
+    X11Font *_font;
 
     void updateInfo(void); // update _width, _height, _depth
     unsigned long getPixelValue(const std::string &color) const;
@@ -146,15 +147,15 @@ inline void X11Graphics::lineWidth(unsigned int width) {
 }
 
 inline unsigned int X11Graphics::textWidth(const std::string &str) {
-    return XTextWidth(_font, str.c_str(), str.size());
+    return _font->textWidth(str);
 }
 
 inline int X11Graphics::textAscent(void) const {
-    return _font->ascent;
+    return _font->textAscent();
 }
 
 inline int X11Graphics::textDescent(void) const {
-    return _font->descent;
+    return _font->textDescent();
 }
 
 inline unsigned int X11Graphics::textHeight(void) const {

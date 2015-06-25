@@ -55,7 +55,9 @@ public:
     void resize( int width, int height )
         { XResizeWindow( display_, window_, width, height ); }
 
-
+    // These return the configured color.  Not the current color.
+    unsigned long foreground( void ) { return fgcolor_; }
+    unsigned long background( void ) { return bgcolor_; }
 
 
     //----------------------------------------
@@ -80,8 +82,7 @@ public:
     void lineWidth( unsigned int width ) { g().lineWidth(width); }
     unsigned long allocColor( const std::string &name )
         { return g().allocColor(name); }
-    unsigned long foreground( void ) { return g().fgPixel(); }
-    unsigned long background( void ) { return g().bgPixel(); }
+
     void drawString( int x, int y, const std::string &str )
         { g().drawString(x, y, str); }
     void drawLine( int x1, int y1, int x2, int y2 )

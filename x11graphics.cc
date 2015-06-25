@@ -16,6 +16,7 @@ X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
       _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0), _font(0),
       _doStippling(false) {
 
+    _font = new X11Font(_dsp);
     updateInfo();
     _gc = XCreateGC(_dsp, _drawable, 0, NULL);
     setFont("fixed");
@@ -39,10 +40,7 @@ X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
 }
 
 X11Graphics::~X11Graphics(void) {
-    if (_font) {
-        XFreeFont(_dsp, _font);
-        _font = 0;
-    }
+    delete _font;
     if (_gc && _myGC)
         XFreeGC(_dsp, _gc);
 }
@@ -158,21 +156,9 @@ unsigned long X11Graphics::allocColor(const std::string &name) {
 }
 
 void X11Graphics::setFont(const std::string &name) {
-    if (_font) {
-        XFreeFont(_dsp, _font);
-        _font = 0;
-    }
-
-    if ((_font = XLoadQueryFont(_dsp, name.c_str())) == NULL) {
-        if ((_font = XLoadQueryFont(_dsp, "fixed")) == NULL) {
-            logFatal << "Cannot load font: " << name << " on display: "
-                     << DisplayString(_dsp) << std::endl;
-        }
-        logProblem << "Cannot load font: " << name << " on display: "
-                   << DisplayString(_dsp) << " using 'fixed'" << std::endl;
-    }
+    _font->setFont(name);
 
     XGCValues gcv;
-    gcv.font = _font->fid;
+    gcv.font = _font->id();
     XChangeGC(_dsp, _gc, GCFont, &gcv);
 }
