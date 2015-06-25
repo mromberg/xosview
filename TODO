@@ -38,9 +38,6 @@
   NetBSD:  Add interrupt-rate meter, add tape-drive meter (or
     arbitrary device throughput meter?)
 
-* Optimise graphing meter to use XCopyArea (or similar) and expose
-    events to reduce X traffic.
-
 * Do if(dolegends_) fix for loadmeter.cc for all ports.
    - Fixed on linux.  Loadmeter peaks at critical level (no re-scaling)
 
@@ -63,10 +60,6 @@
 * Make a better resource for turning meters off/on.  Currently, we
     overload other resources.
 
-* If all meters are disabled, either via resources or command-line
-    options, xosview dies from float-exception.  Probably, we're
-    dividing by the number of meters somewhere.  Fix this.
-
   NetBSD:  Clean up symbol defs in netbsd.cc
   NetBSD:  Merge swapinternal.cc (or at least a lot of it) into kernel.cc
   NetBSD, Linux, hp:  Instead of allowing each meter to figure out the
@@ -74,8 +67,11 @@
     function that does the calculation, using SAMPLE_MSECS and
     priority_.  See the netbsd/diskmeter.cc code for what I think is the
     correct formula (it took me a few attempts to get it right!)
-  Fix depend stuff
-* Get autolookup of X stuff -- perhaps use xmkmf/imake in configure?
+
+*   Fix depend stuff Get autolookup of X stuff -- perhaps use xmkmf/imake
+    in configure?  X11R7 now seems to use /usr and things like /usr/share.
+    So, update the install to do that.  We just have a binary, man page and
+    resource file.
 
   Change the CacheColor stuff from Tom Pavel's patches to be a
     new memWiredColor.
@@ -89,10 +85,6 @@
 
 x Add in support and auto-detect for new NetBSD UVM stuff.
   (added, but no auto-detect).
-
-  Merge in Tom's Xt stuff. -- deferred:  it appears to require
-    Xt, Xaw, and ICE, IIRC, which bloats static executables too
-    much for my taste.  bgrayson
 
 * The Netmeter under *BSD has wrap problems:  the internal
     counter in the kernel is 32 bits, so once we receive 4G of

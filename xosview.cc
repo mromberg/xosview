@@ -430,7 +430,7 @@ void XOSView::createMeters(void) {
         _meters.push_back(mm[i]);
 
     if (_meters.size() == 0)
-        logFatal << "No meters were enabled!  Exiting..." << std::endl;
+        logProblem << "No meters were enabled." << std::endl;
 }
 
 bool XOSView::isResourceTrue( const std::string &name ) {
