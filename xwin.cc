@@ -8,7 +8,7 @@
 #include "Xrm.h"
 #include "log.h"
 #include "x11pixmap.h"
-#include "Xrm.h"
+#include "strutil.h"
 
 #include <sstream>
 
@@ -27,16 +27,13 @@
 XWin::XWin() : _graphics(0) {
 }
 
-void XWin::XWinInit (int argc, char** argv, char* geometry, Xrm* xrm) {
+void XWin::XWinInit(int argc, char** argv) {
     (void) argc;
     (void) argv;  //  Avoid gcc warnings about unused variables.
     //  Eventually, we may want to have XWin handle some arguments other
     //  than resources, so argc and argv are left as parameters.  BCG
 
-    geometry_ = geometry;  //  Save for later use.
     width_ = height_ = x_ = y_ = 0;
-    xrmptr_ = xrm;
-
     done_ = false;
 
     // Set up the default Events
@@ -70,18 +67,16 @@ XWin::~XWin( void ){
 }
 
 
-void XWin::init( int argc, char **argv ){
+void XWin::init(int argc, char **argv, const std::string &pixmapFName,
+  const std::string &geomStr, bool geomUnspecified){
     XSetWindowAttributes xswa;
-
 
     std::string fontName = getResource("font");
     setColors();
-    getGeometry();
-#ifdef HAVE_XPM
-    int		       doPixmap = 0;
+    getGeometry(geomStr, geomUnspecified);
+
     Pixmap	       background_pixmap;
-    doPixmap=getPixmap(&background_pixmap);
-#endif
+    bool doPixmap = getPixmap(&background_pixmap, pixmapFName);
 
     window_ = XCreateSimpleWindow(display_, DefaultRootWindow(display_),
       sizehints_->x, sizehints_->y,
@@ -132,15 +127,15 @@ void XWin::init( int argc, char **argv ){
     }
 }
 
-void XWin::setHints( int argc, char *argv[] ){
+void XWin::setHints(int argc, char *argv[]){
     // Set up class hint
     XClassHint    *classhints;   //  Class hint for window manager
     if((classhints = XAllocClassHint()) == NULL){
         logFatal << "Error allocating class hint!" << std::endl;
     }
     //  We have to cast away the const's.
-    std::string cname = xrmptr_->className();
-    std::string iname = xrmptr_->instanceName();
+    std::string cname = className();
+    std::string iname = instanceName();
     classhints->res_name = const_cast<char *>(iname.c_str());
     classhints->res_class = const_cast<char *>(cname.c_str());
 
@@ -206,37 +201,37 @@ void XWin::setColors( void ){
         fgcolor_ = color.pixel;
 }
 
-int XWin::getPixmap(Pixmap *pixmap) {
+bool XWin::getPixmap(Pixmap *pixmap, const std::string &pixmapFName) {
+    if (pixmapFName == "") {
+        pixmap = NULL;
+        return false;
+    }
+
 #ifdef HAVE_XPM
     XWindowAttributes    root_att;
     XpmAttributes        pixmap_att;
 
-    Xrm::opt pixmap_file = xrmptr_->getResource("pixmapName");
-
-    if (pixmap_file.first) {
-        XGetWindowAttributes(display_, DefaultRootWindow(display_),&root_att);
-        pixmap_att.closeness=30000;
-        pixmap_att.colormap=root_att.colormap;
-        pixmap_att.valuemask=XpmSize|XpmReturnPixels|XpmColormap|XpmCloseness;
-        if(XpmReadFileToPixmap(display_,DefaultRootWindow(display_),
-            pixmap_file.second.c_str(), pixmap, NULL, &pixmap_att)) {
-            logProblem << "Pixmap " << pixmap_file.second  << " not found"
-                       << std::endl
-                       << "Defaulting to blank" << std::endl;
-            pixmap=NULL;
-            return 0; // OOps
-        }
-        return 1;  // Good, found the pixmap
+    XGetWindowAttributes(display_, DefaultRootWindow(display_),&root_att);
+    pixmap_att.closeness=30000;
+    pixmap_att.colormap=root_att.colormap;
+    pixmap_att.valuemask=XpmSize|XpmReturnPixels|XpmColormap|XpmCloseness;
+    if(XpmReadFileToPixmap(display_,DefaultRootWindow(display_),
+        pixmapFName.c_str(), pixmap, NULL, &pixmap_att)) {
+        logProblem << "Pixmap " << pixmapFName << " not found"
+                   << std::endl
+                   << "Defaulting to blank" << std::endl;
+        pixmap=NULL;
+        return false; // OOps
     }
-    return 0; // No file specified, none used
+    return true;  // Good, found the pixmap
 #else
-    (void) pixmap;
+    pixmap = NULL;
     logBug << "getPixmap called, when Xpm is not enabled!\n" ;
-    return 0;
+    return false;
 #endif
 }
 
-void XWin::getGeometry( void ){
+void XWin::getGeometry(const std::string &geomStr, bool geomUnspecified) {
     int                  bitmask;
 
     // Fill out a XsizeHints structure to inform the window manager
@@ -258,10 +253,9 @@ void XWin::getGeometry( void ){
           << sizehints_->x << "+" << sizehints_->y;
 
     // Process the geometry specification
-    Xrm::opt gopt = xrmptr_->getResource("geometry");
-    const char *gptr = geometry_;
-    if (gopt.first)
-        gptr = gopt.second.c_str();
+    const char *gptr = NULL;
+    if (!geomUnspecified)
+        gptr = geomStr.c_str();
     bitmask =  XGeometry(display_, DefaultScreen(display_), gptr,
       defgs.str().c_str(),
       0,
@@ -337,42 +331,6 @@ void XWin::addEvent( Event *event ){
         tmp->next_ = event;
     }
 }
-
-bool XWin::isResourceTrue( const std::string &name ) {
-    Xrm::opt val = xrmptr_->getResource(name);
-    if (!val.first)
-        return false;
-
-    return val.second == "True";
-}
-
-std::string XWin::getResourceOrUseDefault( const std::string &name,
-  const std::string &defaultVal ){
-
-    Xrm::opt retval = xrmptr_->getResource (name);
-    if (retval.first)
-        return retval.second;
-
-    return defaultVal;
-}
-
-std::string XWin::getResource( const std::string &name ){
-    Xrm::opt retval = xrmptr_->getResource (name);
-    if (retval.first)
-        return retval.second;
-    else {
-        logFatal << "Couldn't find '" << name
-                 << "' resource in the resource database!\n";
-        /*  Some compilers aren't smart enough to know that exit() exits.  */
-        return '\0';
-    }
-}
-
-void XWin::dumpResources( std::ostream &os ){
-    logProblem << "Function not implemented!\n";  //BCG FIXME Need to make this.
-    (void) os;  //  Keep gcc happy.
-}
-
 
 void XWin::configureEvent( XEvent &event ){
     x( event.xconfigure.x );
@@ -476,3 +434,37 @@ X11Pixmap *XWin::newX11Pixmap(unsigned int width, unsigned int height) {
     return new X11Pixmap(display_, window_,
       colormap_, bgcolor_, width, height, g().depth());
 }
+
+//-------------------------------------------------------------------
+// These are just stubs to make XWin stand alone if a derrived class
+// does not implement a resource data base
+//-------------------------------------------------------------------
+std::string XWin::getResource(const std::string &name) {
+    if (name == "transparent")
+        return "True";
+    else if (name == "enableStipple")
+        return "True";
+    else if (name == "font")
+        return "fixed";
+    else if (name == "background")
+        return "black";
+    else if (name == "foreground")
+        return "white";
+    logFatal << "Resource " << name << "not found." << std::endl;
+    return "";
+}
+
+std::string XWin::getResourceOrUseDefault(const std::string &,
+  const std::string &) {
+    logFatal << "NOT IMPLEMENTED" << std::endl;
+    return "";
+}
+
+bool XWin::isResourceTrue(const std::string &name) {
+    return util::tolower(getResource(name)) == "true";
+}
+
+void XWin::dumpResources(std::ostream &) {
+    logFatal << "not implemented." << std::endl;
+}
+//-------------------------------------------------------------------

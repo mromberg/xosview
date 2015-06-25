@@ -43,7 +43,7 @@ XOSView::XOSView(int argc, char *argv[])
     //  The resources need to be initialized before calling XWinInit, because
     //  XWinInit looks at the geometry resource for its geometry.  BCG
     xrm.loadAndMergeResources(argc, argv, display());
-    XWinInit (argc, argv, NULL, &xrm);
+    XWinInit (argc, argv);
 
     setSleepTime();
 
@@ -61,7 +61,9 @@ XOSView::XOSView(int argc, char *argv[])
     // And there is no display set in the graphics
     // until init() does it's thing.
     figureSize();
-    init(argc, argv);
+    Xrm::opt geom = xrm.getResource("geometry");
+    init(argc, argv, getResourceOrUseDefault("pixmapName", ""),
+      geom.second, !geom.first);
 
     checkMeterResources(); //  Have the meters re-check the resources.
 
@@ -429,4 +431,38 @@ void XOSView::createMeters(void) {
 
     if (_meters.size() == 0)
         logFatal << "No meters were enabled!  Exiting..." << std::endl;
+}
+
+bool XOSView::isResourceTrue( const std::string &name ) {
+    Xrm::opt val = xrm.getResource(name);
+    if (!val.first)
+        return false;
+
+    return val.second == "True";
+}
+
+std::string XOSView::getResourceOrUseDefault( const std::string &name,
+  const std::string &defaultVal ){
+
+    Xrm::opt retval = xrm.getResource (name);
+    if (retval.first)
+        return retval.second;
+
+    return defaultVal;
+}
+
+std::string XOSView::getResource( const std::string &name ){
+    Xrm::opt retval = xrm.getResource (name);
+    if (retval.first)
+        return retval.second;
+    else {
+        logFatal << "Couldn't find '" << name
+                 << "' resource in the resource database!\n";
+        /*  Some compilers aren't smart enough to know that exit() exits.  */
+        return '\0';
+    }
+}
+
+void XOSView::dumpResources( std::ostream &os ){
+    xrm.dump(os);
 }

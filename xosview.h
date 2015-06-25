@@ -41,6 +41,16 @@ public:
     bool isFullyVisible() const { return _isvisible && !_ispartiallyvisible; }
     bool isAtLeastPartiallyVisible() const { return _isvisible; }
 
+    //------------------------------------------------------
+    // Resouce interface
+    //------------------------------------------------------
+    virtual std::string getResource(const std::string &name); // exit not found
+    virtual std::string getResourceOrUseDefault(const std::string &name,
+      const std::string &defaultVal);
+    virtual bool isResourceTrue(const std::string &name);
+    virtual void dumpResources(std::ostream &os);
+    //------------------------------------------------------
+
 protected:
     Xrm xrm;
     int caption_, legend_, xoff_, yoff_, usedlabels_;
@@ -51,7 +61,8 @@ protected:
     bool _ispartiallyvisible;
     std::vector<Meter *> _meters;
 
-
+    virtual std::string className(void) { return xrm.className(); }
+    virtual std::string instanceName(void) { return xrm.instanceName(); }
     void resize(void);
     void checkArgs(int argc, char** argv) const;
     void usleep_via_select(unsigned long usec);

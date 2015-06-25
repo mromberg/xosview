@@ -9,7 +9,6 @@
 
 
 
-class Xrm;
 class XWin;
 class X11Pixmap;
 
@@ -33,23 +32,21 @@ public:
     Display *display(void) { return display_; }
     Window window(void) { return window_; }
 
-
+    //------------------------------------------------------
+    // Resouce interface
+    //------------------------------------------------------
+    virtual std::string getResource(const std::string &name); // exit not found
+    virtual std::string getResourceOrUseDefault(const std::string &name,
+      const std::string &defaultVal);
+    virtual bool isResourceTrue(const std::string &name);
+    virtual void dumpResources(std::ostream &os);
+    //------------------------------------------------------
 
     void title(const std::string &str)
         { XStoreName( display_, window_, str.c_str() ); }
     void iconname(const std::string &str)
         { XSetIconName( display_, window_, str.c_str() ); }
     const std::string &appName(void) const { return name_; }
-
-    //------------------------------------------------------
-    // Resouce interface
-    //------------------------------------------------------
-    std::string getResource(const std::string &name); // exit() if not found
-    std::string getResourceOrUseDefault(const std::string &name,
-      const std::string &defaultVal);
-    bool isResourceTrue(const std::string &name);
-    void dumpResources(std::ostream &os);
-    //------------------------------------------------------
 
     //-----------------------------------------------
     // New Graphics interface
@@ -103,12 +100,23 @@ public:
     //-End Depricated----------------------------------
 
 protected:
-    void XWinInit(int argc, char* argv[], char* geometry, Xrm* xrmp);
-    void init(int argc, char *argv[]);
+    void XWinInit(int argc, char* argv[]);
+    void init(int argc, char *argv[], const std::string &pixmapFName="",
+      const std::string &geomStr="", bool geomUnspecified=true);
+
+    virtual std::string className(void) {
+        logProblem << "className() not overridden using killroy...\n";
+        return "killroy";
+    }
+    virtual std::string instanceName(void) {
+        logProblem << "instanceName() not overridden using killroy...\n";
+        return "killroy";
+    }
+
     int done(void) { return done_; }
     void done(int val) { done_ = val; }
-    void getGeometry(void);
-    int getPixmap(Pixmap *);
+    void getGeometry(const std::string &geomStr, bool geomUnspecified);
+    bool getPixmap(Pixmap *, const std::string &pixmapFName);
     void x(int val) { x_ = val; }
     void y(int val) { y_ = val; }
     void width(unsigned int val) { width_ = val; }
@@ -161,8 +169,6 @@ protected:
     //-----------------------------------
 
 private:
-    Xrm*		xrmptr_;	//  Pointer to the XOSView xrm.  FIXME??
-
     X11Graphics *_graphics;            //  New graphics interface
 
     XWindowAttributes attr_;      //  Attributes of the window
@@ -171,7 +177,6 @@ private:
     bool           done_;          //  If true the application is finished.
     Atom          wm_, wmdelete_; //  Used to handle delete Events
     std::string	display_name_;  //  Display name string.
-    char*		geometry_;	//  geometry string.
     int x_, y_;                   //  position of the window
     unsigned int width_, height_; //  width and height of the window
     Display       *display_;      //  Connection to X display
