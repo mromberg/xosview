@@ -117,7 +117,7 @@ echo "enabled  Linux system calls by default"
 
 INSTALL_ARGS='-m 755'
 ]
-	NetMeter_Default_Setting=False
+	NetMeter_Default_Setting=True
 )
 
 

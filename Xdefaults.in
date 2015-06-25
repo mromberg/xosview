@@ -21,6 +21,7 @@
 xosview*captions:           True
 xosview*labels:             True
 xosview*transparent:        False
+!xosview*pixmapName:         /path/sunshine.xpm  ! tile and xpm as background
 xosview*meterLabelColor:    #EEEEEE
 xosview*usedlabels:         True
 xosview*usedLabelColor:     #EEEEEE

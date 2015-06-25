@@ -1,10 +1,5 @@
 - Transparent almost works.  Windom moves do not update the background
 
-- make the network meter on by default for linux
-
-- look into an auto-conf way to turn on --enable-debug and --enable-auto-depend
-  and possibly more.
-
 - Linux netmeter's peak does not seem to relate to resource setting
 
 - Add a linux interrupt rate meter (int/sec)
