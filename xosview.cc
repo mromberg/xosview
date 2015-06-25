@@ -5,8 +5,8 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "xosview.h"
-#include "x11font.h"
 #include "meter.h"
+#include "x11font.h"
 #include "MeterMaker.h"
 #include "strutil.h"
 #if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
@@ -16,115 +16,53 @@
 #include <algorithm>
 
 #include <unistd.h>
-#include <stdlib.h>
-#include <sys/time.h>
 
 
 
 static const char * const versionString = "xosview version: " XOSVIEW_VERSION;
-
 static const char NAME[] = "xosview@";
 
 
-double MAX_SAMPLES_PER_SECOND = 10;
+double XOSView::MAX_SAMPLES_PER_SECOND = 10;
 
 
-XOSView::XOSView( const std::string &instName,
-  int argc, char *argv[] ) : XWin(), xrm(Xrm("xosview", instName)){
+XOSView::XOSView(int argc, char *argv[])
+    : XWin(), xrm(Xrm("xosview", iname(argc, argv))){
 
     // Check for version arguments first.  This allows
     // them to work without the need for a connection
     // to the X server
     checkVersion(argc, argv);
 
-    setDisplayName (xrm.getDisplayName( argc, argv));
+    setDisplayName(xrm.getDisplayName(argc, argv));
+
     openDisplay();  //  So that the Xrm class can contact the display for its
-    //  default values.
+                    //  default values.
+
     //  The resources need to be initialized before calling XWinInit, because
     //  XWinInit looks at the geometry resource for its geometry.  BCG
-    xrm.loadAndMergeResources (argc, argv, display_);
+    xrm.loadAndMergeResources(argc, argv, display_);
     XWinInit (argc, argv, NULL, &xrm);
 
-    MAX_SAMPLES_PER_SECOND = util::stof(getResource("samplesPerSec"));
-    if (!MAX_SAMPLES_PER_SECOND)
-        MAX_SAMPLES_PER_SECOND = 10;
+    setSleepTime();
 
-    usleeptime_ = (unsigned long) (1000000/MAX_SAMPLES_PER_SECOND);
-    if (usleeptime_ >= 1000000) {
-        /*  The syscall usleep() only takes times less than 1 sec, so
-         *  split into a sleep time and a usleep time if needed.  */
-        sleeptime_ = usleeptime_ / 1000000;
-        usleeptime_ = usleeptime_ % 1000000;
-    } else {
-        sleeptime_ = 0;
-    }
-#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
-    BSDInit();	/*  Needs to be done before processing of -N option.  */
-#endif
+    loadResources(argc, argv); // General var init
 
-    hmargin_  = util::stoi(getResource("horizontalMargin"));
-    vmargin_  = util::stoi(getResource("verticalMargin"));
-    vspacing_ = util::stoi(getResource("verticalSpacing"));
-    hmargin_  = std::max(0, hmargin_);
-    vmargin_  = std::max(0, vmargin_);
-    vspacing_ = std::max(0, vspacing_);
+    setEvents();  //  set up the X events
 
-    checkArgs (argc, argv);  //  Check for any other unhandled args.
-    xoff_ = hmargin_;
-    yoff_ = 0;
-    nummeters_ = 0;
-    meters_ = NULL;
-    name_ = const_cast<char *>("xosview");
-    _isvisible = false;
-    _ispartiallyvisible = false;
-    exposed_once_flag_ = 0;
+    checkOverallResources(); // see if legends are to be used
 
-    expose_flag_ = 1;
-
-    //  set up the X events
-    addEvent( new Event( this, ConfigureNotify,
-        (EventCallBack)&XOSView::resizeEvent ) );
-    addEvent( new Event( this, Expose,
-        (EventCallBack)&XOSView::exposeEvent ) );
-    addEvent( new Event( this, KeyPress,
-        (EventCallBack)&XOSView::keyPressEvent ) );
-    addEvent( new Event( this, VisibilityNotify,
-        (EventCallBack)&XOSView::visibilityEvent ) );
-    addEvent( new Event( this, UnmapNotify,
-        (EventCallBack)&XOSView::unmapEvent ) );
-
-    // add or change the Resources
-    MeterMaker mm(this);
-
-    // see if legends are to be used
-    checkOverallResources ();
-
-    // add in the meters
-    mm.makeMeters();
-    for (int i = 1 ; i <= mm.n() ; i++)
-        addmeter(mm[i]);
-
-    if (nummeters_ == 0) {
-        logFatal << "No meters were enabled!  Exiting..." << std::endl;
-    }
+    createMeters(); // add in the meters
 
     // determine the width and height of the window then create it
     // These *HAVE* to come before the resource checking
     // because checking resources alloc colors
     // And there is no display set in the graphics
     // until init() does it's thing.
-
-    std::string fname = getResource("font");
-    X11Font font(display_, fname);
-    if (!font)
-        logFatal << "Could not load font: " << fname << std::endl;
-
-    figureSize(font);     // NEEDS Fonts
+    figureSize();
     init(argc, argv);
 
-
-    //  Have the meters re-check the resources.
-    checkMeterResources();
+    checkMeterResources(); //  Have the meters re-check the resources.
 
     title( winname() );
     iconname( winname() );
@@ -141,7 +79,29 @@ void XOSView::checkVersion(int argc, char *argv[]) const {
         }
 }
 
-void XOSView::figureSize(X11Font &font) {
+int XOSView::findx(X11Font &font){
+    if ( legend_ ){
+        if ( !usedlabels_ )
+            return font.textWidth( "XXXXXXXXXXXXXXXXXXXXXXXX" );
+        else
+            return font.textWidth( "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX" );
+    }
+    return 80;
+}
+
+int XOSView::findy(X11Font &font){
+    if ( legend_ )
+        return 10 + font.textHeight() * nummeters_ * ( caption_ ? 2 : 1 );
+
+    return 15 * nummeters_;
+}
+
+void XOSView::figureSize(void) {
+    std::string fname = getResource("font");
+    X11Font font(display_, fname);
+    if (!font)
+        logFatal << "Could not load font: " << fname << std::endl;
+
     if ( legend_ ){
         if ( !usedlabels_ )
             xoff_ = font.textWidth( "XXXXX" );
@@ -192,23 +152,6 @@ void XOSView::addmeter( Meter *fm ){
         tmp->next_ = new MeterNode( fm );
     }
     nummeters_++;
-}
-
-int XOSView::findx(X11Font &font){
-    if ( legend_ ){
-        if ( !usedlabels_ )
-            return font.textWidth( "XXXXXXXXXXXXXXXXXXXXXXXX" );
-        else
-            return font.textWidth( "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX" );
-    }
-    return 80;
-}
-
-int XOSView::findy(X11Font &font){
-    if ( legend_ )
-        return 10 + font.textHeight() * nummeters_ * ( caption_ ? 2 : 1 );
-
-    return 15 * nummeters_;
 }
 
 void XOSView::checkOverallResources() {
@@ -438,4 +381,84 @@ void XOSView::visibilityEvent( XVisibilityEvent &event ){
 
 void XOSView::unmapEvent( XUnmapEvent & ){
     _isvisible = false;
+}
+
+double XOSView::maxSampRate(void) {
+    return MAX_SAMPLES_PER_SECOND;
+}
+
+std::string XOSView::iname(int, char **argv) {
+    /*  Icky.  Need to check for -name option here.  */
+    char** argp = argv;
+    const char* instanceName = "xosview";	// Default value.
+    while (argp && *argp) {
+        if (std::string(*argp) == "-name")
+            instanceName = argp[1];
+        argp++;
+    }  //  instanceName will end up pointing to the last such -name option.
+
+    return instanceName;
+}
+
+void XOSView::setSleepTime(void) {
+    MAX_SAMPLES_PER_SECOND = util::stof(getResource("samplesPerSec"));
+    if (!MAX_SAMPLES_PER_SECOND)
+        MAX_SAMPLES_PER_SECOND = 10;
+
+    usleeptime_ = (unsigned long) (1000000/MAX_SAMPLES_PER_SECOND);
+    if (usleeptime_ >= 1000000) {
+        /*  The syscall usleep() only takes times less than 1 sec, so
+         *  split into a sleep time and a usleep time if needed.  */
+        sleeptime_ = usleeptime_ / 1000000;
+        usleeptime_ = usleeptime_ % 1000000;
+    } else {
+        sleeptime_ = 0;
+    }
+#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
+    BSDInit();	/*  Needs to be done before processing of -N option.  */
+#endif
+}
+
+void XOSView::loadResources(int argc, char **argv) {
+    hmargin_  = util::stoi(getResource("horizontalMargin"));
+    vmargin_  = util::stoi(getResource("verticalMargin"));
+    vspacing_ = util::stoi(getResource("verticalSpacing"));
+    hmargin_  = std::max(0, hmargin_);
+    vmargin_  = std::max(0, vmargin_);
+    vspacing_ = std::max(0, vspacing_);
+
+    checkArgs (argc, argv);  //  Check for any other unhandled args.
+    xoff_ = hmargin_;
+    yoff_ = 0;
+    nummeters_ = 0;
+    meters_ = NULL;
+    name_ = const_cast<char *>("xosview");
+    _isvisible = false;
+    _ispartiallyvisible = false;
+    exposed_once_flag_ = 0;
+
+    expose_flag_ = 1;
+}
+
+void XOSView::setEvents(void) {
+    addEvent( new Event( this, ConfigureNotify,
+        (EventCallBack)&XOSView::resizeEvent ) );
+    addEvent( new Event( this, Expose,
+        (EventCallBack)&XOSView::exposeEvent ) );
+    addEvent( new Event( this, KeyPress,
+        (EventCallBack)&XOSView::keyPressEvent ) );
+    addEvent( new Event( this, VisibilityNotify,
+        (EventCallBack)&XOSView::visibilityEvent ) );
+    addEvent( new Event( this, UnmapNotify,
+        (EventCallBack)&XOSView::unmapEvent ) );
+}
+
+void XOSView::createMeters(void) {
+    MeterMaker mm(this);
+    mm.makeMeters();
+    for (int i = 1 ; i <= mm.n() ; i++)
+        addmeter(mm[i]);
+
+    if (nummeters_ == 0)
+        logFatal << "No meters were enabled!  Exiting..." << std::endl;
 }

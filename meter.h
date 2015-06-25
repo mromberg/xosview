@@ -7,9 +7,12 @@
 #ifndef _METER_H_
 #define _METER_H_
 
-#include <string>
-#include "strutil.h"
 #include "xosview.h"	//  To grab MAX_SAMPLES_PER_SECOND.
+#include "strutil.h"
+
+#include <string>
+
+
 
 class XOSView;
 
@@ -56,7 +59,9 @@ protected:
     int priority_, counter_;
     std::string title_, legend_;
     unsigned long textcolor_;
-    double samplesPerSecond() { return 1.0*MAX_SAMPLES_PER_SECOND/priority_; }
+    double samplesPerSecond(void)
+        { return 1.0 * XOSView::maxSampRate() / priority_; }
+
     double secondsPerSample() { return 1.0/samplesPerSecond(); }
 
 private:

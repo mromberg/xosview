@@ -4,31 +4,32 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _XOSVIEW_H_
-#define _XOSVIEW_H_
+#ifndef XOSVIEW_H
+#define XOSVIEW_H
 
-#include <string>
 #include "xwin.h"
 #include "Xrm.h"  //  For Xrm resource manager class.
-#include "log.h"
+
+#include <string>
 
 
-/*  Take at most n samples per second (default of 10)  */
-extern double MAX_SAMPLES_PER_SECOND;
 
 class Meter;
 class X11Font;
 
 class XOSView : public XWin {
 public:
-    XOSView( const std::string &instName, int argc, char *argv[] );
-    ~XOSView( void );
+    XOSView(int argc, char *argv[]);
+    ~XOSView(void);
 
+    void run(void);
+
+    static double maxSampRate(void); // Samples/sec max
 
     void resize( void );
     void reallydraw( void );
     void draw ( void );
-    void run( void );
+
 
     std::string winname( void );
 
@@ -66,7 +67,7 @@ protected:
     void checkMeterResources( void );
 
 private:
-    void figureSize(X11Font &font);
+    void figureSize(void);
     int findx(X11Font &font);
     int findy(X11Font &font);
 protected:
@@ -84,6 +85,16 @@ private:
 
     bool _isvisible;
     bool _ispartiallyvisible;
+
+    //  Take at most n samples per second (default of 10)
+    static double MAX_SAMPLES_PER_SECOND;
+
+    static std::string iname(int argc, char **argv);
+
+    void setSleepTime(void);
+    void loadResources(int argc, char **argv);
+    void setEvents(void);
+    void createMeters(void);
 };
 
 #endif
