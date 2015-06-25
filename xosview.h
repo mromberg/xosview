@@ -43,12 +43,14 @@ public:
 
 protected:
     Xrm xrm;
-    int caption_, legend_, xoff_, yoff_, nummeters_, usedlabels_;
+    int caption_, legend_, xoff_, yoff_, usedlabels_;
     int hmargin_, vmargin_, vspacing_;
     unsigned long sleeptime_, usleeptime_;
     bool expose_flag_, exposed_once_flag_;
     bool _isvisible;
     bool _ispartiallyvisible;
+    std::vector<Meter *> _meters;
+
 
     void resize(void);
     void checkArgs(int argc, char** argv) const;
@@ -62,17 +64,6 @@ protected:
     void setEvents(void);
     void createMeters(void);
     void checkVersion(int argc, char *argv[]) const;
-
-    class MeterNode {
-    public:
-        MeterNode( Meter *fm ) { meter_ = fm;  next_ = NULL; }
-
-        Meter *meter_;
-        MeterNode *next_;
-    };
-
-    MeterNode *meters_;
-    void addmeter(Meter *fm);
     void dolegends(void);
     void checkOverallResources(void);
     void resizeEvent(XEvent &event);

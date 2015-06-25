@@ -27,7 +27,8 @@ double XOSView::MAX_SAMPLES_PER_SECOND = 10;
 
 
 XOSView::XOSView(int argc, char *argv[])
-    : XWin(), xrm(Xrm("xosview", iname(argc, argv))){
+    : XWin(), xrm(Xrm("xosview", iname(argc, argv))),
+      expose_flag_(false), exposed_once_flag_(false) {
 
     // Check for version arguments first.  This allows
     // them to work without the need for a connection
@@ -91,9 +92,9 @@ int XOSView::findx(X11Font &font){
 
 int XOSView::findy(X11Font &font){
     if ( legend_ )
-        return 10 + font.textHeight() * nummeters_ * ( caption_ ? 2 : 1 );
+        return 10 + font.textHeight() * _meters.size() * ( caption_ ? 2 : 1 );
 
-    return 15 * nummeters_;
+    return 15 * _meters.size();
 }
 
 void XOSView::figureSize(void) {
@@ -119,39 +120,20 @@ void XOSView::figureSize(void) {
 }
 
 void XOSView::checkMeterResources( void ){
-    MeterNode *tmp = meters_;
-
-    while ( tmp != NULL ){
-        tmp->meter_->checkResources();
-        tmp = tmp->next_;
-    }
+    for (size_t i = 0 ; i < _meters.size() ; i++)
+        _meters[i]->checkResources();
 }
 
 int XOSView::newypos( void ){
-    return 15 + 25 * nummeters_;
+    return 15 + 25 * _meters.size();
 }
 
 void XOSView::dolegends( void ){
-    MeterNode *tmp = meters_;
-    while ( tmp != NULL ){
-        tmp->meter_->docaptions( caption_ );
-        tmp->meter_->dolegends( legend_ );
-        tmp->meter_->dousedlegends( usedlabels_ );
-        tmp = tmp->next_;
+    for (size_t i = 0 ; i < _meters.size() ; i++) {
+        _meters[i]->docaptions(caption_);
+        _meters[i]->dolegends(legend_);
+        _meters[i]->dousedlegends(usedlabels_);
     }
-}
-
-void XOSView::addmeter( Meter *fm ){
-    MeterNode *tmp = meters_;
-
-    if ( meters_ == NULL )
-        meters_ = new MeterNode( fm );
-    else {
-        while ( tmp->next_ != NULL )
-            tmp = tmp->next_;
-        tmp->next_ = new MeterNode( fm );
-    }
-    nummeters_++;
 }
 
 void XOSView::checkOverallResources() {
@@ -194,49 +176,38 @@ void  XOSView::resize( void ){
     int topmargin = vmargin_;
     int rightmargin = hmargin_;
     int newwidth = width() - xoff_ - rightmargin;
-
+    size_t nmeters = _meters.size();
+    nmeters = nmeters ? nmeters : 1; // don't divide by zero
     int newheight =
         (height() -
-          (topmargin + topmargin + (nummeters_-1)*spacing + nummeters_*yoff_)
-            ) / nummeters_;
+          (topmargin + topmargin + (nmeters-1)*spacing + nmeters*yoff_)
+            ) / nmeters;
     newheight = (newheight >= 2) ? newheight : 2;
 
-
-    int counter = 1;
-    MeterNode *tmp = meters_;
-    while ( tmp != NULL ) {
-        tmp->meter_->resize( xoff_,
-          topmargin + counter*yoff_ + (counter-1)*(newheight+spacing),
-          newwidth, newheight );
-        tmp = tmp->next_;
-
-        counter++;
+    for (size_t i = 0 ; i < _meters.size() ; i++) {
+        _meters[i]->resize(xoff_,
+          topmargin + (i + 1) * yoff_ + i * (newheight+spacing),
+          newwidth, newheight);
     }
 }
 
 
 XOSView::~XOSView( void ){
-    MeterNode *tmp = meters_;
-    while ( tmp != NULL ){
-        MeterNode *save = tmp->next_;
-        delete tmp->meter_;
-        delete tmp;
-        tmp = save;
-    }
+    for (size_t i = 0 ; i < _meters.size() ; i++)
+        delete _meters[i];
+    _meters.resize(0);
 }
 
 void XOSView::reallydraw( void ){
     logDebug << "Doing draw." << std::endl;
     g().clear();
-    MeterNode *tmp = meters_;
 
-    while ( tmp != NULL ){
-        tmp->meter_->draw();
-        tmp = tmp->next_;
-    }
+    for (size_t i = 0 ; i < _meters.size() ; i++)
+        _meters[i]->draw();
+
     flush();
 
-    expose_flag_ = 0;
+    expose_flag_ = false;
 }
 
 void XOSView::draw ( void ) {
@@ -258,11 +229,9 @@ void XOSView::run( void ){
         checkevent();
 
         if (_isvisible){
-            MeterNode *tmp = meters_;
-            while ( tmp != NULL ){
-                if ( tmp->meter_->requestevent() )
-                    tmp->meter_->checkevent();
-                tmp = tmp->next_;
+            for (size_t i = 0 ; i < _meters.size() ; i++) {
+                if ( _meters[i]->requestevent() )
+                    _meters[i]->checkevent();
             }
 
             flush();
@@ -345,7 +314,8 @@ void XOSView::checkArgs (int argc, char** argv) const {
 void XOSView::exposeEvent( XExposeEvent &event ) {
     _isvisible = true;
     if ( event.count == 0 ) {
-        expose_flag_++;
+        expose_flag_ = true;
+        exposed_once_flag_ = true;
         draw();
     }
     logDebug << "Got expose event." << std::endl;
@@ -358,7 +328,8 @@ void XOSView::exposeEvent( XExposeEvent &event ) {
 void XOSView::resizeEvent( XEvent &e ) {
     g().resize(e.xconfigure.width, e.xconfigure.height);
     resize();
-    expose_flag_++;
+    expose_flag_ = true;
+    exposed_once_flag_ = true;
     draw();
 }
 
@@ -430,14 +401,11 @@ void XOSView::loadResources(int argc, char **argv) {
     checkArgs (argc, argv);  //  Check for any other unhandled args.
     xoff_ = hmargin_;
     yoff_ = 0;
-    nummeters_ = 0;
-    meters_ = NULL;
     appName("xosview");
     _isvisible = false;
     _ispartiallyvisible = false;
-    exposed_once_flag_ = 0;
-
-    expose_flag_ = 1;
+    expose_flag_ = true;
+    exposed_once_flag_ = false;
 }
 
 void XOSView::setEvents(void) {
@@ -457,8 +425,8 @@ void XOSView::createMeters(void) {
     MeterMaker mm(this);
     mm.makeMeters();
     for (int i = 1 ; i <= mm.n() ; i++)
-        addmeter(mm[i]);
+        _meters.push_back(mm[i]);
 
-    if (nummeters_ == 0)
+    if (_meters.size() == 0)
         logFatal << "No meters were enabled!  Exiting..." << std::endl;
 }
