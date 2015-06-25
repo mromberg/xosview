@@ -1,20 +1,15 @@
-#ifndef _XWIN_H_
-#define _XWIN_H_
-
-#include "Xrm.h"
+#ifndef XWIN_H
+#define XWIN_H
 #include "x11graphics.h"
 
-#include <iostream>
 #include <string>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#ifdef HAVE_XPM
-#include <X11/xpm.h>
-#endif
 
 
 
+class Xrm;
 class XWin;
 class X11Pixmap;
 
@@ -23,66 +18,57 @@ typedef void (XWin::*EventCallBack)( XEvent &event );
 
 class XWin {
 public:
-    XWin ();
-    virtual ~XWin( void );
-    void XWinInit ( int argc, char* argv[], char* geometry, Xrm* xrmp );
+    XWin(void);
+    virtual ~XWin(void);
 
-    int x( void ) { return x_; }
-    void x( int val ) { x_ = val; }
-    int y( void ) { return y_; }
-    void y( int val ) { y_ = val; }
-    int width( void ) { return width_; }
-    void width( int val ) { width_ = val; }
-    int height( void ) { return height_; }
-    void height( int val ) { height_ = val; }
-    Display *display( void ) { return display_; }
-    Window window( void ) { return window_; }
-    int done( void ) { return done_; }
-    void done( int val ) { done_ = val; }
-    void title( const std::string &str )
+    int x(void) const { return x_; }
+    int y(void) const { return y_; }
+    unsigned int width(void) const { return width_; }
+    unsigned int height(void) const { return height_; }
+
+    // These return the configured color.  Not the current color.
+    unsigned long foreground(void) { return fgcolor_; }
+    unsigned long background(void) { return bgcolor_; }
+
+    Display *display(void) { return display_; }
+    Window window(void) { return window_; }
+
+
+
+    void title(const std::string &str)
         { XStoreName( display_, window_, str.c_str() ); }
-    void iconname( const std::string &str )
+    void iconname(const std::string &str)
         { XSetIconName( display_, window_, str.c_str() ); }
+    const std::string &appName(void) const { return name_; }
+
+    //------------------------------------------------------
+    // Resouce interface
+    //------------------------------------------------------
+    std::string getResource(const std::string &name); // exit() if not found
+    std::string getResourceOrUseDefault(const std::string &name,
+      const std::string &defaultVal);
+    bool isResourceTrue(const std::string &name);
+    void dumpResources(std::ostream &os);
+    //------------------------------------------------------
 
     //-----------------------------------------------
-    // New Graphics interface (in progress)
+    // New Graphics interface
+    // Drawing should be done by using a member of g()
+    // Preferable rewrite the meters to pass an
+    // reference/pointer to g() to their draw methods.
     //-----------------------------------------------
     X11Graphics &g(void) { return *_graphics; }
     const X11Graphics &g(void) const { return *_graphics; }
     X11Pixmap *newX11Pixmap(unsigned int width, unsigned int height);
     //-----------------------------------------------
 
-    void resize( int width, int height )
-        { XResizeWindow( display_, window_, width, height ); }
-
-    // These return the configured color.  Not the current color.
-    unsigned long foreground( void ) { return fgcolor_; }
-    unsigned long background( void ) { return bgcolor_; }
-
-
-    //----------------------------------------
-    // TODO
-    //----------------------------------------
-
-    //----------------------------------------
-
-    virtual void checkevent( void );
-    void map( void ) { XMapWindow( display_, window_ ); }
-    void unmap( void ) { XUnmapWindow( display_, window_ ); }
-    std::string getResource( const std::string &name ); // exit() if not found
-    std::string getResourceOrUseDefault( const std::string &name,
-      const std::string &defaultVal );
-    bool isResourceTrue( const std::string &name );
-
-    void dumpResources(std::ostream &os );
 
     //-------------------------------------------------
-    // Depricated API
+    // Depricated graphics API
     //-------------------------------------------------
     void lineWidth( unsigned int width ) { g().lineWidth(width); }
     unsigned long allocColor( const std::string &name )
         { return g().allocColor(name); }
-
     void drawString( int x, int y, const std::string &str )
         { g().drawString(x, y, str); }
     void drawLine( int x1, int y1, int x2, int y2 )
@@ -117,6 +103,35 @@ public:
     //-End Depricated----------------------------------
 
 protected:
+    void XWinInit(int argc, char* argv[], char* geometry, Xrm* xrmp);
+    void init(int argc, char *argv[]);
+    int done(void) { return done_; }
+    void done(int val) { done_ = val; }
+    void getGeometry(void);
+    int getPixmap(Pixmap *);
+    void x(int val) { x_ = val; }
+    void y(int val) { y_ = val; }
+    void width(unsigned int val) { width_ = val; }
+    void height(unsigned int val) { height_ = val; }
+    void setDisplayName(const std::string &new_display_name)
+        { display_name_ = new_display_name; }
+    const std::string &displayName(void) const { return display_name_; }
+    void setColors(void);
+    void openDisplay(void);
+    void setHints(int argc, char *argv[]);
+    Colormap colormap(void) { return colormap_; }
+    int screen(void) { return DefaultScreen( display_ ); }
+    void appName(const std::string &name) { name_ = name; }
+    bool done(void) const { return done_; }
+    void done(bool val) { done_ = val; }
+    void resize( int width, int height )
+        { XResizeWindow( display_, window_, width, height ); }
+    void map( void ) { XMapWindow( display_, window_ ); }
+    void unmap( void ) { XUnmapWindow( display_, window_ ); }
+
+    //-----------------------------------
+    //--- Events ------------------------
+    //-----------------------------------
     class Event {
     public:
         Event( XWin *parent, int event, EventCallBack callBack );
@@ -135,9 +150,30 @@ protected:
     private:
         Event *next_;
     };
+    void addEvent(Event *event);
+    void selectEvents(long mask);
+    void ignoreEvents(long mask);
+    void configureEvent(XEvent &event);
+    void mappingNotify(XEvent &event)
+        { XRefreshKeyboardMapping( &event.xmapping ); }
+    void deleteEvent(XEvent &event);
+    virtual void checkevent( void );
+    //-----------------------------------
 
+private:
+    Xrm*		xrmptr_;	//  Pointer to the XOSView xrm.  FIXME??
+
+    X11Graphics *_graphics;            //  New graphics interface
+
+    XWindowAttributes attr_;      //  Attributes of the window
+    XSizeHints    *sizehints_;    //  Size hints for window manager
+    Event         *events_;       //  List of Events for this window
+    bool           done_;          //  If true the application is finished.
+    Atom          wm_, wmdelete_; //  Used to handle delete Events
+    std::string	display_name_;  //  Display name string.
+    char*		geometry_;	//  geometry string.
     int x_, y_;                   //  position of the window
-    int width_, height_;          //  width and height of the window
+    unsigned int width_, height_; //  width and height of the window
     Display       *display_;      //  Connection to X display
     Window        window_;        //  Application's main window
     std::string   name_;          //  Application's name
@@ -147,40 +183,6 @@ private:
     unsigned long fgcolor_;       //  Foreground color of the window
     unsigned long bgcolor_;       //  Background color of the window
     Colormap      colormap_;      //  The colormap
-protected:
-    XWindowAttributes attr_;      //  Attributes of the window
-    XSizeHints    *sizehints_;    //  Size hints for window manager
-    Event         *events_;       //  List of Events for this window
-    int           done_;          //  If true the application is finished.
-    Atom          wm_, wmdelete_; //  Used to handle delete Events
-
-    std::string	display_name_;  //  Display name string.
-    char*		geometry_;	//  geometry string.
-    Xrm*		xrmptr_;	//  Pointer to the XOSView xrm.  FIXME??
-
-
-    void init( int argc, char *argv[] );
-    void getGeometry( void );
-    int getPixmap(Pixmap *);
-    void setDisplayName (const std::string &new_display_name)
-        { display_name_ = new_display_name; }
-    const std::string &displayName() const { return display_name_; }
-
-    void addEvent( Event *event );
-    void setColors( void );
-    void openDisplay( void );
-    void setHints( int argc, char *argv[] );
-    void selectEvents( long mask );
-    void ignoreEvents( long mask );
-    void configureEvent( XEvent &event );
-    void mappingNotify( XEvent &event )
-        { XRefreshKeyboardMapping( &event.xmapping ); }
-    void deleteEvent( XEvent &event );
-    //void usage( void );
-    Colormap colormap( void ) { return colormap_; }
-    int screen( void ) { return DefaultScreen( display_ ); }
-private:
-    X11Graphics *_graphics;            //  New graphics interface
 };
 
 #endif

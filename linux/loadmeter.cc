@@ -81,11 +81,8 @@ void LoadMeter::checkevent( void ){
 void LoadMeter::getloadinfo( void ){
     std::ifstream loadinfo( LOADFILENAME );
 
-    if ( !loadinfo ){
-        logProblem << "Can not open file : " << LOADFILENAME << std::endl;
-        parent_->done(1);
-        return;
-    }
+    if ( !loadinfo )
+        logFatal << "Can not open file : " << LOADFILENAME << std::endl;
 
     loadinfo >> fields_[0];
 

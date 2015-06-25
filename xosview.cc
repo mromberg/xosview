@@ -41,7 +41,7 @@ XOSView::XOSView(int argc, char *argv[])
 
     //  The resources need to be initialized before calling XWinInit, because
     //  XWinInit looks at the geometry resource for its geometry.  BCG
-    xrm.loadAndMergeResources(argc, argv, display_);
+    xrm.loadAndMergeResources(argc, argv, display());
     XWinInit (argc, argv, NULL, &xrm);
 
     setSleepTime();
@@ -98,7 +98,7 @@ int XOSView::findy(X11Font &font){
 
 void XOSView::figureSize(void) {
     std::string fname = getResource("font");
-    X11Font font(display_, fname);
+    X11Font font(display(), fname);
     if (!font)
         logFatal << "Could not load font: " << fname << std::endl;
 
@@ -113,8 +113,8 @@ void XOSView::figureSize(void) {
     static int firsttime = 1;
     if (firsttime) {
         firsttime = 0;
-        width_ = findx(font);
-        height_ = findy(font);
+        width(findx(font));
+        height(findy(font));
     }
 }
 
@@ -193,10 +193,10 @@ void  XOSView::resize( void ){
     int spacing = vspacing_+1;
     int topmargin = vmargin_;
     int rightmargin = hmargin_;
-    int newwidth = width_ - xoff_ - rightmargin;
+    int newwidth = width() - xoff_ - rightmargin;
 
     int newheight =
-        (height_ -
+        (height() -
           (topmargin + topmargin + (nummeters_-1)*spacing + nummeters_*yoff_)
             ) / nummeters_;
     newheight = (newheight >= 2) ? newheight : 2;
@@ -254,7 +254,7 @@ void XOSView::draw ( void ) {
 void XOSView::run( void ){
     int counter = 0;
 
-    while( !done_ ){
+    while( !done() ){
         checkevent();
 
         if (_isvisible){
@@ -297,7 +297,7 @@ void XOSView::keyPressEvent( XKeyEvent &event ){
     XLookupString( &event, &c, 1, &key, NULL );
 
     if ( (c == 'q') || (c == 'Q') )
-        done_ = 1;
+        done(true);
 }
 
 void XOSView::checkArgs (int argc, char** argv) const {
@@ -432,7 +432,7 @@ void XOSView::loadResources(int argc, char **argv) {
     yoff_ = 0;
     nummeters_ = 0;
     meters_ = NULL;
-    name_ = const_cast<char *>("xosview");
+    appName("xosview");
     _isvisible = false;
     _ispartiallyvisible = false;
     exposed_once_flag_ = 0;

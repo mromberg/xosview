@@ -115,10 +115,8 @@ void NetMeter::checkResources( void ){
 
     _ipsock = socket(AF_INET, SOCK_DGRAM, 0);
     if (_ipsock == -1) {
-        logProblem << "Can not open socket : " << util::strerror(errno)
-                   << std::endl;
-        parent_->done(1);
-        return;
+        logFatal << "Can not open socket : " << util::strerror(errno)
+                 << std::endl;
     }
 }
 
@@ -132,11 +130,8 @@ void NetMeter::checkevent(void) {
 void NetMeter::checkeventNew(void) {
     std::ifstream ifs(_netfilename);
 
-    if (!ifs) {
-        logProblem << "Can not open file : " << _netfilename << std::endl;
-        parent_->done(1);
-        return;
-    }
+    if (!ifs)
+        logFatal << "Can not open file : " << _netfilename << std::endl;
 
     std::string str_in;
     unsigned long long in, out, ig;
@@ -222,22 +217,16 @@ void NetMeter::checkeventOld(void) {
     fields_[0] = fields_[1] = 0;  // network activity
 
     std::ifstream ifs(_netfilename);
-    if (!ifs) {
-        logProblem << "Can not open file : " << _netfilename << std::endl;
-        parent_->done(1);
-        return;
-    }
+    if (!ifs)
+        logFatal << "Can not open file : " << _netfilename << std::endl;
 
     struct ifconf ifc;
     std::vector<char> buff(1024);
     ifc.ifc_len = buff.size();
     ifc.ifc_buf = &buff[0];
-    if (ioctl(_ipsock, SIOCGIFCONF, &ifc) < 0) {
-        logProblem << "Can not get interface list : " << util::strerror( errno )
-                   << std::endl;
-        parent_->done(1);
-        return;
-    }
+    if (ioctl(_ipsock, SIOCGIFCONF, &ifc) < 0)
+        logFatal << "Can not get interface list : " << util::strerror( errno )
+                 << std::endl;
 
     char c;
     unsigned long long sa, da, sm, dm, bytes;

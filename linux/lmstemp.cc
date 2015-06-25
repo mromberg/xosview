@@ -27,11 +27,10 @@ LmsTemp::LmsTemp( XOSView *parent, const std::string &filename,
     3, label, caption, 1, 1, 0 ) {
     if(!checksensors(1, PROC_SENSORS_24, filename)) {
 	if(!checksensors(0, PROC_SENSORS_26, filename)) {
-	    logProblem << "Can not find file : " << PROC_SENSORS_24 << "/*/"
-                       << filename
-                       << " or " << PROC_SENSORS_26 << "/*/device/" << filename
-                       << std::endl;
-	    parent_->done(1);
+	    logFatal << "Can not find file : " << PROC_SENSORS_24 << "/*/"
+                     << filename
+                     << " or " << PROC_SENSORS_26 << "/*/device/" << filename
+                     << std::endl;
 	}
     }
     size_t p = std::string::npos;
@@ -142,31 +141,24 @@ void LmsTemp::getlmstemp( void ){
     if (_isproc) {
         std::ifstream file( _filename.c_str() );
 
-        if ( !file ){
-            logProblem << "Can not open file : " << file << std::endl;
-            parent_->done(1);
-            return;
-        }
+        if ( !file )
+            logFatal << "Can not open file : " << file << std::endl;
 
         file >> high >> dummy >> fields_[0];
   }
     else {
         std::string f = _filename + "_input";
         std::ifstream file1(f.c_str());
-        if ( !file1 ){
-            logProblem << "Can not open file : " << file1 << std::endl;
-            parent_->done(1);
-            return;
-        }
+        if ( !file1 )
+            logFatal << "Can not open file : " << file1 << std::endl;
+
         file1 >> fields_[0];
 
         f = _filename + "_max";
         std::ifstream file2(f.c_str());
-        if ( !file2 ){
-            logProblem << "Can not open file : " << file2 << std::endl;
-            parent_->done(1);
-            return;
-        }
+        if ( !file2 )
+            logFatal << "Can not open file : " << file2 << std::endl;
+
         file2 >> high;
         high /= 1000; fields_[0] /= 1000;
     }

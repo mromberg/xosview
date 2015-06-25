@@ -67,10 +67,9 @@ void SerialMeter::checkResources( void ){
 
     _port = getPortBase(_device);
     if (!getport(_port + UART_LSR) || !getport(_port + UART_MSR)){
-        logProblem << "SerialMeter::SerialMeter() : "
-                   << "xosview must be suid root to use the serial meter."
-                   << std::endl;
-        parent_->done(1);
+        logFatal << "SerialMeter::SerialMeter() : "
+                 << "xosview must be suid root to use the serial meter."
+                 << std::endl;
     }
 }
 

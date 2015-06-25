@@ -1,12 +1,23 @@
-#include <X11/Xatom.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sstream>
-#include "general.h"
+//
+//  Copyright (c) 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
+//
+//  This file may be distributed under terms of the GPL
+//
 #include "xwin.h"
 #include "Xrm.h"
 #include "log.h"
 #include "x11pixmap.h"
+#include "Xrm.h"
+
+#include <sstream>
+
+#include <X11/Xatom.h>
+#ifdef HAVE_XPM
+#include <X11/xpm.h>
+#endif
+
+
 
 
 
@@ -26,7 +37,7 @@ void XWin::XWinInit (int argc, char** argv, char* geometry, Xrm* xrm) {
     width_ = height_ = x_ = y_ = 0;
     xrmptr_ = xrm;
 
-    done_ = 0;
+    done_ = false;
 
     // Set up the default Events
     events_ = NULL;
