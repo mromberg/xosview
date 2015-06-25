@@ -33,6 +33,10 @@ public:
     unsigned int depth(void);
     unsigned int width(void) const { return _width; }
     unsigned int height(void) const { return _height; }
+    unsigned int textWidth(const std::string &str);
+    unsigned int textHeight(void) const;
+    int textAscent(void) const;
+    int textDescent(void) const;
 
     void flush(void) { XFlush(_dsp); }
 
@@ -45,6 +49,7 @@ public:
     unsigned long bgPixel(void) const { return _bgPixel; }
 
     void lineWidth(unsigned int width);
+    void setFont(const std::string &name);
 
     void clear(int x, int y, unsigned int width, unsigned int height);
     void clear(void) { clear(0, 0, _width, _height); }
@@ -80,6 +85,7 @@ private:
     unsigned long _bgPixel;
     unsigned int _width;
     unsigned int _height;
+    XFontStruct *_font;
 
     void updateInfo(void); // update _width, _height, _depth
     unsigned long getPixelValue(const std::string &color) const;
@@ -137,6 +143,22 @@ inline void X11Graphics::lineWidth(unsigned int width) {
     XGCValues xgcv;
     xgcv.line_width = width;
     XChangeGC(_dsp, _gc, GCLineWidth, &xgcv);
+}
+
+inline unsigned int X11Graphics::textWidth(const std::string &str) {
+    return XTextWidth(_font, str.c_str(), str.size());
+}
+
+inline int X11Graphics::textAscent(void) const {
+    return _font->ascent;
+}
+
+inline int X11Graphics::textDescent(void) const {
+    return _font->descent;
+}
+
+inline unsigned int X11Graphics::textHeight(void) const {
+    return textAscent() + textDescent();
 }
 
 #endif

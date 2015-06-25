@@ -4,19 +4,22 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
-#include <algorithm>
-#include <unistd.h>
-#include <stdlib.h>
-#include <sys/time.h>
-#include "general.h"
 #include "xosview.h"
+#include "x11font.h"
 #include "meter.h"
 #include "MeterMaker.h"
+#include "strutil.h"
 #if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
 #include "kernel.h"
 #endif
-#include "strutil.h"
+
+#include <algorithm>
+
+#include <unistd.h>
+#include <stdlib.h>
+#include <sys/time.h>
+
+
 
 static const char * const versionString = "xosview version: " XOSVIEW_VERSION;
 
@@ -110,8 +113,15 @@ XOSView::XOSView( const std::string &instName,
     // because checking resources alloc colors
     // And there is no display set in the graphics
     // until init() does it's thing.
-    figureSize();
-    init( argc, argv );
+
+    std::string fname = getResource("font");
+    X11Font font(display_, fname);
+    if (!font)
+        logFatal << "Could not load font: " << fname << std::endl;
+
+    figureSize(font);     // NEEDS Fonts
+    init(argc, argv);
+
 
     //  Have the meters re-check the resources.
     checkMeterResources();
@@ -131,20 +141,20 @@ void XOSView::checkVersion(int argc, char *argv[]) const {
         }
 }
 
-void XOSView::figureSize ( void ) {
+void XOSView::figureSize(X11Font &font) {
     if ( legend_ ){
         if ( !usedlabels_ )
-            xoff_ = textWidth( "XXXXX" );
+            xoff_ = font.textWidth( "XXXXX" );
         else
-            xoff_ = textWidth( "XXXXXXXXX" );
+            xoff_ = font.textWidth( "XXXXXXXXX" );
 
-        yoff_ = caption_ ? textHeight() + textHeight() / 4 : 0;
+        yoff_ = caption_ ? font.textHeight() + font.textHeight() / 4 : 0;
     }
     static int firsttime = 1;
     if (firsttime) {
         firsttime = 0;
-        width_ = findx();
-        height_ = findy();
+        width_ = findx(font);
+        height_ = findy(font);
     }
 }
 
@@ -184,19 +194,19 @@ void XOSView::addmeter( Meter *fm ){
     nummeters_++;
 }
 
-int XOSView::findx( void ){
+int XOSView::findx(X11Font &font){
     if ( legend_ ){
         if ( !usedlabels_ )
-            return textWidth( "XXXXXXXXXXXXXXXXXXXXXXXX" );
+            return font.textWidth( "XXXXXXXXXXXXXXXXXXXXXXXX" );
         else
-            return textWidth( "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX" );
+            return font.textWidth( "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX" );
     }
     return 80;
 }
 
-int XOSView::findy( void ){
+int XOSView::findy(X11Font &font){
     if ( legend_ )
-        return 10 + textHeight() * nummeters_ * ( caption_ ? 2 : 1 );
+        return 10 + font.textHeight() * nummeters_ * ( caption_ ? 2 : 1 );
 
     return 15 * nummeters_;
 }
@@ -207,8 +217,6 @@ void XOSView::checkOverallResources() {
     //  Set 'off' value.  This is not necessarily a default value --
     //    the value in the defaultXResourceString is the default value.
     usedlabels_ = legend_ = caption_ = 0;
-
-    setFont();
 
     // use captions
     if ( isResourceTrue("captions") )

@@ -48,6 +48,7 @@ public:
     // New Graphics interface (in progress)
     //-----------------------------------------------
     X11Graphics &g(void) { return *_graphics; }
+    const X11Graphics &g(void) const { return *_graphics; }
     X11Pixmap *newX11Pixmap(unsigned int width, unsigned int height);
     //-----------------------------------------------
 
@@ -60,13 +61,7 @@ public:
     //----------------------------------------
     // TODO
     //----------------------------------------
-    int textWidth( const std::string &str, int n )
-        { return XTextWidth( font_, str.c_str(), n ); }
-    int textWidth( const std::string &str )
-        { return textWidth( str.c_str(), str.size() ); }
-    int textAscent( void ) { return font_->ascent; }
-    int textDescent( void ) { return font_->descent; }
-    int textHeight( void ) { return textAscent() + textDescent(); }
+
     //----------------------------------------
 
     virtual void checkevent( void );
@@ -111,6 +106,13 @@ public:
         { g().setForeground(pixelvalue); }
     void setBackground( unsigned long pixelvalue )
         { g().setBackground(pixelvalue); }
+    unsigned int textWidth( const std::string &str, int n )
+        { return g().textWidth(str.substr(0, n)); }
+    unsigned int textWidth( const std::string &str )
+        { return g().textWidth(str); }
+    int textAscent( void ) const { return g().textAscent(); }
+    int textDescent( void ) const { return g().textDescent(); }
+    unsigned int textHeight( void ) const { return g().textHeight(); }
     //-End Depricated----------------------------------
 
 protected:
@@ -137,8 +139,6 @@ protected:
     int width_, height_;          //  width and height of the window
     Display       *display_;      //  Connection to X display
     Window        window_;        //  Application's main window
-    GC            gc_;            //  The graphics context for the window
-    XFontStruct   *font_;         //  Info on the default font
     std::string   name_;          //  Application's name
     XTextProperty title_;         //  Window name for title bar
     XTextProperty iconname_;      //  Icon name for icon label
@@ -169,7 +169,6 @@ protected:
     void setColors( void );
     void openDisplay( void );
     void setHints( int argc, char *argv[] );
-    void setFont( void );
     void selectEvents( long mask );
     void ignoreEvents( long mask );
     void configureEvent( XEvent &event );

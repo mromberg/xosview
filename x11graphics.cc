@@ -13,11 +13,12 @@ X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
   unsigned long bgPixVal)
     : _dsp(dsp), _drawable(d), _isWindow(isWindow), _cmap(cmap),
       _gc(0), _myGC(true), _depth(0),
-      _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0),
+      _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0), _font(0),
       _doStippling(false) {
 
     updateInfo();
     _gc = XCreateGC(_dsp, _drawable, 0, NULL);
+    setFont("fixed");
     setBG(_bgPixel);
     setFG("white");
     initStipples();
@@ -27,7 +28,7 @@ X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
   GC gc, unsigned long bgPixVal)
     : _dsp(dsp), _drawable(d), _isWindow(isWindow), _cmap(cmap),
       _gc(gc), _myGC(false), _depth(0),
-      _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0),
+      _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0), _font(0),
       _doStippling(false) {
 
     logProblem << "Temporary ctor.  Kill me!" << std::endl;
@@ -38,6 +39,10 @@ X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
 }
 
 X11Graphics::~X11Graphics(void) {
+    if (_font) {
+        XFreeFont(_dsp, _font);
+        _font = 0;
+    }
     if (_gc && _myGC)
         XFreeGC(_dsp, _gc);
 }
@@ -150,4 +155,24 @@ unsigned long X11Graphics::allocColor(const std::string &name) {
     }
 
     return exact.pixel;
+}
+
+void X11Graphics::setFont(const std::string &name) {
+    if (_font) {
+        XFreeFont(_dsp, _font);
+        _font = 0;
+    }
+
+    if ((_font = XLoadQueryFont(_dsp, name.c_str())) == NULL) {
+        if ((_font = XLoadQueryFont(_dsp, "fixed")) == NULL) {
+            logFatal << "Cannot load font: " << name << " on display: "
+                     << DisplayString(_dsp) << std::endl;
+        }
+        logProblem << "Cannot load font: " << name << " on display: "
+                   << DisplayString(_dsp) << " using 'fixed'" << std::endl;
+    }
+
+    XGCValues gcv;
+    gcv.font = _font->fid;
+    XChangeGC(_dsp, _gc, GCFont, &gcv);
 }

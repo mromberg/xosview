@@ -26,7 +26,6 @@ void XWin::XWinInit (int argc, char** argv, char* geometry, Xrm* xrm) {
     width_ = height_ = x_ = y_ = 0;
     xrmptr_ = xrm;
 
-    font_ = NULL;
     done_ = 0;
 
     // Set up the default Events
@@ -54,8 +53,6 @@ XWin::~XWin( void ){
     XFree( title_.value );
     XFree( iconname_.value );
     XFree( sizehints_ );
-    XFreeGC( display_, gc_ );
-    XFreeFont( display_, font_ );
     XDestroyWindow( display_, window_ );
     // close the connection to the display
     XCloseDisplay( display_ );
@@ -63,10 +60,10 @@ XWin::~XWin( void ){
 
 
 void XWin::init( int argc, char **argv ){
-    XGCValues            gcv;
     XSetWindowAttributes xswa;
 
-    setFont();
+
+    std::string fontName = getResource("font");
     setColors();
     getGeometry();
 #ifdef HAVE_XPM
@@ -82,13 +79,6 @@ void XWin::init( int argc, char **argv ){
       fgcolor_, bgcolor_);
 
     setHints( argc, argv );
-
-    // Create a graphics context for the main window
-    gcv.font = font_->fid;
-    gcv.foreground = fgcolor_;
-    gcv.background = bgcolor_;
-    gc_ = XCreateGC(display_, window_,
-      (GCFont | GCForeground | GCBackground), &gcv);
 
     // Set main window's attributes (colormap, bit_gravity)
     xswa.colormap = colormap_;
@@ -116,8 +106,9 @@ void XWin::init( int argc, char **argv ){
     }
 
     // Create new Graphics interface.
-    _graphics = new X11Graphics(display_, window_, true, colormap_, gc_,
+    _graphics = new X11Graphics(display_, window_, true, colormap_,
       bgcolor_);
+    g().setFont(fontName);
     g().setBG(bgcolor_);
     g().setFG(fgcolor_);
     g().setStippleMode(isResourceTrue("enableStipple"));
@@ -127,18 +118,6 @@ void XWin::init( int argc, char **argv ){
     flush();
     if(XGetWindowAttributes(display_, window_, &attr_) == 0){
         logFatal << "Error getting attributes of Main." << std::endl;
-    }
-}
-
-void XWin::setFont( void ){
-    // Set up the font
-    if ( font_ != NULL )
-        return;
-    std::string fontName = getResource("font");
-
-    if ((font_ = XLoadQueryFont(display_, fontName.c_str())) == NULL){
-        logFatal << name_ << ": display " << DisplayString(display_)
-                 << " cannot load font " << fontName << std::endl;
     }
 }
 

@@ -17,13 +17,14 @@
 extern double MAX_SAMPLES_PER_SECOND;
 
 class Meter;
+class X11Font;
 
 class XOSView : public XWin {
 public:
     XOSView( const std::string &instName, int argc, char *argv[] );
     ~XOSView( void );
 
-    void figureSize ( void );
+
     void resize( void );
     void reallydraw( void );
     void draw ( void );
@@ -64,8 +65,11 @@ protected:
     void addmeter( Meter *fm );
     void checkMeterResources( void );
 
-    int findx( void );
-    int findy( void );
+private:
+    void figureSize(X11Font &font);
+    int findx(X11Font &font);
+    int findy(X11Font &font);
+protected:
     void dolegends( void );
 
     void checkOverallResources();
