@@ -52,6 +52,15 @@
 //EVENT: main.cc:18: prec(3): 42.1
 //EVENT: main.cc:19: normp  : 42.1234
 //
+//  ASSERT  These are enabled by --enable-debug otherwise
+// the compiler should optimize them out.
+// logAssert(condition) << msg
+// Example:
+// logAssert(1 == 2) << "and dogs aren't cats." << std::endl;
+// Output:
+// ASSERT (1 == 2) false: main.cc:13: and dogs aren't cats.
+// and the program exit()s
+//
 // At some point this could be extended to log to files (or elsewhere)
 // and supress messages based on file/linenumber from some
 // sort of config file.  For now this is good enough.
@@ -118,5 +127,11 @@ inline std::ostream &operator<<(std::ostream &os, const ssave &fs){
 #define logBug logMsg("BUG",true,std::cerr)
 #define logEvent logMsg("EVENT",true,std::cerr)
 #define logFatal logMsg("FATAL",true,util::Fatal()<<=std::cerr)
+
+#define logAssert(condition)                                \
+    if (XOSVLOGIT && (!(condition)))                        \
+        util::Fatal()<<= std::cerr << "ASSERT ("            \
+                     << #condition << ") false: "           \
+                     << __FILE__ << ":" << __LINE__ << ": "
 
 #endif

@@ -23,7 +23,7 @@ public:
     operator bool(void) const { return good(); }
 
     const std::string &name(void) const { return _name; }
-    Font id(void) const { return _font ? _font->fid : 0; }
+    Font id(void) const;
 
     bool setFont(const std::string &name);
 
@@ -38,27 +38,28 @@ private:
     XFontStruct *_font;
 };
 
+inline Font X11Font::id(void) const {
+    logAssert(good()) << "can't use an uninitialized font." << std::endl;
+    return _font->fid;
+}
+
 inline unsigned int X11Font::textWidth(const std::string &str) {
-    if (!good())
-        logFatal << "can't use an uninitialized font." << std::endl;
+    logAssert(good()) << "can't use an uninitialized font." << std::endl;
     return XTextWidth(_font, str.c_str(), str.size());
 }
 
 inline int X11Font::textAscent(void) const {
-    if (!good())
-        logFatal << "can't use an uninitialized font." << std::endl;
+    logAssert(good()) << "can't use an uninitialized font." << std::endl;
     return _font->ascent;
 }
 
 inline int X11Font::textDescent(void) const {
-    if (!good())
-        logFatal << "can't use an uninitialized font." << std::endl;
+    logAssert(good()) << "can't use an uninitialized font." << std::endl;
     return _font->descent;
 }
 
 inline unsigned int X11Font::textHeight(void) const {
-    if (!good())
-        logFatal << "can't use an uninitialized font." << std::endl;
+    logAssert(good()) << "can't use an uninitialized font." << std::endl;
     return textAscent() + textDescent();
 }
 
