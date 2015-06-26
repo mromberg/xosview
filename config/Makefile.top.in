@@ -147,4 +147,7 @@ maintainer-clean: distclean
 	rm -f configure Xdefaults xosview.1
 	rm -rf config/autom4te.cache/
 
+headercheck:
+	find . -regex ".*\.\(h\|cc\)" -exec grep "include <[^\.]*>" {} \; | sort - | uniq | cut -d " " -f2 - | cut -d "<" -f2 - | cut -d ">" -f1 -
+
 @AUTODEPEND@

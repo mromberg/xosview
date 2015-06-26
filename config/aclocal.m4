@@ -3,8 +3,20 @@ dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
 dnl specific port.
 dnl
-dnl $Id: aclocal.m4,v 1.36 2008/02/28 23:43:06 romberg Exp $
+
 dnl
+dnl Checks for the existance of the C++ library
+dnl files xosview expects to be there and useable
+dnl The make headercheck target will search all .h and .cc
+dnl files to help make/maintain this list
+AC_DEFUN(CXX_LIBRARY_SUPPORT,[
+AC_MSG_NOTICE([Examining C++ library support...])
+AC_LANG_PUSH([C++])
+AC_CHECK_HEADERS(
+[algorithm cassert cerrno cmath cstddef cstdlib cstring fstream iomanip iostream limits map sstream stdexcept string utility vector],
+[],
+[AC_MSG_WARN([Missing C++ library support.  Probably won't build.])])])
+
 
 dnl Make an absolute symbol for the top of the configuration.
 dnl
