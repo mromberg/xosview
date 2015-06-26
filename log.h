@@ -61,9 +61,28 @@
 // ASSERT (1 == 2) false: main.cc:13: and dogs aren't cats.
 // and the program exit()s
 //
+// Debug supressions:
+//
+//   When XOSDEBUG is defined all logDebug statements are active.
+// This can be controlled by creating a simple config file in the working
+// directory called log.conf.  The file is a sequence
+// of lines that turn on or off logDebug messages from the
+// source.
+//
+//  Each line is of the form "+|-  fspec".  The - lines suppress
+// logging of files that match the fspec and lines that start with + turn
+// logging back on.  The fspec is either a direct file name match or a
+// glob match (if fglob is found on the system).  All lines are processed
+// and each line overrides the preceeding ones.
+//
+//  For example this spec file disables all logDebugs except for those
+// with "meter" in their name except for the netmeter:
+// - *.cc
+// + *meter*.cc
+// - netmeter.cc
+//
 // At some point this could be extended to log to files (or elsewhere)
-// and supress messages based on file/linenumber from some
-// sort of config file.  For now this is good enough.
+// and supress messages based on file/linenumber
 //
 #include <iostream>
 #include <vector>
@@ -141,21 +160,31 @@ private:
              << __LINE__ << ": "
 
 
-// Basic logs.  Always on.  logFatal logs and then exits
-#define logProblem logMsg("PROBLEM",true,std::cerr)
-#define logBug logMsg("BUG",true,std::cerr)
+// Events that are normal and are to be loged (always on)
 #define logEvent logMsg("EVENT",true,std::cerr)
+
+// Problems that can be worked around (always on)
+#define logProblem logMsg("PROBLEM",true,std::cerr)
+
+// Serious problems that can be worked around
+// but may cause trouble elsewhere. (always on)
+#define logBug logMsg("BUG",true,std::cerr)
+
+// Serious problems that can not allow the
+// program to continue in it's current state.
+// After the message is loged, exit(1) is called  (always on)
 #define logFatal logMsg("FATAL",true,util::Fatal()<<=std::cerr)
 
+// Debug messages.
 // Disabled unless XOSDEBUG defined.
-// Then can be supressed via xosvlog.conf
+// Then can be supressed via log.conf
 #define logDebug logMsg("DEBUG",                        \
   (XOSVLOGIT&&!util::Log::suppress(__FILE__,__LINE__)), \
       std::cerr)
 
-// ------------------------------------
+// Asserts
 // Always on when XOSDEBUG is defined otherwise
-// no ops.
+// no ops (in production)
 // condition : Expression that if false
 //             sinks message to logFatal
 // ------------------------------------

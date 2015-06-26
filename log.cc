@@ -14,7 +14,7 @@
 
 namespace util {
 
-static const char *LOGCONFIGFILE = "xosvlog.conf";
+static const char *LOGCONFIGFILE = "log.conf";
 
 bool Log::_readConfig = false;  //  Have we read (or tried to) the config file?
 // The supression list.  processed in order
