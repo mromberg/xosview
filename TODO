@@ -15,6 +15,8 @@
 
 - Look into some kind of decay option for the used labels
 
+- Look into using a config.h to clean up the compile commands
+
 - Look into a decay only option on the field meter.
 
 - Add Xft support for new fangled (and installed by default) fuzzy fonts
@@ -22,6 +24,10 @@
 
 - Look into seperating the X11 drawing interface into a more abstracted layer.
   Make it easier to support other drawing systems Wayland etc.
+  First 1/2 of this is done.  All drawing routines now in a seperate
+  class.  Need to convert the meter draw() methods to pass a Graphics object
+  and the meters to render into it.  Right now they do.  But through
+  XWin pass throughs.
 
 - Add a "scripting" interface so new meters (for non rapidly updating)
   things could be written in python/ruby/shell?

@@ -85,15 +85,12 @@
 // and supress messages based on file/linenumber
 //
 #include <iostream>
+#include <cstdlib>
+#ifdef XOSVDEBUG
 #include <vector>
 #include <utility>
-#include <cstdlib>
-
-#ifdef XOSVDEBUG
-#define XOSVLOGIT true
-#else
-#define XOSVLOGIT false
 #endif
+
 
 namespace util {
 // The operator <<= is used here because
@@ -133,6 +130,7 @@ inline std::ostream &operator<<(std::ostream &os, const ssave &fs){
     return os;
 }
 
+#ifdef XOSVDEBUG
 class Log {
 public:
     static bool suppress(const std::string &file, size_t lineNum);
@@ -143,8 +141,14 @@ private:
 
     static void readConfig(void);
 };
+#define XOSVLOGIT (!util::Log::suppress(__FILE__,__LINE__))
+#else
+#define XOSVLOGIT false
+#endif
 
 } // end namespace util
+
+
 
 //----------------------------------------------
 // Basic macro for loging
@@ -178,9 +182,7 @@ private:
 // Debug messages.
 // Disabled unless XOSDEBUG defined.
 // Then can be supressed via log.conf
-#define logDebug logMsg("DEBUG",                        \
-  (XOSVLOGIT&&!util::Log::suppress(__FILE__,__LINE__)), \
-      std::cerr)
+#define logDebug logMsg("DEBUG",XOSVLOGIT,std::cerr)
 
 // Asserts
 // Always on when XOSDEBUG is defined otherwise

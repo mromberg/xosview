@@ -4,13 +4,16 @@
 //
 //  This file may be distributed under terms of the GPL
 //
+#ifdef XOSVDEBUG
 #include "log.h"
 #include "strutil.h"
 
 #include <fstream>
 #include <sstream>
 
+#ifdef HAVE_FNMATCH_H
 #include <fnmatch.h>
+#endif
 
 namespace util {
 
@@ -58,7 +61,11 @@ bool Log::suppress(const std::string &file, size_t) {
     // as we go.  Later matches override earlier ones
     bool suppress = false;
     for (size_t i = 0 ; i < _slist.size() ; i++) {
+#ifdef HAVE_FNMATCH
         if (!fnmatch(_slist[i].first.c_str(), file.c_str(), 0)) {
+#else
+        if (_slist[i].first == file) {
+#endif
             suppress = _slist[i].second;
         }
     }
@@ -67,3 +74,4 @@ bool Log::suppress(const std::string &file, size_t) {
 }
 
 } // end namespace util
+#endif  // XOSVDEBUG
