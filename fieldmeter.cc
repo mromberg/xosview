@@ -4,23 +4,14 @@
 //
 //  This file may be distributed under terms of the GPL
 //
+#include "fieldmeter.h"
 
-#ifdef HAVE_IOSTREAM
 #include <iostream>
-#else
-#include <iostream.h>
-#endif
-#ifdef HAVE_FSTREAM
 #include <fstream>
-#else
-#include <fstream.h>
-#endif
 #include <sstream>
 #include <iomanip>
-#include <stdlib.h>
-#include "general.h"
-#include "fieldmeter.h"
-#include "xosview.h"
+
+
 
 FieldMeter::FieldMeter( XOSView *parent, int numfields,
   const std::string &title,

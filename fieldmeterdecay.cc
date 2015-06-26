@@ -25,22 +25,12 @@
 //       FieldMeter().
 //   4.  Make the checkResources () function in the meter set the
 //	 dodecay_ variable according to the, e.g., xosview*cpuDecay resource.
-
-#ifdef HAVE_IOSTREAM
-#include <iostream>
-#else
-#include <iostream.h>
-#endif
-#ifdef HAVE_FSTREAM
-#include <fstream>
-#else
-#include <fstream.h>
-#endif
-#include <math.h>		//  For fabs()
-#include "general.h"
-#include "fieldmeter.h"
 #include "fieldmeterdecay.h"
-#include "xosview.h"
+
+#include <iostream>
+#include <fstream>
+#include <cmath>		//  For fabs()
+
 
 FieldMeterDecay::FieldMeterDecay( XOSView *parent,
   int numfields, const std::string &title,

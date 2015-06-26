@@ -4,14 +4,10 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
-#ifdef HAVE_IOSTREAM
-#include <iostream>
-#else
-#include <iostream.h>
-#endif
-#include "general.h"
 #include "llist.h"
+
+#include <iostream>
+
 
 LList::LNode::LNode( void *data ){
     data_ = data;

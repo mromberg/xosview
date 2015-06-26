@@ -4,21 +4,19 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
-#include <stdlib.h>
-#include <ctype.h>
-#ifdef HAVE_IOSTREAM
-#include <iostream>
-#else
-#include <iostream.h>
-#endif
-#include <unistd.h>  //  for access(), etc.  BCG
-#include "general.h"
-#include <cstddef> // for NULL
 #include "Xrm.h"
 #include "Xrmcommandline.h"
 #include "strutil.h"
 #include "log.h"
+
+#include <iostream>
+#include <cstddef> // for NULL
+
+#include <unistd.h>  //  for access(), etc.  BCG
+
+
+
+
 
 extern char *defaultXResourceString;
 

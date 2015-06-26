@@ -6,17 +6,13 @@
 //  This file may be distributed under terms of the GPL
 //
 //
-#ifdef HAVE_FSTREAM
+#include "bitfieldmeter.h"
+
 #include <fstream>
-#else
-#include <fstream.h>
-#endif
 #include <sstream>
 #include <iomanip>
-#include <stdlib.h>
-#include "general.h"
-#include "bitfieldmeter.h"
-#include "xosview.h"
+
+
 
 
 BitFieldMeter::BitFieldMeter( XOSView *parent, int numBits, int numfields,

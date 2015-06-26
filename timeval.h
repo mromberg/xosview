@@ -4,15 +4,13 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _TIMEVAL_H_
-#define _TIMEVAL_H_
+#ifndef TIMEVAL_H
+#define TIMEVAL_H
+
+#include <iostream>
 
 #include <sys/time.h>
-#ifdef HAVE_IOSTREAM
-#include <iostream>
-#else
-#include <iostream.h>
-#endif
+
 
 class TimeVal {
 public:
