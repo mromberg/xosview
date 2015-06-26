@@ -8,3 +8,4 @@ Makefile.config
 Makefile.GNU.autodep
 defaultstring.cc
 autom4te.cache
+xosvlog.conf

@@ -66,6 +66,8 @@
 // sort of config file.  For now this is good enough.
 //
 #include <iostream>
+#include <vector>
+#include <utility>
 #include <cstdlib>
 
 #ifdef XOSVDEBUG
@@ -112,9 +114,25 @@ inline std::ostream &operator<<(std::ostream &os, const ssave &fs){
     return os;
 }
 
+class Log {
+public:
+    static bool suppress(const std::string &file, size_t lineNum);
+
+private:
+    static bool _readConfig;
+    static std::vector<std::pair<std::string, bool> > _slist;
+
+    static void readConfig(void);
+};
+
 } // end namespace util
 
-
+//----------------------------------------------
+// Basic macro for loging
+// category: Name displayed at line start
+// enabled : expression.  If true log the message
+// ostr    : the ostream to log to.
+//----------------------------------------------
 #define logMsg(category,enabled,ostr) \
     if (enabled)                      \
         ostr << util::ssave()         \
@@ -122,12 +140,25 @@ inline std::ostream &operator<<(std::ostream &os, const ssave &fs){
              << __FILE__ << ":"       \
              << __LINE__ << ": "
 
-#define logDebug logMsg("DEBUG",XOSVLOGIT,std::cerr)
+
+// Basic logs.  Always on.  logFatal logs and then exits
 #define logProblem logMsg("PROBLEM",true,std::cerr)
 #define logBug logMsg("BUG",true,std::cerr)
 #define logEvent logMsg("EVENT",true,std::cerr)
 #define logFatal logMsg("FATAL",true,util::Fatal()<<=std::cerr)
 
+// Disabled unless XOSDEBUG defined.
+// Then can be supressed via xosvlog.conf
+#define logDebug logMsg("DEBUG",                        \
+  (XOSVLOGIT&&!util::Log::suppress(__FILE__,__LINE__)), \
+      std::cerr)
+
+// ------------------------------------
+// Always on when XOSDEBUG is defined otherwise
+// no ops.
+// condition : Expression that if false
+//             sinks message to logFatal
+// ------------------------------------
 #define logAssert(condition)                                \
     if (XOSVLOGIT && (!(condition)))                        \
         util::Fatal()<<= std::cerr << "ASSERT ("            \
