@@ -1,7 +1,9 @@
-dnl
-dnl $Id: configure.in,v 1.61 2008/02/28 23:43:06 romberg Exp $
-dnl
-AC_INIT(xosview.1)
+AC_INIT(
+[xosview],
+[1.8.4],
+[https://sourceforge.net/p/xosview/_list/tickets],
+[xosview],
+[http://sourceforge.net/projects/xosview/])
 CF_TOP_SRCDIR
 AC_CONFIG_AUX_DIR(config)
 AC_CANONICAL_HOST
@@ -146,13 +148,12 @@ AC_SUBST(AUTODEPRULE_SUBDIR)
 AC_SUBST(AUTODEPEND)
 AC_SUBST(CPP_DEP)
 
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
+AC_LANG_PUSH([C++])
 AC_CHECK_HEADERS([iostream])
 AC_CHECK_HEADERS([fstream])
 AC_CHECK_HEADERS([fnmatch.h])
 AC_CHECK_FUNCS([fnmatch])
-AC_LANG_RESTORE
+AC_LANG_POP([])
 
 CPPFLAGS='-I /usr/X11R6/include'
 AC_CHECK_HEADER(X11/xpm.h,
@@ -370,13 +371,14 @@ then
    x_libraries=.
 fi
 
-
 AC_SUBST(host_dir)
 AC_SUBST(NetMeter_Default_Setting)
-AC_OUTPUT(\
+AC_CONFIG_FILES([\
   Makefile:config/Makefile.top.in \
   $host_dir/Makefile:config/Makefile.$host_dir.in \
   Makefile.config:config/Makefile.config.in \
   Makefile.GNU.autodep:config/Makefile.GNU.autodep.in \
   Xdefaults:Xdefaults.in \
-  $EXTRA_OUT_FILES)
+  xosview.1:xosview.1.in \
+  $EXTRA_OUT_FILES])
+AC_OUTPUT

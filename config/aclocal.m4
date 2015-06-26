@@ -19,12 +19,9 @@ AC_REQUIRE([AC_PROG_CXX])
 AC_MSG_CHECKING(whether ${CXX} supports bool types)
 AC_CACHE_VAL(ice_cv_have_bool,
 [
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(,[bool b = true;],
-ice_cv_have_bool=yes,
-ice_cv_have_bool=no)
-AC_LANG_RESTORE
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[bool b = true;]])],[ice_cv_have_bool=yes],[ice_cv_have_bool=no])
+AC_LANG_POP([])
 ])
 AC_MSG_RESULT($ice_cv_have_bool)
 if test "$ice_cv_have_bool" = yes; then
@@ -38,12 +35,9 @@ AC_REQUIRE([AC_PROG_CXX])
 AC_MSG_CHECKING(whether ${CXX} supports long long types)
 AC_CACHE_VAL(ice_cv_have_long_long,
 [
-AC_LANG_SAVE
-AC_LANG_CPLUSPLUS
-AC_TRY_COMPILE(,[long long x; x = (long long)0;],
-ice_cv_have_long_long=yes,
-ice_cv_have_long_long=no)
-AC_LANG_RESTORE
+AC_LANG_PUSH([C++])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[long long x; x = (long long)0;]])],[ice_cv_have_long_long=yes],[ice_cv_have_long_long=no])
+AC_LANG_POP([])
 ])
 AC_MSG_RESULT($ice_cv_have_long_long)
 if test "$ice_cv_have_long_long" = yes; then

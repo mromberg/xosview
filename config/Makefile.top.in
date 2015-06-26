@@ -144,7 +144,7 @@ distclean: clean
 
 
 maintainer-clean: distclean
-	rm -f configure Xdefaults
+	rm -f configure Xdefaults xosview.1
 	rm -rf config/autom4te.cache/
 
 @AUTODEPEND@

@@ -9,3 +9,4 @@ Makefile.GNU.autodep
 defaultstring.cc
 autom4te.cache
 log.conf
+xosview.1
