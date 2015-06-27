@@ -4,4 +4,3 @@
 cd config
 make
 cd ..
-chmod 755 configure

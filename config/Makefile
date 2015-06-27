@@ -4,11 +4,11 @@
 
 all: ../configure ../config.h.in
 
-../configure: configure.in aclocal.m4
+../configure: configure.in *.m4
 	autoconf -Wall configure.in > ../configure
 	chmod 755 ../configure
 
-../config.h.in: configure.in aclocal.m4
+../config.h.in: configure.in *.m4
 	autoheader && mv -f config.h.in ..
 
 clean:

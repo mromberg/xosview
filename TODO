@@ -15,8 +15,6 @@
 
 - Look into some kind of decay option for the used labels
 
-- Look into using a config.h to clean up the compile commands
-
 - Look into a decay only option on the field meter.
 
 - Add Xft support for new fangled (and installed by default) fuzzy fonts
