@@ -16,6 +16,13 @@ AC_CANONICAL_HOST
 AC_PROG_CXX([c++ g++])
 ICE_CXX_BOOL
 ICE_CXX_LONG_LONG
+dnl
+dnl  x_includes and x_libraries are not longer being exported
+dnl via AC_SUBST.  Because the whole X11 thing is a giant mess.
+dnl For now on configure will just try and figure out what it
+dnl is and insert correct falgs into things like CFLAGS
+dnl x_includes and x_libraries can be used inside the configure script
+dnl
 AC_PATH_X
 if test -n "$x_includes" ; then
     CXXFLAGS="$CXXFLAGS -I$x_includes"
@@ -54,8 +61,6 @@ dnl want to stuff things into /usr/X11.  If we don't specify this,
 dnl configure will shove things into /usr/local by default.
 dnl AC_PREFIX_PROGRAM(X)
 
-AC_SUBST(x_includes)
-AC_SUBST(x_libraries)
 AC_PROG_INSTALL
 AC_PROG_AWK
 AC_PROG_RANLIB
@@ -302,18 +307,6 @@ AC_CHECK_FUNCS(usleep)
 # This causes compiler options like '-I' and '-L', which break
 # the build.  So, we avoid empty strings here.
 #
-if test -z "$x_includes"
-then
-    x_includes=.
-fi
-if test -z "$x_libraries"
-then
-   x_libraries=.
-fi
-
-
-
-
 
 
 

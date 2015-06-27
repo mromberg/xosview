@@ -7,7 +7,7 @@
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
 
-CXXFLAGS += -I@top_srcdir@
+CXXFLAGS += -I@TOP_SRCDIR@
 
 OBJS = \
 MeterMaker.o \

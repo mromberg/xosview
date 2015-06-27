@@ -39,12 +39,12 @@ defaultstring.cc: Xdefaults defresources.awk
 	@AWK@ -f defresources.awk Xdefaults > defaultstring.cc
 
 meterlib:
-	cd @top_srcdir@/@host_dir@ && $(MAKE)
+	cd @TOP_SRCDIR@/@host_dir@ && $(MAKE)
 
-@top_srcdir@/@host_dir@/libmeter.a: meterlib
+@TOP_SRCDIR@/@host_dir@/libmeter.a: meterlib
 
 ##  Also use LDFLAGS, which is inherited from the system.
-xosview: $(OBJS) @top_srcdir@/@host_dir@/libmeter.a
+xosview: $(OBJS) @TOP_SRCDIR@/@host_dir@/libmeter.a
 	$(CXX) $(LDFLAGS) $(LFLAGS) -o xosview $(OBJS) $(LIBS)
 
 ##  If for some reason (such as permissions) you wish to change where
@@ -55,7 +55,7 @@ BINDIR=$(PREFIX_TO_USE)/bin
 MANDIR=$(PREFIX_TO_USE)/share/man/man1
 XAPPLOADDIR=$(PREFIX_TO_USE)/lib/X11/app-defaults
 PACKAGENAME=xosview-$(VERS)
-DISTRIBDIR=@top_srcdir@/../$(PACKAGENAME)
+DISTRIBDIR=@TOP_SRCDIR@/../$(PACKAGENAME)
 
 ##  These next lines look really ugly.  The echo statements are an
 ##    attempt to make the output look a little nicer.
@@ -77,12 +77,12 @@ install-man:
 	@#@INSTALL_DATA@ xosview.1 $(MANDIR)
 
 distrib: checksource distclean
-	cd @top_srcdir@/..; rm -rf $(PACKAGENAME)
+	cd @TOP_SRCDIR@/..; rm -rf $(PACKAGENAME)
 	mkdir $(DISTRIBDIR)
-	(cd @top_srcdir@; tar cf - *) | (cd $(DISTRIBDIR); tar xf -)
+	(cd @TOP_SRCDIR@; tar cf - *) | (cd $(DISTRIBDIR); tar xf -)
 	cd $(DISTRIBDIR); rm -rf `find . -name "CVS"`
-	cd @top_srcdir@/..; tar cf $(PACKAGENAME).tar $(PACKAGENAME)
-	gzip -f9 @top_srcdir@/../$(PACKAGENAME).tar
+	cd @TOP_SRCDIR@/..; tar cf $(PACKAGENAME).tar $(PACKAGENAME)
+	gzip -f9 @TOP_SRCDIR@/../$(PACKAGENAME).tar
 
 #  The next one is only used by bgrayson to set up the local
 #  mirrors of the xosview distributions.

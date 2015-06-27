@@ -10,7 +10,7 @@ include ../Makefile.config
 #arch=$(shell uname -m)
 #export arch
 
-CXXFLAGS += -I@top_srcdir@
+#CXXFLAGS += -I@TOP_SRCDIR@
 
 OBJS = \
 cpumeter.o \
