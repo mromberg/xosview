@@ -4,8 +4,9 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifdef XOSVDEBUG
 #include "log.h"
+
+#ifdef XOSVDEBUG
 #include "strutil.h"
 
 #include <fstream>

@@ -75,9 +75,6 @@ void XWin::init(int argc, char **argv, const std::string &pixmapFName,
     setColors();
     getGeometry(geomStr, geomUnspecified);
 
-    Pixmap	       background_pixmap;
-    bool doPixmap = getPixmap(&background_pixmap, pixmapFName);
-
     window_ = XCreateSimpleWindow(display_, DefaultRootWindow(display_),
       sizehints_->x, sizehints_->y,
       sizehints_->width, sizehints_->height,
@@ -93,10 +90,14 @@ void XWin::init(int argc, char **argv, const std::string &pixmapFName,
       (CWColormap | CWBitGravity), &xswa);
 
 #ifdef HAVE_XPM
+    Pixmap	       background_pixmap;
+    bool doPixmap = getPixmap(&background_pixmap, pixmapFName);
     // If there is a pixmap file, set it as the background
     if(doPixmap) {
 	XSetWindowBackgroundPixmap(display_,window_,background_pixmap);
     }
+#else
+    util::toupper(pixmapFName); // just to avoid warning about unused.
 #endif
 
     // Do transparency if requested
@@ -201,13 +202,13 @@ void XWin::setColors( void ){
         fgcolor_ = color.pixel;
 }
 
+#ifdef HAVE_XPM
 bool XWin::getPixmap(Pixmap *pixmap, const std::string &pixmapFName) {
     if (pixmapFName == "") {
         pixmap = NULL;
         return false;
     }
 
-#ifdef HAVE_XPM
     XWindowAttributes    root_att;
     XpmAttributes        pixmap_att;
 
@@ -224,12 +225,8 @@ bool XWin::getPixmap(Pixmap *pixmap, const std::string &pixmapFName) {
         return false; // OOps
     }
     return true;  // Good, found the pixmap
-#else
-    pixmap = NULL;
-    logBug << "getPixmap called, when Xpm is not enabled!\n" ;
-    return false;
-#endif
 }
+#endif
 
 void XWin::getGeometry(const std::string &geomStr, bool geomUnspecified) {
     int                  bitmask;

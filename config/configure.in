@@ -6,6 +6,7 @@ AC_INIT(
 [http://sourceforge.net/projects/xosview/])
 CF_TOP_SRCDIR
 AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_HEADERS(config.h:config.h.in)
 AC_CANONICAL_HOST
 AC_PROG_CXX([c++ g++])
 ICE_CXX_BOOL
@@ -85,7 +86,7 @@ then
         echo "disabled debug info and messages"
         xosvdebug="no"
 else
-        AC_DEFINE(XOSVDEBUG)
+        AC_DEFINE(XOSVDEBUG,[1],[Enable logDebug and logAssert])
         xosvdebug="yes"
         echo "enabled  debug info and messages"
 fi
@@ -157,12 +158,16 @@ AC_LANG_POP([])
 
 CPPFLAGS='-I /usr/X11R6/include'
 AC_CHECK_HEADER(X11/xpm.h,
-AC_CHECK_LIB(Xpm, XpmCreateImageFromData, AC_DEFINE(HAVE_XPM) XPMLIB=-lXpm,,
--lX11))
+AC_CHECK_LIB(Xpm, XpmCreateImageFromData,
+   [AC_DEFINE(HAVE_XPM,[1],[Have libXpm])
+   XPMLIB=-lXpm],,-lX11))
 dnl  For FreeBSD, see if libdevstat exists.
 case $host_os in
 freebsd*)
-  AC_CHECK_LIB(devstat, main, AC_DEFINE(HAVE_DEVSTAT) DEVSTATLIB=-ldevstat) ;;
+  AC_CHECK_LIB(devstat, main,
+  AC_DEFINE(HAVE_DEVSTAT,[1],[Have libdevstat])
+  DEVSTATLIB=-ldevstat)
+  ;;
 esac
 
 dnl
@@ -188,11 +193,11 @@ netbsd1.[[0123456]]*|netbsdelf1.[[56]]*)
   ## Check if the network interface supports 64-bit counters.  This
   ## support was committed around 11/19/1999, for 1.4P.
   if test $host_os_full '>' netbsd1.4O  -o $host_os_full '>' netbsdelf1.4O ; then
-    AC_DEFINE(NETBSD_64BIT_IFACE_CTRS)
+    AC_DEFINE(NETBSD_64BIT_IFACE_CTRS,[1],[NetBSD 64 bit network counters])
   fi
 
   ## We'll assume the existence of UVM now -- it's been around a long time.
-  AC_DEFINE(UVM)
+  AC_DEFINE(UVM,[1],[UVM exists])
   host_dir=bsd
 
 ;;
@@ -226,7 +231,7 @@ freebsd[[0123]]*) AC_XOSV_FREEBSD
 	host_os=freebsd ;;
 freebsd[[4]]*) AC_XOSV_FREEBSD
 	AC_GCC_EXTRA_CXXFLAGS
-	AC_DEFINE(USE_KVM_GETSWAPINFO)
+	AC_DEFINE(USE_KVM_GETSWAPINFO,[1],[Use libkvm getswapinfo])
 	dnl AC_MSG_WARN([
 	dnl ])
 	host_dir=bsd
@@ -338,7 +343,7 @@ netbsd)
   #  Only enable the battery meter if it appears we support it.
   if test -e /dev/apm ; then
     BTRYMETER=btrymeter.o
-    AC_DEFINE(HAVE_BATTERY_METER)
+    AC_DEFINE(HAVE_BATTERY_METER,[1],[NetBSD battery meter])
   fi
   ;;
 esac

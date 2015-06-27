@@ -37,7 +37,7 @@ AC_LANG_POP([])
 ])
 AC_MSG_RESULT($ice_cv_have_bool)
 if test "$ice_cv_have_bool" = yes; then
-AC_DEFINE(HAVE_BOOL)
+AC_DEFINE(HAVE_BOOL,[1],[Has type bool])
 fi
 ])dnl
 
@@ -53,9 +53,9 @@ AC_LANG_POP([])
 ])
 AC_MSG_RESULT($ice_cv_have_long_long)
 if test "$ice_cv_have_long_long" = yes; then
-AC_DEFINE(LONG_LONG,long long)
+AC_DEFINE(LONG_LONG,long long,[Have type long long])
 else
-AC_DEFINE(LONG_LONG,long)
+AC_DEFINE(LONG_LONG,long,[long long is not so long])
 fi
 ])dnl
 
@@ -95,15 +95,6 @@ AC_DEFUN(AC_XOSV_LINUX, [
 EXTRALIBS=$XPMLIB
 
 dnl
-dnl Define GNULIBC for the new GNU libc for linux
-dnl
-dnl Assume "linux-gnu" is GNU libc and linux-gnulibc1 is the old libc
-dnl
-if test "$host_os" = "linux-gnu"; then
-AC_DEFINE(GNULIBC)
-fi
-
-dnl
 dnl Add a switch to add -DUSESYSCALLS for linux.
 dnl
 AC_ARG_ENABLE([linux-syscalls],
@@ -113,7 +104,7 @@ if test "$enableval" = "no"
 then
         echo "disabled Linux system calls"
 else
-        AC_DEFINE(USESYSCALLS)
+        AC_DEFINE(USESYSCALLS,[1],[Use Linux syscalls when possible])
         echo "enabled  Linux system calls"
 fi
 ,
@@ -148,7 +139,7 @@ dnl
         EXTRALIBS="-lkvm $XPMLIB"
         INSTALL_ARGS='-s -g kmem -m 02555'
 	NetMeter_Default_Setting=True
-	AC_DEFINE(XOSVIEW_NETBSD)
+	AC_DEFINE(XOSVIEW_NETBSD,[1],[NetBSD lkvm])
 ])
 
 AC_DEFUN(AC_XOSV_FREEBSD, [
@@ -158,7 +149,7 @@ dnl
         EXTRALIBS="-lkvm $XPMLIB $DEVSTATLIB"
         INSTALL_ARGS='-s -g kmem -m 02555'
 	NetMeter_Default_Setting=True
-	AC_DEFINE(XOSVIEW_FREEBSD)
+	AC_DEFINE(XOSVIEW_FREEBSD,[1],[FreeBSD lkvm])
 ])
 
 AC_DEFUN(AC_XOSV_OPENBSD, [
@@ -168,7 +159,7 @@ dnl
         EXTRALIBS="-lkvm $XPMLIB"
         INSTALL_ARGS='-s -g kmem -m 02555'
 	NetMeter_Default_Setting=True
-	AC_DEFINE(XOSVIEW_OPENBSD)
+	AC_DEFINE(XOSVIEW_OPENBSD,[1],[OpenBSD lkvm])
 ])
 
 AC_DEFUN(AC_XOSV_BSDI, [
@@ -180,7 +171,7 @@ dnl
 	EXTRALIBS="-lkvm $XPMLIB"
 	INSTALL_ARGS='-s -g kmem -m 02555'
 	NetMeter_Default_Setting=True
-	AC_DEFINE(XOSVIEW_BSDI)
+	AC_DEFINE(XOSVIEW_BSDI,[1],[BSDI lkvm])
 ])
 
 AC_DEFUN(AC_XOSV_HPUX, [
@@ -192,7 +183,7 @@ dnl
 AC_DEFUN(AC_XOSV_IRIX65, [
 	dnl
 	EXTRALIBS="-lrpcsvc"
-    AC_DEFINE(_G_HAVE_BOOL)
+    AC_DEFINE(_G_HAVE_BOOL,[1],[IRIX65 bool])
 ])
 
 AC_DEFUN(AC_XOSV_GNU, [

@@ -10,3 +10,5 @@ defaultstring.cc
 autom4te.cache
 log.conf
 xosview.1
+config.h
+config.h.in

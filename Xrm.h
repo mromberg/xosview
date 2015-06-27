@@ -4,10 +4,8 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _Xrm_h
-#define _Xrm_h
-
-#include "bool.h"
+#ifndef XRM_H
+#define XRM_H
 
 #include <string>
 #include <utility>

@@ -2,11 +2,14 @@
 # $Id: Makefile,v 1.3 2002/02/18 02:09:21 bgrayson Exp $
 #
 
-all: ../configure
+all: ../configure ../config.h.in
 
 ../configure: configure.in aclocal.m4
 	autoconf -Wall configure.in > ../configure
 	chmod 755 ../configure
+
+../config.h.in: configure.in aclocal.m4
+	autoheader && mv -f config.h.in ..
 
 clean:
 	rm -f *~

@@ -144,7 +144,7 @@ distclean: clean
 
 
 maintainer-clean: distclean
-	rm -f configure Xdefaults xosview.1
+	rm -f configure Xdefaults xosview.1 config.h config.h.in
 	rm -rf config/autom4te.cache/
 
 headercheck:
