@@ -1,6 +1,6 @@
 #ifndef XWIN_H
 #define XWIN_H
-#include "xosvconf.h"
+#include "configxosv.h"
 #include "x11graphics.h"
 
 #include <string>

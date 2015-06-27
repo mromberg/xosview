@@ -84,7 +84,7 @@
 // At some point this could be extended to log to files (or elsewhere)
 // and supress messages based on file/linenumber
 //
-#include "xosvconf.h"
+#include "configxosv.h"
 
 #include <iostream>
 #include <cstdlib>

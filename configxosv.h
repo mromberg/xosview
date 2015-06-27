@@ -8,8 +8,8 @@
 // have include guards.  Rather than pondering the mysteries of
 // why, I'm just gonna put them here.  No one should directly include
 // config.h
-#ifndef XOSVCONF_H
-#define XOSVCONF_H
+#ifndef CONFIGXOSV_H
+#define CONFIGXOSV_H
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
