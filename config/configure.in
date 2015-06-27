@@ -8,8 +8,9 @@ CF_TOP_SRCDIR
 AC_CONFIG_HEADERS(config.h:config.h.in)
 
 AC_CONFIG_AUX_DIR(config)
-m4_include([m4_ax_config_feature.m4])
 
+m4_include([m4_ax_config_feature.m4])
+m4_include([xo_gcc_auto_depend.m4])
 
 AC_CANONICAL_HOST
 AC_PROG_CXX([c++ g++])
@@ -60,7 +61,7 @@ AC_PROG_AWK
 AC_PROG_RANLIB
 
 
-m4_include([gcc_auto_depend.m4])
+
 
 AX_CONFIG_FEATURE_DEFAULT_DISABLED
 
@@ -78,7 +79,7 @@ AX_CONFIG_FEATURE(debug, [turns on/off debug support],
 AX_CONFIG_FEATURE(auto-depend, [turns on/off auto-depend support],
                   AUTO_DEPEND, [Does nothing autoconf noise],
                   [enable_auto_depend="yes"])
-MR_GCC_AUTO_DEPEND($enable_auto_depend)
+XO_GCC_AUTO_DEPEND($enable_auto_depend)
 
 
 
