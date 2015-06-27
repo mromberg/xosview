@@ -19,7 +19,7 @@
 
 
 
-static const char * const versionString = "xosview version: " XOSVIEW_VERSION;
+static const char * const versionString = "xosview version: " PACKAGE_VERSION;
 static const char NAME[] = "xosview@";
 
 

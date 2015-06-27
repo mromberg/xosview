@@ -21,13 +21,13 @@ CXX           = @CXX@
 
 # Optimized CXXFLAGS
 CXXFLAGS      += $(CFLAGS) @EXTRA_CXXFLAGS@ -I@x_includes@ \
-                -DXOSVIEW_VERSION=\"$(VERS)\" -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
+                 -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
 # DEBUG CXXFLAGS
 #CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pipe -I@x_includes@ \
-#                -DXOSVIEW_VERSION=\"$(VERS)\" -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
+#                 -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
 # PROFILE CXXFLAGS
 #CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pg -pipe -I@x_includes@ \
-#                -DXOSVIEW_VERSION=\"$(VERS)\" -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
+#                 -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
 
 #-----------------------------------------------------------------
 # Link flags and libraries
