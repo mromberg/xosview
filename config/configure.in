@@ -24,17 +24,20 @@ ICE_CXX_LONG_LONG
 #
 #  x_includes and x_libraries are not longer being exported
 # via AC_SUBST.  Because the whole X11 thing is a giant mess.
-# For now on configure will just try and figure out what it
-# is and insert correct falgs into things like CFLAGS
-# x_includes and x_libraries can be used inside the configure script
-#
-AC_PATH_X
-if test -n "$x_includes" ; then
-    CXXFLAGS="$CXXFLAGS -I$x_includes"
-fi
+# For now on configure will export exactly two variables
+# XINCS and XLIBS.  These variables are ONLY for
+# the locations of the core X11 library.  Other libraries
+# should be added to EXTRALIBS and EXTRA_CXXFLAGS
+XINCS=""
+XLIBS="-lX11"
 
+# Give AC_ thing a shot (for the user to supply paths if nothing else)
+AC_PATH_XTRA
+if test -n "$x_includes" ; then
+    XO_CONCAT(XINCS,$XINCS,"-I$x_includes")
+fi
 if test -n "$x_libraries"; then
-  LIBS="-L$x_libraries $LIBS"
+    XO_CONCAT(XLIBS,"-L$x_libraries",$XLIBS)
 fi
 
 AC_PROG_INSTALL
@@ -99,6 +102,7 @@ AC_CHECK_LIB(Xpm, XpmCreateImageFromData,
 # Call each ports macro so that it can set up its own
 # options / configuration.
 #
+EXTRA_CXXFLAGS=""
 case $host_os in
     linux*)
         AC_XOSV_LINUX
@@ -145,12 +149,13 @@ esac
 AC_SUBST(BTRYMETER)
 AC_SUBST(EXTRA_CXXFLAGS)
 AC_SUBST(EXTRALIBS)
-AC_SUBST(ELF_LINK_FLAGS)
 AC_SUBST(INSTALL_ARGS)
 AC_SUBST(LVERSION)
 AC_SUBST(USE_MOD_VERSIONS)
 AC_SUBST(host_dir)
 AC_SUBST(NetMeter_Default_Setting)
+AC_SUBST(XINCS)
+AC_SUBST(XLIBS)
 
 AC_CONFIG_FILES([
   Makefile:config/Makefile.top.in

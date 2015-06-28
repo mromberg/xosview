@@ -1,3 +1,23 @@
+#-------------------------------
+# XO_CONCAT([SHVAR],[string1],[string2])
+#
+# Joins the two strings with a single space and stores them in the
+# shell variable.  Won't add an space in the case string1 or
+# string2 is empty "".
+#-------------------------------
+AC_DEFUN([XO_CONCAT],[dnl
+if test -n "[$2]"; then
+    if test -n "[$3]"; then
+        $1="[$2] [$3]"
+    else
+        $1="[$2]"
+    fi
+else
+    $1="[$3]"
+fi
+])
+
+
 dnl
 dnl This file containes a macro for each os xosview has been ported to.
 dnl Each macro can add specific config options that apply to only that
@@ -62,9 +82,9 @@ fi
 dnl	For gcc-based (or primarily-gcc) OS's, set EXTRA_CXXFLAGS to -Wall -O4
 AC_DEFUN(AC_GCC_EXTRA_CXXFLAGS, [
 if test "$xosvdebug" = no; then
-	EXTRA_CXXFLAGS="-W -Wall -O3"
+	XO_CONCAT(EXTRA_CXXFLAGS,[-W -Wall -O3],$EXTRA_CXXFLAGS)
 else
-      	EXTRA_CXXFLAGS="-W -Wall -g"
+      	XO_CONCAT(EXTRA_CXXFLAGS,[-W -Wall -g],$EXTRA_CXXFLAGS)
 fi
 AC_MSG_NOTICE([EXTRA_CXXFLAGS=$EXTRA_CXXFLAGS])
 ])
@@ -92,7 +112,7 @@ changequote([, ])
 ]])
 
 AC_DEFUN(AC_XOSV_LINUX, [
-EXTRALIBS=$XPMLIB
+EXTRALIBS="$EXTRALIBS $XPMLIB"
 
 dnl
 dnl Add a switch to add -DUSESYSCALLS for linux.

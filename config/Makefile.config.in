@@ -20,13 +20,13 @@ CXX           = @CXX@
 #-----------------------------------------------------------------
 
 # Optimized CXXFLAGS
-CXXFLAGS      += $(CFLAGS) @EXTRA_CXXFLAGS@ \
+CXXFLAGS      += $(CFLAGS) @EXTRA_CXXFLAGS@ @XINCS@ \
                  -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
 # DEBUG CXXFLAGS
-#CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pipe \
+#CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pipe @XINCS@ \
 #                 -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
 # PROFILE CXXFLAGS
-#CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pg -pipe \
+#CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pg -pipe @XINCS@ \
 #                 -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
 
 #-----------------------------------------------------------------
@@ -34,16 +34,16 @@ CXXFLAGS      += $(CFLAGS) @EXTRA_CXXFLAGS@ \
 #-----------------------------------------------------------------
 
 # NORMAL LIBS
-LFLAGS        += -L$(TOP)/@host_dir@ @ELF_LINK_FLAGS@
-LIBS          += -lmeter @EXTRALIBS@ -lX11
+LFLAGS        += -L$(TOP)/@host_dir@
+LIBS          += -lmeter @EXTRALIBS@ @XLIBS@
 
 # DEBUG LIBS
 #LFLAGS        += -L$(TOP)/@host_dir@ -static
-#LIBS          += -lmeter @EXTRALIBS@ -lX11
+#LIBS          += -lmeter @EXTRALIBS@ @XLIBS@
 
 # PROFILE LIBS
 #LFLAGS        += -L$(TOP)/@host_dir@ -pg
-#LIBS          += -lmeter @EXTRALIBS@ -lX11 -lgmon
+#LIBS          += -lmeter @EXTRALIBS@ @XLIBS@ -lgmon
 
 #-----------------------------------------------------------------
 # Rules
