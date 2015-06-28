@@ -30,7 +30,7 @@ void BitMeter::setNumBits(size_t n){
 
 void BitMeter::disableMeter ( void ) {
     disabled_ = true;
-    onColor_ = parent_->allocColor ("gray");
+    onColor_ = parent_->g().allocColor ("gray");
     offColor_ = onColor_;
     Meter::legend ("Disabled");
 }
@@ -40,10 +40,10 @@ void BitMeter::checkResources( void ){
 }
 
 void BitMeter::checkevent( void ){
-    drawBits();
+    drawBits(parent_->g());
 }
 
-void BitMeter::drawBits( int manditory ){
+void BitMeter::drawBits(X11Graphics &g, bool manditory){
     static int pass = 1;
 
     int x1 = x_ + 0, x2;
@@ -56,11 +56,11 @@ void BitMeter::drawBits( int manditory ){
 
         if ( (bits_[i] != lastbits_[i]) || manditory ){
             if ( bits_[i] && pass )
-                parent_->setForeground( onColor_ );
+                g.setFG( onColor_ );
             else
-                parent_->setForeground( offColor_ );
+                g.setFG( offColor_ );
 
-            parent_->drawFilledRectangle( x1, y_, x2 - x1, height_);
+            g.drawFilledRectangle( x1, y_, x2 - x1, height_);
         }
 
         lastbits_[i] = bits_[i];
@@ -70,29 +70,33 @@ void BitMeter::drawBits( int manditory ){
 }
 
 void BitMeter::draw( void ){
-    parent_->lineWidth( 1 );
-    parent_->setForeground( parent_->foreground() );
-    parent_->drawFilledRectangle( x_ -1, y_ - 1, width_ + 2, height_ + 2 );
+    drawNewG(parent_->g());
+}
 
-    parent_->lineWidth( 0 );
+void BitMeter::drawNewG(X11Graphics &g){
+    g.lineWidth( 1 );
+    g.setFG( parent_->foreground() );
+    g.drawFilledRectangle( x_ -1, y_ - 1, width_ + 2, height_ + 2 );
+
+    g.lineWidth( 0 );
 
     if ( dolegends_ ){
-        parent_->setForeground( textcolor_ );
+        g.setFG( textcolor_ );
 
         int offset;
         if ( dousedlegends_ )
-            offset = parent_->textWidth( "XXXXXXXXX" );
+            offset = g.textWidth( "XXXXXXXXX" );
         else
-            offset = parent_->textWidth( "XXXXX" );
+            offset = g.textWidth( "XXXXX" );
 
-        parent_->drawString( x_ - offset + 1, y_ + height_, title_ );
-        parent_->setForeground( onColor_ );
+        g.drawString( x_ - offset + 1, y_ + height_, title_ );
+        g.setFG( onColor_ );
         if(docaptions_) {
-            parent_->drawString( x_, y_ - 5, legend_ );
+            g.drawString( x_, y_ - 5, legend_ );
         }
     }
 
-    drawBits( 1 );
+    drawBits(g, true);
 }
 
 void BitMeter::setBits(int startbit, unsigned char values){

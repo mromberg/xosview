@@ -122,7 +122,7 @@ void XWin::init(int argc, char **argv, const std::string &pixmapFName,
 
     // Map the main window
     map();
-    flush();
+    g().flush();
     if(XGetWindowAttributes(display_, window_, &attr_) == 0){
         logFatal << "Error getting attributes of Main." << std::endl;
     }

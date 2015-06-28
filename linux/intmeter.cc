@@ -46,8 +46,8 @@ void IntMeter::checkevent( void ){
 
 void IntMeter::checkResources( void ){
     BitMeter::checkResources();
-    onColor_  = parent_->allocColor( parent_->getResource( "intOnColor" ) );
-    offColor_ = parent_->allocColor( parent_->getResource( "intOffColor" ) );
+    onColor_  = parent_->g().allocColor( parent_->getResource( "intOnColor" ) );
+    offColor_ = parent_->g().allocColor(parent_->getResource( "intOffColor"));
     priority_ = util::stoi(parent_->getResource("intPriority"));
 }
 

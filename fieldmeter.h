@@ -21,6 +21,7 @@ public:
 
     size_t numfields(void) const { return fields_.size() ; }
     virtual void drawfields( int manditory = 0 );
+    virtual void drawfieldsNewG( X11Graphics &g, int manditory = 0 );
     void setfieldcolor( int field, const std::string &color );
     void setfieldcolor( int field, unsigned long color);
     void docaptions( int val ) { docaptions_ = val; }
@@ -30,6 +31,7 @@ public:
 
     void setUsed (float val, float total);
     void draw( void );
+    void drawNewG(X11Graphics &g);
     void checkevent( void );
     void disableMeter ( void );
 
@@ -50,7 +52,9 @@ protected:
 
     void setUsedFormat ( const std::string &str );
     void drawlegend( void );
+    void drawlegendNewG(X11Graphics &g);
     void drawused( int manditory );
+    void drawusedNewG( X11Graphics &g, int manditory );
     bool checkX(int x, int width) const;
 
     void setNumFields(int n);

@@ -28,6 +28,7 @@ public:
     virtual ~FieldMeterDecay( void );
 
     virtual void drawfields( int manditory = 0 );
+    virtual void drawfieldsNewG( X11Graphics &g, int manditory = 0 );
 
 protected:
     int dodecay_;

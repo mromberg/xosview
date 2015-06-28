@@ -54,14 +54,15 @@ void RAIDMeter::checkevent( void ){
 
 void RAIDMeter::checkResources( void ){
     BitFieldMeter::checkResources();
-    onColor_ = parent_->allocColor(parent_->getResource("RAIDdiskOnlineColor"));
-    offColor_ = parent_->allocColor(
+    onColor_ = parent_->g().allocColor(parent_->getResource(
+          "RAIDdiskOnlineColor"));
+    offColor_ = parent_->g().allocColor(
         parent_->getResource("RAIDdiskFailureColor"));
-    doneColor_ = parent_->allocColor(
+    doneColor_ = parent_->g().allocColor(
         parent_->getResource("RAIDresyncdoneColor"));
-    todoColor_ = parent_->allocColor(
+    todoColor_ = parent_->g().allocColor(
         parent_->getResource("RAIDresynctodoColor"));
-    completeColor_= parent_->allocColor(
+    completeColor_= parent_->g().allocColor(
         parent_->getResource("RAIDresynccompleteColor"));
     priority_  = util::stoi(parent_->getResource("RAIDPriority"));
     setfieldcolor( 0, doneColor_ );

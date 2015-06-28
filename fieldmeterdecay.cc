@@ -53,12 +53,16 @@ FieldMeterDecay::~FieldMeterDecay( void ){
 }
 
 void FieldMeterDecay::drawfields( int manditory ){
+    drawfieldsNewG(parent_->g(), manditory);
+}
+
+void FieldMeterDecay::drawfieldsNewG( X11Graphics &g, int manditory ){
     int twidth, x = x_;
 
     if (!dodecay_) {
         //  If this meter shouldn't be done as a decaying splitmeter,
         //  call the ordinary fieldmeter code.
-        FieldMeter::drawfields (manditory);
+        FieldMeter::drawfieldsNewG(g, manditory);
         return;
     }
 
@@ -129,8 +133,8 @@ void FieldMeterDecay::drawfields( int manditory ){
           && ((decayx + decaytwidth) != (x_ + width_)))
             decaytwidth = width_ + x_ - decayx;
 
-        parent_->setForeground( colors_[i] );
-        parent_->setStippleN(i%4);
+        g.setFG( colors_[i] );
+        g.setStippleN(i%4);
 
         //  drawFilledRectangle() adds one to its width and height.
         //    Let's correct for that here.
@@ -138,14 +142,14 @@ void FieldMeterDecay::drawfields( int manditory ){
             if (!checkX(x, twidth))
                 logProblem << "!checkX(" << x << ", " << twidth << ")"
                            << std::endl;
-            parent_->drawFilledRectangle( x, y_, twidth, halfheight );
+            g.drawFilledRectangle( x, y_, twidth, halfheight );
         }
 
         if ( manditory || (decay_[i] != lastDecayval_[i]) ){
             if (!checkX(decayx, decaytwidth))
                 logProblem << "!checkX(" << decayx << ", " << decaytwidth << ")"
                            << std::endl;
-            parent_->drawFilledRectangle( decayx, y_+halfheight+1,
+            g.drawFilledRectangle( decayx, y_+halfheight+1,
               decaytwidth, height_ - halfheight-1);
         }
 
@@ -153,7 +157,7 @@ void FieldMeterDecay::drawfields( int manditory ){
         lastx_[i] = x;
         lastDecayval_[i] = decay_[i];
 
-        parent_->setStippleN(0);	/*  Restore all-bits stipple.  */
+        g.setStippleN(0);	/*  Restore all-bits stipple.  */
         if ( dousedlegends_ )
             drawused( manditory );
         x += twidth;

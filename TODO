@@ -9,6 +9,8 @@
 - Update the install scripts for X11R7 locations (or just where distros
   now dump stuff.
 
+- Pass a Graphics to checkResources
+
 - Create an rpm spec file (as an example) to hold build package deps if
   nothing else.
 

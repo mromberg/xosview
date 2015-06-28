@@ -64,6 +64,7 @@ public:
     //-------------------------------------------------
     // Depricated graphics API
     //-------------------------------------------------
+#if 0
     void lineWidth( unsigned int width ) { g().lineWidth(width); }
     unsigned long allocColor( const std::string &name )
         { return g().allocColor(name); }
@@ -98,6 +99,7 @@ public:
     int textAscent( void ) const { return g().textAscent(); }
     int textDescent( void ) const { return g().textDescent(); }
     unsigned int textHeight( void ) const { return g().textHeight(); }
+#endif
     //-End Depricated----------------------------------
 
 protected:

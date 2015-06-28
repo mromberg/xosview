@@ -207,7 +207,7 @@ void XOSView::reallydraw( void ){
     for (size_t i = 0 ; i < _meters.size() ; i++)
         _meters[i]->draw();
 
-    flush();
+    g().flush();
 
     expose_flag_ = false;
 }
@@ -236,7 +236,7 @@ void XOSView::run( void ){
                     _meters[i]->checkevent();
             }
 
-            flush();
+            g().flush();
         }
 #ifdef HAVE_USLEEP
         /*  First, sleep for the proper integral number of seconds --

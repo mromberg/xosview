@@ -22,7 +22,8 @@ Meter::~Meter( void ){
 }
 
 void Meter::checkResources( void ){
-    textcolor_ = parent_->allocColor(parent_->getResource( "meterLabelColor"));
+    textcolor_ = parent_->g().allocColor(parent_->getResource(
+          "meterLabelColor"));
 }
 
 void Meter::resize( int x, int y, int width, int height ){

@@ -23,6 +23,7 @@ public:
 
     void checkevent( void );
     void draw( void );
+    void drawNewG(X11Graphics &g);
     void disableMeter ( void );
 
     size_t numBits(void) const { return bits_.size(); }
@@ -38,7 +39,7 @@ protected:
 
     void setBits(int startbit, unsigned char values);
 
-    void drawBits( int manditory = 0 );
+    void drawBits(X11Graphics &g, bool manditory = false);
 private:
 };
 

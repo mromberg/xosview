@@ -43,7 +43,8 @@ FieldMeter::~FieldMeter( void ){
 
 void FieldMeter::checkResources( void ){
     Meter::checkResources();
-    usedcolor_ = parent_->allocColor( parent_->getResource( "usedLabelColor") );
+    usedcolor_ = parent_->g().allocColor(parent_->getResource(
+          "usedLabelColor"));
 }
 
 
@@ -93,35 +94,43 @@ void FieldMeter::reset( void ){
 }
 
 void FieldMeter::setfieldcolor( int field, const std::string &color ){
-    colors_[field] = parent_->allocColor( color );
+    colors_[field] = parent_->g().allocColor( color );
 }
 
 void FieldMeter::setfieldcolor( int field, unsigned long color ) {
     colors_[field] = color;
 }
-
 void FieldMeter::draw( void ){
+    drawNewG(parent_->g());
+}
+
+void FieldMeter::drawNewG(X11Graphics &g) {
+
     /*  Draw the outline for the fieldmeter.  */
-    parent_->setForeground( parent_->foreground() );
-    parent_->drawRectangle( x_ - 1, y_ - 1, width_ + 2, height_ + 2 );
+    g.setFG( parent_->foreground() );
+    g.drawRectangle( x_ - 1, y_ - 1, width_ + 2, height_ + 2 );
     if ( dolegends_ ){
-        parent_->setForeground( textcolor_ );
+        g.setFG( textcolor_ );
 
         int offset;
         if ( dousedlegends_ )
-            offset = parent_->textWidth( "XXXXXXXXX" );
+            offset = g.textWidth( "XXXXXXXXX" );
         else
-            offset = parent_->textWidth( "XXXXX" );
+            offset = g.textWidth( "XXXXX" );
 
-        parent_->drawString( x_ - offset + 1, y_ + height_, title_ );
+        g.drawString( x_ - offset + 1, y_ + height_, title_ );
         if(docaptions_)
-            drawlegend();
+            drawlegendNewG(g);
     }
 
-    drawfields( 1 );
+    drawfieldsNewG( g, 1 );
 }
 
 void FieldMeter::drawlegend( void ){
+    drawlegendNewG(parent_->g());
+}
+
+void FieldMeter::drawlegendNewG(X11Graphics &g) {
     size_t pos = 0;
     int x = x_;
 
@@ -130,27 +139,31 @@ void FieldMeter::drawlegend( void ){
         std::string li = legend_.substr(pos, fpos - pos);
         pos = fpos + 1;
 
-        parent_->setStippleN(i%4);
-        parent_->setForeground( colors_[i] );
-        parent_->drawString( x, y_ - 5, li);
-        x += parent_->textWidth( li );
+        g.setStippleN(i%4);
+        g.setFG( colors_[i] );
+        g.drawString( x, y_ - 5, li);
+        x += g.textWidth( li );
 
-        parent_->setForeground( parent_->foreground() );
+        g.setFG( parent_->foreground() );
         if ( i != numfields() - 1 )
-            parent_->drawString( x, y_ - 5, "/" );
-        x += parent_->textWidth( "/", 1 );
+            g.drawString( x, y_ - 5, "/" );
+        x += g.textWidth("/");
     }
-    parent_->setStippleN(0);	/*  Restore default all-bits stipple.  */
+    g.setStippleN(0);	/*  Restore default all-bits stipple.  */
 }
 
 void FieldMeter::drawused( int manditory ){
+    drawusedNewG(parent_->g(), manditory);
+}
+
+void FieldMeter::drawusedNewG( X11Graphics &g, int manditory ){
     if ( !manditory )
         if ( (lastused_ == used_) )
             return;
 
-    parent_->setStippleN(0);	/*  Use all-bits stipple.  */
-    static const int onechar = parent_->textWidth( "X" );
-    static int xoffset = parent_->textWidth( "XXXXX" );
+    g.setStippleN(0);	/*  Use all-bits stipple.  */
+    static const int onechar = g.textWidth( "X" );
+    static int xoffset = g.textWidth( "XXXXX" );
 
     std::ostringstream bufs;
     bufs << std::fixed;
@@ -214,17 +227,21 @@ void FieldMeter::drawused( int manditory ){
         bufs << std::setprecision(1) << used_;
     }
 
-    parent_->clear( x_ - xoffset, y_ + height_ - parent_->textHeight(),
-      xoffset - onechar / 2, parent_->textHeight() + 1 );
-    parent_->setForeground( usedcolor_ );
+    g.clear( x_ - xoffset, y_ + height_ - g.textHeight(),
+      xoffset - onechar / 2, g.textHeight() + 1 );
+    g.setFG( usedcolor_ );
     std::string buf = bufs.str();
-    parent_->drawString( x_ - (buf.size() + 1 ) * onechar + 2,
+    g.drawString( x_ - (buf.size() + 1 ) * onechar + 2,
       y_ + height_, buf );
 
     lastused_ = used_;
 }
 
 void FieldMeter::drawfields( int manditory ){
+    drawfieldsNewG(parent_->g(), manditory);
+}
+
+void FieldMeter::drawfieldsNewG( X11Graphics &g, int manditory ){
     int twidth, x = x_;
 
     if ( total_ == 0 )
@@ -251,15 +268,15 @@ void FieldMeter::drawfields( int manditory ){
             twidth = width_ + x_ - x;
 
         if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
-            parent_->setForeground( colors_[i] );
-            parent_->setStippleN(i%4);
-            parent_->drawFilledRectangle( x, y_, twidth, height_ );
-            parent_->setStippleN(0);	/*  Restore all-bits stipple.  */
+            g.setFG( colors_[i] );
+            g.setStippleN(i%4);
+            g.drawFilledRectangle( x, y_, twidth, height_ );
+            g.setStippleN(0);	/*  Restore all-bits stipple.  */
             lastvals_[i] = twidth;
             lastx_[i] = x;
 
             if ( dousedlegends_ )
-                drawused( manditory );
+                drawusedNewG( g, manditory );
         }
         x += twidth;
     }
@@ -268,7 +285,7 @@ void FieldMeter::drawfields( int manditory ){
 }
 
 void FieldMeter::checkevent( void ){
-    drawfields();
+    drawfieldsNewG(parent_->g());
 }
 
 void FieldMeter::setNumFields(int n){

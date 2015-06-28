@@ -61,8 +61,10 @@ void SerialMeter::checkevent( void ){
 
 void SerialMeter::checkResources( void ){
     BitMeter::checkResources();
-    onColor_  = parent_->allocColor( parent_->getResource( "serialOnColor" ) );
-    offColor_ = parent_->allocColor( parent_->getResource( "serialOffColor" ) );
+    onColor_  = parent_->g().allocColor( parent_->getResource(
+          "serialOnColor" ) );
+    offColor_ = parent_->g().allocColor( parent_->getResource(
+          "serialOffColor" ) );
     priority_ = util::stoi (parent_->getResource( "serialPriority" ));
 
     _port = getPortBase(_device);
