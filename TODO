@@ -1,3 +1,7 @@
+- Make a README.devel for developers
+
+- Move stuff out of aclocal.m4 and into more specific m4 files.
+
 - Do something (if anything can be done) about X11 inc/library paths
 
 - Transparent almost works.  Windom moves do not update the background
