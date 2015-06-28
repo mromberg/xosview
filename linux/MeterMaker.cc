@@ -57,7 +57,7 @@ void MeterMaker::makeMeters(void){
             util::stof(_xos->getResource("pageBandwidth"))));
 
     if (_xos->isResourceTrue("net"))
-        push(new NetMeter(_xos, util::stof(_xos->getResource("netBandwidth"))));
+        push(new NetMeter(_xos));
 
     if (_xos->isResourceTrue("NFSDStats"))
         push(new NFSDStats(_xos));

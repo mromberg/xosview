@@ -2,11 +2,7 @@
 
 - Move stuff out of aclocal.m4 and into more specific m4 files.
 
-- Do something (if anything can be done) about X11 inc/library paths
-
 - Transparent almost works.  Windom moves do not update the background
-
-- Linux netmeter's peak does not seem to relate to resource setting
 
 - Add a linux interrupt rate meter (int/sec)
 

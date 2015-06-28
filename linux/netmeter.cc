@@ -2,108 +2,35 @@
 //  Copyright (c) 1994, 1995, 2002, 2006, 2015
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
-//  Modifications to support dynamic addresses by:
-//    Michael N. Lipp (mnl@dtro.e-technik.th-darmstadt.de)
-//
 //  This file may be distributed under terms of the GPL
 //
-
-
-//-----------------------------------------------------------------------
-//
-// To use this meter, ipaccounting needs to be configured in the kernel and
-// accounting needs to be set up.  Here are a couple of lines from my
-// rc.local which add ip accounting on all packets to and from my ip
-// address (192.168.0.3):
-//
-// /sbin/ipfw add accounting all iface 192.168.0.3 from 192.168.0.3 to 0/0
-// /sbin/ipfw add accounting all iface 192.168.0.3 from 0/0 to 192.168.0.3
-//
-// If you have more than one ip address you can add lines similar to the
-// ones above for the other addresses and this class will combine them in
-// its display.
-//-----------------------------------------------------------------------
-
-
 #include "netmeter.h"
-#include "xosview.h"
 
-#include <unistd.h>
 #include <fstream>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#if defined(GNULIBC) || defined(__GLIBC__)
-#include <net/if.h>
-#else
-#include <linux/if.h>
-#endif
-#include <netinet/in.h>
-#include <errno.h>
 #include <iostream>
+#include <cerrno>
 #include <iomanip>
 #include <string>
+#include <limits>
 
-NetMeter::NetMeter( XOSView *parent, float max )
-    : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ){
+
+static const char *NETFILENAME = "/proc/net/dev";
+
+
+NetMeter::NetMeter( XOSView *parent)
+    : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ), _maxBandwidth(0),
+      _netfilename(NETFILENAME) {
+    _last = getStats();
     _timer.start();
-    maxpackets_ = max;
-    _lastBytesIn = _lastBytesOut = 0;
-    _usechains = false;
-
-    checkOSVersion();
 }
 
 NetMeter::~NetMeter( void ){
-    close (_ipsock);
-}
-
-void NetMeter::checkOSVersion(void) {
-    std::ifstream ifs("/proc/sys/kernel/osrelease");
-    if (!ifs) {
-        logFatal << "Can not open file : " << "/proc/sys/kernel/osrelease"
-                 << std::endl;
-    }
-
-    int major, minor;
-    _bytesInDev = 0;
-    ifs >> major;
-    ifs.ignore(1);
-    ifs >> minor;
-    ifs.ignore(1);
-
-    if (major > 2 || (major == 2 && minor >= 1)) {
-	// check presence of iacct and oacct chains
-        std::ifstream chains("/proc/net/ip_fwchains");
-	int n = 0;
-        std::string buf;
-
-        while (chains && !chains.eof()) {
-            chains >> buf;
-            chains.ignore(1024, '\n');
-
-            if (buf == "iacct")
-                n |= 1;
-            if (buf == "oacct")
-                n |= 2;
-        }
-
-	if (n == 3) {
-            _netfilename = "/proc/net/ip_fwchains";
-            _usechains = true;
-        }
-	else
-            _netfilename = "/proc/net/dev";
-
-	_bytesInDev = 1;
-    }
-    else
-        _netfilename = "/proc/net/ip_acct";
 }
 
 void NetMeter::checkResources( void ){
     FieldMeterGraph::checkResources();
 
+    _maxBandwidth = util::stof(parent_->getResource( "netBandwidth" ));
     setfieldcolor( 0, parent_->getResource( "netInColor" ) );
     setfieldcolor( 1, parent_->getResource( "netOutColor" ) );
     setfieldcolor( 2, parent_->getResource( "netBackground" ) );
@@ -111,188 +38,85 @@ void NetMeter::checkResources( void ){
     useGraph_ = parent_->isResourceTrue( "netGraph" );
     dodecay_ = parent_->isResourceTrue( "netDecay" );
     setUsedFormat (parent_->getResource("netUsedFormat"));
-    netIface_ = parent_->getResource( "netIface" );
-
-    _ipsock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (_ipsock == -1) {
-        logFatal << "Can not open socket : " << util::strerror(errno)
-                 << std::endl;
-    }
 }
 
 void NetMeter::checkevent(void) {
-    if (_bytesInDev)
-        checkeventNew();
-    else
-        checkeventOld();
-}
-
-void NetMeter::checkeventNew(void) {
-    std::ifstream ifs(_netfilename);
-
-    if (!ifs)
-        logFatal << "Can not open file : " << _netfilename << std::endl;
-
-    std::string str_in;
-    unsigned long long in, out, ig;
-    unsigned long long totin = 0, totout = 0;
-    std::string buf;
-
-    fields_[2] = maxpackets_;     // assume no
-    fields_[0] = fields_[1] = 0;  // network activity
-
+    netpair nstats(getStats());
     _timer.stop();
-
-    if (_usechains)
-        while (ifs) {
-            ifs >> buf;
-
-            if (buf == "iacct")
-                ifs >> buf >> buf >> ig >> ig >> ig >> ig >> ig >> ig >> totin;
-            else if (buf == "oacct")
-                ifs >> buf >> buf >> ig >> ig >> ig >> ig >> ig >> ig >> totout;
-
-            ifs.ignore(1024, '\n');
-        }
-    else {
-        std::string ifname;
-        ifs.ignore(1024, '\n');
-        ifs.ignore(1024, '\n');
-
-        while (ifs) {
-            if (netIface_ == "False" ) {
-                ifs.ignore(1024, ':');
-            }
-            else {
-                std::getline(ifs, buf, ':');
-                //ifs.get(buf, 128, ':');
-                ifname = buf;
-                ifs.ignore(1, ':');
-                ifname.erase(0, ifname.find_first_not_of(" ") );
-                if (ifname != netIface_) {
-                    ifs.ignore(1024,'\n');
-                    continue;
-                }
-            }
-
-            ifs >> str_in;
-            if (str_in == "No")
-                continue;
-            else {
-                in = strtoull(str_in.c_str(), NULL, 10);
-                ifs >> ig >> ig >> ig >> ig >> ig >> ig >> ig >> out;
-            }
-
-            if (!ifs.eof()) {
-                totin += in;
-                totout += out;
-            }
-
-            ifs.ignore(1024, '\n');
-        }
-    }
-
-    float t = 1000000.0 / _timer.report_usecs();
-
-    if (t < 0)
-        t = 0.1;
-
-    fields_[0] = (totin - _lastBytesIn) * t;
-    fields_[1] = (totout - _lastBytesOut) * t;
-
-    _lastBytesIn = totin;
-    _lastBytesOut = totout;
-
-    adjust();
-
-    if (total_)
-        setUsed(fields_[0] + fields_[1], total_);
+    double etime = _timer.report_usecs() / 1000000; // now in seconds
     _timer.start();
-    drawfields();
-}
 
-void NetMeter::checkeventOld(void) {
-    _timer.stop();
-    fields_[2] = maxpackets_;     // assume no
-    fields_[0] = fields_[1] = 0;  // network activity
+    unsigned long long in = nstats.first - _last.first;
+    unsigned long long out = nstats.second - _last.second;
 
-    std::ifstream ifs(_netfilename);
-    if (!ifs)
-        logFatal << "Can not open file : " << _netfilename << std::endl;
+    //logDebug << "IN : " << nstats.first << " : " << _last.first << std::endl;
+    //logDebug << "OUT: " << nstats.second << " : " << _last.second << std::endl;
 
-    struct ifconf ifc;
-    std::vector<char> buff(1024);
-    ifc.ifc_len = buff.size();
-    ifc.ifc_buf = &buff[0];
-    if (ioctl(_ipsock, SIOCGIFCONF, &ifc) < 0)
-        logFatal << "Can not get interface list : " << util::strerror( errno )
-                 << std::endl;
+    _last = nstats;
 
-    char c;
-    unsigned long long sa, da, sm, dm, bytes;
-    unsigned long long tot_in = 0, tot_out = 0;
+    logDebug << "read: " << in << ", " << out
+             << " in: " << etime << " seconds" << std::endl;
+    logDebug << "rate: " << std::setprecision(1)
+             << (in / etime) / 1000
+             << "/" << (out / etime) / 1000 << std::endl;
 
-    ifs.ignore(1024, '\n');
-
-    while (ifs) {
-        ifs >> std::hex >> sa >> c >> sm >> c >> c >> da >> c >> dm;
-        for (int index = 0 ; index < 7 ; index++)
-            ifs.ignore(9999, ' ');
-        ifs >> std::dec >> bytes;
-
-        ifs.ignore(9999, '\n');
-
-        if (!ifs.eof()) {
-            struct ifreq *ifr = ifc.ifc_req;
-            for (int i = ifc.ifc_len / sizeof(struct ifreq);
-                 --i >= 0; ifr++) {
-                unsigned long adr = ntohl(
-                    ((struct sockaddr_in *)&ifr->ifr_addr)->sin_addr.s_addr);
-                if (sm == 0 && da == adr) {
-                    tot_in += bytes;
-                    break;
-                }
-                if (dm == 0 && sa == adr) {
-                    tot_out += bytes;
-                    break;
-                }
-            }
-        }
-    }
-
-    // This will happen when a dynamic connection (SLIP/PPP) goes down.
-    if ((tot_in < _lastBytesIn) || (tot_out < _lastBytesOut)) {
-        fields_[0] = fields_[1] = 0;
-        _lastBytesIn = tot_in;
-        _lastBytesOut = tot_out;
-    }
-    else {
-        float t = 1000000.0 / _timer.report_usecs();
-
-        if (t < 0)  // can happen when system clock is reset. (ntp, timed, etc)
-            t = 0.1;
-
-        fields_[0] = (tot_in - _lastBytesIn) * t;
-        fields_[1] = (tot_out - _lastBytesOut) * t;
-
-        _lastBytesIn = tot_in;
-        _lastBytesOut = tot_out;
-    }
-
-    adjust();
-    if (total_)
-        setUsed(fields_[0] + fields_[1], total_);
-    _timer.start();
-    drawfields();
-}
-
-void NetMeter::adjust(void) {
-    total_ = fields_[0] + fields_[1];
-
-    if (total_ > maxpackets_)
+    if (((in + out) / etime) > _maxBandwidth) { // display percentages
+        total_ = (in + out) / etime;
+        fields_[0] = (in / etime) / total_;
+        fields_[1] = (out / etime) / total_;
         fields_[2] = 0;
+        total_ = 1.0;
+    }
     else {
-        total_ = maxpackets_;
+        total_ = _maxBandwidth;
+        fields_[0] = (in / etime);
+        fields_[1] = (out / etime);
         fields_[2] = total_ - fields_[0] - fields_[1];
     }
+
+    setUsed((out + in) / etime, _maxBandwidth);
+}
+
+NetMeter::netpair NetMeter::getStats(void) {
+    // Returns total bytes in/out
+    std::ifstream ifs(_netfilename.c_str());
+    if (!ifs)
+        logFatal << "can not open: " << _netfilename << std::endl;
+
+    // toss first two lines (captions)
+    ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    if (!ifs)
+        logFatal << "error reading: " << _netfilename << std::endl;
+
+    // each remaining line is stats for an interface.
+    unsigned long long read=0, write=0; // totals
+    while(!ifs.eof()) {
+        std::string buf;
+        // The caption says these are in bytes
+        unsigned long long receive=0, trans=0;
+        ifs >> buf;
+        if (buf == "lo:") { // skip the loopback (it is crazy fast
+            ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+        if (ifs.eof()) // yea we will really hit EOF here
+            break;
+        ifs >> receive;
+
+        // The transmit is the eighth one down the row
+        for (size_t i = 0 ; i < 7 ; i++)
+            ifs >> trans;
+        ifs >> trans;
+
+        // don't need the rest of the line
+        ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (!ifs)
+            logFatal << "error reading2: " << _netfilename << std::endl;
+
+        read += receive;
+        write += trans;
+    }
+
+    return netpair(read, write);
 }

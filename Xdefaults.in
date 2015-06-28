@@ -76,7 +76,7 @@ xosview*memKernelColor:     yellow
 xosview*memUsedColor:       #56E67B
 xosview*memSharedColor:     #56E67B
 xosview*memBufferColor:     #F2EF44
-xosview*memCacheColor:      #FC842B
+xosview*memCacheColor:      #0ABBDA
 xosview*memFreeColor:       #03315E
 xosview*memTextColor:       blue
 xosview*memOtherColor:      orange
@@ -125,12 +125,15 @@ xosview*pageUsedFormat:     autoscale
 
 
 ! ** Network Meter Resources
+! The netBandwidth is not in bytes/sec because... I said so.
 xosview*net:                 @NetMeter_Default_Setting@
-!xosview*netBandwidth:       7500  ! for 64kbps ISDN
-!xosview*netBandwidth:       5000  ! for up to 57.6kbps modems
-!xosview*netBandwidth:       2000  ! for 28.8kbps modems (no comp) 14.4 (with)
-xosview*netBandwidth:    1000000  ! for 10Mbit/s Ethernet (could be 1250000)
-!xosview*netBandwidth:   10000000  ! for 100Mbit/s Ethernet (could be 12500000)
+!xosview*netBandwidth:      64000  ! for 64kbps ISDN
+!xosview*netBandwidth:      57600  ! for up to 57.6kbps modems
+!xosview*netBandwidth:      28800  ! for 28.8kbps modems (no comp) 14.4 (with)
+xosview*netBandwidth:      6750000 ! 54Mbps 802.11g (wifi)
+!xosview*netBandwidth:    10000000  ! for 10Mbit/s Ethernet
+!xosview*netBandwidth:  100000000  ! for 100Mbit/s Ethernet
+!xosview*netBandwidth: 1000000000  ! for 1Gbit/s Ethernet
 xosview*netInColor:         #56E67B
 xosview*netOutColor:        #F2EF44
 xosview*netBackground:      #03315E
@@ -138,7 +141,7 @@ xosview*netPriority:        5
 xosview*netDecay:           True
 xosview*netGraph:           False
 xosview*netUsedFormat:	    autoscale
-xosview*netIface:           False
+xosview*netIface:           False   ! Linux does not use.  If others don't nuke
 
 
 ! Interrupt Meter Resources
