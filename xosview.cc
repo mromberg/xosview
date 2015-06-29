@@ -195,6 +195,7 @@ void  XOSView::resize( void ){
 
 
 XOSView::~XOSView( void ){
+    logDebug << "deleting " << _meters.size() << " meters..." << std::endl;
     for (size_t i = 0 ; i < _meters.size() ; i++)
         delete _meters[i];
     _meters.resize(0);
@@ -229,6 +230,10 @@ void XOSView::run( void ){
 
     while( !done() ){
         checkevent();
+        if (done()) {
+            logDebug << "checkevent() set done" << std::endl;
+            break; // XEvents can set this
+        }
 
         if (_isvisible){
             for (size_t i = 0 ; i < _meters.size() ; i++) {
@@ -250,6 +255,7 @@ void XOSView::run( void ){
 #endif
         counter = (counter + 1) % 5;
     }
+    logDebug << "leaging run()..." << std::endl;
 }
 
 void XOSView::usleep_via_select( unsigned long usec ){

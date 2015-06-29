@@ -74,8 +74,6 @@ protected:
         return "killroy";
     }
 
-    int done(void) { return done_; }
-    void done(int val) { done_ = val; }
     void getGeometry(const std::string &geomStr, bool geomUnspecified);
     bool getPixmap(Pixmap *, const std::string &pixmapFName);
     void x(int val) { x_ = val; }

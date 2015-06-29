@@ -18,7 +18,7 @@
 #endif
 
 
-
+static std::ostream &operator<<(std::ostream &os, const XEvent &e);
 
 
 //-----------------------------------------------------------------------------
@@ -293,15 +293,17 @@ void XWin::ignoreEvents( long mask ){
     }
 }
 
+
 void XWin::checkevent( void ){
     XEvent event;
 
-    while ( XEventsQueued( display_, QueuedAfterReading ) ){
+    while ( !done() && XEventsQueued( display_, QueuedAfterReading ) ){
         XNextEvent( display_, &event );
+        logDebug << "EVENT: " << event << ", done=" << done() << std::endl;
 
         // call all of the Event's call back functions to process this event
         Event *tmp = events_;
-        while ( tmp != NULL ){
+        while ( !done() && (tmp != NULL) ){
             tmp->callBack( event );
             tmp = tmp->next_;
         }
@@ -338,8 +340,10 @@ void XWin::configureEvent( XEvent &event ){
 
 void XWin::deleteEvent( XEvent &event ){
     if ( (event.xclient.message_type == wm_ ) &&
-      ((unsigned)event.xclient.data.l[0] == wmdelete_) )
-        done( 1 );
+      ((unsigned)event.xclient.data.l[0] == wmdelete_) ) {
+        logDebug << "calling done(true)..." << std::endl;
+        done(true);
+    }
 }
 
 XWin::Event::Event( XWin *parent, int event, EventCallBack callBack ){
@@ -465,3 +469,114 @@ void XWin::dumpResources(std::ostream &) {
     logFatal << "not implemented." << std::endl;
 }
 //-------------------------------------------------------------------
+
+static std::ostream &operator<<(std::ostream &os, const XEvent &e) {
+    os << "XEvent: type=";
+    switch (e.type) {
+#ifdef XOSVDEBUG
+    case KeyPress:
+        os << "KeyPress";
+        break;
+    case KeyRelease:
+        os << "KeyRelease";
+        break;
+    case ButtonPress:
+        os << "ButtonPress";
+        break;
+    case ButtonRelease:
+        os << "ButtonRelease";
+        break;
+    case MotionNotify:
+        os << "MotionNotify";
+        break;
+    case EnterNotify:
+        os << "EnterNotify";
+        break;
+    case LeaveNotify:
+        os << "LeaveNotify";
+        break;
+    case FocusIn:
+        os << "FocusIn";
+        break;
+    case FocusOut:
+        os << "FocusOut";
+        break;
+    case KeymapNotify:
+        os << "KeymapNotify";
+        break;
+    case Expose:
+        os << "Expose";
+        break;
+    case GraphicsExpose:
+        os << "GraphicsExpose";
+        break;
+    case NoExpose:
+        os << "NoExpose";
+        break;
+    case CirculateRequest:
+        os << "CirculateRequest";
+        break;
+    case ConfigureRequest:
+        os << "ConfigureRequest";
+        break;
+    case MapRequest:
+        os << "MapRequest";
+        break;
+    case ResizeRequest:
+        os << "ResizeRequest";
+        break;
+    case CirculateNotify:
+        os << "CirculateNotify";
+        break;
+    case ConfigureNotify:
+        os << "ConfigureNotify";
+        break;
+    case CreateNotify:
+        os << "CreateNotify";
+        break;
+    case DestroyNotify:
+        os << "DestroyNotify";
+        break;
+    case GravityNotify:
+        os << "GravityNotify";
+        break;
+    case MapNotify:
+        os << "MapNotify";
+        break;
+    case MappingNotify:
+        os << "MappingNotify";
+        break;
+    case ReparentNotify:
+        os << "ReparentNotify";
+        break;
+    case UnmapNotify:
+        os << "UnmapNotify";
+        break;
+    case VisibilityNotify:
+        os << "VisibilityNotify";
+        break;
+    case ColormapNotify:
+        os << "ColormapNotify";
+        break;
+    case ClientMessage:
+        os << "ClientMessage";
+        break;
+    case PropertyNotify:
+        os << "PropertyNotify";
+        break;
+    case SelectionClear:
+        os << "SelectionClear";
+        break;
+    case SelectionNotify:
+        os << "SelectionNotify";
+        break;
+    case SelectionRequest:
+        os << "SelectionRequest";
+        break;
+#endif
+    default:
+        os << "Unknown(" << e.type << ")";
+    };
+
+    return os;
+}

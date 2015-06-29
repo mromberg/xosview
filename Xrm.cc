@@ -90,6 +90,7 @@ Xrm::opt Xrm::getResource(const std::string &rname) const{
     return opt(false, "<(Xrm::uninitialized)>");
 }
 
+
 Xrm::~Xrm(){
     logDebug << "Xrm::~Xrm(): " << (void *)_db << std::endl;
     XrmDestroyDatabase(_db);
