@@ -19,15 +19,14 @@
 static const size_t MAX_PROCSTAT_LENGTH = 2048;
 
 
-DiskMeter::DiskMeter( XOSView *parent, float max ) : FieldMeterGraph(
-    parent, 3, "DISK", "READ/WRITE/IDLE"), _vmstat(false),
-    _statFileName("/proc/stat") {
-    read_prev_ = 0;
-    write_prev_ = 0;
-    maxspeed_ = max;
+DiskMeter::DiskMeter( XOSView *parent, float max )
+    : FieldMeterGraph(parent, 3, "DISK", "READ/WRITE/IDLE"),
+      sysfs_read_prev_(0), sysfs_write_prev_(0), _sysfs(false),
+      read_prev_(0), write_prev_(0), maxspeed_(max), _vmstat(false),
+      _statFileName("/proc/stat") {
 
-    _sysfs=_vmstat=false;
-    sysfs_read_prev_=sysfs_write_prev_=0L;
+    logDebug << "DiskMeter::DiskMeter(): fields_.size(): " << fields_.size()
+             << std::endl;
 
     // first - try sysfs:
     if (util::FS::isdir("/sys/block")) {
