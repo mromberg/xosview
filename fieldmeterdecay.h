@@ -27,7 +27,8 @@ public:
       bool docaptions=false, bool dolegends=false, bool dousedlegends=false);
     virtual ~FieldMeterDecay( void );
 
-    virtual void drawfields( X11Graphics &g, bool manditory=false);
+    // Virtual from FieldMeter
+    virtual void drawfields(X11Graphics &g, bool manditory=false);
 
 protected:
     int dodecay_;

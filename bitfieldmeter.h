@@ -4,11 +4,12 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _BITFIELDMETER_H_
-#define _BITFIELDMETER_H_
+#ifndef BITFIELDMETER_H
+#define BITFIELDMETER_H
 
 #include "meter.h"
 #include "timer.h"
+
 #include <string>
 #include <vector>
 
@@ -20,7 +21,14 @@ public:
       bool dolegends=false, bool dousedlegends=false);
     virtual ~BitFieldMeter( void );
 
+    // virtual from Meter
+    virtual void draw(X11Graphics &g);
+    virtual void checkevent( void );
+    virtual void checkResources( void );
+
+    // virtual from here
     virtual void drawfields(X11Graphics &g, bool manditory=false);
+
     void drawBits(X11Graphics &g, bool manditory=false);
 
     void setfieldcolor( int field, const std::string &color );
@@ -30,11 +38,8 @@ public:
     void setUsed (float val, float total);
     void setBits(int startbit, unsigned char values);
 
-    void draw(X11Graphics &g);
-    void checkevent( void );
-    void disableMeter ( void );
 
-    virtual void checkResources( void );
+    void disableMeter ( void );
 
 protected:
     enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };

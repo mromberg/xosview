@@ -34,3 +34,15 @@ void Meter::resize( int x, int y, int width, int height ){
     height_ = (height>=0) ? height : 0; // beware of values < 0 !
     width_ &= ~1;                       // only allow even width_ values
 }
+
+bool Meter::requestevent( void ){
+    if (priority_ == 0) {
+        logBug << "meter " << name()
+               << " had an invalid priority"
+               << " of 0.  Resetting to 1..." << std::endl;
+        priority_ = 1;
+    }
+    int rval = counter_ % priority_;
+    counter_ = (counter_ + 1) % priority_;
+    return !rval;
+}

@@ -25,9 +25,11 @@ public:
       bool docaptions=false, bool dolegends=false, bool dousedlegends=false);
     virtual ~FieldMeterGraph( void );
 
-    virtual void drawfields(X11Graphics &g, bool manditory=false);
-
+    // virtual from Meter
     virtual void checkResources( void );
+
+    // virtual from FieldMeter
+    virtual void drawfields(X11Graphics &g, bool manditory=false);
 
 protected:
     void setNumCols( int n );

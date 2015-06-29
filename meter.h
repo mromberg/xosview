@@ -24,9 +24,12 @@ public:
     virtual ~Meter( void );
 
     virtual std::string name( void ) const { return "Meter"; }
-    void resize( int x, int y, int width, int height );
     virtual void checkevent( void ) = 0;
     virtual void draw(X11Graphics &g) = 0;
+    virtual void checkResources( void );
+
+
+    void resize( int x, int y, int width, int height );
     void title( const std::string &title ) { title_ = title; }
     const std::string &title( void ) const { return title_; }
     void legend( const std::string &legend ) { legend_ = legend; }
@@ -34,24 +37,14 @@ public:
     void docaptions(bool val ) { docaptions_ = val; }
     void dolegends(bool val) { dolegends_ = val; }
     void dousedlegends(bool val) { dousedlegends_ = val; }
-    int requestevent( void ){
-        if (priority_ == 0) {
-            logBug << "meter " << name()
-                   << " had an invalid priority"
-                   << " of 0.  Resetting to 1..." << std::endl;
-            priority_ = 1;
-        }
-        int rval = counter_ % priority_;
-        counter_ = (counter_ + 1) % priority_;
-        return !rval;
-    }
+    bool requestevent(void);
 
     int getX() const { return x_; }
     int getY() const { return y_; }
     int getWidth() const { return width_; }
     int getHeight() const { return height_; }
 
-    virtual void checkResources( void );
+
 
 protected:
     XOSView *parent_;
@@ -69,6 +62,8 @@ protected:
     bool dousedlegends(void) const { return dousedlegends_; }
 
 private:
+    // Child classes were caught creating their own
+    // setters for these.  So...
     bool docaptions_, dolegends_, dousedlegends_;
 };
 

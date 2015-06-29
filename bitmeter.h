@@ -21,14 +21,16 @@ public:
       bool dousedlegends=false);
     virtual ~BitMeter( void );
 
-    void checkevent( void );
-    void draw(X11Graphics &g);
+    // virtual from Meter
+    virtual void checkevent( void );
+    virtual void draw(X11Graphics &g);
+    virtual void checkResources( void );
+
     void disableMeter ( void );
 
     size_t numBits(void) const { return bits_.size(); }
     void setNumBits(size_t n);
 
-    void checkResources( void );
 protected:
     unsigned long onColor_, offColor_;
     std::vector<char> bits_;

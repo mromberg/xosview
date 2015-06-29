@@ -19,18 +19,23 @@ public:
       bool docaptions=false, bool dolegends=false, bool dousedlegends=false);
     virtual ~FieldMeter( void );
 
-    size_t numfields(void) const { return fields_.size() ; }
+    // virtual from Meter
+    virtual void checkevent( void );
+    virtual void draw(X11Graphics &g);
+    virtual void checkResources( void );
+
+    // Virtual starting here.
     virtual void drawfields(X11Graphics &g, bool manditory=false);
+
+    size_t numfields(void) const { return fields_.size() ; }
     void setfieldcolor( int field, const std::string &color );
     void setfieldcolor( int field, unsigned long color);
     void reset( void );
 
     void setUsed (float val, float total);
-    virtual void draw(X11Graphics &g);
-    virtual void checkevent( void );
-    void disableMeter ( void );
 
-    virtual void checkResources( void );
+
+    void disableMeter ( void );
 
 protected:
     enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };

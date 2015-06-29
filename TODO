@@ -1,3 +1,5 @@
+- Add -D_GLIBCXX_DEBUG to enable-debug (available with GCC 3.4.0 and later)
+
 - If XOSVDEBUG is set have Xrm use ONLY resources from Xdefaults (in tree)
 
 - Make a README.devel for developers
@@ -26,12 +28,10 @@
 - Add Xft support for new fangled (and installed by default) fuzzy fonts
   (http://www.keithp.com/~keithp/render/Xft.tutorial)
 
-- Look into seperating the X11 drawing interface into a more abstracted layer.
-  Make it easier to support other drawing systems Wayland etc.
-  First 1/2 of this is done.  All drawing routines now in a seperate
-  class.  Need to convert the meter draw() methods to pass a Graphics object
-  and the meters to render into it.  Right now they do.  But through
-  XWin pass throughs.
+- See if the new X11Graphics can be done as a pass down from the top
+  sorta thing.  Right now some low level meters have to grab a Graphics
+  from the parent to draw from checkevent.  Should we even be drawing
+  in checkevent?
 
 - Add a "scripting" interface so new meters (for non rapidly updating)
   things could be written in python/ruby/shell?
