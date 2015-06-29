@@ -119,10 +119,14 @@ unsigned int X11Graphics::depth(void) {
 
 void X11Graphics::initStipples(void) {
     if (!_stipples.size()) {
-        _stipples.push_back(createPixmap("\000\000", 2, 2));
-        _stipples.push_back(createPixmap("\002\000\001\000", 2, 4));
-        _stipples.push_back(createPixmap("\002\001", 2, 2));
-        _stipples.push_back(createPixmap("\002\003\001\003", 2, 4));
+        _stipples.push_back(createPixmap(
+              std::string("\000\000", 2), 2, 2));
+        _stipples.push_back(createPixmap(
+              std::string("\002\000\001\000", 4), 2, 4));
+        _stipples.push_back(createPixmap(
+              std::string("\002\001", 2), 2, 2));
+        _stipples.push_back(createPixmap(
+              std::string("\002\003\001\003", 4), 2, 4));
     }
 }
 
