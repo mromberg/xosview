@@ -21,8 +21,6 @@ class X11Graphics {
 public:
     X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
       unsigned long bgPixVal);
-    X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
-      GC gc, unsigned long bgPixVal);
     ~X11Graphics(void);
 
     // Inform the Graphics object that the drawable (window)
@@ -80,13 +78,12 @@ private:
     bool _isWindow;  // because XClearArea only works with 'em (no way to tell)
     Colormap _cmap;
     GC _gc;
-    bool _myGC;
     unsigned int _depth;
     unsigned long _fgPixel;
     unsigned long _bgPixel;
     unsigned int _width;
     unsigned int _height;
-    X11Font *_font;
+    X11Font _font;
 
     void updateInfo(void); // update _width, _height, _depth
     unsigned long getPixelValue(const std::string &color) const;
@@ -96,7 +93,9 @@ private:
     //------------------------------------------------------------
     bool _doStippling;
     void initStipples(void);
+    void releaseStipples(void);
     static std::vector<Pixmap>	_stipples;	//  Array of Stipple masks.
+    static size_t &refCount(void);
     //---End Depricated-------------------------------------------
 
     friend class X11Pixmap;
@@ -147,15 +146,15 @@ inline void X11Graphics::lineWidth(unsigned int width) {
 }
 
 inline unsigned int X11Graphics::textWidth(const std::string &str) {
-    return _font->textWidth(str);
+    return _font.textWidth(str);
 }
 
 inline int X11Graphics::textAscent(void) const {
-    return _font->textAscent();
+    return _font.textAscent();
 }
 
 inline int X11Graphics::textDescent(void) const {
-    return _font->textDescent();
+    return _font.textDescent();
 }
 
 inline unsigned int X11Graphics::textHeight(void) const {

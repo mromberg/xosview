@@ -12,11 +12,11 @@ std::vector<Pixmap>	X11Graphics::_stipples;
 X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
   unsigned long bgPixVal)
     : _dsp(dsp), _drawable(d), _isWindow(isWindow), _cmap(cmap),
-      _gc(0), _myGC(true), _depth(0),
-      _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0), _font(0),
+      _gc(0), _depth(0),
+      _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0), _font(dsp),
       _doStippling(false) {
 
-    _font = new X11Font(_dsp);
+    refCount()++;
     updateInfo();
     _gc = XCreateGC(_dsp, _drawable, 0, NULL);
     setFont("fixed");
@@ -25,23 +25,12 @@ X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
     initStipples();
 }
 
-X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
-  GC gc, unsigned long bgPixVal)
-    : _dsp(dsp), _drawable(d), _isWindow(isWindow), _cmap(cmap),
-      _gc(gc), _myGC(false), _depth(0),
-      _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0), _font(0),
-      _doStippling(false) {
-
-    logProblem << "Temporary ctor.  Kill me!" << std::endl;
-    updateInfo();
-    setBG(_bgPixel);
-    setFG("white");
-    initStipples();
-}
-
 X11Graphics::~X11Graphics(void) {
-    delete _font;
-    if (_gc && _myGC)
+    logDebug << "~X11Graphics(): " << refCount() << std::endl;
+    refCount()--;
+    releaseStipples();
+
+    if (_gc)
         XFreeGC(_dsp, _gc);
 }
 
@@ -137,6 +126,15 @@ void X11Graphics::initStipples(void) {
     }
 }
 
+void X11Graphics::releaseStipples(void) {
+    if (!refCount()) {
+        logDebug << "Free stipples..." << std::endl;
+        for (size_t i = 0 ; i < _stipples.size() ; i++)
+            XFreePixmap(_dsp, _stipples[i]);
+        _stipples.resize(0);
+    }
+}
+
 Pixmap X11Graphics::createPixmap(const std::string &data,
   unsigned int w, unsigned int h) {
     return XCreatePixmapFromBitmapData(_dsp, _drawable,
@@ -156,9 +154,14 @@ unsigned long X11Graphics::allocColor(const std::string &name) {
 }
 
 void X11Graphics::setFont(const std::string &name) {
-    _font->setFont(name);
+    _font.setFont(name);
 
     XGCValues gcv;
-    gcv.font = _font->id();
+    gcv.font = _font.id();
     XChangeGC(_dsp, _gc, GCFont, &gcv);
+}
+
+size_t &X11Graphics::refCount(void) {
+    static size_t count = 0;
+    return count;
 }

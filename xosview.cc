@@ -113,9 +113,9 @@ void XOSView::figureSize(void) {
 
         yoff_ = caption_ ? font.textHeight() + font.textHeight() / 4 : 0;
     }
-    static int firsttime = 1;
+    static bool firsttime = true;
     if (firsttime) {
-        firsttime = 0;
+        firsttime = false;
         width(findx(font));
         height(findy(font));
     }
