@@ -22,12 +22,12 @@
 
 class FieldMeterDecay : public FieldMeter {
 public:
-    FieldMeterDecay( XOSView *parent, int numfields,
+    FieldMeterDecay(XOSView *parent, size_t numfields,
       const std::string &title = "", const std::string &legend = "",
-      int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
+      bool docaptions=false, bool dolegends=false, bool dousedlegends=false);
     virtual ~FieldMeterDecay( void );
 
-    virtual void drawfields( X11Graphics &g, int manditory = 0 );
+    virtual void drawfields( X11Graphics &g, bool manditory=false);
 
 protected:
     int dodecay_;

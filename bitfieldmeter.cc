@@ -15,10 +15,10 @@
 
 
 
-BitFieldMeter::BitFieldMeter( XOSView *parent, int numBits, int numfields,
+BitFieldMeter::BitFieldMeter(XOSView *parent, size_t numBits, size_t numfields,
   const std::string &title,
   const std::string &bitslegend, const std::string &FieldLegend,
-  int docaptions, int dolegends, int dousedlegends )
+  bool docaptions, bool dolegends, bool dousedlegends)
     : Meter(parent, title, bitslegend, docaptions, dolegends, dousedlegends){
     /*  We need to set print_ to something valid -- the meters
      *  apparently get drawn before the meters have a chance to call
@@ -123,18 +123,18 @@ void BitFieldMeter::draw(X11Graphics &g) {
 
     g.drawRectangle( x_ + width_/2 +3, y_ - 1, width_/2 - 2,
       height_ + 2 );
-    if ( dolegends_ ){
+    if (dolegends()){
         g.setFG( textcolor_ );
 
         int offset;
-        if ( dousedlegends_ )
+        if (dousedlegends())
             offset = g.textWidth( "XXXXXXXXX" );
         else
             offset = g.textWidth( "XXXXX" );
 
         g.drawString( x_ - offset + 1, y_ + height_, title_ );
 
-        if(docaptions_){
+        if(docaptions()){
             g.setFG( onColor_ );
             g.drawString( x_, y_ - 5, legend_ );
             drawfieldlegend(g);
@@ -166,7 +166,7 @@ void BitFieldMeter::drawfieldlegend(X11Graphics &g) {
     g.setStippleN(0);	/*  Restore default all-bits stipple.  */
 }
 
-void BitFieldMeter::drawused(X11Graphics &g, int manditory) {
+void BitFieldMeter::drawused(X11Graphics &g, bool manditory) {
     if ( !manditory )
         if ( (lastused_ == used_) )
             return;
@@ -243,7 +243,7 @@ void BitFieldMeter::drawused(X11Graphics &g, int manditory) {
     lastused_ = used_;
 }
 
-void BitFieldMeter::drawBits(X11Graphics &g, int manditory){
+void BitFieldMeter::drawBits(X11Graphics &g, bool manditory){
     static int pass = 1;
 
     int x1 = x_, w;
@@ -265,7 +265,7 @@ void BitFieldMeter::drawBits(X11Graphics &g, int manditory){
     }
 }
 
-void BitFieldMeter::drawfields(X11Graphics &g, int manditory) {
+void BitFieldMeter::drawfields(X11Graphics &g, bool manditory) {
     int twidth, x = x_ + width_/2 + 4;
 
     if ( total_ == 0 )
@@ -298,7 +298,7 @@ void BitFieldMeter::drawfields(X11Graphics &g, int manditory) {
             lastvals_[i] = twidth;
             lastx_[i] = x;
 
-            if ( dousedlegends_ )
+            if (dousedlegends())
                 drawused(g, manditory );
         }
         x += twidth;

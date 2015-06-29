@@ -30,10 +30,10 @@
 #include <math.h>		//  For fabs()
 
 
-FieldMeterGraph::FieldMeterGraph( XOSView *parent,
-  int numfields, const std::string &title,
-  const std::string &legend, int docaptions, int dolegends,
-  int dousedlegends )
+FieldMeterGraph::FieldMeterGraph(XOSView *parent,
+  size_t numfields, const std::string &title,
+  const std::string &legend, bool docaptions, bool dolegends,
+  bool dousedlegends)
     : FieldMeterDecay (parent, numfields, title, legend, docaptions,
       dolegends, dousedlegends), _pmap(0) {
 
@@ -49,7 +49,7 @@ FieldMeterGraph::~FieldMeterGraph( void ){
     delete _pmap;
 }
 
-void FieldMeterGraph::drawfields(X11Graphics &g, int manditory){
+void FieldMeterGraph::drawfields(X11Graphics &g, bool manditory) {
     if( !useGraph_ ) {
         // Call FieldMeterDecay code if this meter should not be
         // drawn as a graph
@@ -71,7 +71,7 @@ void FieldMeterGraph::drawfields(X11Graphics &g, int manditory){
     // and finally copy the pixmap into the window
     _pmap->copyTo(parent_->g(), 0, 0, width_, height_, x_, y_);
 
-    if ( dousedlegends_ )
+    if (dousedlegends())
     	drawused(g, manditory);
 }
 
@@ -100,7 +100,7 @@ void FieldMeterGraph::checkBackBuffer(void) {
     }
 }
 
-void FieldMeterGraph::drawBars(X11Graphics &g, int ) {
+void FieldMeterGraph::drawBars(X11Graphics &g, bool) {
     int i;
 
     if( total_ <= 0.0 )

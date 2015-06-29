@@ -9,9 +9,9 @@
 #include "bitmeter.h"
 #include "xosview.h"
 
-BitMeter::BitMeter( XOSView *parent,
+BitMeter::BitMeter(XOSView *parent,
   const std::string &title, const std::string &legend, size_t numBits,
-  int docaptions, int, int dousedlegends)
+  bool docaptions, bool, bool dousedlegends)
     : Meter( parent, title, legend, docaptions, dousedlegends, dousedlegends ),
       disabled_(false)  {
     setNumBits(numBits);
@@ -76,18 +76,18 @@ void BitMeter::draw(X11Graphics &g){
 
     g.lineWidth( 0 );
 
-    if ( dolegends_ ){
+    if (dolegends()){
         g.setFG( textcolor_ );
 
         int offset;
-        if ( dousedlegends_ )
+        if (dousedlegends())
             offset = g.textWidth( "XXXXXXXXX" );
         else
             offset = g.textWidth( "XXXXX" );
 
         g.drawString( x_ - offset + 1, y_ + height_, title_ );
         g.setFG( onColor_ );
-        if(docaptions_) {
+        if(docaptions()) {
             g.drawString( x_, y_ - 5, legend_ );
         }
     }

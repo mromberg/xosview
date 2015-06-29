@@ -4,33 +4,30 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _FIELDMETER_H_
-#define _FIELDMETER_H_
-
+#ifndef FIELDMETER_H
+#define FIELDMETER_H
 #include "meter.h"
 #include "timer.h"
+
 #include <string>
 #include <vector>
 
 class FieldMeter : public Meter {
 public:
-    FieldMeter( XOSView *parent, int numfields,
+    FieldMeter( XOSView *parent, size_t numfields,
       const std::string &title = "", const std::string &legend = "",
-      int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
+      bool docaptions=false, bool dolegends=false, bool dousedlegends=false);
     virtual ~FieldMeter( void );
 
     size_t numfields(void) const { return fields_.size() ; }
-    virtual void drawfields( X11Graphics &g, int manditory = 0 );
+    virtual void drawfields(X11Graphics &g, bool manditory=false);
     void setfieldcolor( int field, const std::string &color );
     void setfieldcolor( int field, unsigned long color);
-    void docaptions( int val ) { docaptions_ = val; }
-    void dolegends( int val ) { dolegends_ = val; }
-    void dousedlegends( int val ) { dousedlegends_ = val; }
     void reset( void );
 
     void setUsed (float val, float total);
-    void draw(X11Graphics &g);
-    void checkevent( void );
+    virtual void draw(X11Graphics &g);
+    virtual void checkevent( void );
     void disableMeter ( void );
 
     virtual void checkResources( void );
@@ -50,10 +47,10 @@ protected:
 
     void setUsedFormat ( const std::string &str );
     void drawlegend(X11Graphics &g);
-    void drawused( X11Graphics &g, int manditory );
+    void drawused(X11Graphics &g, bool manditory);
     bool checkX(int x, int width) const;
 
-    void setNumFields(int n);
+    void setNumFields(size_t n);
 
 
 private:

@@ -32,15 +32,15 @@
 #include <cmath>		//  For fabs()
 
 
-FieldMeterDecay::FieldMeterDecay( XOSView *parent,
-  int numfields, const std::string &title,
-  const std::string &legend, int docaptions, int dolegends,
-  int dousedlegends )
+FieldMeterDecay::FieldMeterDecay(XOSView *parent,
+  size_t numfields, const std::string &title,
+  const std::string &legend, bool docaptions, bool dolegends,
+  bool dousedlegends)
     : FieldMeter (parent, numfields, title, legend, docaptions, dolegends,
       dousedlegends) {
     decay_.resize(numfields);
     lastDecayval_.resize(numfields);
-    for (int decayCtr = 0; decayCtr < numfields; decayCtr++) {
+    for (size_t decayCtr = 0; decayCtr < numfields; decayCtr++) {
         decay_[decayCtr] = 0.0;
         lastDecayval_[decayCtr] = 0.0;
     }
@@ -52,7 +52,7 @@ FieldMeterDecay::FieldMeterDecay( XOSView *parent,
 FieldMeterDecay::~FieldMeterDecay( void ){
 }
 
-void FieldMeterDecay::drawfields( X11Graphics &g, int manditory ){
+void FieldMeterDecay::drawfields(X11Graphics &g, bool manditory) {
     int twidth, x = x_;
 
     if (!dodecay_) {
@@ -154,7 +154,7 @@ void FieldMeterDecay::drawfields( X11Graphics &g, int manditory ){
         lastDecayval_[i] = decay_[i];
 
         g.setStippleN(0);	/*  Restore all-bits stipple.  */
-        if ( dousedlegends_ )
+        if (dousedlegends())
             drawused(g, manditory);
         x += twidth;
 

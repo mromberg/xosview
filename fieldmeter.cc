@@ -13,10 +13,10 @@
 
 
 
-FieldMeter::FieldMeter( XOSView *parent, int numfields,
+FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
   const std::string &title,
-  const std::string &legend, int docaptions, int dolegends,
-  int dousedlegends )
+  const std::string &legend, bool docaptions, bool dolegends,
+  bool dousedlegends)
     : Meter(parent, title, legend, docaptions, dolegends, dousedlegends){
     /*  We need to set print_ to something valid -- the meters
      *  apparently get drawn before the meters have a chance to call
@@ -106,17 +106,17 @@ void FieldMeter::draw(X11Graphics &g) {
     /*  Draw the outline for the fieldmeter.  */
     g.setFG( parent_->foreground() );
     g.drawRectangle( x_ - 1, y_ - 1, width_ + 2, height_ + 2 );
-    if ( dolegends_ ){
+    if (dolegends()){
         g.setFG( textcolor_ );
 
         int offset;
-        if ( dousedlegends_ )
+        if (dousedlegends())
             offset = g.textWidth( "XXXXXXXXX" );
         else
             offset = g.textWidth( "XXXXX" );
 
         g.drawString( x_ - offset + 1, y_ + height_, title_ );
-        if(docaptions_)
+        if(docaptions())
             drawlegend(g);
     }
 
@@ -145,7 +145,7 @@ void FieldMeter::drawlegend(X11Graphics &g) {
     g.setStippleN(0);	/*  Restore default all-bits stipple.  */
 }
 
-void FieldMeter::drawused( X11Graphics &g, int manditory ){
+void FieldMeter::drawused(X11Graphics &g, bool manditory) {
     if ( !manditory )
         if ( (lastused_ == used_) )
             return;
@@ -226,7 +226,7 @@ void FieldMeter::drawused( X11Graphics &g, int manditory ){
     lastused_ = used_;
 }
 
-void FieldMeter::drawfields( X11Graphics &g, int manditory ){
+void FieldMeter::drawfields(X11Graphics &g, bool manditory) {
     int twidth, x = x_;
 
     if ( total_ == 0 )
@@ -260,7 +260,7 @@ void FieldMeter::drawfields( X11Graphics &g, int manditory ){
             lastvals_[i] = twidth;
             lastx_[i] = x;
 
-            if ( dousedlegends_ )
+            if (dousedlegends())
                 drawused( g, manditory );
         }
         x += twidth;
@@ -273,7 +273,7 @@ void FieldMeter::checkevent( void ){
     drawfields(parent_->g());
 }
 
-void FieldMeter::setNumFields(int n){
+void FieldMeter::setNumFields(size_t n){
     fields_.clear();
     fields_.resize(n, 0);
     colors_.clear();

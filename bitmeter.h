@@ -17,8 +17,8 @@ class BitMeter : public Meter {
 public:
     BitMeter( XOSView *parent,
       const std::string &title = "", const std::string &legend ="",
-      size_t numBits = 1, int docaptions = 0, int dolegends = 0,
-      int dousedlegends = 0 );
+      size_t numBits = 1, bool docaptions=false, bool dolegends=false,
+      bool dousedlegends=false);
     virtual ~BitMeter( void );
 
     void checkevent( void );
@@ -38,7 +38,7 @@ protected:
 
     void setBits(int startbit, unsigned char values);
 
-    void drawBits(X11Graphics &g, bool manditory = false);
+    void drawBits(X11Graphics &g, bool manditory=false);
 private:
 };
 

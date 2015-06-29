@@ -14,20 +14,17 @@
 
 class BitFieldMeter : public Meter {
 public:
-    BitFieldMeter( XOSView *parent, int numBits = 1, int numfields = 1,
+    BitFieldMeter( XOSView *parent, size_t numBits=1, size_t numfields=1,
       const std::string &title = "", const std::string &bitlegend = "",
-      const std::string &fieldlegend = "", int docaptions = 0,
-      int dolegends = 0, int dousedlegends = 0 );
+      const std::string &fieldlegend = "", bool docaptions=false,
+      bool dolegends=false, bool dousedlegends=false);
     virtual ~BitFieldMeter( void );
 
-    virtual void drawfields(X11Graphics &g, int manditory = 0);
-    void drawBits(X11Graphics &g, int manditory = 0 );
+    virtual void drawfields(X11Graphics &g, bool manditory=false);
+    void drawBits(X11Graphics &g, bool manditory=false);
 
     void setfieldcolor( int field, const std::string &color );
     void setfieldcolor( int field, unsigned long color);
-    void docaptions( int val ) { docaptions_ = val; }
-    void dolegends( int val ) { dolegends_ = val; }
-    void dousedlegends( int val ) { dousedlegends_ = val; }
     void reset( void );
 
     void setUsed (float val, float total);
@@ -42,7 +39,7 @@ public:
 protected:
     enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };
 
-    unsigned int numfields(void) const { return fields_.size(); }
+    size_t numfields(void) const { return fields_.size(); }
     std::vector<float> fields_;
     float total_, used_, lastused_;
     std::vector<int> lastvals_;
@@ -60,7 +57,7 @@ protected:
 
     void SetUsedFormat ( const std::string &str );
     void drawfieldlegend(X11Graphics &g);
-    void drawused(X11Graphics &g, int manditory);
+    void drawused(X11Graphics &g, bool manditory);
     bool checkX(int x, int width) const;
 
     void setNumFields(int n);

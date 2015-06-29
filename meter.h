@@ -20,7 +20,7 @@ class Meter {
 public:
     Meter( XOSView *parent, const std::string &title = "",
       const std::string &legend ="",
-      int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
+      bool docaptions=false, bool dolegends=false, bool dousedlegends=false);
     virtual ~Meter( void );
 
     virtual std::string name( void ) const { return "Meter"; }
@@ -31,9 +31,9 @@ public:
     const std::string &title( void ) const { return title_; }
     void legend( const std::string &legend ) { legend_ = legend; }
     const std::string &legend( void ) const { return legend_; }
-    void docaptions( int val ) { docaptions_ = val; }
-    void dolegends( int val ) { dolegends_ = val; }
-    void dousedlegends( int val ) { dousedlegends_ = val; }
+    void docaptions(bool val ) { docaptions_ = val; }
+    void dolegends(bool val) { dolegends_ = val; }
+    void dousedlegends(bool val) { dousedlegends_ = val; }
     int requestevent( void ){
         if (priority_ == 0) {
             logBug << "meter " << name()
@@ -55,7 +55,7 @@ public:
 
 protected:
     XOSView *parent_;
-    int x_, y_, width_, height_, docaptions_, dolegends_, dousedlegends_;
+    int x_, y_, width_, height_;
     int priority_, counter_;
     std::string title_, legend_;
     unsigned long textcolor_;
@@ -64,7 +64,12 @@ protected:
 
     double secondsPerSample() { return 1.0/samplesPerSecond(); }
 
+    bool docaptions(void) const { return docaptions_; }
+    bool dolegends(void) const { return docaptions_; }
+    bool dousedlegends(void) const { return dousedlegends_; }
+
 private:
+    bool docaptions_, dolegends_, dousedlegends_;
 };
 
 #endif

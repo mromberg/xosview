@@ -10,11 +10,12 @@
 #include "xosview.h"
 
 Meter::Meter( XOSView *parent, const std::string &title,
-  const std::string &legend, int docaptions, int dolegends,
-  int dousedlegends ) : parent_(parent), docaptions_(docaptions),
-                        dolegends_(dolegends), dousedlegends_(dousedlegends),
-                        priority_(1), counter_(0),
-                        title_(title), legend_(legend) {
+  const std::string &legend, bool docaptions, bool dolegends,
+  bool dousedlegends )
+    : parent_(parent), priority_(1), counter_(0),
+      title_(title), legend_(legend),docaptions_(docaptions),
+      dolegends_(dolegends), dousedlegends_(dousedlegends) {
+
     resize( parent->xoff(), parent->newypos(), parent->width() - 10, 10 );
 }
 

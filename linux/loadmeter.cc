@@ -70,7 +70,7 @@ void LoadMeter::checkevent( void ){
             logDebug << "SPEED: " << _cur_cpu_speed << std::endl;
             legnd << "PROCS/MIN" << " " << _cur_cpu_speed << " MHz"<< std::ends;
             legend( legnd.str().c_str() );
-            if (dolegends_) {
+            if (dolegends()) {
                 drawlegend(parent_->g());
                 parent_->reallydraw();
             }
@@ -113,7 +113,7 @@ void LoadMeter::getloadinfo( void ){
             logBug << "Unknown alarm state: " << _alarmstate << std::endl;
         };
 
-        if (dolegends_)
+        if (dolegends())
             drawlegend(parent_->g());
         _lastalarmstate = _alarmstate;
     }

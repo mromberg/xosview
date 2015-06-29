@@ -20,12 +20,12 @@ class X11Pixmap;
 
 class FieldMeterGraph : public FieldMeterDecay {
 public:
-    FieldMeterGraph( XOSView *parent, int numfields,
+    FieldMeterGraph( XOSView *parent, size_t numfields,
       const std::string &title = "", const std::string &legend = "",
-      int docaptions = 0, int dolegends = 0, int dousedlegends = 0 );
+      bool docaptions=false, bool dolegends=false, bool dousedlegends=false);
     virtual ~FieldMeterGraph( void );
 
-    virtual void drawfields(X11Graphics &g, int manditory = 0);
+    virtual void drawfields(X11Graphics &g, bool manditory=false);
 
     virtual void checkResources( void );
 
@@ -44,7 +44,7 @@ protected:
 private:
     X11Pixmap *_pmap;  // backbuffer
 
-    void drawBars(X11Graphics &g, int manditory);
+    void drawBars(X11Graphics &g, bool manditory);
     void drawBar(X11Graphics &g, int i);
     void checkBackBuffer(void);
 };
