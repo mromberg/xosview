@@ -12,9 +12,10 @@
 Meter::Meter( XOSView *parent, const std::string &title,
   const std::string &legend, bool docaptions, bool dolegends,
   bool dousedlegends )
-    : parent_(parent), priority_(1), counter_(0),
-      title_(title), legend_(legend),docaptions_(docaptions),
-      dolegends_(dolegends), dousedlegends_(dousedlegends) {
+    : parent_(parent), x_(0), y_(0), width_(1), height_(1),
+    priority_(1), counter_(0), title_(title), legend_(legend),
+    textcolor_(0), docaptions_(docaptions),
+    dolegends_(dolegends), dousedlegends_(dousedlegends) {
 
     resize( parent->xoff(), parent->newypos(), parent->width() - 10, 10 );
 }

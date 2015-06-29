@@ -14,8 +14,6 @@
 
 
 
-class XOSView;
-
 class Meter {
 public:
     Meter( XOSView *parent, const std::string &title = "",

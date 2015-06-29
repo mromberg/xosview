@@ -30,19 +30,19 @@
 #include <math.h>		//  For fabs()
 
 
+static const size_t DEF_COLS = 100;
+
+
 FieldMeterGraph::FieldMeterGraph(XOSView *parent,
   size_t numfields, const std::string &title,
   const std::string &legend, bool docaptions, bool dolegends,
   bool dousedlegends)
     : FieldMeterDecay (parent, numfields, title, legend, docaptions,
-      dolegends, dousedlegends), _pmap(0) {
-
-    useGraph_ = 0;
-    firstTimeDrawn_ = 1;
-
-    // set number of columns to a reasonable default in case we can't
-    // find the resource
-    setNumCols( 100 );
+      dolegends, dousedlegends),
+      useGraph_(false),
+      graphNumCols_(DEF_COLS), graphpos_(DEF_COLS-1),
+      firstTimeDrawn_(true), heightfield_(0),
+      _pmap(0) {
 }
 
 FieldMeterGraph::~FieldMeterGraph( void ){

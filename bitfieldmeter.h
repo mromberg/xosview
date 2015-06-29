@@ -52,8 +52,8 @@ protected:
     std::vector<unsigned long> colors_;
     unsigned long usedcolor_;
     UsedType print_;
-    int printedZeroTotalMesg_;
-    int numWarnings_;
+    bool printedZeroTotalMesg_;
+    size_t numWarnings_;
 
     unsigned long onColor_, offColor_;
     std::vector<char> bits_;

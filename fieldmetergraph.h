@@ -34,10 +34,10 @@ public:
 protected:
     void setNumCols( int n );
 
-    int useGraph_;
+    bool useGraph_;
     int graphNumCols_;
     int graphpos_;
-    int firstTimeDrawn_;
+    bool firstTimeDrawn_;
     /*  There's some sort of corruption going on -- we can't have
      *  variables after the heightfield_ below, otherwise they get
      *  corrupted???

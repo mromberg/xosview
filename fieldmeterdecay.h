@@ -31,8 +31,8 @@ public:
     virtual void drawfields(X11Graphics &g, bool manditory=false);
 
 protected:
-    int dodecay_;
-    int firsttime_;  //  Used to set up decaying fields right the first time.
+    bool dodecay_;
+    bool firsttime_;  //  Used to set up decaying fields right the first time.
     std::vector<float> decay_;
     std::vector<float> lastDecayval_;
 private:

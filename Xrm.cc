@@ -91,6 +91,7 @@ Xrm::opt Xrm::getResource(const std::string &rname) const{
 }
 
 Xrm::~Xrm(){
+    logDebug << "Xrm::~Xrm(): " << (void *)_db << std::endl;
     XrmDestroyDatabase(_db);
 }
 

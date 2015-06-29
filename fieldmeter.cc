@@ -17,15 +17,17 @@ FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
   const std::string &title,
   const std::string &legend, bool docaptions, bool dolegends,
   bool dousedlegends)
-    : Meter(parent, title, legend, docaptions, dolegends, dousedlegends){
+    : Meter(parent, title, legend, docaptions, dolegends, dousedlegends),
+      fields_(numfields, 0.0), total_(1.0),
+      used_(0), lastused_(-1), lastvals_(numfields, 0.0),
+      lastx_(numfields, 0), colors_(numfields, 0),
+      usedcolor_(0), print_(PERCENT), printedZeroTotalMesg_(0),
+      numWarnings_(0) {
     /*  We need to set print_ to something valid -- the meters
      *  apparently get drawn before the meters have a chance to call
      *  CheckResources() themselves.  */
-    numWarnings_ = printedZeroTotalMesg_ = 0;
-    print_ = PERCENT;
-    used_ = 0;
-    lastused_ = -1;
-    setNumFields(numfields);
+
+    //setNumFields(numfields);  // the initializers should do the same as this
 }
 
 void FieldMeter::disableMeter(void) {

@@ -13,8 +13,8 @@ BitMeter::BitMeter(XOSView *parent,
   const std::string &title, const std::string &legend, size_t numBits,
   bool docaptions, bool, bool dousedlegends)
     : Meter( parent, title, legend, docaptions, dousedlegends, dousedlegends ),
+      onColor_(0), offColor_(0), bits_(numBits, 0), lastbits_(numBits, 0),
       disabled_(false)  {
-    setNumBits(numBits);
 }
 
 BitMeter::~BitMeter( void ){

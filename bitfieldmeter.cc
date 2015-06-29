@@ -17,20 +17,19 @@
 
 BitFieldMeter::BitFieldMeter(XOSView *parent, size_t numBits, size_t numfields,
   const std::string &title,
-  const std::string &bitslegend, const std::string &FieldLegend,
+  const std::string &bitslegend, const std::string &fieldLegend,
   bool docaptions, bool dolegends, bool dousedlegends)
-    : Meter(parent, title, bitslegend, docaptions, dolegends, dousedlegends){
+    : Meter(parent, title, bitslegend, docaptions, dolegends, dousedlegends),
+      fields_(numfields, 0.0), total_(0.0), used_(0),
+      lastused_(-1), lastvals_(numfields, 0), lastx_(numfields, 0),
+      colors_(numfields, 0), usedcolor_(0),
+      print_(PERCENT), printedZeroTotalMesg_(false), numWarnings_(0),
+      onColor_(0), offColor_(0), bits_(numBits, 0), lastbits_(numBits, 0),
+      fieldLegend_(fieldLegend) {
     /*  We need to set print_ to something valid -- the meters
      *  apparently get drawn before the meters have a chance to call
      *  CheckResources() themselves.
      */
-    numWarnings_ = printedZeroTotalMesg_ = 0;
-    print_ = PERCENT;
-    used_ = 0;
-    lastused_ = -1;
-    setNumBits(numBits);
-    setfieldlegend(FieldLegend);
-    setNumFields(numfields);
 }
 
 void BitFieldMeter::disableMeter ( ) {

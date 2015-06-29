@@ -37,16 +37,11 @@ FieldMeterDecay::FieldMeterDecay(XOSView *parent,
   const std::string &legend, bool docaptions, bool dolegends,
   bool dousedlegends)
     : FieldMeter (parent, numfields, title, legend, docaptions, dolegends,
-      dousedlegends) {
-    decay_.resize(numfields);
-    lastDecayval_.resize(numfields);
-    for (size_t decayCtr = 0; decayCtr < numfields; decayCtr++) {
-        decay_[decayCtr] = 0.0;
-        lastDecayval_[decayCtr] = 0.0;
-    }
+      dousedlegends),
+      dodecay_(true), firsttime_(true), decay_(numfields, 0.0),
+      lastDecayval_(numfields, 0.0) {
+
     decay_[numfields-1] = 1.0;  //  Initialize to all free...
-    firsttime_ = 1;
-    dodecay_ = 1;
 }
 
 FieldMeterDecay::~FieldMeterDecay( void ){
