@@ -115,11 +115,7 @@ void BitFieldMeter::setfieldcolor( int field, unsigned long color ) {
 }
 
 
-void BitFieldMeter::draw( void ) {
-    drawNewG(parent_->g());
-}
-
-void BitFieldMeter::drawNewG(X11Graphics &g) {
+void BitFieldMeter::draw(X11Graphics &g) {
     /*  Draw the outline for the fieldmeter.  */
     g.setFG( parent_->foreground() );
     g.lineWidth( 1 );
@@ -141,18 +137,14 @@ void BitFieldMeter::drawNewG(X11Graphics &g) {
         if(docaptions_){
             g.setFG( onColor_ );
             g.drawString( x_, y_ - 5, legend_ );
-            drawfieldlegendNewG(g);
+            drawfieldlegend(g);
         }
     }
     drawBits(g, 1);
-    drawfieldsNewG(g, 1);
+    drawfields(g, 1);
 }
 
-void BitFieldMeter::drawfieldlegend( void ){
-    drawfieldlegendNewG(parent_->g());
-}
-
-void BitFieldMeter::drawfieldlegendNewG(X11Graphics &g) {
+void BitFieldMeter::drawfieldlegend(X11Graphics &g) {
     size_t pos = 0;
     int x = x_ + width_/2 + 4;
 
@@ -174,11 +166,7 @@ void BitFieldMeter::drawfieldlegendNewG(X11Graphics &g) {
     g.setStippleN(0);	/*  Restore default all-bits stipple.  */
 }
 
-void BitFieldMeter::drawused( int manditory ){
-    drawusedNewG(parent_->g(), manditory);
-}
-
-void BitFieldMeter::drawusedNewG(X11Graphics &g, int manditory) {
+void BitFieldMeter::drawused(X11Graphics &g, int manditory) {
     if ( !manditory )
         if ( (lastused_ == used_) )
             return;
@@ -277,11 +265,7 @@ void BitFieldMeter::drawBits(X11Graphics &g, int manditory){
     }
 }
 
-void BitFieldMeter::drawfields( int manditory ){
-    drawfieldsNewG(parent_->g(), manditory);
-}
-
-void BitFieldMeter::drawfieldsNewG(X11Graphics &g, int manditory) {
+void BitFieldMeter::drawfields(X11Graphics &g, int manditory) {
     int twidth, x = x_ + width_/2 + 4;
 
     if ( total_ == 0 )
@@ -315,7 +299,7 @@ void BitFieldMeter::drawfieldsNewG(X11Graphics &g, int manditory) {
             lastx_[i] = x;
 
             if ( dousedlegends_ )
-                drawusedNewG(g, manditory );
+                drawused(g, manditory );
         }
         x += twidth;
     }
@@ -325,7 +309,7 @@ void BitFieldMeter::drawfieldsNewG(X11Graphics &g, int manditory) {
 
 void BitFieldMeter::checkevent( void ){
     drawBits(parent_->g());
-    drawfieldsNewG(parent_->g());
+    drawfields(parent_->g());
 }
 
 void BitFieldMeter::setBits(int startbit, unsigned char values){

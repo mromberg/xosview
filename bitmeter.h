@@ -22,8 +22,7 @@ public:
     virtual ~BitMeter( void );
 
     void checkevent( void );
-    void draw( void );
-    void drawNewG(X11Graphics &g);
+    void draw(X11Graphics &g);
     void disableMeter ( void );
 
     size_t numBits(void) const { return bits_.size(); }

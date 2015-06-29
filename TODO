@@ -1,3 +1,5 @@
+- If XOSVDEBUG is set have Xrm use ONLY resources from Xdefaults (in tree)
+
 - Make a README.devel for developers
 
 - Move stuff out of aclocal.m4 and into more specific m4 files.

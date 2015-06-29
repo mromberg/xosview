@@ -76,7 +76,7 @@ void CPUMeter::checkResources( void ){
 
 void CPUMeter::checkevent( void ){
     getcputime();
-    drawfields();
+    drawfields(parent_->g());
 }
 
 void CPUMeter::getcputime( void ){

@@ -49,11 +49,11 @@ FieldMeterGraph::~FieldMeterGraph( void ){
     delete _pmap;
 }
 
-void FieldMeterGraph::drawfields( int manditory ){
+void FieldMeterGraph::drawfields(X11Graphics &g, int manditory){
     if( !useGraph_ ) {
         // Call FieldMeterDecay code if this meter should not be
         // drawn as a graph
-        FieldMeterDecay::drawfields( manditory );
+        FieldMeterDecay::drawfields(parent_->g(), manditory);
         return;
     }
 
@@ -72,7 +72,7 @@ void FieldMeterGraph::drawfields( int manditory ){
     _pmap->copyTo(parent_->g(), 0, 0, width_, height_, x_, y_);
 
     if ( dousedlegends_ )
-    	drawused( manditory );
+    	drawused(g, manditory);
 }
 
 void FieldMeterGraph::checkBackBuffer(void) {

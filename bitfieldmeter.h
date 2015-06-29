@@ -20,8 +20,7 @@ public:
       int dolegends = 0, int dousedlegends = 0 );
     virtual ~BitFieldMeter( void );
 
-    virtual void drawfields( int manditory = 0 );
-    virtual void drawfieldsNewG(X11Graphics &g, int manditory = 0);
+    virtual void drawfields(X11Graphics &g, int manditory = 0);
     void drawBits(X11Graphics &g, int manditory = 0 );
 
     void setfieldcolor( int field, const std::string &color );
@@ -34,8 +33,7 @@ public:
     void setUsed (float val, float total);
     void setBits(int startbit, unsigned char values);
 
-    void draw( void );
-    void drawNewG(X11Graphics &g);
+    void draw(X11Graphics &g);
     void checkevent( void );
     void disableMeter ( void );
 
@@ -61,10 +59,8 @@ protected:
     unsigned int numbits(void) const { return bits_.size(); }
 
     void SetUsedFormat ( const std::string &str );
-    void drawfieldlegend( void );
-    void drawfieldlegendNewG(X11Graphics &g);
-    void drawused( int manditory );
-    void drawusedNewG(X11Graphics &g, int manditory);
+    void drawfieldlegend(X11Graphics &g);
+    void drawused(X11Graphics &g, int manditory);
     bool checkX(int x, int width) const;
 
     void setNumFields(int n);

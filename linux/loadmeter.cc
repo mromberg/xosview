@@ -71,13 +71,13 @@ void LoadMeter::checkevent( void ){
             legnd << "PROCS/MIN" << " " << _cur_cpu_speed << " MHz"<< std::ends;
             legend( legnd.str().c_str() );
             if (dolegends_) {
-                drawlegend();
+                drawlegend(parent_->g());
                 parent_->reallydraw();
             }
         }
     }
 
-    drawfields();
+    drawfields(parent_->g());
 }
 
 
@@ -114,7 +114,7 @@ void LoadMeter::getloadinfo( void ){
         };
 
         if (dolegends_)
-            drawlegend();
+            drawlegend(parent_->g());
         _lastalarmstate = _alarmstate;
     }
 

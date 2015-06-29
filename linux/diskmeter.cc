@@ -73,7 +73,7 @@ void DiskMeter::checkevent( void ) {
     else
         getdiskinfo();
 
-    drawfields();
+    drawfields(parent_->g());
 
 }
 

@@ -106,7 +106,7 @@ void LmsTemp::checkResources( void ){
 void LmsTemp::checkevent( void ){
     getlmstemp();
 
-    drawfields();
+    drawfields(parent_->g());
 }
 
 // Note:

@@ -100,11 +100,8 @@ void FieldMeter::setfieldcolor( int field, const std::string &color ){
 void FieldMeter::setfieldcolor( int field, unsigned long color ) {
     colors_[field] = color;
 }
-void FieldMeter::draw( void ){
-    drawNewG(parent_->g());
-}
 
-void FieldMeter::drawNewG(X11Graphics &g) {
+void FieldMeter::draw(X11Graphics &g) {
 
     /*  Draw the outline for the fieldmeter.  */
     g.setFG( parent_->foreground() );
@@ -120,17 +117,13 @@ void FieldMeter::drawNewG(X11Graphics &g) {
 
         g.drawString( x_ - offset + 1, y_ + height_, title_ );
         if(docaptions_)
-            drawlegendNewG(g);
+            drawlegend(g);
     }
 
-    drawfieldsNewG( g, 1 );
+    drawfields( g, 1 );
 }
 
-void FieldMeter::drawlegend( void ){
-    drawlegendNewG(parent_->g());
-}
-
-void FieldMeter::drawlegendNewG(X11Graphics &g) {
+void FieldMeter::drawlegend(X11Graphics &g) {
     size_t pos = 0;
     int x = x_;
 
@@ -152,11 +145,7 @@ void FieldMeter::drawlegendNewG(X11Graphics &g) {
     g.setStippleN(0);	/*  Restore default all-bits stipple.  */
 }
 
-void FieldMeter::drawused( int manditory ){
-    drawusedNewG(parent_->g(), manditory);
-}
-
-void FieldMeter::drawusedNewG( X11Graphics &g, int manditory ){
+void FieldMeter::drawused( X11Graphics &g, int manditory ){
     if ( !manditory )
         if ( (lastused_ == used_) )
             return;
@@ -237,11 +226,7 @@ void FieldMeter::drawusedNewG( X11Graphics &g, int manditory ){
     lastused_ = used_;
 }
 
-void FieldMeter::drawfields( int manditory ){
-    drawfieldsNewG(parent_->g(), manditory);
-}
-
-void FieldMeter::drawfieldsNewG( X11Graphics &g, int manditory ){
+void FieldMeter::drawfields( X11Graphics &g, int manditory ){
     int twidth, x = x_;
 
     if ( total_ == 0 )
@@ -276,7 +261,7 @@ void FieldMeter::drawfieldsNewG( X11Graphics &g, int manditory ){
             lastx_[i] = x;
 
             if ( dousedlegends_ )
-                drawusedNewG( g, manditory );
+                drawused( g, manditory );
         }
         x += twidth;
     }
@@ -285,7 +270,7 @@ void FieldMeter::drawfieldsNewG( X11Graphics &g, int manditory ){
 }
 
 void FieldMeter::checkevent( void ){
-    drawfieldsNewG(parent_->g());
+    drawfields(parent_->g());
 }
 
 void FieldMeter::setNumFields(int n){

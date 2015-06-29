@@ -71,7 +71,7 @@ void BtryMeter::checkevent( void ){
         setUsed(fields_[0], total_);
     }
 
-    drawfields();
+    drawfields(parent_->g());
 }
 
 bool BtryMeter::getpwrinfo( void ){
@@ -428,7 +428,7 @@ bool BtryMeter::getapminfo( void ){
             break;
 	}
 
-  	drawfields();
+  	drawfields(parent_->g());
 	// force redraw of whole widget
 	// (no other idea how to update the legend/labels)
 	parent_->reallydraw();
@@ -577,7 +577,7 @@ bool BtryMeter::getacpiinfo( void ){
             legend( "AC/Charging");
             break;
 	}
-  	drawfields();
+  	drawfields(parent_->g());
 	parent_->reallydraw();
     }
 

@@ -60,7 +60,7 @@ void MemMeter::checkevent( void ){
              << "free " << std::setw(4) << fields_[4]/1024.0/1024.0
              << std::endl;
 
-    drawfields();
+    drawfields(parent_->g());
 }
 
 // FIXME: /proc/memstat and /proc/meminfo don't seem to correspond

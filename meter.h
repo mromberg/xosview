@@ -26,7 +26,7 @@ public:
     virtual std::string name( void ) const { return "Meter"; }
     void resize( int x, int y, int width, int height );
     virtual void checkevent( void ) = 0;
-    virtual void draw( void ) = 0;
+    virtual void draw(X11Graphics &g) = 0;
     void title( const std::string &title ) { title_ = title; }
     const std::string &title( void ) const { return title_; }
     void legend( const std::string &legend ) { legend_ = legend; }

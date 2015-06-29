@@ -205,7 +205,7 @@ void XOSView::reallydraw( void ){
     g().clear();
 
     for (size_t i = 0 ; i < _meters.size() ; i++)
-        _meters[i]->draw();
+        _meters[i]->draw(g());
 
     g().flush();
 

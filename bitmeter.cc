@@ -69,11 +69,7 @@ void BitMeter::drawBits(X11Graphics &g, bool manditory){
     }
 }
 
-void BitMeter::draw( void ){
-    drawNewG(parent_->g());
-}
-
-void BitMeter::drawNewG(X11Graphics &g){
+void BitMeter::draw(X11Graphics &g){
     g.lineWidth( 1 );
     g.setFG( parent_->foreground() );
     g.drawFilledRectangle( x_ -1, y_ - 1, width_ + 2, height_ + 2 );

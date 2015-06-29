@@ -52,17 +52,13 @@ FieldMeterDecay::FieldMeterDecay( XOSView *parent,
 FieldMeterDecay::~FieldMeterDecay( void ){
 }
 
-void FieldMeterDecay::drawfields( int manditory ){
-    drawfieldsNewG(parent_->g(), manditory);
-}
-
-void FieldMeterDecay::drawfieldsNewG( X11Graphics &g, int manditory ){
+void FieldMeterDecay::drawfields( X11Graphics &g, int manditory ){
     int twidth, x = x_;
 
     if (!dodecay_) {
         //  If this meter shouldn't be done as a decaying splitmeter,
         //  call the ordinary fieldmeter code.
-        FieldMeter::drawfieldsNewG(g, manditory);
+        FieldMeter::drawfields(g, manditory);
         return;
     }
 
@@ -159,7 +155,7 @@ void FieldMeterDecay::drawfieldsNewG( X11Graphics &g, int manditory ){
 
         g.setStippleN(0);	/*  Restore all-bits stipple.  */
         if ( dousedlegends_ )
-            drawused( manditory );
+            drawused(g, manditory);
         x += twidth;
 
         decayx += decaytwidth;

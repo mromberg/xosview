@@ -60,48 +60,6 @@ public:
     X11Pixmap *newX11Pixmap(unsigned int width, unsigned int height);
     //-----------------------------------------------
 
-
-    //-------------------------------------------------
-    // Depricated graphics API
-    //-------------------------------------------------
-#if 0
-    void lineWidth( unsigned int width ) { g().lineWidth(width); }
-    unsigned long allocColor( const std::string &name )
-        { return g().allocColor(name); }
-    void drawString( int x, int y, const std::string &str )
-        { g().drawString(x, y, str); }
-    void drawLine( int x1, int y1, int x2, int y2 )
-        { g().drawLine(x1, y1, x2, y2); }
-    void flush( void ) { g().flush(); }
-    void clear( void ) { g().clear(); }
-    void clear( int x, int y, unsigned int width, unsigned int height )
-        { g().clear(x, y, width, height); }
-    void drawRectangle(int x, int y, unsigned int width, unsigned int height)
-        { g().drawRectangle(x, y, width, height); }
-    void drawFilledRectangle( int x, int y,
-      unsigned int width, unsigned int height )
-        { g().drawFilledRectangle(x, y, width, height); }
-    void copyArea( int src_x, int src_y,
-      unsigned int width, unsigned int height, int dest_x, int dest_y )
-        { g().copyArea(src_x, src_y, width, height, dest_x, dest_y); }
-    void setStipple( Pixmap stipple) { g().setStipple(stipple); }
-    void setStippleN (int n) { g().setStippleN(n); }
-    Pixmap createPixmap(const std::string &data,
-      unsigned int w, unsigned int h) { return g().createPixmap(data, w, h); }
-    void setForeground( unsigned long pixelvalue )
-        { g().setForeground(pixelvalue); }
-    void setBackground( unsigned long pixelvalue )
-        { g().setBackground(pixelvalue); }
-    unsigned int textWidth( const std::string &str, int n )
-        { return g().textWidth(str.substr(0, n)); }
-    unsigned int textWidth( const std::string &str )
-        { return g().textWidth(str); }
-    int textAscent( void ) const { return g().textAscent(); }
-    int textDescent( void ) const { return g().textDescent(); }
-    unsigned int textHeight( void ) const { return g().textHeight(); }
-#endif
-    //-End Depricated----------------------------------
-
 protected:
     void XWinInit(int argc, char* argv[]);
     void init(int argc, char *argv[], const std::string &pixmapFName="",
