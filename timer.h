@@ -21,7 +21,13 @@
 
 class Timer {
 public:
-    Timer( int start = 0 ) { if ( start ) Timer::start(); }
+    Timer(bool start=false) {
+        // in C++11 you can do starttime_({0, 0}) in the initializer list
+        starttime_.tv_sec = starttime_.tv_usec = 0;
+        stoptime_.tv_sec = stoptime_.tv_usec = 0;
+        if ( start )
+            Timer::start();
+    }
     ~Timer( void ){}
 
     void start( void ) { gettimeofday( &starttime_, NULL ); }
