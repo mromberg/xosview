@@ -4,8 +4,8 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef XFT_H
-#define XFT_H
+#ifndef XFTFONT_H
+#define XFTFONT_H
 
 #include <string>
 

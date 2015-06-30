@@ -12,6 +12,7 @@ xwin.o \
 x11graphics.o \
 x11font.o \
 xftfont.o \
+xftgraphics.o \
 x11pixmap.o \
 Xrm.o \
 defaultstring.o \
