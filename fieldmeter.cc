@@ -129,6 +129,11 @@ void FieldMeter::drawlegend(X11Graphics &g) {
     size_t pos = 0;
     int x = x_;
 
+    g.clear(x, y_-g.textHeight()-5, g.textWidth(legend_), g.textHeight());
+    //g.setFG("red");
+    //g.drawRectangle(x-1, y_-g.textHeight()-1-5, g.textWidth(legend_)+2, g.textHeight()+2);
+    //return;
+
     for (unsigned int i = 0 ; i < numfields() ; i++) {
         size_t fpos = legend_.find("/", pos); // string::npos if not found
         std::string li = legend_.substr(pos, fpos - pos);
