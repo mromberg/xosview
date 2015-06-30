@@ -20,7 +20,7 @@ CXX           = @CXX@
 #-----------------------------------------------------------------
 
 # Optimized CXXFLAGS
-CXXFLAGS      += $(CFLAGS) @EXTRA_CXXFLAGS@ -I/usr/include/freetype2 @XINCS@ \
+CXXFLAGS      += $(CFLAGS) @EXTRA_CXXFLAGS@ @XINCS@ \
                  -I$(TOP) -I$(TOP)/@host_dir@ @DEFS@
 # DEBUG CXXFLAGS
 #CXXFLAGS      += $(CFLAGS) -Wall -ggdb -pipe @XINCS@ \
@@ -35,7 +35,7 @@ CXXFLAGS      += $(CFLAGS) @EXTRA_CXXFLAGS@ -I/usr/include/freetype2 @XINCS@ \
 
 # NORMAL LIBS
 LFLAGS        += -L$(TOP)/@host_dir@
-LIBS          += -lmeter @EXTRALIBS@ -lXft @XLIBS@
+LIBS          += -lmeter @EXTRALIBS@ @XLIBS@
 
 # DEBUG LIBS
 #LFLAGS        += -L$(TOP)/@host_dir@ -static
