@@ -29,12 +29,17 @@ public:
     unsigned int depth(void);
 
     unsigned long allocColor(const std::string &name);
-    void setFG(const std::string &color, unsigned short alpha=0xffff);
-    void setFG(unsigned long pixVal, unsigned short alpha=0xffff);
+    void setFG(const std::string &color, unsigned short alpha=0);
+    void setFG(unsigned long pixVal, unsigned short alpha=0);
     void setBG(const std::string &color, unsigned short alpha=0xffff);
     void setBG(unsigned long pixVal, unsigned short alpha=0xffff);
     unsigned long fgPixel(void) const { return _fgPixVal; }
     unsigned long bgPixel(void) const { return _bgPixVal; }
+
+    unsigned int textWidth(const std::string &str);
+    unsigned int textHeight(void) const;
+    int textAscent(void) const;
+    int textDescent(void) const;
 
     void drawString(int x, int y, const std::string &str);
 

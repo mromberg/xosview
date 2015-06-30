@@ -157,6 +157,13 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
 }
 
 void XftGraphics::drawString(int x, int y, const std::string &str) {
+    XGlyphInfo extents;
+    XftTextExtents8(_dsp, _font.font(), (XftChar8 *)str.c_str(), str.size(),
+      &extents);
+    XClearArea(_dsp, _d, x, y-extents.height,
+      extents.xOff, extents.height, False);
+
+    //XftDrawRect(_draw, _bgxftc, x, y-extents.height, extents.xOff, extents.height);
     XftDrawString8(_draw, _fgxftc, _font.font(), x, y, (XftChar8 *)str.c_str(),
       str.size());
 }

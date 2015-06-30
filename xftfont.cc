@@ -60,7 +60,10 @@ unsigned int X11ftFont::textWidth(const std::string &str) {
 
 unsigned int X11ftFont::textHeight(void) const {
     if (good()) {
-        return _font->height;
+        XGlyphInfo extents;
+        XftTextExtents8(_dsp, _font, (XftChar8 *)"Ag", 2,
+          &extents);
+        return extents.height;
     }
 
     logBug << "textHeight() of bad font: " << name() << std::endl;
