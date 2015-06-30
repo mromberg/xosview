@@ -6,6 +6,8 @@
 #
 include Makefile.config
 
+XFT_OBJS = xftfont.o xftgraphics.o
+
 OBJS = \
 llist.o \
 xwin.o \
@@ -24,7 +26,9 @@ xosview.o \
 strutil.o \
 fsutil.o \
 log.o \
+@XFT_OBJS@ \
 main.o
+
 
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)

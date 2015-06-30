@@ -15,6 +15,7 @@ dnl
 m4_include([m4_ax_config_feature.m4])
 m4_include([xo_gcc_auto_depend.m4])
 m4_include([xo_bsd_config.m4])
+m4_include([xo_xft_support.m4])
 
 AC_CANONICAL_HOST
 AC_PROG_CXX([c++ g++])
@@ -30,6 +31,8 @@ ICE_CXX_LONG_LONG
 # should be added to EXTRALIBS and EXTRA_CXXFLAGS
 XINCS=""
 XLIBS="-lX11"
+EXTRA_CXXFLAGS=""
+EXTRALIBS=""
 
 # Give AC_ thing a shot (for the user to supply paths if nothing else)
 AC_PATH_XTRA
@@ -97,12 +100,13 @@ AC_CHECK_LIB(Xpm, XpmCreateImageFromData,
    [AC_DEFINE(HAVE_XPM,[1],[Have libXpm])
    XPMLIB=-lXpm],,-lX11))
 
+XO_XFT_SUPPORT
 
 #
 # Call each ports macro so that it can set up its own
 # options / configuration.
 #
-EXTRA_CXXFLAGS=""
+
 case $host_os in
     linux*)
         AC_XOSV_LINUX
@@ -146,6 +150,7 @@ esac
 # The netbsd and linux ports modify these variables which
 # are exported by AC_OUTPUT.
 #
+AC_SUBST(XFT_OBJS)
 AC_SUBST(BTRYMETER)
 AC_SUBST(EXTRA_CXXFLAGS)
 AC_SUBST(EXTRALIBS)
