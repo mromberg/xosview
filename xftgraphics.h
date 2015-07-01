@@ -43,6 +43,7 @@ public:
 
     void drawString(int x, int y, const std::string &str);
 
+    X11ftFont &font(void) { return _font; }
 private:
     Display *_dsp;
     Drawable _d;

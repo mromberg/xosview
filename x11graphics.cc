@@ -6,6 +6,10 @@
 //
 #include "x11graphics.h"
 #include "log.h"
+#include "x11font.h"
+#ifdef HAVE_XFT
+#include "xftgraphics.h"
+#endif
 
 std::vector<Pixmap>	X11Graphics::_stipples;
 
@@ -13,9 +17,14 @@ X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
   unsigned long bgPixVal)
     : _dsp(dsp), _drawable(d), _isWindow(isWindow), _cmap(cmap),
       _gc(0), _depth(0),
-      _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0), _font(dsp),
-      _doStippling(false) {
-
+      _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0), _font(0),
+      _xftg(0), _doStippling(false) {
+#if HAVE_XFT
+    _xftg = new XftGraphics(_dsp, _drawable, _isWindow, _cmap, _bgPixel);
+    _font = &_xftg->font();
+#else
+    _font = new X11Font(_dsp);
+#endif
     refCount()++;
     updateInfo();
     _gc = XCreateGC(_dsp, _drawable, 0, NULL);
@@ -27,6 +36,11 @@ X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
 
 X11Graphics::~X11Graphics(void) {
     logDebug << "~X11Graphics(): " << refCount() << std::endl;
+#ifdef HAVE_XFT
+    delete _xftg;
+#else
+    delete _font;
+#endif
     refCount()--;
     releaseStipples();
 
@@ -158,14 +172,31 @@ unsigned long X11Graphics::allocColor(const std::string &name) {
 }
 
 void X11Graphics::setFont(const std::string &name) {
-    _font.setFont(name);
+    _font->setFont(name);
 
+#ifndef HAVE_XFT
     XGCValues gcv;
-    gcv.font = _font.id();
-    XChangeGC(_dsp, _gc, GCFont, &gcv);
+    X11Font *fnt = dynamic_cast<X11Font *>(_font);
+    if (!fnt) {
+        logBug << "Can't find X11 core font object." << std::endl;
+    }
+    else {
+        gcv.font = fnt->id();
+        XChangeGC(_dsp, _gc, GCFont, &gcv);
+    }
+#endif
 }
 
 size_t &X11Graphics::refCount(void) {
     static size_t count = 0;
     return count;
+}
+
+void X11Graphics::drawString(int x, int y, const std::string &str) {
+#ifdef HAVE_XFT
+    _xftg->setFG(fgPixel());
+    _xftg->drawString(x, y, str);
+#else
+    XDrawString(_dsp, _drawable, _gc, x, y, str.c_str(), str.size());
+#endif
 }

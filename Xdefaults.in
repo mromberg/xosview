@@ -26,7 +26,9 @@ xosview*meterLabelColor:    #EEEEEE
 xosview*usedlabels:         True
 xosview*usedLabelColor:     #EEEEEE
 xosview*borderwidth:        0
-xosview*font:               7x13bold
+!xosview*font:               7x13bold      ! X11 core font
+!xosview*font:               Oxygen Mono-8  ! Freetype2 font
+xosview*font:               @XOSV_FONT@
 xosview*background:         #352E37
 xosview*foreground:         #FFFFFF
 xosview*enableStipple:	    False ! Change to true to try beta stipple support.

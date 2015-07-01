@@ -7,6 +7,8 @@
 #ifndef XFTFONT_H
 #define XFTFONT_H
 
+#include "font.h"
+
 #include <string>
 
 #include <X11/Xlib.h>
@@ -14,24 +16,23 @@
 struct _XftFont;
 typedef _XftFont XftFont;
 
-class X11ftFont {
+class X11ftFont : public XOSVFont {
 public:
     X11ftFont(Display *dsp);
     X11ftFont(Display *dsp, const std::string &name);
-    ~X11ftFont(void);
+    virtual ~X11ftFont(void);
 
-    bool good(void) const { return _font != 0; }
-    operator bool(void) const { return good(); }
+    virtual bool good(void) const { return _font != 0; }
 
-    const std::string &name(void) const { return _name; }
+    virtual const std::string &name(void) const { return _name; }
     XftFont *font(void) const { return _font; }
 
-    bool setFont(const std::string &name);
+    virtual bool setFont(const std::string &name);
 
-    unsigned int textWidth(const std::string &str);
-    unsigned int textHeight(void) const;
-    int textAscent(void) const;
-    int textDescent(void) const;
+    virtual unsigned int textWidth(const std::string &str);
+    virtual unsigned int textHeight(void) const;
+    virtual int textAscent(void) const;
+    virtual int textDescent(void) const;
 
 private:
     Display *_dsp;

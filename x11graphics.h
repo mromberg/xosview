@@ -8,7 +8,7 @@
 #define X11GRAPHICS_H
 
 #include "log.h"
-#include "x11font.h"
+#include "font.h"
 
 #include <string>
 #include <vector>
@@ -16,6 +16,8 @@
 #include <X11/Xlib.h>
 
 class X11Pixmap;
+class XftGraphics;
+
 
 class X11Graphics {
 public:
@@ -83,7 +85,8 @@ private:
     unsigned long _bgPixel;
     unsigned int _width;
     unsigned int _height;
-    X11Font _font;
+    XOSVFont *_font;
+    XftGraphics *_xftg;
 
     void updateInfo(void); // update _width, _height, _depth
     unsigned long getPixelValue(const std::string &color) const;
@@ -135,10 +138,6 @@ inline void X11Graphics::resize(unsigned int width, unsigned int height) {
     _height = height;
 }
 
-inline void X11Graphics::drawString(int x, int y, const std::string &str) {
-    XDrawString(_dsp, _drawable, _gc, x, y, str.c_str(), str.size());
-}
-
 inline void X11Graphics::lineWidth(unsigned int width) {
     XGCValues xgcv;
     xgcv.line_width = width;
@@ -146,15 +145,15 @@ inline void X11Graphics::lineWidth(unsigned int width) {
 }
 
 inline unsigned int X11Graphics::textWidth(const std::string &str) {
-    return _font.textWidth(str);
+    return _font->textWidth(str);
 }
 
 inline int X11Graphics::textAscent(void) const {
-    return _font.textAscent();
+    return _font->textAscent();
 }
 
 inline int X11Graphics::textDescent(void) const {
-    return _font.textDescent();
+    return _font->textDescent();
 }
 
 inline unsigned int X11Graphics::textHeight(void) const {

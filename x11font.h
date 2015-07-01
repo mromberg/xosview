@@ -6,31 +6,29 @@
 //
 #ifndef X11FONT_H
 #define X11FONT_H
+#include "font.h"
 #include "log.h"
-
-#include <string>
 
 #include <X11/Xlib.h>
 
 
-class X11Font {
+class X11Font : public XOSVFont {
 public:
     X11Font(Display *dsp);
     X11Font(Display *dsp, const std::string &name);
-    ~X11Font(void);
+    virtual ~X11Font(void);
 
     bool good(void) const { return _font; }
-    operator bool(void) const { return good(); }
 
-    const std::string &name(void) const { return _name; }
+    virtual const std::string &name(void) const { return _name; }
     Font id(void) const;
 
-    bool setFont(const std::string &name);
+    virtual bool setFont(const std::string &name);
 
-    unsigned int textWidth(const std::string &str);
-    unsigned int textHeight(void) const;
-    int textAscent(void) const;
-    int textDescent(void) const;
+    virtual unsigned int textWidth(const std::string &str);
+    virtual unsigned int textHeight(void) const;
+    virtual int textAscent(void) const;
+    virtual int textDescent(void) const;
 
 private:
     Display *_dsp;

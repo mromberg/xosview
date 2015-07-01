@@ -7,6 +7,9 @@
 #include "xosview.h"
 #include "meter.h"
 #include "x11font.h"
+#ifdef HAVE_XFT
+#include "xftfont.h"
+#endif
 #include "MeterMaker.h"
 #include "strutil.h"
 #if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
@@ -82,7 +85,7 @@ void XOSView::checkVersion(int argc, char *argv[]) const {
         }
 }
 
-int XOSView::findx(X11Font &font){
+int XOSView::findx(XOSVFont &font){
     if ( legend_ ){
         if ( !usedlabels_ )
             return font.textWidth( "XXXXXXXXXXXXXXXXXXXXXXXX" );
@@ -92,7 +95,7 @@ int XOSView::findx(X11Font &font){
     return 80;
 }
 
-int XOSView::findy(X11Font &font){
+int XOSView::findy(XOSVFont &font){
     if ( legend_ )
         return 10 + font.textHeight() * _meters.size() * ( caption_ ? 2 : 1 );
 
@@ -101,7 +104,12 @@ int XOSView::findy(X11Font &font){
 
 void XOSView::figureSize(void) {
     std::string fname = getResource("font");
+    logDebug << "Font name: " << fname << std::endl;
+#ifdef HAVE_XFT
+    X11ftFont font(display(), fname);
+#else
     X11Font font(display(), fname);
+#endif
     if (!font)
         logFatal << "Could not load font: " << fname << std::endl;
 

@@ -15,7 +15,7 @@
 
 
 class Meter;
-class X11Font;
+class XOSVFont;
 
 
 
@@ -68,8 +68,8 @@ protected:
     void usleep_via_select(unsigned long usec);
     void checkMeterResources(void);
     void figureSize(void);
-    int findx(X11Font &font);
-    int findy(X11Font &font);
+    int findx(XOSVFont &font);
+    int findy(XOSVFont &font);
     void setSleepTime(void);
     void loadResources(int argc, char **argv);
     void setEvents(void);
