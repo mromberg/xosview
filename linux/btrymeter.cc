@@ -62,6 +62,7 @@ void BtryMeter::checkResources( void ){
 
 void BtryMeter::checkevent( void ){
 
+    std::string oldLegend = legend();
     if (!getpwrinfo()) {
         // getting the power info failed (for some reason)
         // reset with sane defaults.
@@ -71,7 +72,8 @@ void BtryMeter::checkevent( void ){
         setUsed(fields_[0], total_);
     }
 
-    drawlegend(parent_->g());
+    if (legend() != oldLegend)
+        drawlegend(parent_->g());
     drawfields(parent_->g());
 }
 
