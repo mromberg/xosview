@@ -75,6 +75,7 @@ void NetMeter::checkevent(void) {
     }
 
     setUsed((out + in) / etime, _maxBandwidth);
+    drawfields(parent_->g());
 }
 
 NetMeter::netpair NetMeter::getStats(void) {

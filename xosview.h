@@ -29,8 +29,13 @@ public:
     static double maxSampRate(void); // Samples/sec max
     std::string winname(void);
 
+protected:
+    // individual meters were calling these causing flashing
+    // only allow direct sub classes (which should prolly not
+    // call these either).
     void reallydraw(void);
     void draw(void);
+public:
 
     // used by meter makers
     int xoff(void) const { return xoff_; }

@@ -71,6 +71,7 @@ void BtryMeter::checkevent( void ){
         setUsed(fields_[0], total_);
     }
 
+    drawlegend(parent_->g());
     drawfields(parent_->g());
 }
 
@@ -384,6 +385,8 @@ bool BtryMeter::getapminfo( void ){
     */
     if ( old_apm_battery_state != apm_battery_state ) {
 
+        size_t oldLegendSize = legend().size();
+        std::string newLegend;
 	/* so let's eval the apm_battery_state in some more detail: */
 
 	switch ( apm_battery_state ) {
@@ -391,32 +394,32 @@ bool BtryMeter::getapminfo( void ){
 	case 0: /* high (e.g. over 25% on my box) */
             logDebug << "battery_status HIGH" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryLeftColor"));
-            legend("High CAP/USED");
+            newLegend = "High CAP/USED";
             break;
 
 	case 1: /* low  ( e.g. under 25% on my box ) */
             logDebug << "battery_status LOW" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryLowColor"));
-            legend("LOW avail/used");
+            newLegend = "LOW avail/used";
             break;
 
 	case 2: /* critical ( less than  5% on my box ) */
             logDebug << "battery_status CRITICAL" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryCritColor"));
-            legend( "Crit LOW/Used");
+            newLegend = "Crit LOW/Used";
             break;
 
 	case 3: /* Charging */
             logDebug << "battery_status CHARGING" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryChargeColor"));
-            legend( "AC/Charging");
+            newLegend = "AC/Charging";
             break;
 
 	case 4: /* selected batt not present */
 		/* no idea how this state ever could happen with APM */
             logDebug << "battery_status not present" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryNoneColor"));
-            legend( "Not Present/N.A.");
+            newLegend = "Not Present/N.A.";
             break;
 
 	case 255: /* unknown - do nothing - maybe not APM */
@@ -424,15 +427,17 @@ bool BtryMeter::getapminfo( void ){
             // ( while on AC of course :-)) )
             logDebug << "apm battery_state not known" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryNoneColor"));
-            legend( "Unknown/N.A.");
+            newLegend = "Unknown/N.A.";
             break;
 	}
+        // The legend drawing code currently only clears the area
+        // behind the text it is drawig.  Not the area of the old text.
+        // So, for now make sure the legend is wide enough to cover all
+        // cases.
+        if (newLegend.size() < oldLegendSize)
+            newLegend.resize(oldLegendSize, ' ');
 
-  	drawfields(parent_->g());
-	// force redraw of whole widget
-	// (no other idea how to update the legend/labels)
-	parent_->reallydraw();
-
+        legend(newLegend);
     }
 
     return true;
@@ -548,37 +553,42 @@ bool BtryMeter::getacpiinfo( void ){
                  << "old=" << old_acpi_charge_state << ", "
                  << "now=" << acpi_charge_state << std::endl;
 
+        size_t oldLegendSize = legend().size();
+        std::string newLegend;
 	/* so let's eval the apm_battery_state in some more detail: */
 
 	switch ( acpi_charge_state ) {
 	case 0:  // charged
             logDebug << "battery_status CHARGED" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryFullColor"));
-            legend( "CHARGED/FULL");
+            newLegend = "CHARGED/FULL";
             break;
 	case -1: // discharging
             logDebug << "battery_status DISCHARGING" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryLeftColor"));
-            legend( "CAP/USED");
+            newLegend = "CAP/USED";
             break;
 	case -2: // discharging - below alarm
             logDebug << "battery_status ALARM DISCHARGING" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryCritColor"));
-            legend( "LOW/ALARM");
+            newLegend = "LOW/ALARM";
             break;
 	case -3: // not present
             logDebug << "battery_status NOT PRESENT" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryNoneColor"));
-            legend( "NONE/NONE");
+            newLegend = "NONE/NONE";
             break;
 	case 1:  // charging
             logDebug << "battery_status CHARGING" << std::endl;
             setfieldcolor( 0, parent_->getResource("batteryChargeColor"));
-            legend( "AC/Charging");
+            newLegend = "AC/Charging";
             break;
 	}
-  	drawfields(parent_->g());
-	parent_->reallydraw();
+        // add spaces to clear the old text
+        if (newLegend.size() < oldLegendSize)
+            newLegend.resize(oldLegendSize, ' ');
+
+        legend(newLegend);
     }
 
     return true;

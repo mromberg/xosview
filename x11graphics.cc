@@ -36,11 +36,13 @@ X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
 
 X11Graphics::~X11Graphics(void) {
     logDebug << "~X11Graphics(): " << refCount() << std::endl;
-#ifdef HAVE_XFT
     delete _xftg;
-#else
+
+#ifndef HAVE_XFT
     delete _font;
 #endif
+
+    // The refCount is used to free global cached stipples
     refCount()--;
     releaseStipples();
 
@@ -178,7 +180,7 @@ void X11Graphics::setFont(const std::string &name) {
     XGCValues gcv;
     X11Font *fnt = dynamic_cast<X11Font *>(_font);
     if (!fnt) {
-        logBug << "Can't find X11 core font object." << std::endl;
+        logBug << "Font is not a core X11 font object." << std::endl;
     }
     else {
         gcv.font = fnt->id();
