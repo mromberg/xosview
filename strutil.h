@@ -80,6 +80,13 @@ std::string strerror(int error);
 
 } // namespace util
 
+// print std::pair in the form: (first,second)
+template<typename S, typename T>
+inline std::ostream &operator<<(std::ostream &os, const std::pair<S,T> &pp) {
+    os << "(" << pp.first << "," << pp.second << ")";
+    return os;
+}
+
 // print vectors in the form: [a,b,c,d]
 template<class X>
 std::ostream &operator<<(std::ostream &os, const std::vector<X> &x) {
