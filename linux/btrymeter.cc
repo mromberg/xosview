@@ -159,8 +159,12 @@ bool BtryMeter::getsysinfo(void) {
 
     setUsed(fields_[0], total_);
 
-    legend(std::string(std::string("CAP ") + timeLeft
+    size_t oldSize = legend().size();
+    std::string newLegend(std::string(std::string("CAP ") + timeLeft
         + "(" + status + ")/USED"));
+    if (newLegend.size() < oldSize)
+        newLegend.resize(oldSize, ' ');
+    legend(newLegend);
 
     return true;
 }
