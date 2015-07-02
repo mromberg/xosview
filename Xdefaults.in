@@ -37,7 +37,7 @@ xosview*graphNumCols:       128   ! number of samples shown in a graph
 
 
 ! ** Load Meter Resources
-!    We don't need to enable the Decay option, as it is already time-averaged.
+!    We do not need to enable the Decay option, as it is already time-averaged.
 xosview*load:               True
 xosview*loadCritColor:      #FC842B
 xosview*loadWarnColor:      #F2EF44
@@ -143,7 +143,7 @@ xosview*netPriority:        5
 xosview*netDecay:           True
 xosview*netGraph:           False
 xosview*netUsedFormat:	    autoscale
-xosview*netIface:           False   ! Linux does not use.  If others don't nuke
+xosview*netIface:           False   ! Linux does not use.  If others do not nuke
 
 
 ! Interrupt Meter Resources
