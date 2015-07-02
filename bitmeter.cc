@@ -88,7 +88,10 @@ void BitMeter::draw(X11Graphics &g){
         g.drawString( x_ - offset + 1, y_ + height_, title_ );
         g.setFG( onColor_ );
         if(docaptions()) {
-            g.drawString( x_, y_ - 5, legend_ );
+            int x = x_;
+            int y = y_ - 1 - g.textDescent() - 1; // the bonus -1 = mystery
+            // think we always have full window clear here
+            g.drawString( x, y, legend_ );
         }
     }
 

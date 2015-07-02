@@ -36,9 +36,10 @@ X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
 
 X11Graphics::~X11Graphics(void) {
     logDebug << "~X11Graphics(): " << refCount() << std::endl;
-    delete _xftg;
 
-#ifndef HAVE_XFT
+#ifdef HAVE_XFT
+    delete _xftg;
+#else
     delete _font;
 #endif
 

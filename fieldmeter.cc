@@ -126,13 +126,20 @@ void FieldMeter::draw(X11Graphics &g) {
 }
 
 void FieldMeter::drawlegend(X11Graphics &g) {
+    // (x_, y_) = coord of upper left of fields
+    // the outline overlaps (x_, y_)
+    // So make the text draw on y_ - 1 - desent of the text (y=0 is top of)
+    //
+    // x + textWidth() is the location to start the next glyph
+    //
+    // And something funky is going on (I think) with the width
+    // height of rectangles/clear areas.  off by one.
     size_t pos = 0;
     int x = x_;
+    int y = y_ - 1 - g.textDescent() - 1; // the bonus -1 I can't explain
 
-    g.clear(x, y_-g.textHeight()-5, g.textWidth(legend_), g.textHeight());
-    //g.setFG("red");
-    //g.drawRectangle(x-1, y_-g.textHeight()-1-5, g.textWidth(legend_)+2, g.textHeight()+2);
-    //return;
+    g.clear(x, y - g.textAscent(), g.textWidth(legend()),
+      g.textHeight()+1); // again the bonus + 1 is a mystery
 
     for (unsigned int i = 0 ; i < numfields() ; i++) {
         size_t fpos = legend_.find("/", pos); // string::npos if not found
@@ -141,12 +148,12 @@ void FieldMeter::drawlegend(X11Graphics &g) {
 
         g.setStippleN(i%4);
         g.setFG( colors_[i] );
-        g.drawString( x, y_ - 5, li);
+        g.drawString( x, y, li);
         x += g.textWidth( li );
 
         g.setFG( parent_->foreground() );
         if ( i != numfields() - 1 )
-            g.drawString( x, y_ - 5, "/" );
+            g.drawString( x, y, "/" );
         x += g.textWidth("/");
     }
     g.setStippleN(0);	/*  Restore default all-bits stipple.  */
