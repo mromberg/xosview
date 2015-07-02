@@ -1,5 +1,13 @@
 - Add -D_GLIBCXX_DEBUG to enable-debug (available with GCC 3.4.0 and later)
 
+- Make the linux netmeter support individual interfaces.  Possibly even
+  the loopback
+
+- Have some meter base class(s) remember previous values and call things
+  like drawfields() drawlegend() etc only if the values have not changed.
+  This way the leaf classes just gather stats and report back.  But don't
+  worry about display.
+
 - If XOSVDEBUG is set have Xrm use ONLY resources from Xdefaults (in tree)
 
 - Make a README.devel for developers
@@ -19,14 +27,15 @@
   nothing else.
 
 - Fix any other ports for the new C++ update.  Should
-  be simple.  Mostly char * -> std::string conversion.
+  be simple"ish".  Mostly char * -> std::string conversion.
 
 - Look into some kind of decay option for the used labels
 
 - Look into a decay only option on the field meter.
 
-- Add Xft support for new fangled (and installed by default) fuzzy fonts
-  (http://www.keithp.com/~keithp/render/Xft.tutorial)
+- Update the text rendering to allow non monospaced fonts.
+
+- if using Xft fonts rescale the font based on the height of the meter.
 
 - See if the new X11Graphics can be done as a pass down from the top
   sorta thing.  Right now some low level meters have to grab a Graphics
