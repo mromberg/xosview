@@ -13,6 +13,19 @@
 !
 !  xosview resources (override into your .Xdefaults file)
 !
+! ######################################################################
+! A note on comments:
+! X only technically supports a comment by placing a '!' character
+! and the beginning of a line.  Anything else appears to be undefined
+! behavior.  Since xosview has used comments on any position on a line
+! for 20+ years (and I like it this way) it will continue to do so.
+!
+! So, you may place a '!' anywhere *AFTER* the ':' and the rest of the
+! line will be a comment.  Unless you wish to use a literal '!' character
+! in your value.  Then "escape" the '!' with a '&' character like so:
+! xosview*someName: True ! This is a comment
+! xosview*someName: False&!  ! This resource is set to "False!"
+! ######################################################################
 
 ! **General Resources
 !xosview*title:

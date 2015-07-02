@@ -11,6 +11,8 @@
 
 #include <iostream>
 #include <cstddef> // for NULL
+#include <sstream>
+#include <algorithm>
 
 #include <unistd.h>  //  for access(), etc.  BCG
 
@@ -85,11 +87,38 @@ Xrm::opt Xrm::getResource(const std::string &rname) const{
         XrmGetResource(_db, frn.c_str(), fcn.c_str(), &type, &val);
     }
 
-    if (val.addr)
-        return opt(true, util::strip(val.addr));
+    if (val.addr) {
+        return opt(true, fixValue(val.addr));
+    }
     return opt(false, "<(Xrm::uninitialized)>");
 }
 
+std::string Xrm::fixValue(const std::string &val) {
+    // Support '!' as a comment in the resorce value.
+    // Allow it to be used by escapeing it with '&'
+    // (ex: "True ! This is a boolean" = "True"
+    // "OMG&! A Pony&! ! awesome!" = "OMG! A Pony!"
+    //
+    // '&' was chosen 'cause xrdb seems to use '\' for something
+    // Also strips whitespace from front and back.
+    std::string rval(val);
+    std::vector<std::string> lst = util::split(rval, "!");
+
+    rval = "";
+    for (size_t i = 0 ; i < lst.size() ; i++) {
+        if (!lst[i].empty() && (lst[i][lst[i].size()-1] == '&')) {
+            // Then ! was escaped
+            rval += util::rstrip(lst[i], "&") + "!";
+        }
+        else {
+            // was a comment.
+            rval += lst[i];
+            break;
+        }
+    }
+
+    return util::strip(rval);
+}
 
 Xrm::~Xrm(){
     logDebug << "Xrm::~Xrm(): " << (void *)_db << std::endl;
@@ -247,8 +276,14 @@ std::ostream &Xrm::dump(std::ostream &os) const {
     XrmName names[] = { _instance, NULLQUARK };
     XrmClass classes[] = { _class, NULLQUARK };
 
+    std::vector<std::string> rlist;
     XrmEnumerateDatabase(_db, names, classes, XrmEnumAllLevels, enumCB,
-      (XPointer)&os);
+      (XPointer)&rlist);
+
+    std::sort(rlist.begin(), rlist.end());
+
+    for (size_t i = 0 ; i < rlist.size() ; i++)
+        os << rlist[i] << "\n";
 
     return os;
 }
@@ -257,15 +292,21 @@ Bool Xrm::enumCB(XrmDatabase *, XrmBindingList bindings,
   XrmQuarkList quarks, XrmRepresentation *type,
   XrmValue *value, XPointer closure) {
 
-    std::ostream *os = (std::ostream *)closure;
+    std::vector<std::string> *rlist = (std::vector<std::string> *)closure;
+
     (void) type;  //  Avoid gcc warnings.
 
+    std::string res;
     int i = 0;
     while (quarks[i] != NULLQUARK){
-        *os <<bindings[i] <<XrmQuarkToString(quarks[i]);
+        std::ostringstream os;
+        os << bindings[i];
+        res += (os.str() +
+          std::string(XrmQuarkToString(quarks[i])));
         i++;
     }
-    *os <<": " <<value->addr <<"\n";
+    res += std::string(":\t") + Xrm::fixValue(value->addr);
+    rlist->push_back(res);
 
     return False;
 }

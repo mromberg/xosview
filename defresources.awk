@@ -22,7 +22,10 @@ BEGIN {
 # Echo each line of input (that is not a comment or empty) to stdout.
 #
 (! /^!/) && (NF != 0) {
-    split($0, a, "!")
+    # toss comments in the value unless they are escaped
+    # with a &.  So, ! = comment to end of line
+    # and &! means literal ! character
+    split($0, a, /[^&]!/)
     printf "%s\\n\\\n", a[1]
 }
 

@@ -44,6 +44,7 @@ private:
       XrmQuarkList quarks, XrmRepresentation *type,
       XrmValue *value, XPointer closure);
     void initClassName(const std::string &className);
+    static std::string fixValue(const std::string &val);
 
     static bool _initialized;
 };
