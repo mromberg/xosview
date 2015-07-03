@@ -66,8 +66,7 @@ public:
 
 protected:
     virtual void setEvents(void);
-    void init(int argc, char *argv[], const std::string &pixmapFName="",
-      const std::string &geomStr="", bool geomUnspecified=true);
+    void createWindow(void);
 
     virtual std::string className(void);
     virtual std::string instanceName(void);
@@ -134,8 +133,8 @@ private:
     unsigned long bgcolor_;       //  Background color of the window
     Colormap      colormap_;      //  The colormap
 
-    XSizeHints *getGeometry(const std::string &geomStr, bool geomUnspecified);
-    void setHints(int argc, char *argv[], XSizeHints *szHints);
+    XSizeHints *getGeometry(void);
+    void setHints(XSizeHints *szHints);
 };
 
 #endif

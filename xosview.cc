@@ -40,25 +40,6 @@ XOSView::XOSView(void)
       _isvisible(false), _ispartiallyvisible(false) {
 }
 
-void XOSView::scaffolding(int argc, char **argv) {
-
-    // determine the width and height of the window then create it
-    // These *HAVE* to come before the resource checking
-    // because checking resources alloc colors
-    // And there is no display set in the graphics
-    // until init() does it's thing.
-    Xrm::opt geom = _xrm->getResource("geometry");
-    init(argc, argv, getResourceOrUseDefault("pixmapName", ""),
-      geom.second, !geom.first);
-
-    checkMeterResources(); //  Have the meters re-check the resources.
-
-    title( winname() );
-    iconname( winname() );
-    dolegends();
-    resize();
-}
-
 int XOSView::findx(XOSVFont &font){
     if ( legend_ ){
         if ( !usedlabels_ )
@@ -239,6 +220,14 @@ void XOSView::loadConfiguration(int argc, char **argv) {
                      << std::endl;
         }
 
+    // The window manager will later wanna know the command line
+    // arguments.  Since this may be used to restore a session, we
+    // will save them here in a resource.
+    std::string command;
+    for (int i = 0 ; i < argc ; i++)
+        command += std::string(" ") + argv[i];
+    _xrm->putResource("." + instanceName() + "*command", command);
+
     //---------------------------------------------------
     // No use of clopts beyond this point.  It is all in
     // the resource database now.  Example immediately follows...
@@ -256,16 +245,22 @@ void XOSView::loadConfiguration(int argc, char **argv) {
 void XOSView::run(int argc, char **argv){
 
     loadConfiguration(argc, argv);
-    setEvents();     //  set up the X events
+    setEvents();           //  set up the X events
     setSleepTime();
-    loadResources(); // initialize from our resources
-    createMeters();  // add in the meters
-    figureSize();    // calculate our size now that we know the number of meters
+    loadResources();       // initialize from our resources
+    createMeters();        // add in the meters
+    figureSize();          // calculate size using number of meters
+    createWindow();        // Graphics should now be up (so can alloc colors)
+    checkMeterResources(); // Have the meters re-check the resources.
+    title(winname());      // Now that the window exists set the title
+    iconname(winname());   // and the icon name
+    dolegends();
+    resize();
 
-    scaffolding(argc, argv);
+    loop();                // enter event loop
+}
 
-
-
+void XOSView::loop(void) {
     int counter = 0;
 
     while( !done() ){

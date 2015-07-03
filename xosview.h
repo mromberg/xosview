@@ -25,7 +25,6 @@ public:
     virtual ~XOSView(void);
 
     void run(int argc, char **argv);
-    void scaffolding(int argc, char **argv);
 
     static double maxSampRate(void); // Samples/sec max
     std::string winname(void);
@@ -62,6 +61,7 @@ protected:
     std::vector<Meter *> _meters;
 
 
+    void loop(void);
     void loadConfiguration(int argc, char **argv);
     void setCommandLineArgs(util::CLOpts &o);
     void reallydraw(void);

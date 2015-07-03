@@ -1,6 +1,6 @@
-- xosview*background seems to not work from Xdefaults
+- Make a couple of example Xdefaults themes/background pixmaps
 
-- fix command line options so -h or --help works
+- xosview*background seems to not work from Xdefaults
 
 - Make list of tested meters for CHANGELOG
 

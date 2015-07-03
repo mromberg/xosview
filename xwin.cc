@@ -54,13 +54,12 @@ XWin::~XWin( void ){
 }
 
 
-void XWin::init(int argc, char **argv, const std::string &pixmapFName,
-  const std::string &geomStr, bool geomUnspecified){
+void XWin::createWindow(void) {
     XSetWindowAttributes xswa;
 
     std::string fontName = getResource("font");
     setColors();
-    XSizeHints *szHints = getGeometry(geomStr, geomUnspecified);
+    XSizeHints *szHints = getGeometry();
 
     window_ = XCreateSimpleWindow(display_, DefaultRootWindow(display_),
       szHints->x, szHints->y,
@@ -68,7 +67,7 @@ void XWin::init(int argc, char **argv, const std::string &pixmapFName,
       1,
       fgcolor_, bgcolor_);
 
-    setHints( argc, argv, szHints );
+    setHints(szHints);
     XFree(szHints);
     szHints = 0;
 
@@ -80,6 +79,7 @@ void XWin::init(int argc, char **argv, const std::string &pixmapFName,
 
 #ifdef HAVE_XPM
     Pixmap	       background_pixmap;
+    std::string pixmapFName = getResourceOrUseDefault("pixmapName", "");
     bool doPixmap = getPixmap(&background_pixmap, pixmapFName);
     // If there is a pixmap file, set it as the background
     if(doPixmap) {
@@ -114,7 +114,7 @@ void XWin::init(int argc, char **argv, const std::string &pixmapFName,
     g().flush();
 }
 
-void XWin::setHints(int argc, char *argv[], XSizeHints *szHints){
+void XWin::setHints(XSizeHints *szHints){
     // Set up class hint
     XClassHint    *classhints;   //  Class hint for window manager
     if((classhints = XAllocClassHint()) == NULL){
@@ -131,6 +131,7 @@ void XWin::setHints(int argc, char *argv[], XSizeHints *szHints){
     if((wmhints = XAllocWMHints()) == NULL){
         logFatal << "Error allocating Window Manager hints!" << std::endl;
     }
+
     wmhints->flags = (InputHint|StateHint);
     wmhints->input = True;
     wmhints->initial_state = NormalState;
@@ -146,8 +147,17 @@ void XWin::setHints(int argc, char *argv[], XSizeHints *szHints){
         logFatal << "Error creating XTextProperty!" << std::endl;
     }
 
-    XSetWMProperties(display_, window_, &titlep, &iconnamep, argv, argc,
+    // First make a "fake" argument list
+    std::vector<std::string> clst = util::split(getResource("command"), " ");
+    char **fargv = new char*[clst.size()];
+    for (size_t i = 0 ; i < clst.size() ; i++)
+        fargv[i] = const_cast<char *>(clst[i].c_str()); // we'll be careful...
+
+    XSetWMProperties(display_, window_, &titlep, &iconnamep, fargv, clst.size(),
       szHints, wmhints, classhints);
+    delete[] fargv; // the char* elements here just point into clst
+    fargv = 0;
+
     XFree( titlep.value );
     XFree( iconnamep.value );
 
@@ -218,7 +228,7 @@ bool XWin::getPixmap(Pixmap *pixmap, const std::string &pixmapFName) {
 }
 #endif
 
-XSizeHints *XWin::getGeometry(const std::string &geomStr, bool geomUnspecified){
+XSizeHints *XWin::getGeometry(void) {
     int                  bitmask;
 
     // Fill out a XsizeHints structure to inform the window manager
@@ -241,6 +251,10 @@ XSizeHints *XWin::getGeometry(const std::string &geomStr, bool geomUnspecified){
           << szHints->x << "+" << szHints->y;
 
     // Process the geometry specification
+    std::string geomStr = getResourceOrUseDefault("geometry", "<!UNSP!>");
+    bool geomUnspecified = false;
+    if (geomStr == "<!UNSP!>")
+        geomUnspecified = true;
     const char *gptr = NULL;
     if (!geomUnspecified)
         gptr = geomStr.c_str();
