@@ -7,6 +7,7 @@
 #include "xosview.h"
 #include "meter.h"
 #include "x11font.h"
+#include "clopt.h"
 #ifdef HAVE_XFT
 #include "xftfont.h"
 #endif
@@ -22,7 +23,7 @@
 
 
 
-static const char * const versionString = "xosview version: " PACKAGE_VERSION;
+static const char * const VersionString = "xosview version: " PACKAGE_VERSION;
 static const char NAME[] = "xosview@";
 
 
@@ -40,21 +41,7 @@ XOSView::XOSView(void)
 }
 
 void XOSView::scaffolding(int argc, char **argv) {
-    _xrm = new Xrm("xosview", iname(argc, argv));
 
-    // Check for version arguments first.  This allows
-    // them to work without the need for a connection
-    // to the X server
-    checkVersion(argc, argv);
-
-    setDisplayName(_xrm->getDisplayName(argc, argv));
-
-    openDisplay();  //  So that the Xrm class can contact the display for its
-                    //  default values.
-
-    //  The resources need to be initialized before calling XWinInit, because
-    //  XWinInit looks at the geometry resource for its geometry.  BCG
-    _xrm->loadAndMergeResources(argc, argv, display());
     XWinInit (argc, argv);
 
     setSleepTime();
@@ -83,15 +70,6 @@ void XOSView::scaffolding(int argc, char **argv) {
     iconname( winname() );
     dolegends();
     resize();
-}
-
-void XOSView::checkVersion(int argc, char *argv[]) const {
-    for (int i = 0 ; i < argc ; i++)
-        if ((util::tolower(argv[i]) == "-v")
-          || (util::tolower(argv[i]) == "--version")) {
-            std::cout << versionString << std::endl;
-            exit(0);
-        }
 }
 
 int XOSView::findx(XOSVFont &font){
@@ -243,7 +221,75 @@ void XOSView::draw ( void ) {
     }
 }
 
+void XOSView::loadConfiguration(int argc, char **argv) {
+    //...............................................
+    // Command line options
+    //...............................................
+
+    util::CLOpts clopts(argc, argv);
+    // No one touches (or even looks at) argc or argv
+    // beyond this point without an EXCELLENT reason.
+    //!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*
+    setCommandLineArgs(clopts);
+    clopts.parse(); // will exit() if fails.
+
+    if (clopts.isTrue("help")) {
+        std::cout << versionStr() << "\n\n" << clopts.useage() << std::endl;
+        exit(0);
+    }
+    if (clopts.isTrue("version")) {
+        std::cout << versionStr() << std::endl;
+        exit(0);
+    }
+
+    //...............................................
+    // X resources
+    //...............................................
+    _xrm = new Xrm("xosview", clopts.value("name", "xosview"));
+
+    //  Open the Display and load the X resources
+    setDisplayName(clopts.value("displayName", ""));
+    openDisplay();
+    _xrm->loadResources(display());
+
+    // load all of the command line options into the
+    // resouce database.  First the ones speced by -xrm
+    const std::vector<std::string> &xrml = clopts.values("xrm");
+    for (size_t i = 0 ; i < xrml.size() ; i++) {
+        _xrm->putResource(xrml[i]);
+        logDebug << "ADD: " << xrml[i] << std::endl;
+    }
+
+    // Now all the rest that are set by the user.
+    // defaults delt with by getResourceOrUseDefault()
+    const std::vector<util::CLOpt> &opts = clopts.opts();
+    for (size_t i = 0 ; i < opts.size() ; i++)
+        if (opts[i].name() != "xrm" && !opts[i].missing()) {
+            std::string rname("." + instanceName() + "*" +opts[i].name());
+            _xrm->putResource(rname, opts[i].value());
+            logDebug << "ADD: "
+                     << rname << " : " << opts[i].value()
+                     << std::endl;
+        }
+
+    //---------------------------------------------------
+    // No use of clopts beyond this point.  It is all in
+    // the resource database now.  Example immediately follows...
+    //---------------------------------------------------
+    if (isResourceTrue("xrmdump")) {
+        _xrm->dump(std::cout);
+        exit(0);
+    }
+}
+
+// Think about having run() return an int
+// so it works just like main.  failures
+// in run() return an exit status for main
+// this way the destructors run.
 void XOSView::run(int argc, char **argv){
+
+    loadConfiguration(argc, argv);
+
     scaffolding(argc, argv);
 
     int counter = 0;
@@ -386,19 +432,6 @@ double XOSView::maxSampRate(void) {
     return MAX_SAMPLES_PER_SECOND;
 }
 
-std::string XOSView::iname(int, char **argv) {
-    /*  Icky.  Need to check for -name option here.  */
-    char** argp = argv;
-    const char* instanceName = "xosview";	// Default value.
-    while (argp && *argp) {
-        if (std::string(*argp) == "-name")
-            instanceName = argp[1];
-        argp++;
-    }  //  instanceName will end up pointing to the last such -name option.
-
-    return instanceName;
-}
-
 void XOSView::setSleepTime(void) {
     MAX_SAMPLES_PER_SECOND = util::stof(getResource("samplesPerSec"));
     if (!MAX_SAMPLES_PER_SECOND)
@@ -491,4 +524,49 @@ std::string XOSView::getResource( const std::string &name ){
 
 void XOSView::dumpResources( std::ostream &os ){
     _xrm->dump(os);
+}
+
+std::string XOSView::versionStr(void) const {
+    return VersionString;
+}
+
+void XOSView::setCommandLineArgs(util::CLOpts &o) {
+
+    //------------------------------------------------------
+    // Define ALL of the command line options here.
+    //
+    // Note.  Every command line option that is set by the user
+    // will be loaded into the Xrm database using the name
+    // given here.  So, you can lookup these options anywhere
+    // getResource() is available.
+    //------------------------------------------------------
+    o.add("help",
+      "-h", "--help",
+      "Display this message and exit.");
+    o.add("version",
+      "-v", "--version",
+      "Display version information and exit.");
+
+    // General X resouces
+    //-----------------------------------------
+    o.add("name",
+      "-name", "--name", "name",
+      "The X resource instance name to use.");
+    o.add("displayName",
+      "-display", "--display", "name",
+      "The name of the X display to connect to.");
+    o.add("title",
+      "-title", "--title", "title",
+      "The title to use.");
+    o.add("geometry",
+      "-g", "--geometry", "geometry",
+      "The X geometry string to use.");
+    o.add("xrm",
+      "-x", "-xrm",
+      "spec",
+      "Set an X resource using the supplied spec.  For example: "
+      "-x '*background: red' would set the background to red.");
+    o.add("xrmdump",
+      "-xrmd", "--xrm-dump",
+      "Dump the X resouces seen by xosview to stdout and exit.");
 }

@@ -16,7 +16,7 @@
 
 class Meter;
 class XOSVFont;
-
+namespace util { class CLOpts; }
 
 
 class XOSView : public XWin {
@@ -38,6 +38,7 @@ public:
     bool isExposed() const { return expose_flag_; }
     bool isFullyVisible() const { return _isvisible && !_ispartiallyvisible; }
     bool isAtLeastPartiallyVisible() const { return _isvisible; }
+    std::string versionStr(void) const;
 
     //------------------------------------------------------
     // Resouce interface
@@ -61,6 +62,8 @@ protected:
     std::vector<Meter *> _meters;
 
 
+    void loadConfiguration(int argc, char **argv);
+    void setCommandLineArgs(util::CLOpts &o);
     void reallydraw(void);
     void draw(void);
     virtual std::string className(void) { return _xrm->className(); }
@@ -76,7 +79,6 @@ protected:
     void loadResources(int argc, char **argv);
     void setEvents(void);
     void createMeters(void);
-    void checkVersion(int argc, char *argv[]) const;
     void dolegends(void);
     void checkOverallResources(void);
     void resizeEvent(XEvent &event);
@@ -88,8 +90,6 @@ protected:
 private:
     //  Take at most n samples per second (default of 10)
     static double MAX_SAMPLES_PER_SECOND;
-
-    static std::string iname(int argc, char **argv);
 };
 
 #endif

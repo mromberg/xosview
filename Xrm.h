@@ -28,15 +28,15 @@ public:
     typedef std::pair<bool, std::string> opt;
 
     opt getResource(const std::string &rname) const;
-    std::string getDisplayName (int argc, char** argv);
-    void loadAndMergeResources(int& argc, char** argv, Display* display);
+    void putResource(const std::string &line);
+    void putResource(const std::string &specifier, const std::string &val);
+    void loadResources(Display* display);
 
     std::ostream &dump(std::ostream &os) const;
 
 private:
     XrmDatabase _db;
     XrmClass _class, _instance;
-    std::string _display_name; //Used solely for getting the display's resources
 
     //void getArgs(int argc, char **argv);
     static Bool enumCB(XrmDatabase *, XrmBindingList bindings,

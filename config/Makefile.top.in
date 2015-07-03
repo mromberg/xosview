@@ -22,6 +22,7 @@ fieldmeterdecay.o \
 fieldmetergraph.o \
 bitfieldmeter.o \
 bitmeter.o \
+clopt.o \
 xosview.o \
 strutil.o \
 fsutil.o \

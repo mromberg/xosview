@@ -313,14 +313,6 @@ void XWin::checkevent( void ){
     }
 }
 
-#if 0
-void XWin::usage( void ){
-    //  FIXME  We need to update this.  BCG
-    std::cout << name_ << " [-display name] [-geometry geom]" << std::endl;
-//    exit (1);
-}
-#endif
-
 
 void XWin::addEvent( Event *event ){
     Event *tmp = events_;

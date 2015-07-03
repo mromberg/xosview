@@ -5,7 +5,6 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "Xrm.h"
-#include "Xrmcommandline.h"
 #include "strutil.h"
 #include "log.h"
 
@@ -35,24 +34,6 @@ Xrm::Xrm(const std::string &className, const std::string &instanceName)
     initClassName(className);
 }
 
-
-std::string Xrm::getDisplayName (int argc, char** argv) {
-    (void) argc;  //  Avoid gcc warnings.
-    //  See if '-display foo:0' is on the command line, and return it if it is.
-    char** argp;
-
-    for (argp = argv; (*argp != NULL) &&
-             (util::tolower(*argp) != "-display") ; argp++)
-        ;  //  Don't do anything.
-
-    //  If we found -display and the next word exists...
-    if (*argp && *(++argp))
-        _display_name = *argp;
-    else
-        _display_name = "";
-    return _display_name.c_str();
-    //  An empty display string means use the DISPLAY environment variable.
-}
 
 Xrm::opt Xrm::getResource(const std::string &rname) const{
     std::string frn = std::string(instanceName()) + std::string(".") + rname;
@@ -114,9 +95,7 @@ Xrm::~Xrm(){
     XrmDestroyDatabase(_db);
 }
 
-//---------------------------------------------------------------------
-//  This function uses XrmParseCommand, and updates argc and argv through it.
-void Xrm::loadAndMergeResources(int& argc, char** argv, Display* display){
+void Xrm::loadResources(Display* display) {
 
     // init the database if it needs it
     if (!_initialized){
@@ -221,11 +200,6 @@ void Xrm::loadAndMergeResources(int& argc, char** argv, Display* display){
         //  The XENVIRONMENT file overrides all of the above.
         XrmCombineFileDatabase (xenvfile, &_db, 1);
     }
-    //  Command-line resources override system and user defaults.
-    XrmDatabase cmdlineRdb_ = NULL;
-    XrmParseCommand (&cmdlineRdb_, options, NUM_OPTIONS, instanceName().c_str(),
-		    &argc, argv);
-    XrmCombineDatabase (cmdlineRdb_, &_db, 1);  //  Keeps cmdlineRdb_ around.
 //  =========== END X Resource lookup and merging ==========
 }
 
@@ -298,4 +272,12 @@ Bool Xrm::enumCB(XrmDatabase *, XrmBindingList bindings,
     rlist->push_back(res);
 
     return False;
+}
+
+void Xrm::putResource(const std::string &line) {
+    XrmPutLineResource(&_db, line.c_str());
+}
+
+void Xrm::putResource(const std::string &specifier, const std::string &val) {
+    XrmPutStringResource(&_db, specifier.c_str(), val.c_str());
 }
