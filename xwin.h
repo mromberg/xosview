@@ -65,7 +65,7 @@ public:
     //-----------------------------------------------
 
 protected:
-    void XWinInit(int argc, char* argv[]);
+    virtual void setEvents(void);
     void init(int argc, char *argv[], const std::string &pixmapFName="",
       const std::string &geomStr="", bool geomUnspecified=true);
 

@@ -42,24 +42,11 @@ XOSView::XOSView(void)
 
 void XOSView::scaffolding(int argc, char **argv) {
 
-    XWinInit (argc, argv);
-
-    setSleepTime();
-
-    loadResources(argc, argv); // General var init
-
-    setEvents();  //  set up the X events
-
-    checkOverallResources(); // see if legends are to be used
-
-    createMeters(); // add in the meters
-
     // determine the width and height of the window then create it
     // These *HAVE* to come before the resource checking
     // because checking resources alloc colors
     // And there is no display set in the graphics
     // until init() does it's thing.
-    figureSize();
     Xrm::opt geom = _xrm->getResource("geometry");
     init(argc, argv, getResourceOrUseDefault("pixmapName", ""),
       geom.second, !geom.first);
@@ -131,26 +118,6 @@ void XOSView::dolegends( void ){
         _meters[i]->dolegends(legend_);
         _meters[i]->dousedlegends(usedlabels_);
     }
-}
-
-void XOSView::checkOverallResources() {
-    //  Check various resource values.
-
-    //  Set 'off' value.  This is not necessarily a default value --
-    //    the value in the defaultXResourceString is the default value.
-    usedlabels_ = legend_ = caption_ = false;
-
-    // use captions
-    if ( isResourceTrue("captions") )
-        caption_ = 1;
-
-    // use labels
-    if ( isResourceTrue("labels") )
-        legend_ = 1;
-
-    // use "free" labels
-    if ( isResourceTrue("usedlabels") )
-        usedlabels_ = 1;
 }
 
 std::string XOSView::winname( void ){
@@ -289,8 +256,15 @@ void XOSView::loadConfiguration(int argc, char **argv) {
 void XOSView::run(int argc, char **argv){
 
     loadConfiguration(argc, argv);
+    setEvents();     //  set up the X events
+    setSleepTime();
+    loadResources(); // initialize from our resources
+    createMeters();  // add in the meters
+    figureSize();    // calculate our size now that we know the number of meters
 
     scaffolding(argc, argv);
+
+
 
     int counter = 0;
 
@@ -343,47 +317,6 @@ void XOSView::keyPressEvent( XKeyEvent &event ){
         done(true);
 }
 
-void XOSView::checkArgs (int argc, char** argv) const {
-    //  The XWin constructor call in the XOSView constructor above
-    //  modifies argc and argv, so by this
-    //  point, all XResource arguments should be removed.  Since we currently
-    //  don't have any other command-line arguments, perform a check here
-    //  to make sure we don't get any more.
-    if (argc == 1)
-        return;  //  No arguments besides X resources.
-
-    //  Skip to the first real argument.
-    argc--;
-    argv++;
-    while (argc > 0 && argv && *argv) {
-        switch (argv[0][1]) {
-        case 'n': //  Check for -name option that was already parsed
-                  //  and acted upon by main().
-            if (util::tolower(*argv) == "-name") {
-                argv++;	//  Skip arg to -name.
-                argc--;
-            }
-            break;
-#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
-        case 'N':
-            if (strlen(argv[0]) > 2)
-                SetKernelName(argv[0]+2);
-            else {
-                SetKernelName(argv[1]);
-                argc--;
-                argv++;
-            }
-            break;
-#endif
-            /*  Fall through to default/error case.  */
-        default:
-            logEvent << "Ignoring unknown option '" << argv[0] << "'.\n";
-            break;
-        }
-        argc--;
-        argv++;
-    }
-}
 
 void XOSView::exposeEvent( XExposeEvent &event ) {
     _isvisible = true;
@@ -451,7 +384,7 @@ void XOSView::setSleepTime(void) {
 #endif
 }
 
-void XOSView::loadResources(int argc, char **argv) {
+void XOSView::loadResources(void) {
     hmargin_  = util::stoi(getResource("horizontalMargin"));
     vmargin_  = util::stoi(getResource("verticalMargin"));
     vspacing_ = util::stoi(getResource("verticalSpacing"));
@@ -459,7 +392,12 @@ void XOSView::loadResources(int argc, char **argv) {
     vmargin_  = std::max(0, vmargin_);
     vspacing_ = std::max(0, vspacing_);
 
-    checkArgs (argc, argv);  //  Check for any other unhandled args.
+#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
+    opt kname = _xrm->getResource("kernelName");
+    if (opt.first)
+        SetKernelName(opt.second.c_str());
+#endif
+
     xoff_ = hmargin_;
     yoff_ = 0;
     appName("xosview");
@@ -467,9 +405,27 @@ void XOSView::loadResources(int argc, char **argv) {
     _ispartiallyvisible = false;
     expose_flag_ = true;
     exposed_once_flag_ = false;
+
+    //  Set 'off' value.  This is not necessarily a default value --
+    //    the value in the defaultXResourceString is the default value.
+    usedlabels_ = legend_ = caption_ = false;
+
+    // use captions
+    if ( isResourceTrue("captions") )
+        caption_ = 1;
+
+    // use labels
+    if ( isResourceTrue("labels") )
+        legend_ = 1;
+
+    // use "free" labels
+    if ( isResourceTrue("usedlabels") )
+        usedlabels_ = 1;
 }
 
 void XOSView::setEvents(void) {
+    XWin::setEvents();
+
     addEvent( new Event( this, ConfigureNotify,
         (EventCallBack)&XOSView::resizeEvent ) );
     addEvent( new Event( this, Expose,
@@ -569,4 +525,14 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
     o.add("xrmdump",
       "-xrmd", "--xrm-dump",
       "Dump the X resouces seen by xosview to stdout and exit.");
+
+    // Near as I can tell this was pretty undocumented.  I only found it
+    // mentioned in passing in the README.netbsd file.  There was
+    // code in here for it.  So, I'll attempt to keep the functionality.
+    // The actual command line syntax may be different.  UNTESTED.
+#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
+    o.add("kernelName",
+      "-N", "--kernel-name", "name",
+      "Sets the kernel name for BSD variants.");
+#endif
 }

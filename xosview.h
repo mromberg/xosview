@@ -69,18 +69,16 @@ protected:
     virtual std::string className(void) { return _xrm->className(); }
     virtual std::string instanceName(void) { return _xrm->instanceName(); }
     void resize(void);
-    void checkArgs(int argc, char** argv) const;
     void usleep_via_select(unsigned long usec);
     void checkMeterResources(void);
     void figureSize(void);
     int findx(XOSVFont &font);
     int findy(XOSVFont &font);
     void setSleepTime(void);
-    void loadResources(int argc, char **argv);
-    void setEvents(void);
+    void loadResources(void);
+    virtual void setEvents(void);
     void createMeters(void);
     void dolegends(void);
-    void checkOverallResources(void);
     void resizeEvent(XEvent &event);
     void exposeEvent(XExposeEvent &event);
     void keyPressEvent(XKeyEvent &event);

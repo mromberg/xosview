@@ -27,22 +27,12 @@ XWin::XWin() : _graphics(0), events_(0), done_(false),
                colormap_(0) {
 }
 
-void XWin::XWinInit(int argc, char** argv) {
-    (void) argc;
-    (void) argv;  //  Avoid gcc warnings about unused variables.
-    //  Eventually, we may want to have XWin handle some arguments other
-    //  than resources, so argc and argv are left as parameters.  BCG
-
-    width_ = height_ = x_ = y_ = 0;
-    done_ = false;
-
+void XWin::setEvents(void) {
     // Set up the default Events
     events_ = NULL;
     addEvent( new Event( this, ConfigureNotify, &XWin::configureEvent ) );
     addEvent( new Event( this, ClientMessage, &XWin::deleteEvent ) );
     addEvent( new Event( this, MappingNotify, &XWin::mappingNotify ) );
-
-    //openDisplay();  //  Done explicitly in xosview.cc.
 }
 
 XWin::~XWin( void ){
