@@ -24,22 +24,11 @@ extern char *defaultXResourceString;
 
 bool Xrm::_initialized = false;
 
-Xrm::Xrm(const std::string &instanceName, int argc, char **argv){
-    logFatal << " Error:  This constructor is not supported yet." << std::endl;
-    _db = NULL;
-    _class = _instance = NULLQUARK;
-    getDisplayName(argc, argv);
 
-    (void) instanceName;
-    //  End unsupported constructor.  !!!!!!!! BCG
-}
+Xrm::Xrm(const std::string &className, const std::string &instanceName)
+    : _db(0), _class(NULLQUARK), _instance(NULLQUARK) {
 
-Xrm::Xrm(const std::string &className, const std::string &instanceName){
     XrmInitialize ();
-
-    //  Initialize everything to NULL.
-    _db = NULL;
-    _class = _instance = NULLQUARK;
 
     // init the _instance and _class Quarks
     _instance = XrmStringToQuark(instanceName.c_str());

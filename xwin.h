@@ -22,9 +22,13 @@ public:
     virtual ~XWin(void);
 
     int x(void) const { return x_; }
+    void x(int val) { x_ = val; }
     int y(void) const { return y_; }
+    void y(int val) { y_ = val; }
     unsigned int width(void) const { return width_; }
+    void width(unsigned int val) { width_ = val; }
     unsigned int height(void) const { return height_; }
+    void height(unsigned int val) { height_ = val; }
 
     // These return the configured color.  Not the current color.
     unsigned long foreground(void) { return fgcolor_; }
@@ -65,27 +69,15 @@ protected:
     void init(int argc, char *argv[], const std::string &pixmapFName="",
       const std::string &geomStr="", bool geomUnspecified=true);
 
-    virtual std::string className(void) {
-        logProblem << "className() not overridden using killroy...\n";
-        return "killroy";
-    }
-    virtual std::string instanceName(void) {
-        logProblem << "instanceName() not overridden using killroy...\n";
-        return "killroy";
-    }
+    virtual std::string className(void);
+    virtual std::string instanceName(void);
 
-    void getGeometry(const std::string &geomStr, bool geomUnspecified);
     bool getPixmap(Pixmap *, const std::string &pixmapFName);
-    void x(int val) { x_ = val; }
-    void y(int val) { y_ = val; }
-    void width(unsigned int val) { width_ = val; }
-    void height(unsigned int val) { height_ = val; }
     void setDisplayName(const std::string &new_display_name)
         { display_name_ = new_display_name; }
     const std::string &displayName(void) const { return display_name_; }
     void setColors(void);
     void openDisplay(void);
-    void setHints(int argc, char *argv[]);
     Colormap colormap(void) { return colormap_; }
     int screen(void) { return DefaultScreen( display_ ); }
     void appName(const std::string &name) { name_ = name; }
@@ -128,25 +120,22 @@ protected:
     //-----------------------------------
 
 private:
-    X11Graphics *_graphics;            //  New graphics interface
-
-    XWindowAttributes attr_;      //  Attributes of the window
-    XSizeHints    *sizehints_;    //  Size hints for window manager
+    X11Graphics *_graphics;       //  New graphics interface
     Event         *events_;       //  List of Events for this window
-    bool           done_;          //  If true the application is finished.
+    bool           done_;         //  If true the application is finished.
     Atom          wm_, wmdelete_; //  Used to handle delete Events
-    std::string	display_name_;  //  Display name string.
+    std::string	display_name_;    //  Display name string.
     int x_, y_;                   //  position of the window
     unsigned int width_, height_; //  width and height of the window
     Display       *display_;      //  Connection to X display
     Window        window_;        //  Application's main window
     std::string   name_;          //  Application's name
-    XTextProperty title_;         //  Window name for title bar
-    XTextProperty iconname_;      //  Icon name for icon label
-private:
     unsigned long fgcolor_;       //  Foreground color of the window
     unsigned long bgcolor_;       //  Background color of the window
     Colormap      colormap_;      //  The colormap
+
+    XSizeHints *getGeometry(const std::string &geomStr, bool geomUnspecified);
+    void setHints(int argc, char *argv[], XSizeHints *szHints);
 };
 
 #endif

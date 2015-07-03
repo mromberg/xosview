@@ -21,10 +21,10 @@
 static std::ostream &operator<<(std::ostream &os, const XEvent &e);
 
 
-//-----------------------------------------------------------------------------
-//  argc is a reference, so that the changes to argc by XrmParseCommand are
-//  noticed by the caller (XOSView, in this case).  BCG
-XWin::XWin() : _graphics(0) {
+XWin::XWin() : _graphics(0), events_(0), done_(false),
+               wm_(None), wmdelete_(None), x_(0), y_(0), width_(1), height_(1),
+               display_(0), window_(0), fgcolor_(0), bgcolor_(0),
+               colormap_(0) {
 }
 
 void XWin::XWinInit(int argc, char** argv) {
@@ -58,9 +58,6 @@ XWin::~XWin( void ){
         event = save;
     }
 
-    XFree( title_.value );
-    XFree( iconname_.value );
-    XFree( sizehints_ );
     XDestroyWindow( display_, window_ );
     // close the connection to the display
     XCloseDisplay( display_ );
@@ -73,15 +70,17 @@ void XWin::init(int argc, char **argv, const std::string &pixmapFName,
 
     std::string fontName = getResource("font");
     setColors();
-    getGeometry(geomStr, geomUnspecified);
+    XSizeHints *szHints = getGeometry(geomStr, geomUnspecified);
 
     window_ = XCreateSimpleWindow(display_, DefaultRootWindow(display_),
-      sizehints_->x, sizehints_->y,
-      sizehints_->width, sizehints_->height,
+      szHints->x, szHints->y,
+      szHints->width, szHints->height,
       1,
       fgcolor_, bgcolor_);
 
-    setHints( argc, argv );
+    setHints( argc, argv, szHints );
+    XFree(szHints);
+    szHints = 0;
 
     // Set main window's attributes (colormap, bit_gravity)
     xswa.colormap = colormap_;
@@ -123,12 +122,9 @@ void XWin::init(int argc, char **argv, const std::string &pixmapFName,
     // Map the main window
     map();
     g().flush();
-    if(XGetWindowAttributes(display_, window_, &attr_) == 0){
-        logFatal << "Error getting attributes of Main." << std::endl;
-    }
 }
 
-void XWin::setHints(int argc, char *argv[]){
+void XWin::setHints(int argc, char *argv[], XSizeHints *szHints){
     // Set up class hint
     XClassHint    *classhints;   //  Class hint for window manager
     if((classhints = XAllocClassHint()) == NULL){
@@ -151,15 +147,19 @@ void XWin::setHints(int argc, char *argv[]){
 
     // Set up XTextProperty for window name and icon name
     char *np = const_cast<char *>(name_.c_str());
-    if(XStringListToTextProperty(&np, 1, &title_) == 0){
+    XTextProperty titlep;
+    if(XStringListToTextProperty(&np, 1, &titlep) == 0){
         logFatal << "Error creating XTextProperty!" << std::endl;
     }
-    if(XStringListToTextProperty(&np, 1, &iconname_) == 0){
+    XTextProperty iconnamep;
+    if(XStringListToTextProperty(&np, 1, &iconnamep) == 0){
         logFatal << "Error creating XTextProperty!" << std::endl;
     }
 
-    XSetWMProperties(display_, window_, &title_, &iconname_, argv, argc,
-      sizehints_, wmhints, classhints);
+    XSetWMProperties(display_, window_, &titlep, &iconnamep, argv, argc,
+      szHints, wmhints, classhints);
+    XFree( titlep.value );
+    XFree( iconnamep.value );
 
     // Set up the Atoms for delete messages
     wm_ = XInternAtom( display(), "WM_PROTOCOLS", False );
@@ -228,26 +228,27 @@ bool XWin::getPixmap(Pixmap *pixmap, const std::string &pixmapFName) {
 }
 #endif
 
-void XWin::getGeometry(const std::string &geomStr, bool geomUnspecified) {
+XSizeHints *XWin::getGeometry(const std::string &geomStr, bool geomUnspecified){
     int                  bitmask;
 
     // Fill out a XsizeHints structure to inform the window manager
     // of desired size and location of main window.
-    if((sizehints_ = XAllocSizeHints()) == NULL){
+    XSizeHints *szHints = 0;
+    if((szHints = XAllocSizeHints()) == NULL){
         logFatal << "Error allocating size hints!" << std::endl;
     }
-    sizehints_->flags = PSize;
-    sizehints_->height = height_;
-    sizehints_->min_height = sizehints_->height;
-    sizehints_->width = width_;
-    sizehints_->min_width = sizehints_->width;
-    sizehints_->x = x_;
-    sizehints_->y = y_;
+    szHints->flags = PSize;
+    szHints->height = height_;
+    szHints->min_height = szHints->height;
+    szHints->width = width_;
+    szHints->min_width = szHints->width;
+    szHints->x = x_;
+    szHints->y = y_;
 
     // Construct a default geometry string
     std::ostringstream defgs;
-    defgs << sizehints_->width << "x" << sizehints_->height << "+"
-          << sizehints_->x << "+" << sizehints_->y;
+    defgs << szHints->width << "x" << szHints->height << "+"
+          << szHints->x << "+" << szHints->y;
 
     // Process the geometry specification
     const char *gptr = NULL;
@@ -256,21 +257,23 @@ void XWin::getGeometry(const std::string &geomStr, bool geomUnspecified) {
     bitmask =  XGeometry(display_, DefaultScreen(display_), gptr,
       defgs.str().c_str(),
       0,
-      1, 1, 0, 0, &(sizehints_->x), &(sizehints_->y),
-      &(sizehints_->width), &(sizehints_->height));
+      1, 1, 0, 0, &(szHints->x), &(szHints->y),
+      &(szHints->width), &(szHints->height));
 
     // Check bitmask and set flags in XSizeHints structure
     if (bitmask & (WidthValue | HeightValue)){
-        sizehints_->flags |= PPosition;
-        width_ = sizehints_->width;
-        height_ = sizehints_->height;
+        szHints->flags |= PPosition;
+        width_ = szHints->width;
+        height_ = szHints->height;
     }
 
     if (bitmask & (XValue | YValue)){
-        sizehints_->flags |= USPosition;
-        x_ = sizehints_->x;
-        y_ = sizehints_->y;
+        szHints->flags |= USPosition;
+        x_ = szHints->x;
+        y_ = szHints->y;
     }
+
+    return szHints;
 }
 
 void XWin::selectEvents( long mask ){
@@ -579,4 +582,14 @@ static std::ostream &operator<<(std::ostream &os, const XEvent &e) {
     };
 
     return os;
+}
+
+std::string XWin::className(void) {
+    logProblem << "className() not overridden using killroy...\n";
+    return "killroy";
+}
+
+std::string XWin::instanceName(void) {
+    logProblem << "instanceName() not overridden using killroy...\n";
+    return "killroy";
 }

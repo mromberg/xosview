@@ -15,7 +15,6 @@
 class Xrm {
 public:
     Xrm(const std::string &className, const std::string &instanceName);
-    Xrm(const std::string &instanceName, int argc, char **argv);
     ~Xrm();
 
     std::string className(void) const
