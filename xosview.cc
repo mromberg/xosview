@@ -28,24 +28,33 @@ static const char NAME[] = "xosview@";
 
 double XOSView::MAX_SAMPLES_PER_SECOND = 10;
 
+//
+XOSView::XOSView(void)
+    : XWin(), _xrm(0),
+      caption_(false), legend_(false), usedlabels_(false),
+      xoff_(0), yoff_(0),
+      hmargin_(0), vmargin_(0), vspacing_(0),
+      sleeptime_(1), usleeptime_(1000),
+      expose_flag_(false), exposed_once_flag_(false),
+      _isvisible(false), _ispartiallyvisible(false) {
+}
 
-XOSView::XOSView(int argc, char *argv[])
-    : XWin(), xrm(Xrm("xosview", iname(argc, argv))),
-      expose_flag_(false), exposed_once_flag_(false) {
+void XOSView::scaffolding(int argc, char **argv) {
+    _xrm = new Xrm("xosview", iname(argc, argv));
 
     // Check for version arguments first.  This allows
     // them to work without the need for a connection
     // to the X server
     checkVersion(argc, argv);
 
-    setDisplayName(xrm.getDisplayName(argc, argv));
+    setDisplayName(_xrm->getDisplayName(argc, argv));
 
     openDisplay();  //  So that the Xrm class can contact the display for its
                     //  default values.
 
     //  The resources need to be initialized before calling XWinInit, because
     //  XWinInit looks at the geometry resource for its geometry.  BCG
-    xrm.loadAndMergeResources(argc, argv, display());
+    _xrm->loadAndMergeResources(argc, argv, display());
     XWinInit (argc, argv);
 
     setSleepTime();
@@ -64,7 +73,7 @@ XOSView::XOSView(int argc, char *argv[])
     // And there is no display set in the graphics
     // until init() does it's thing.
     figureSize();
-    Xrm::opt geom = xrm.getResource("geometry");
+    Xrm::opt geom = _xrm->getResource("geometry");
     init(argc, argv, getResourceOrUseDefault("pixmapName", ""),
       geom.second, !geom.first);
 
@@ -151,7 +160,7 @@ void XOSView::checkOverallResources() {
 
     //  Set 'off' value.  This is not necessarily a default value --
     //    the value in the defaultXResourceString is the default value.
-    usedlabels_ = legend_ = caption_ = 0;
+    usedlabels_ = legend_ = caption_ = false;
 
     // use captions
     if ( isResourceTrue("captions") )
@@ -207,6 +216,7 @@ XOSView::~XOSView( void ){
     for (size_t i = 0 ; i < _meters.size() ; i++)
         delete _meters[i];
     _meters.resize(0);
+    delete _xrm;
 }
 
 void XOSView::reallydraw( void ){
@@ -233,7 +243,9 @@ void XOSView::draw ( void ) {
     }
 }
 
-void XOSView::run( void ){
+void XOSView::run(int argc, char **argv){
+    scaffolding(argc, argv);
+
     int counter = 0;
 
     while( !done() ){
@@ -448,7 +460,7 @@ void XOSView::createMeters(void) {
 }
 
 bool XOSView::isResourceTrue( const std::string &name ) {
-    Xrm::opt val = xrm.getResource(name);
+    Xrm::opt val = _xrm->getResource(name);
     if (!val.first)
         return false;
 
@@ -458,7 +470,7 @@ bool XOSView::isResourceTrue( const std::string &name ) {
 std::string XOSView::getResourceOrUseDefault( const std::string &name,
   const std::string &defaultVal ){
 
-    Xrm::opt retval = xrm.getResource (name);
+    Xrm::opt retval = _xrm->getResource (name);
     if (retval.first)
         return retval.second;
 
@@ -466,7 +478,7 @@ std::string XOSView::getResourceOrUseDefault( const std::string &name,
 }
 
 std::string XOSView::getResource( const std::string &name ){
-    Xrm::opt retval = xrm.getResource (name);
+    Xrm::opt retval = _xrm->getResource (name);
     if (retval.first)
         return retval.second;
     else {
@@ -478,5 +490,5 @@ std::string XOSView::getResource( const std::string &name ){
 }
 
 void XOSView::dumpResources( std::ostream &os ){
-    xrm.dump(os);
+    _xrm->dump(os);
 }

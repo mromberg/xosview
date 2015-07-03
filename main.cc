@@ -9,9 +9,9 @@
 
 int main(int argc, char **argv) {
 
-    XOSView xosview(argc, argv);
+    XOSView xosview;
 
-    xosview.run();
+    xosview.run(argc, argv);
 
     return 0;
 }

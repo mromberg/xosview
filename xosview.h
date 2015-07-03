@@ -21,21 +21,14 @@ class XOSVFont;
 
 class XOSView : public XWin {
 public:
-    XOSView(int argc, char *argv[]);
-    ~XOSView(void);
+    XOSView(void);
+    virtual ~XOSView(void);
 
-    void run(void);
+    void run(int argc, char **argv);
+    void scaffolding(int argc, char **argv);
 
     static double maxSampRate(void); // Samples/sec max
     std::string winname(void);
-
-protected:
-    // individual meters were calling these causing flashing
-    // only allow direct sub classes (which should prolly not
-    // call these either).
-    void reallydraw(void);
-    void draw(void);
-public:
 
     // used by meter makers
     int xoff(void) const { return xoff_; }
@@ -57,8 +50,9 @@ public:
     //------------------------------------------------------
 
 protected:
-    Xrm xrm;
-    int caption_, legend_, xoff_, yoff_, usedlabels_;
+    Xrm *_xrm;
+    bool caption_, legend_, usedlabels_;
+    int xoff_, yoff_;
     int hmargin_, vmargin_, vspacing_;
     unsigned long sleeptime_, usleeptime_;
     bool expose_flag_, exposed_once_flag_;
@@ -66,8 +60,11 @@ protected:
     bool _ispartiallyvisible;
     std::vector<Meter *> _meters;
 
-    virtual std::string className(void) { return xrm.className(); }
-    virtual std::string instanceName(void) { return xrm.instanceName(); }
+
+    void reallydraw(void);
+    void draw(void);
+    virtual std::string className(void) { return _xrm->className(); }
+    virtual std::string instanceName(void) { return _xrm->instanceName(); }
     void resize(void);
     void checkArgs(int argc, char** argv) const;
     void usleep_via_select(unsigned long usec);
@@ -88,11 +85,11 @@ protected:
     void visibilityEvent(XVisibilityEvent &event);
     void unmapEvent(XUnmapEvent &event);
 
-    static std::string iname(int argc, char **argv);
-
 private:
     //  Take at most n samples per second (default of 10)
     static double MAX_SAMPLES_PER_SECOND;
+
+    static std::string iname(int argc, char **argv);
 };
 
 #endif
