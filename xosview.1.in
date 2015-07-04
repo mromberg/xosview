@@ -203,139 +203,70 @@ an abbreviation for all three of the free BSD operating systems
 
 .SH OPTIONS
 
-Most of these command line options are just a convenient way to set one or
-more of xosview's resources.  Please see the \fBRESOURCES\fP section for
-more details on what the resource is for.
+Almost all of these command line options are just a convenient way to set one or
+more of xosview's resources.  All resouces set on the command line will override
+those specified anywhere else.  Please see the \fBRESOURCES\fP section for
+more details on what the resource is for and for the overall scheme of how
+resource values are found.
 
--v
+--help, -h
 .RS
-Displays the version number.
+Displays usage information to stdout and exits.
 .RE
 
--name \fIname\fP
+--version, -v
 .RS
-Sets the Resource name xosview will use (same as the -name option
-for typical X applications like xterm).  When performing resource
-lookups, xosview will look under \fIname\fP, and then under
-``xosview''.  For an example, perform the following (as
-documented in README.netbsd):
-.RS
-  xrdb -merge Xdefaults.stipple
-  xosview -name xosvstipple &
-  xosview -name xosvstipplebw &
+Displays the version information and exits.
 .RE
 
-.RE
-
--display \fIdisplay\fP
+--display, -display \fIname\fP
 .RS
-Sets the X display to \fIdisplay\fP.  This option overrides the
-xosview*display resource.
+Sets the X display to \fIname\fP.
 .RE
 
--font \fIfont\fP
-.RS
-Specifies the font xosview will use for labels.  This option overrides the
-xosview*font resource.
-.RE
-
--title \fItitle\fP
+--title, -title \fIname\fP
 .RS
 This option sets the name xosview will tell the window manager to use for
 the X window and icon.  This option overrides the xosview*title resource.
 .RE
 
--geometry \fIgeometry_string\fP
+-geometry, -g \fIgeometry\fP
 .RS
 Sets the X geometry to \fIgeometry_string\fP.  This option overrides the
 xosview*geometry resource.
 .RE
 
-.\"  Handle -/+captions
-.pm captions
-
-.\"  Handle -/+labels
-.pm labels
-
--usedlabels
+--foreground, -fg \fIcolor\fP
 .RS
-This option overrides the xosview*usedlabels resource.  It is equivalent to
-setting xosview*usedlabels to "False".
+The \fIcolor\fP to use for the foreground.
 .RE
 
-+usedlabels
+--background, -bg \fIcolor\fP
 .RS
-This option overrides the xosview*usedlabels resource.  It is equivalent to
-setting xosview*usedlabels to "True".
+The \fIcolor\fP to use for the background.
 .RE
 
-.\"  Handle -/+cpu
-.pm cpu
-
-.\"  Handle -/+load
-.pm load
-
-.\"  Handle -/+mem
-.pm mem
-
-.\"  Handle -/+swap
-.pm swap
-
-.\"  Handle -/+battery
-.pm battery
-
-.\"  Handle -/+gfx
-.pm gfx
-
-.\"  Handle -/+net
-.pm net
-
--network \fImaxbandwidth\fP
-.RE
--networkBW \fImaxbandwidth\fP
-.RE
--networkBandwidth \fImaxbandwidth\fP
+-font, -fn \fIfontName\fP
 .RS
-These options override the xosview*netBandwidth resource.  They cause
-xosview to display a meter that will shows network usage, with a maximum
-bandwidth of \fBmaxbandwidth\fP.  Notice that setting the bandwidth to
-0 no longer disables the meter -- use the ``-net'' option instead.
+Specifies the \fIfontName\fP xosview will use for labels.  This option
+overrides the xosview*font resource.  Not all fonts currently work well
+with xosview.  For more details see the \fBRESOURCES\fP section.
 .RE
 
-.\"  Handle -/+page
-.pm page
-
--pagespeed \fIval\fP
+--iconic, -iconic
 .RS
-This option overrides the xosview*pageBandWidth resource.  The resource
-xosview*pageBandWidth will be set to \fIval\fP.
+Request to start in an iconic state.
 .RE
 
-.\"  Handle -/+disk
-.pm disk
-
-.\"  Handle -/+ int
-.pm int
-
--ints +ints
-.RE
--interrupts +interrupts
+--name, -name \fIname\fP
 .RS
-Equivalent to -int and +int.
+Sets the Resource name xosview will use (same as the -name option
+for typical X applications like xterm).  When performing resource
+lookups, xosview will look under \fIname\fP, and then under
+``xosview''.
 .RE
 
-.pm irqrate
-
--intrate +intrate
-.RS
-Equivalent to -irqrate and +irqrate.
-.RE
-
-.\"  Handle -/+lmstemp
-.pm lmstemp
-.RE
-
--xrm \fIresource_string\fP
+-xrm, -x \fIspec\fP
 .RS
 This switch allows any of xosview's resources to be set on the command line.
 An example of how the xosview*memFreeColor could be set using this option is
@@ -346,6 +277,21 @@ and \'purple\'):
 -xrm "xosview*memFreeColor: purple"
 .RE
 .RE
+
+--config, -c \fIfileName\fP
+.RS
+Load an XResource file containing overrides.  This file will be overrides
+(not replace) any previous resources.  See the \fBRESOURCES\fP section for more
+details.
+.RE
+
+--xrm-dump, -xrmd
+.RS
+Dump the X resouces seen by xosview to stdout and exit.  This will show a
+final list of all resources seen after loading and merging is finished.
+.RE
+
+
 
 .SH X RESOURCES
 
@@ -360,6 +306,34 @@ xosview that does not support the feature the resource configures.  Xosview
 will simply ignore the resources that are set for it but not supported on
 a given platform.
 
+The resouces used by xosview are located and loaded in the following order.
+Each layer overrides the previous.  And, of course, the best match is used.
+For example ".xosview*font" overrides the more generic "*font".
+
+.RS
+.nr step 1 1
+From first loaded/searched to last:
+.IP \n[step] 3
+An embeded copy of Xdefaults used to build xosview.  So, xosview always has
+a default and complete set of resources even if all other options fail.
+.IP \n+[step]
+Standard X11 search paths and mechanics (XAPPLRESDIR, .Xdefault, xmodmap, etc).  For full details see the X documentation.
+.IP \n+[step]
+xosview will read your .Xdefaults even if your desktop "thing"/environment
+did not.
+.IP \n+[step]
+Resource files specified by the -c, --config command line arguments
+.IP \n+[step]
+Resources set by using the -xrm command line argument(s).
+.IP \n+[step]
+Command line options (such as -display) that set resources.
+.RE
+
+  Note that since xosview always starts off with a complete set of resources
+it needs then you only need specify those options you would like to change from
+their default values.  For example your .Xdefaults file could simply contain
+the line "xosview*background: blue" if all you wish is an "stock" xosview
+with a blue background.
 
 \fBGeneral Resources\fP
 

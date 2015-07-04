@@ -135,6 +135,8 @@ void XWin::setHints(XSizeHints *szHints){
     wmhints->flags = (InputHint|StateHint);
     wmhints->input = True;
     wmhints->initial_state = NormalState;
+    if (isResourceTrue("iconic"))
+        wmhints->initial_state = IconicState;
 
     // Set up XTextProperty for window name and icon name
     char *np = const_cast<char *>(name_.c_str());

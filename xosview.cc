@@ -200,6 +200,11 @@ void XOSView::loadConfiguration(int argc, char **argv) {
     openDisplay();
     _xrm->loadResources(display());
 
+    // Now load any resouce files specified on the command line
+    const std::vector<std::string> &cfiles = clopts.values("configFile");
+    for (size_t i = 0 ; i < cfiles.size() ; i++)
+        _xrm->loadResources(cfiles[i]);
+
     // load all of the command line options into the
     // resouce database.  First the ones speced by -xrm
     const std::vector<std::string> &xrml = clopts.values("xrm");
@@ -498,11 +503,8 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
       "-v", "--version",
       "Display version information and exit.");
 
-    // General X resouces
+    // General "common" X resouces
     //-----------------------------------------
-    o.add("name",
-      "-name", "--name", "name",
-      "The X resource instance name to use.");
     o.add("displayName",
       "-display", "--display", "name",
       "The name of the X display to connect to.");
@@ -510,16 +512,44 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
       "-title", "--title", "title",
       "The title to use.");
     o.add("geometry",
-      "-g", "--geometry", "geometry",
+      "-g", "-geometry", "geometry",
       "The X geometry string to use.");
+    o.add("foreground",
+      "-fg", "--foreground", "color",
+      "The color to use for the foreground.");
+    o.add("background",
+      "-bg", "--background", "color",
+      "The color to use for the background.");
+    o.add("font",
+      "-fn", "-font", "fontName",
+      "The name of the font to use.");
+    o.add("iconic",
+      "-iconic", "--iconic",
+      "Request to start in an iconic state.");
+    o.add("name",
+      "-name", "--name", "name",
+      "The X resource instance name to use.");
     o.add("xrm",
       "-x", "-xrm",
       "spec",
       "Set an X resource using the supplied spec.  For example: "
       "-x '*background: red' would set the background to red.");
+
+    // Xosview specific options
+    //----------------------------------------------------
+    o.add("configFile",
+      "-c", "--config", "fileName",
+      "Load an XResource file containing overrides.");
     o.add("xrmdump",
       "-xrmd", "--xrm-dump",
       "Dump the X resouces seen by xosview to stdout and exit.");
+
+    //-----------------------------------------------------
+    // No other options that override X resources are needed
+    // as they can be easily done with one or more of the
+    // methods above.  We don't need to support as many options
+    // as the UNIX ls command.
+    //-----------------------------------------------------
 
     // Near as I can tell this was pretty undocumented.  I only found it
     // mentioned in passing in the README.netbsd file.  There was
