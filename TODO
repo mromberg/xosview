@@ -1,3 +1,5 @@
+- Explore the alpha rendering strageness of xft text over pixmap background
+
 - Make a couple of example Xdefaults themes/background pixmaps
 
 - xosview*background seems to not work from Xdefaults

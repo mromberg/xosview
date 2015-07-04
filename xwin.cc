@@ -149,9 +149,10 @@ void XWin::setHints(XSizeHints *szHints){
 
     // First make a "fake" argument list
     std::vector<std::string> clst = util::split(getResource("command"), " ");
-    char **fargv = new char*[clst.size()];
+    char **fargv = new char*[clst.size()+1];
     for (size_t i = 0 ; i < clst.size() ; i++)
         fargv[i] = const_cast<char *>(clst[i].c_str()); // we'll be careful...
+    fargv[clst.size()] = 0; // just in cat argc is ignored
 
     XSetWMProperties(display_, window_, &titlep, &iconnamep, fargv, clst.size(),
       szHints, wmhints, classhints);
