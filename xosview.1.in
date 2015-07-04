@@ -402,7 +402,11 @@ The width of the border for the xosview window.
 
 xosview*font: \fIfont\fP
 .RS
-This is the font that xosview will use.
+This is the font that xosview will use.  Currently the xosview text
+rendering code assumes that a mono spaced (fixed width) font.  So,
+things will most likely look poor with a non mono spaced font.  If the
+build system supports Xft then xosview will switch to using freetype2 fonts.
+Otherwise core X11 fonts are used.
 .RE
 
 xosview*background: \fIcolor\fP
