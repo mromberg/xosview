@@ -30,7 +30,7 @@ public:
     opt getResource(const std::string &rname) const;
     void putResource(const std::string &line);
     void putResource(const std::string &specifier, const std::string &val);
-    void loadResources(const std::string &fname);
+    bool loadResources(const std::string &fname);
     void loadResources(Display* display);
 
     std::ostream &dump(std::ostream &os) const;

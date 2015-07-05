@@ -282,6 +282,6 @@ void Xrm::putResource(const std::string &specifier, const std::string &val) {
     XrmPutStringResource(&_db, specifier.c_str(), val.c_str());
 }
 
-void Xrm::loadResources(const std::string &fname) {
-    XrmCombineFileDatabase(fname.c_str(), &_db, 1);
+bool Xrm::loadResources(const std::string &fname) {
+    return XrmCombineFileDatabase(fname.c_str(), &_db, 1);
 }

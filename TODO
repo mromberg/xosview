@@ -2,8 +2,6 @@
 
 - Make a couple of example Xdefaults themes/background pixmaps
 
-- xosview*background seems to not work from Xdefaults
-
 - Make list of tested meters for CHANGELOG
 
 - fix graph meter copy (off by one pixel in y)
@@ -17,8 +15,6 @@
   like drawfields() drawlegend() etc only if the values have not changed.
   This way the leaf classes just gather stats and report back.  But don't
   worry about display.
-
-- If XOSVDEBUG is set have Xrm use ONLY resources from Xdefaults (in tree)
 
 - Make a README.devel for developers
 

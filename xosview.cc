@@ -203,7 +203,11 @@ void XOSView::loadConfiguration(int argc, char **argv) {
     // Now load any resouce files specified on the command line
     const std::vector<std::string> &cfiles = clopts.values("configFile");
     for (size_t i = 0 ; i < cfiles.size() ; i++)
-        _xrm->loadResources(cfiles[i]);
+        if (!_xrm->loadResources(cfiles[i])) {
+            logProblem << "Could not read file: " << cfiles[i]
+                       << std::endl;
+        }
+
 
     // load all of the command line options into the
     // resouce database.  First the ones speced by -xrm

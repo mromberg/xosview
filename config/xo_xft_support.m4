@@ -2,8 +2,8 @@
 # Check for libXft
 #
 AC_DEFUN([XO_XFT_SUPPORT],[dnl
-    AC_ARG_WITH([freetype2],[AS_HELP_STRING([--with-freetype2=],
-              [path to freetype2 headers])],[dnl
+    AC_ARG_WITH([freetype2],[AS_HELP_STRING([--with-freetype2=DIR],
+              [path to freetype2 headers [/usr/include/freetype2]])],[dnl
     freetype2_inc="$with_freetype2"],[freetype2_inc="/usr/include/freetype2"])
     XFT_OBJS=""
     XOSV_FONT="7x13bold"

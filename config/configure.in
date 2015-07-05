@@ -43,9 +43,17 @@ if test -n "$x_libraries"; then
     XO_CONCAT(XLIBS,"-L$x_libraries",$XLIBS)
 fi
 
-AC_PROG_INSTALL
+xapploaddir="\${datarootdir}/X11/app-defaults"
+AC_ARG_WITH([app-defaults],
+            [AS_HELP_STRING([--with-app-defaults=DIR],dnl
+                [X resource directory [DATAROOTDIR/X11/app-defaults]])],
+            [xapploaddir="$with_app_defaults"])
+
+
+
 AC_PROG_AWK
 AC_PROG_RANLIB
+AC_PROG_INSTALL
 
 #------------------------------------------------
 # Enable features
@@ -159,6 +167,7 @@ AC_SUBST(INSTALL_ARGS)
 AC_SUBST(LVERSION)
 AC_SUBST(USE_MOD_VERSIONS)
 AC_SUBST(host_dir)
+AC_SUBST(xapploaddir)
 AC_SUBST(NetMeter_Default_Setting)
 AC_SUBST(XINCS)
 AC_SUBST(XLIBS)
