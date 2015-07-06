@@ -69,7 +69,7 @@ void FieldMeterGraph::drawfields(X11Graphics &g, bool manditory) {
     x_ = oldx; y_ = oldy;
 
     // and finally copy the pixmap into the window
-    _pmap->copyTo(parent_->g(), 0, 0, width_, height_, x_, y_);
+    _pmap->copyTo(parent_->g(), 0, 0, width_, height_, x_ + 1, y_ + 1);
 
     if (dousedlegends())
     	drawused(g, manditory);

@@ -4,8 +4,6 @@
 
 - Make list of tested meters for CHANGELOG
 
-- fix graph meter copy (off by one pixel in y)
-
 - Add -D_GLIBCXX_DEBUG to enable-debug (available with GCC 3.4.0 and later)
 
 - Make the linux netmeter support individual interfaces.  Possibly even
