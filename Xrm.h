@@ -43,10 +43,10 @@ private:
     static Bool enumCB(XrmDatabase *, XrmBindingList bindings,
       XrmQuarkList quarks, XrmRepresentation *type,
       XrmValue *value, XPointer closure);
-    void initClassName(const std::string &className);
+    void initQuarks(const std::string &className,
+      const std::string &instanceName);
+    void initialize(void);
     static std::string fixValue(const std::string &val);
-
-    static bool _initialized;
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Xrm &xrm){

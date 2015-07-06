@@ -11,6 +11,18 @@ namespace util {
 
 const char *WHITE_SPACE = " \f\n\r\t\v";
 
+std::string join(const std::vector<std::string> &v,
+  const std::string &sep) {
+    std::string rval;
+    for (size_t i = 0 ; i < v.size() ; i ++) {
+        rval += v[i];
+        if (i + 1 < v.size())
+            rval += sep;
+    }
+
+    return rval;
+}
+
 std::vector<std::string> split(const std::string& s,
   const std::string& delim, const bool keep_empty) {
     std::vector<std::string> result;

@@ -21,17 +21,21 @@
 
 extern char *defaultXResourceString;
 
-bool Xrm::_initialized = false;
+// This *should* be set by configure through the Makefile
+#ifdef XAPPLOADDIR
+static const char *XAppLoadDir = XAPPLOADDIR;
+#else
+static const char *XAppLoadDir = 0;
+#endif
 
 
 Xrm::Xrm(const std::string &className, const std::string &instanceName)
     : _db(0), _class(NULLQUARK), _instance(NULLQUARK) {
 
-    XrmInitialize ();
+    initialize();
 
     // init the _instance and _class Quarks
-    _instance = XrmStringToQuark(instanceName.c_str());
-    initClassName(className);
+    initQuarks(className, instanceName);
 }
 
 
@@ -97,31 +101,16 @@ Xrm::~Xrm(){
 
 void Xrm::loadResources(Display* display) {
 
-    // init the database if it needs it
-    if (!_initialized){
-        XrmInitialize();
-        _initialized = true;
-    }
-    else {
-        logFatal << "Xrm:loadAndMergeResources() called twice!"
-                 << std::endl;
-    }
-    //  This is ugly code.  According to X and Xt rules, many files need
-    //  to be checked for resource settings.  Since we aren't (yet) using
-    //  Xt or any other package, we need to do all of these checks
-    //  individually.  BCG
-//  =========== BEGIN X Resource lookup and merging ==========
+    // Load resources with each subsequent load overriding the last.
+    // This more or less follows the order in the X11 documentation.
+    //
+    // Listed from weakest to strongest:
+    //  *(from code-builtin-resources) (Stored in the string in defaultstring.h)
+    //  * app-defaults directory
+    //  * XOSView (from XAPPLRESDIR directory)
+    //  * from RESOURCE_MANAGER property on server (reads .Xdefaults if needed)
+    //  * from file specified in XENVIRONMENT
 
-//  This all needs to be done in the proper order:
-/*
-  Listed from weakest to strongest:
-  (from code-builtin-resources) (Stored in the string in defaultstring.h)
-  app-defaults
-  XOSView (from XAPPLRESDIR directory)
-  from RESOURCE_MANAGER property on server (reads .Xdefaults if needed)
-  from file specified in XENVIRONMENT
-  from command line (i.e., handled with XrmParseCommand)
-*/
 
     // Get resources from the various resource files
 
@@ -132,48 +121,29 @@ void Xrm::loadResources(Display* display) {
     std::string rfilename;
 
     // Get the app-defaults
-    if (XrmQuarkToString(_class)) {
-        rfilename = std::string("/etc/X11/app-defaults/")
-            + XrmQuarkToString(_class);
-        XrmCombineFileDatabase(rfilename.c_str(), &_db, 1);
-
-        rfilename = std::string("/usr/lib/X11/app-defaults/")
-            + XrmQuarkToString(_class);
-        XrmCombineFileDatabase (rfilename.c_str(), &_db, 1);
-
-        rfilename = std::string("/usr/X11R6/lib/X11/app-defaults/")
-            + XrmQuarkToString(_class);
-        XrmCombineFileDatabase (rfilename.c_str(), &_db, 1);
-
-        //  Try a few more, for SunOS/Solaris folks.
-        rfilename = std::string("/usr/openwin/lib/X11/app-defaults/")
-            + XrmQuarkToString(_class);
-        XrmCombineFileDatabase (rfilename.c_str(), &_db, 1);
-
-        rfilename = std::string("/usr/local/X11R6/lib/X11/app-defaults/")
-            + XrmQuarkToString(_class);
-        XrmCombineFileDatabase (rfilename.c_str(), &_db, 1);
+    // This one is set by configure
+    // We will look in this spot (and this spot ONLY
+    // If for some reason it is not set, complain and move on
+    if (XAppLoadDir) {
+        loadResources(std::string(XAppLoadDir) + "/" + className());
     }
-
-
+    else {
+        logProblem << "XAPPLRESDIR was not correctly configured/set "
+                   << "at build time.  Skipping app-defaults..."
+                   << std::endl;
+    }
 
     //  Now, check for an XOSView file in the XAPPLRESDIR directory...
     char* xappdir = getenv ("XAPPLRESDIR");
-    if (xappdir != NULL) {
-        std::string xappfile;
-        xappfile = std::string(xappdir) + "/" + className();
-        // this did not work for XAPPLRESDIR
-        //if (!access (xappfile, X_OK | R_OK))
-        if (!access(xappfile.c_str(), R_OK)) {
-            XrmCombineFileDatabase(xappfile.c_str(), &_db, 1);
-        }
-    }
+    if (xappdir != NULL)
+        loadResources(std::string(xappdir) + "/" + className());
 
     //  Now, check the display's RESOURCE_MANAGER property...
     char* displayString = XResourceManagerString (display);
     if (displayString != NULL) {
         XrmDatabase displayrdb = XrmGetStringDatabase (displayString);
         XrmMergeDatabases (displayrdb, &_db);  //Destroys displayrdb when done.
+        logDebug << "loaded display resources." << std::endl;
     }
 
     //  And check this screen of the display...
@@ -182,35 +152,44 @@ void Xrm::loadResources(Display* display) {
     if (screenString != NULL) {
         XrmDatabase screenrdb = XrmGetStringDatabase (screenString);
         XrmMergeDatabases (screenrdb, &_db);  //  Destroys screenrdb when done.
+        logDebug << "loaded screen resources." << std::endl;
     }
 
     //  Now, check for a user resource file, and merge it in if there is one...
     char *home = getenv("HOME");
-    if (home){
-        std::string userrfilename = std::string(home) + "/.Xdefaults";
-
-        //  User file overrides system (_db).
-        XrmCombineFileDatabase (userrfilename.c_str(), &_db, 1);
-    }
+    if (home)
+        loadResources(std::string(home) + "/.Xdefaults");
 
     //  Second-to-last, parse any resource file specified in the
     //  environment variable XENVIRONMENT.
-    char* xenvfile;
-    if ((xenvfile = getenv ("XENVIRONMENT")) != NULL) {
-        //  The XENVIRONMENT file overrides all of the above.
-        XrmCombineFileDatabase (xenvfile, &_db, 1);
-    }
-//  =========== END X Resource lookup and merging ==========
+    char* xenvfile = getenv("XENVIRONMENT");
+    if (xenvfile)
+        loadResources(xenvfile);
 }
 
-void Xrm::initClassName(const std::string &name){
-    std::string className(name);
+void Xrm::initQuarks(const std::string &cName, const std::string &instanceName){
+    std::string className(cName);
     className[0] = std::toupper(className[0]);
 
     if (className[0] == 'X')
         className[1] = std::toupper(className[1]);
 
     _class = XrmStringToQuark(className.c_str());
+    if (_class == NULLQUARK)
+        logFatal << "NULL class quark: " << className << std::endl;
+    _instance = XrmStringToQuark(instanceName.c_str());
+    if (_instance == NULLQUARK)
+        logFatal << "NULL instance quark: " << instanceName << std::endl;
+
+    // From the man page:
+    // "For any given quark, if XrmStringToQuark returns a non-NULL value, all
+    // future calls will return the same value (identical address)"
+    //
+    // We will check them once here...
+    if (!XrmQuarkToString(_class))
+        logFatal << "failed to convert class quark." << std::endl;
+    if (!XrmQuarkToString(_instance))
+        logFatal << "failed to convert instance quark." << std::endl;
 }
 
 
@@ -283,5 +262,15 @@ void Xrm::putResource(const std::string &specifier, const std::string &val) {
 }
 
 bool Xrm::loadResources(const std::string &fname) {
-    return XrmCombineFileDatabase(fname.c_str(), &_db, 1);
+    bool rval = XrmCombineFileDatabase(fname.c_str(), &_db, 1);
+    logDebug << "combine: " << fname << " : " << rval << std::endl;
+    return rval;
+}
+
+void Xrm::initialize(void) {
+    static bool first = true;
+    if (first) {
+        first = false;
+        XrmInitialize();
+    }
 }

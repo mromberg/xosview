@@ -30,12 +30,33 @@ public:
     // returns true if path exists and is a regular file
     static bool isfile(const std::string &path);
 
+    // returns true if path exists and is a regular file and is executable
+    static bool isexec(const std::string &path);
+
     // reads the entire file into str.  Returns false on failure.
     static bool readAll(const std::string &file, std::string &str);
 
     // reads the first X from file.  returns false on failure.
     template<class X>
     static bool readFirst(const std::string &file, X &x);
+
+    // returns the current working directory as an absolute path
+    static std::string cwd(void);
+
+
+    // returns an absolute path to path
+    static std::string abspath(const std::string &path);
+
+    // collapse redundant separators and up-level references
+    static std::string normpath(const std::string &path);
+
+    // The absolute normalized path (canonical path)
+    static std::string canonpath(const std::string &path) {
+        return normpath(abspath(path));
+    }
+
+    // returns an absolute path to the command.
+    static std::string findCommand(const std::string &command);
 };
 
 template<class X>

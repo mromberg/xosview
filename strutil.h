@@ -50,6 +50,8 @@ float stof(const std::string &str, size_t *idx = 0);
 extern std::vector<std::string> split(const std::string& s,
   const std::string& delim, const bool keep_empty = true);
 
+extern std::string join(const std::vector<std::string> &v,
+  const std::string &sep);
 
 template <class X>
 inline static bool fstr(const std::string &s, X &x) {
@@ -80,16 +82,19 @@ std::string strerror(int error);
 
 } // namespace util
 
+
+namespace std {
+
 // print std::pair in the form: (first,second)
 template<typename S, typename T>
-inline std::ostream &operator<<(std::ostream &os, const std::pair<S,T> &pp) {
+inline ostream &operator<<(ostream &os, const pair<S,T> &pp) {
     os << "(" << pp.first << "," << pp.second << ")";
     return os;
 }
 
 // print vectors in the form: [a,b,c,d]
-template<class X>
-std::ostream &operator<<(std::ostream &os, const std::vector<X> &x) {
+template<typename X>
+ostream &operator<<(ostream &os, const vector<X> &x) {
     os << "[";
     for (size_t i = 0 ; i < x.size() ; i++) {
         os << x[i];
@@ -102,10 +107,10 @@ std::ostream &operator<<(std::ostream &os, const std::vector<X> &x) {
 }
 
 // print maps in the form: {key1:value1,key2:value2}
-template<class X,class Y>
-std::ostream &operator<<(std::ostream &os, const std::map<X,Y> &m) {
+template<typename X,typename Y>
+ostream &operator<<(ostream &os, const map<X,Y> &m) {
     os << "{";
-    typename std::map<X,Y>::const_iterator it;
+    typename map<X,Y>::const_iterator it;
     for (it = m.begin(); it != m.end(); ) {
         os << it->first << ":" << it->second;
         ++it;
@@ -116,5 +121,7 @@ std::ostream &operator<<(std::ostream &os, const std::map<X,Y> &m) {
 
     return os;
 }
+
+} // end namespace std
 
 #endif

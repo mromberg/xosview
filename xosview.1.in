@@ -317,10 +317,23 @@ From first loaded/searched to last:
 An embeded copy of Xdefaults used to build xosview.  So, xosview always has
 a default and complete set of resources even if all other options fail.
 .IP \n+[step]
-Standard X11 search paths and mechanics (XAPPLRESDIR, .Xdefault, xmodmap, etc).  For full details see the X documentation.
-.IP \n+[step]
-xosview will read your .Xdefaults even if your desktop "thing"/environment
-did not.
+Standard X11 search paths and mechanics (XAPPLRESDIR, .Xdefault, xmodmap, etc).  For full details see the X documentation. The following is a short summary:
+.RS
+.IP \[bu] 2
+From the class file (XOsview) found in the \fPapp-defaults\fI directory
+configured into xosview at compile time.
+.IP \[bu]
+From the class file (XOsview) in the XAPPLRESDIR (environment variable).
+.IP \[bu]
+From resources loaded onto the Display of the X server (by xrdb for example).
+.IP \[bu]
+From resources loaded onto the Screen of the Display
+(again by xrdb or the like).
+.IP \[bu]
+From the .Xdefaults file in the users HOME (environment variable) directory.  Xosview loads this file even if your X session did not.
+.IP \[bu]
+From resources found in the file specified by the XENVIRONMENT environment variable.
+.RE
 .IP \n+[step]
 Resource files specified by the -c, --config command line arguments
 .IP \n+[step]

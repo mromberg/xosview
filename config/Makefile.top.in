@@ -157,16 +157,22 @@ mandir = @mandir@
 man1dir = $(mandir)/man1
 srcdir = @srcdir@
 
+# This seems to be the "accepted" way of inserting paths into the binary
+CXXFLAGS += -DXAPPLOADDIR=\"$(xapploaddir)\"
+
 #-------------------------------------------------------
 # New install
 #-------------------------------------------------------
 install: xosview
 	$(INSTALL) -d $(bindir) $(man1dir) $(docdir) $(xapploaddir)
-	$(INSTALL) -m 0755 xosview $(bindir)/xosview
-	$(INSTALL) -m 0644 xosview.1 $(man1dir)/xosview.1
-	$(INSTALL) -m 0644 README $(docdir)/README
-	$(INSTALL) -m 0644 README.linux $(docdir)/README.linux
-	$(INSTALL) -m 0644 Xdefaults $(xapploaddir)/XOsview
+	$(INSTALL) -m 0755 $(srcdir)/xosview $(bindir)/xosview
+	$(INSTALL) -m 0644 $(srcdir)/xosview.1 $(man1dir)/xosview.1
+	$(INSTALL) -m 0644 $(srcdir)/README $(docdir)/README
+	$(INSTALL) -m 0644 $(srcdir)/README.linux $(docdir)/README.linux
+	$(INSTALL) -m 0644 $(srcdir)/Xdefaults $(xapploaddir)/XOsview
+
+
+
 #-------------------------------------------------------
 
 
