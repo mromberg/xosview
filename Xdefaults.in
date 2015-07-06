@@ -38,7 +38,6 @@ xosview*transparent:        False
 xosview*meterLabelColor:    #EEEEEE
 xosview*usedlabels:         True
 xosview*usedLabelColor:     #EEEEEE
-xosview*borderwidth:        0
 !xosview*font:               7x13bold      ! X11 core font
 !xosview*font:               Oxygen Mono-8  ! Freetype2 font
 xosview*font:               @XOSV_FONT@

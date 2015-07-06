@@ -408,11 +408,6 @@ xosview*usedLabelColor: \fIcolor\fP
 The color to use for "used" labels.
 .RE
 
-xosview*borderwidth:  \fIwidth\fP
-.RS
-The width of the border for the xosview window.
-.RE
-
 xosview*font: \fIfont\fP
 .RS
 This is the font that xosview will use.  Currently the xosview text
