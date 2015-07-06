@@ -2,11 +2,15 @@
 # Top level Makefile Template for xosview.
 #
 #
-# $Id: Makefile.top.in,v 1.29 2006/02/18 08:15:40 romberg Exp $
-#
 include Makefile.config
 
+#--------------------------------------------------------
+# File lists
+#--------------------------------------------------------
+
+# build these only if Xft is found (probably will be)
 XFT_OBJS = xftfont.o xftgraphics.o
+
 
 OBJS = \
 llist.o \
@@ -30,18 +34,16 @@ log.o \
 @XFT_OBJS@ \
 main.o
 
-
+# Build these lists from the object files.
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)
 
-INSTALL            = @INSTALL@
 
+#-----------------------------------------------------------------------
+# Make rules
 #-----------------------------------------------------------------------
 
 all : meterlib xosview
-
-defaultstring.cc: Xdefaults defresources.awk
-	@AWK@ -f defresources.awk Xdefaults > defaultstring.cc
 
 meterlib:
 	cd @TOP_SRCDIR@/@host_dir@ && $(MAKE)
@@ -52,93 +54,46 @@ meterlib:
 xosview: $(OBJS) @TOP_SRCDIR@/@host_dir@/libmeter.a
 	$(CXX) $(LDFLAGS) $(LFLAGS) -o xosview $(OBJS) $(LIBS)
 
-##  If for some reason (such as permissions) you wish to change where
-##    xosview is installed, re-run configure with
-##    --prefix=<path>, which will change the next line.
-PREFIX_TO_USE=@prefix@
-BINDIR=$(PREFIX_TO_USE)/bin
-MANDIR=$(PREFIX_TO_USE)/share/man/man1
-XAPPLOADDIR=$(PREFIX_TO_USE)/lib/X11/app-defaults
-PACKAGENAME=xosview-$(VERS)
-DISTRIBDIR=@TOP_SRCDIR@/../$(PACKAGENAME)
 
+defaultstring.cc: Xdefaults defresources.awk
+	@AWK@ -f defresources.awk Xdefaults > defaultstring.cc
 
 distrib: checksource distclean
-	cd @TOP_SRCDIR@/..; rm -rf $(PACKAGENAME)
-	mkdir $(DISTRIBDIR)
-	(cd @TOP_SRCDIR@; tar cf - *) | (cd $(DISTRIBDIR); tar xf -)
-	cd $(DISTRIBDIR); rm -rf `find . -name "CVS"`
-	cd @TOP_SRCDIR@/..; tar cf $(PACKAGENAME).tar $(PACKAGENAME)
-	gzip -f9 @TOP_SRCDIR@/../$(PACKAGENAME).tar
-
-#  The next one is only used by bgrayson to set up the local
-#  mirrors of the xosview distributions.
-distrib-and-copy: distrib
-	cp ../$(PACKAGENAME).tar.gz `echo ~bgrayson/public_html/xosview`
-	scp ../$(PACKAGENAME).tar.gz omni:~bgrayson/public_html/xosview
+	echo "FIXME!  Make distrib tarball"
 
 clean :
 	@echo "***  Cleaning..."
-	@cd @host_dir@ && $(MAKE) clean
-	@#  Only clean the config directory if it exists...
-	@sh -c 'if [ -d config ]; then \
-	    echo "***  Cleaning config directory..."; \
-	    cd config && $(MAKE) clean; fi'
+	cd @host_dir@ && $(MAKE) clean
+	cd config && $(MAKE) clean
 	rm -f xosview $(OBJS) $(DEPFILES) *~ defaultstring.cc
 
 checksource:
-	@#  Check that certain unsafe things aren't in any of the
-	@#  code.
-	@echo "***  Grep'ing for uses of strcmp, sprintf, strcat, strcmp,"
-	@echo "     strcasecmp instead of safer strncmp, snprintf, strncat,"
-	@echo "     strncmp, strncasecmp...."
-	@#  If egrep finds no matches, it returns as if it is an
-	@#  error.  Reverse that error code....
-	@#  We also should not check snprintf.cc, which calls vsprintf.
-	@sh -c 'egrep "strcmp|sprintf|strcat|strcmp|strcasecmp" \
-		`echo *.cc *.h */*.cc */*.h | sed -e 's/snprintf.cc//'`; \
-		if [ $$? != 0 ]; then exit 0; else \
-		echo "***  Bad functions found -- error!"; exit 1; fi'
-	@#  Also check that the version in the man page is the
-	@#  same as the one in the Makefile, VERS.
-	@echo "***  Checking for consistent version in config/Makefile.top.in and man page..."
-	@#  This is a tricky little thing, since both 'make' and
-	@#  'sh' try to deal with the embedded $3 for awk.
-	@sh -c 'manver=`sed -ne 2p xosview.1 | awk \{print\ \\$$3\}`; \
-	  manver2=`sed -ne 3p xosview.1 | awk \{print\ \\$$3\}`; \
-	  if [ x"$$manver" != x"$$manver2" ]; then \
-	    echo "!!!  Version mismatch in the man page file xosview.1:"; \
-	    echo "     $$manver in SCCS header (line 2),"; \
-	    echo "     $$manver2 in title (line 3)."; \
-	    exit 1; \
-	  fi; \
-	  if [ x"$$manver" != x"$(VERS)" ]; then \
-	    echo "!!!  Apparent version mismatch:  "; \
-	    echo "      $(VERS) in config/Makefile.top.in,"; \
-	    echo "      $$manver in man page file xosview.1"; exit 1; \
-	  fi'
+	$(TOP)/chk-src.sh
 
+# Cleans everything except files that will be distributed
 distclean: clean
-	@#  Also check _all_ subdirs, not just the configured one, for
-	@#  object files.
-	@echo "***  Checking for any missed .o files..."
-	@sh -c 'objects=`find . -name "*.o" -print`; if [ x"$$objects" != x ]; then \
-	  echo "The following object files still need to be removed:";\
-	  echo $$objects; exit 1; fi'
-	@echo "***  Removing all Makefiles..."
-	@rm -f Makefile Makefile.config Makefile.GNU.autodep \
-           @host_dir@/Makefile config.cache config.log config.status
-
-
-maintainer-clean: distclean
-	rm -f configure Xdefaults xosview.1 config.h config.h.in
+	find . -name "*.o" -exec rm -f {} \;
+	rm -f Makefile Makefile.config Makefile.GNU.autodep \
+           @host_dir@/Makefile config.cache config.log config.status \
+	   Xdefaults xosview.1 config.h
 	rm -rf config/autom4te.cache/
 
+# cleans all build items
+maintainer-clean: distclean
+	rm -f configure config.h.in
+
+# For updating configure.in's checks for C++ header files.
+# This finds all uses of '#include <.*>'
 headercheck:
-	find . -regex ".*\.\(h\|cc\)" -exec grep "include <[^\.]*>" {} \; | sort - | uniq | cut -d " " -f2 - | cut -d "<" -f2 - | cut -d ">" -f1 -
+	@echo "list of all used C++ headers:"
+	@find . -regex ".*\.\(h\|cc\)" -exec grep "include <[^\.]*>" {} \; \
+          | sort - | uniq | cut -d " " -f2 - | cut -d "<" -f2 - \
+          | cut -d ">" -f1 -
 
-
-
+#-----------------------------------------------
+# Install related section
+#-----------------------------------------------
+INSTALL            = @INSTALL@
 #-----------------------------------------------
 # Gnu Makefile conventions (subset really)
 #-----------------------------------------------
