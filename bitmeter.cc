@@ -78,14 +78,7 @@ void BitMeter::draw(X11Graphics &g){
 
     if (dolegends()){
         g.setFG( textcolor_ );
-
-        int offset;
-        if (dousedlegends())
-            offset = g.textWidth( "XXXXXXXXX" );
-        else
-            offset = g.textWidth( "XXXXX" );
-
-        g.drawString( x_ - offset + 1, y_ + height_, title_ );
+        g.drawString( 0, y_ + height_, title_ );
         g.setFG( onColor_ );
         if(docaptions()) {
             int x = x_;

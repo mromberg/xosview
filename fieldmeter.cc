@@ -110,14 +110,7 @@ void FieldMeter::draw(X11Graphics &g) {
     g.drawRectangle( x_ - 1, y_ - 1, width_ + 2, height_ + 2 );
     if (dolegends()){
         g.setFG( textcolor_ );
-
-        int offset;
-        if (dousedlegends())
-            offset = g.textWidth( "XXXXXXXXX" );
-        else
-            offset = g.textWidth( "XXXXX" );
-
-        g.drawString( x_ - offset + 1, y_ + height_, title_ );
+        g.drawString( 0, y_ + height_, title_ );
         if(docaptions())
             drawlegend(g);
     }
@@ -165,8 +158,6 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
             return;
 
     g.setStippleN(0);	/*  Use all-bits stipple.  */
-    static const int onechar = g.textWidth( "X" );
-    static int xoffset = g.textWidth( "XXXXX" );
 
     std::ostringstream bufs;
     bufs << std::fixed;
@@ -214,9 +205,9 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
         /*  Also check for negative values, and just print "-" for
          *  them.  */
         if (scaled_used < 0)
-            bufs << "-";
+            bufs << "-" << scale;
         else if (scaled_used == 0.0)
-            bufs << "0";
+            bufs << "0" << scale;
         else if (scaled_used < 9.95)  //  9.95 or above would get
                                       //  rounded to 10.0, which is too wide.
             bufs << std::setprecision(1) << scaled_used << scale;
@@ -230,14 +221,20 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
         bufs << std::setprecision(1) << used_;
     }
 
-    g.clear( x_ - xoffset, y_ + height_ - g.textHeight(),
-      xoffset - onechar / 2, g.textHeight() + 1 );
+    unsigned int cwidth = g.textWidth(_lastUsedStr);
+    unsigned int sheight = g.textAscent();
+    int sx = x_ - (cwidth + 1);
+    int sy = y_ + height_ + 1;
+
+    g.clear(sx, sy, cwidth-1, sheight-1);
     g.setFG( usedcolor_ );
     std::string buf = bufs.str();
-    g.drawString( x_ - (buf.size() + 1 ) * onechar + 2,
-      y_ + height_, buf );
+
+    unsigned int twidth = g.textWidth(buf);
+    g.drawString( x_ - (twidth + 2), sy, buf);
 
     lastused_ = used_;
+    _lastUsedStr = buf;
 }
 
 void FieldMeter::drawfields(X11Graphics &g, bool manditory) {

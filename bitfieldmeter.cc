@@ -124,14 +124,7 @@ void BitFieldMeter::draw(X11Graphics &g) {
       height_ + 2 );
     if (dolegends()){
         g.setFG( textcolor_ );
-
-        int offset;
-        if (dousedlegends())
-            offset = g.textWidth( "XXXXXXXXX" );
-        else
-            offset = g.textWidth( "XXXXX" );
-
-        g.drawString( x_ - offset + 1, y_ + height_, title_ );
+        g.drawString( 0, y_ + height_, title_ );
 
         if(docaptions()){
             g.setFG( onColor_ );

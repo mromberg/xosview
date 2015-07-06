@@ -57,10 +57,6 @@ protected:
 
     void setNumFields(size_t n);
 
-
-private:
-    Timer _timer;
-protected:
     void IntervalTimerStart() { _timer.start(); }
     void IntervalTimerStop() { _timer.stop(); }
     //  Before, we simply called _timer.report(), which returns usecs.
@@ -68,6 +64,10 @@ protected:
     //  instead we use doubles for everything.
     double IntervalTimeInMicrosecs() { return _timer.report_usecs(); }
     double IntervalTimeInSecs() { return _timer.report_usecs()/1e6; }
+
+private:
+    Timer _timer;
+    std::string _lastUsedStr;
 };
 
 #endif
