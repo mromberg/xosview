@@ -76,6 +76,15 @@ xosview*\\$1: (True or False)
 If True then xosview will display a \\$1 meter.
 .RE
 ..
+.\"  The .ud macro is for the ``used decay'' option.
+.de ud
+xosview*\\$1UsedDecay:   (True or False)
+.RS
+If True then xosview will display the used labels as an average
+over the last N samples.  N is a vague number set at the
+factory.  It reduces the text drawing load on the X server.
+.RE
+..
 .\"  The .uf macro is for the ``used format'' stuff.
 .de uf
 xosview*\\$1UsedFormat:	  (float, percent or autoscale)
@@ -530,19 +539,7 @@ created for multiple CPUs.
 .dc cpu
 .dg cpu
 .uf cpu
-
-xosview*cpuFormat: (single, all, both or auto)
-.RS
-Linux and IRIX only.
-.RE
-.RS
-If single, only a cumulative meter for all CPU is created. All creates a
-meter for each CPU, but no cumulative meter. Both creates one cumulative
-meter and one per cpu. auto behaves like single on uniprocessor system,
-and like both on multiprocessor systems.
-.RE
-
-
+.ud cpu
 
 \fBMemory Meter Resources\fP
 
@@ -583,7 +580,7 @@ and like both on multiprocessor systems.
 .dc swap
 .dg swap
 .uf swap
-
+.ud swap
 
 \fBPage Swapping Meter Resources\fP
 
@@ -608,6 +605,7 @@ percentage of page swapping (25% in, 75% out).
 .dc page
 .dg page
 .uf page
+.ud page
 
 
 \fBGfx Meter Resources\fP
@@ -707,6 +705,7 @@ This is the color that the network meter will use for the "idle" field.
 .dc net
 .dg net
 .uf net
+.ud net
 
 \fBNFSStats (Client) Resources\fP
 
@@ -768,6 +767,8 @@ xosview*NFSDStatIdleColor: \fIcolor\fP
 .RS
 The color to be used for idle stats.
 .RE
+.uf NFSDStat
+.ud NFSDStat
 
 
 \fBSerial Meter Resources\fP
@@ -965,6 +966,7 @@ This color will be used for the linux meter to show reads.
 .dc disk
 .dg disk
 .uf disk
+.ud disk
 
 \fBRAID Meter Resources\fP
 

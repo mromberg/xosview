@@ -76,10 +76,11 @@ xosview*cpuStolenColor:     #D31B4C
 xosview*cpuGuestColor:      #F90B53
 xosview*cpuNiceGuestColor:  #F9608E
 xosview*cpuFreeColor:       #03315E
-xosview*cpuPriority:        1
+xosview*cpuPriority:        2
 xosview*cpuDecay:           True
 xosview*cpuGraph:           False
 xosview*cpuUsedFormat:	    percent
+xosview*cpuUsedDecay:       True
 xosview*cpuFormat:          auto   ! single, all, auto or both
 
 
@@ -112,6 +113,7 @@ xosview*diskBandwidth:      30000000  ! 30MB/s reasonable for IDE and SCSI
 xosview*diskPriority:	    10
 xosview*diskDecay:	    True
 xosview*diskUsedFormat:     autoscale
+xosview*diskUsedDecay:      True
 xosview*diskGraph:	    False
 
 
@@ -124,7 +126,7 @@ xosview*swapPriority:       10
 xosview*swapDecay:          False
 xosview*swapGraph:          False
 xosview*swapUsedFormat:	    autoscale
-
+xosview*swapUsedDecay:      True
 
 ! ** Page Meter Resources
 xosview*page:               True
@@ -136,6 +138,7 @@ xosview*pagePriority:       5
 xosview*pageDecay:          False
 xosview*pageGraph:          False
 xosview*pageUsedFormat:     autoscale
+xosview*pageUsedDecay:      True
 
 
 ! ** Network Meter Resources
@@ -155,6 +158,7 @@ xosview*netPriority:        5
 xosview*netDecay:           True
 xosview*netGraph:           False
 xosview*netUsedFormat:	    autoscale
+xosview*netUsedDecay:       True
 xosview*netIface:           False   ! Linux does not use.  If others do not nuke
 
 
@@ -266,14 +270,14 @@ xosview*lmstempUsedFormat: autoscale
 ! ** NFSD meter resources
 xosview*NFSDStats:       False
 xosview*NFSDStatCallsColor:     green
-xosview*NFSDStatBadCallsColor: red
+xosview*NFSDStatBadCallsColor:  red
 xosview*NFSDStatUDPColor:       yellow
 xosview*NFSDStatTCPColor:       orange
 xosview*NFSDStatIdleColor:      aquamarine
 xosview*NFSDStatDecay:		True
 xosview*NFSDStatGraph:		False
 xosview*NFSDStatUsedFormat:	percent
-
+xosview*NFSDStatUsedDecay:      False
 
 ! ** NFS meter resources
 xosview*NFSStats:       False

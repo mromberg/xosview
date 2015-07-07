@@ -67,6 +67,7 @@ void NFSDStats::checkResources( void ){
     useGraph_ = parent_->isResourceTrue( "NFSDStatGraph" );
     dodecay_ = parent_->isResourceTrue( "NFSDStatDecay" );
     setUsedFormat (parent_->getResource("NFSDStatUsedFormat"));
+    decayUsed(parent_->isResourceTrue("NFSDStatUsedDecay"));
     //useGraph_ = 1;
     //dodecay_ = 1;
     //SetUsedFormat ("autoscale");

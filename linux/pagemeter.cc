@@ -40,6 +40,7 @@ void PageMeter::checkResources( void ){
     dodecay_ = parent_->isResourceTrue( "pageDecay" );
     useGraph_ = parent_->isResourceTrue( "pageGraph" );
     setUsedFormat (parent_->getResource("pageUsedFormat"));
+    decayUsed(parent_->isResourceTrue("pageUsedDecay"));
 }
 
 void PageMeter::checkevent( void ){

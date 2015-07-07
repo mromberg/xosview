@@ -38,6 +38,7 @@ void NetMeter::checkResources( void ){
     useGraph_ = parent_->isResourceTrue( "netGraph" );
     dodecay_ = parent_->isResourceTrue( "netDecay" );
     setUsedFormat (parent_->getResource("netUsedFormat"));
+    decayUsed(parent_->isResourceTrue("netUsedDecay"));
 }
 
 void NetMeter::checkevent(void) {

@@ -68,6 +68,7 @@ void CPUMeter::checkResources( void ){
     setfieldcolor( 8, parent_->getResource( "cpuNiceGuestColor" ) );
     setfieldcolor( 9, parent_->getResource( "cpuFreeColor" ) );
 
+    decayUsed(parent_->isResourceTrue("cpuUsedDecay"));
     priority_ = util::stoi (parent_->getResource( "cpuPriority" ));
     dodecay_ = parent_->isResourceTrue( "cpuDecay" );
     useGraph_ = parent_->isResourceTrue( "cpuGraph" );

@@ -51,6 +51,8 @@ protected:
     int numWarnings_;
 
     void setUsedFormat ( const std::string &str );
+    bool decayUsed(void) const { return _decayUsed; }
+    void decayUsed(bool val) { _decayUsed = val; }
     virtual void drawLegend(X11Graphics &g);
     void drawused(X11Graphics &g, bool manditory);
     bool checkX(int x, int width) const;
@@ -68,6 +70,9 @@ protected:
 private:
     Timer _timer;
     std::string _lastUsedStr;
+    std::vector<float> _usedAvg;
+    size_t _usedAvgIndex;
+    bool _decayUsed;
 };
 
 #endif

@@ -41,6 +41,7 @@ void SwapMeter::checkResources( void ){
     dodecay_ = parent_->isResourceTrue( "swapDecay" );
     useGraph_ = parent_->isResourceTrue( "swapGraph" );
     setUsedFormat (parent_->getResource("swapUsedFormat"));
+    decayUsed(parent_->isResourceTrue("swapUsedDecay"));
 }
 
 void SwapMeter::checkevent( void ){

@@ -1,3 +1,5 @@
+- The used field clear area is not large enough.
+
 - Explore the alpha rendering strageness of xft text over pixmap background
 
 - Make a couple of example Xdefaults themes/background pixmaps
@@ -29,8 +31,6 @@
 
 - Fix any other ports for the new C++ update.  Should
   be simple"ish".  Mostly char * -> std::string conversion.
-
-- Look into some kind of decay option for the used labels
 
 - Look into a decay only option on the field meter.
 

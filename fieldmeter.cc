@@ -11,7 +11,12 @@
 #include <sstream>
 #include <iomanip>
 
-
+// Size in sample to use for decaying used labels.
+// Not scientific.  Just set to a value that caused
+// the twitchy cpu meters to stop hammering the X server
+// with text draws yet still give some reasonable
+// update rate.
+static const size_t DECAYN = 25;
 
 FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
   const std::string &title,
@@ -22,12 +27,8 @@ FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
       used_(0), lastused_(-1), lastvals_(numfields, 0.0),
       lastx_(numfields, 0), colors_(numfields, 0),
       usedcolor_(0), print_(PERCENT), printedZeroTotalMesg_(0),
-      numWarnings_(0) {
-    /*  We need to set print_ to something valid -- the meters
-     *  apparently get drawn before the meters have a chance to call
-     *  CheckResources() themselves.  */
-
-    //setNumFields(numfields);  // the initializers should do the same as this
+      numWarnings_(0), _usedAvg(DECAYN, 0.0), _usedAvgIndex(0),
+      _decayUsed(false) {
 }
 
 void FieldMeter::disableMeter(void) {
@@ -153,9 +154,15 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
     if (!dolegends() || !dousedlegends())
         return;
 
-    if ( !manditory )
-        if ( (lastused_ == used_) )
-            return;
+    if (decayUsed()) {
+        _usedAvg[_usedAvgIndex%DECAYN] = used_;
+        _usedAvgIndex++;
+
+        float total = 0;
+        for (size_t i = 0 ; i < DECAYN ; i++)
+            total += _usedAvg[i];
+        used_ = total / (float)DECAYN;
+    }
 
     g.setStippleN(0);	/*  Use all-bits stipple.  */
 
@@ -222,6 +229,9 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
     }
 
     std::string buf = bufs.str();
+    if (!manditory && (buf == _lastUsedStr))
+        return;
+
     unsigned int twidth = g.textWidth(buf);
     unsigned int cwidth = std::max(g.textWidth(_lastUsedStr), twidth);
     unsigned int sheight = g.textAscent();
@@ -231,6 +241,10 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
     g.clear(sx, sy, cwidth-1, sheight-1);
     g.setFG( usedcolor_ );
 
+    // drawing text is expensive on the X server
+    // If this message is too annoying someting is drawing too much
+    // uncomment to check
+    //logDebug << "draw used: " << name() << std::endl;
     g.drawString( x_ - (twidth + 2), sy, buf);
 
     lastused_ = used_;
