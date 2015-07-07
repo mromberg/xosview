@@ -45,7 +45,8 @@ int XOSView::findx(XOSVFont &font){
         if ( !usedlabels_ )
             return font.maxCharWidth() * 24;
         else
-            return font.maxCharWidth() * 29;
+            return font.maxCharWidth() * 24
+                + font.textWidth("SWAP 999% ");
     }
     return 80;
 }
@@ -70,9 +71,9 @@ void XOSView::figureSize(void) {
 
     if ( legend_ ){
         if ( !usedlabels_ )
-            xoff_ = font.maxCharWidth() * 5;
+            xoff_ = font.textWidth("INT(9) ");
         else
-            xoff_ = font.maxCharWidth() * 9;
+            xoff_ = font.textWidth("SWAP 99%%");
 
         yoff_ = caption_ ? font.textHeight() + font.textHeight() / 4 : 0;
     }

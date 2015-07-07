@@ -66,6 +66,6 @@ void Meter::drawLegend(X11Graphics &g) {
 void Meter::drawTitle(X11Graphics &g) {
     if (dolegends()) {
         g.setFG( textcolor_ );
-        g.drawString( 0, y_ + height_, title_ );
+        g.drawString( 0, y_ + height_ + 1, title_ );
     }
 }

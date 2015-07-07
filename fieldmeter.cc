@@ -221,16 +221,16 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
         bufs << std::setprecision(1) << used_;
     }
 
-    unsigned int cwidth = g.textWidth(_lastUsedStr);
+    std::string buf = bufs.str();
+    unsigned int twidth = g.textWidth(buf);
+    unsigned int cwidth = std::max(g.textWidth(_lastUsedStr), twidth);
     unsigned int sheight = g.textAscent();
     int sx = x_ - (cwidth + 1);
     int sy = y_ + height_ + 1;
 
     g.clear(sx, sy, cwidth-1, sheight-1);
     g.setFG( usedcolor_ );
-    std::string buf = bufs.str();
 
-    unsigned int twidth = g.textWidth(buf);
     g.drawString( x_ - (twidth + 2), sy, buf);
 
     lastused_ = used_;
