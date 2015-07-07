@@ -41,7 +41,7 @@ protected:
     enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };
 
     std::vector<float> fields_;
-    float total_, used_, lastused_;
+    float total_, used_;
     std::vector<int> lastvals_;
     std::vector<int> lastx_;
     std::vector<unsigned long> colors_;

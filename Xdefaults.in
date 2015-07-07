@@ -154,7 +154,7 @@ xosview*netBandwidth:      6750000 ! 54Mbps 802.11g (wifi)
 xosview*netInColor:         #56E67B
 xosview*netOutColor:        #F2EF44
 xosview*netBackground:      #03315E
-xosview*netPriority:        5
+xosview*netPriority:        3
 xosview*netDecay:           True
 xosview*netGraph:           False
 xosview*netUsedFormat:	    autoscale

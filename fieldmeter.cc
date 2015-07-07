@@ -24,7 +24,7 @@ FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
   bool dousedlegends)
     : Meter(parent, title, legend, docaptions, dolegends, dousedlegends),
       fields_(numfields, 0.0), total_(1.0),
-      used_(0), lastused_(-1), lastvals_(numfields, 0.0),
+      used_(0), lastvals_(numfields, 0.0),
       lastx_(numfields, 0), colors_(numfields, 0),
       usedcolor_(0), print_(PERCENT), printedZeroTotalMesg_(0),
       numWarnings_(0), _usedAvg(DECAYN, 0.0), _usedAvgIndex(0),
@@ -154,14 +154,15 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
     if (!dolegends() || !dousedlegends())
         return;
 
+    float dispUsed = used_; // value we will display here
     if (decayUsed()) {
-        _usedAvg[_usedAvgIndex%DECAYN] = used_;
+        _usedAvg[_usedAvgIndex%DECAYN] = dispUsed;
         _usedAvgIndex++;
 
         float total = 0;
         for (size_t i = 0 ; i < DECAYN ; i++)
             total += _usedAvg[i];
-        used_ = total / (float)DECAYN;
+        dispUsed = total / (float)DECAYN;
     }
 
     g.setStippleN(0);	/*  Use all-bits stipple.  */
@@ -170,7 +171,7 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
     bufs << std::fixed;
 
     if (print_ == PERCENT){
-        bufs << (int)used_ << "%";
+        bufs << (int)dispUsed << "%";
     }
     else if (print_ == AUTOSCALE){
         char scale;
@@ -184,26 +185,26 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
          *  999.5, if not rounded up to 1.0 K, will be rounded by the
          *  %.0f to be 1000, which is too wide.  So anything at or above
          *  999.5 needs to be bumped up.  */
-        if (used_ >= 999.5*1000*1000*1000*1000*1000*1000) {
-            scale='E'; scaled_used = used_/1024/1024/1024/1024/1024/1024;
+        if (dispUsed >= 999.5*1000*1000*1000*1000*1000*1000) {
+            scale='E'; scaled_used = dispUsed/1024/1024/1024/1024/1024/1024;
         }
-        else if (used_ >= 999.5*1000*1000*1000*1000) {
-            scale='P'; scaled_used = used_/1024/1024/1024/1024/1024;
+        else if (dispUsed >= 999.5*1000*1000*1000*1000) {
+            scale='P'; scaled_used = dispUsed/1024/1024/1024/1024/1024;
         }
-        else if (used_ >= 999.5*1000*1000*1000) {
-            scale='T'; scaled_used = used_/1024/1024/1024/1024;
+        else if (dispUsed >= 999.5*1000*1000*1000) {
+            scale='T'; scaled_used = dispUsed/1024/1024/1024/1024;
         }
-        else if (used_ >= 999.5*1000*1000) {
-            scale='G'; scaled_used = used_/1024/1024/1024;
+        else if (dispUsed >= 999.5*1000*1000) {
+            scale='G'; scaled_used = dispUsed/1024/1024/1024;
         }
-        else if (used_ >= 999.5*1000) {
-            scale='M'; scaled_used = used_/1024/1024;
+        else if (dispUsed >= 999.5*1000) {
+            scale='M'; scaled_used = dispUsed/1024/1024;
         }
-        else if (used_ >= 999.5) {
-            scale='K'; scaled_used = used_/1024;
+        else if (dispUsed >= 999.5) {
+            scale='K'; scaled_used = dispUsed/1024;
         }
         else {
-            scale=' '; scaled_used = used_;
+            scale=' '; scaled_used = dispUsed;
         }
         /*  For now, we can only print 3 characters, plus the optional
          *  suffix, without overprinting the legends.  Thus, we can
@@ -225,7 +226,7 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
             bufs << std::setprecision(0) << scaled_used << scale;
     }
     else {
-        bufs << std::setprecision(1) << used_;
+        bufs << std::setprecision(1) << dispUsed;
     }
 
     std::string buf = bufs.str();
@@ -235,19 +236,19 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
     unsigned int twidth = g.textWidth(buf);
     unsigned int cwidth = std::max(g.textWidth(_lastUsedStr), twidth);
     unsigned int sheight = g.textAscent();
-    int sx = x_ - (cwidth + 1);
+    int sx = x_ - (cwidth + 2);
+    int tx = x_ - (twidth + 2);
     int sy = y_ + height_ + 1;
 
-    g.clear(sx, sy, cwidth-1, sheight-1);
+    g.clear(sx, sy-g.textAscent(), cwidth+1, sheight+1);
     g.setFG( usedcolor_ );
 
     // drawing text is expensive on the X server
     // If this message is too annoying someting is drawing too much
     // uncomment to check
     //logDebug << "draw used: " << name() << std::endl;
-    g.drawString( x_ - (twidth + 2), sy, buf);
+    g.drawString( tx, sy, buf);
 
-    lastused_ = used_;
     _lastUsedStr = buf;
 }
 
