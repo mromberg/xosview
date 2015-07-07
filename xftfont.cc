@@ -39,9 +39,17 @@ X11ftFont::~X11ftFont(void) {
     // XftFonts  are internally  allocated,  reference-counted,
     // and freed by Xft; the programmer does not ordinarily need
     // to allocate or free  storage
+
+    // However calling this fixes a valgrind memory leak.
+    // The Xemacs gang seems to be calling XftFontClose()
+    // So I will too (what could go wrong?...)
+    if (_font)
+        XftFontClose(_dsp, _font);
 }
 
 bool X11ftFont::setFont(const std::string &name) {
+    if (_font)
+        XftFontClose(_dsp, _font);
     _font = XftFontOpenName(_dsp, DefaultScreen(_dsp), name.c_str());
     return _font;
 }

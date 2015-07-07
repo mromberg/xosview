@@ -35,7 +35,6 @@
 #include <X11/Xft/Xft.h>
 
 
-
 XftGraphics::XftGraphics(Display *dsp, Drawable d, bool isWindow,
   Colormap cmap, unsigned long bgPixVal)
     : _dsp(dsp), _d(d), _isWindow(isWindow), _cmap(cmap), _bgPixVal(bgPixVal),

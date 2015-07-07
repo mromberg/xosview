@@ -47,6 +47,10 @@ private:
       const std::string &instanceName);
     void initialize(void);
     static std::string fixValue(const std::string &val);
+
+    // Not implemented
+    Xrm(Xrm &);
+    Xrm &operator=(const Xrm &);
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Xrm &xrm){

@@ -96,7 +96,8 @@ std::string Xrm::fixValue(const std::string &val) {
 
 Xrm::~Xrm(){
     logDebug << "Xrm::~Xrm(): " << (void *)_db << std::endl;
-    XrmDestroyDatabase(_db);
+    if (_db)
+        XrmDestroyDatabase(_db);
 }
 
 void Xrm::loadResources(Display* display) {
@@ -152,6 +153,7 @@ void Xrm::loadResources(Display* display) {
     if (screenString != NULL) {
         XrmDatabase screenrdb = XrmGetStringDatabase (screenString);
         XrmMergeDatabases (screenrdb, &_db);  //  Destroys screenrdb when done.
+        XFree(screenString); // unlike XResourceManagerString() we must free
         logDebug << "loaded screen resources." << std::endl;
     }
 

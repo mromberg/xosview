@@ -38,6 +38,10 @@ private:
     Display *_dsp;
     XftFont *_font;
     std::string _name;
+
+    // not implemented
+    X11ftFont(X11ftFont &);
+    X11ftFont &operator=(const X11ftFont &);
 };
 
 #endif
