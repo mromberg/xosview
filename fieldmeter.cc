@@ -108,17 +108,14 @@ void FieldMeter::draw(X11Graphics &g) {
     /*  Draw the outline for the fieldmeter.  */
     g.setFG( parent_->foreground() );
     g.drawRectangle( x_ - 1, y_ - 1, width_ + 2, height_ + 2 );
-    if (dolegends()){
-        g.setFG( textcolor_ );
-        g.drawString( 0, y_ + height_, title_ );
-        if(docaptions())
-            drawlegend(g);
-    }
 
+    drawLabels(g);
     drawfields( g, 1 );
 }
 
-void FieldMeter::drawlegend(X11Graphics &g) {
+void FieldMeter::drawLegend(X11Graphics &g) {
+    if (!dolegends() || !docaptions())
+        return;
     // (x_, y_) = coord of upper left of fields
     // the outline overlaps (x_, y_)
     // So make the text draw on y_ - 1 - desent of the text (y=0 is top of)
@@ -153,6 +150,9 @@ void FieldMeter::drawlegend(X11Graphics &g) {
 }
 
 void FieldMeter::drawused(X11Graphics &g, bool manditory) {
+    if (!dolegends() || !dousedlegends())
+        return;
+
     if ( !manditory )
         if ( (lastused_ == used_) )
             return;
@@ -271,8 +271,7 @@ void FieldMeter::drawfields(X11Graphics &g, bool manditory) {
             lastvals_[i] = twidth;
             lastx_[i] = x;
 
-            if (dousedlegends())
-                drawused( g, manditory );
+            drawused( g, manditory );
         }
         x += twidth;
     }

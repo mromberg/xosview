@@ -47,3 +47,25 @@ bool Meter::requestevent( void ){
     counter_ = (counter_ + 1) % priority_;
     return !rval;
 }
+
+void Meter::drawLabels(X11Graphics &g) {
+    drawTitle(g);
+    drawLegend(g);
+}
+
+void Meter::drawLegend(X11Graphics &g) {
+    if (dolegends() && docaptions()) {
+        int x = x_;
+        int y = y_ - 1 - g.textDescent() - 1; // the bonus -1 = mystery
+        // think we always have full window clear here
+        g.setFG( textcolor_ );
+        g.drawString( x, y, legend_ );
+    }
+}
+
+void Meter::drawTitle(X11Graphics &g) {
+    if (dolegends()) {
+        g.setFG( textcolor_ );
+        g.drawString( 0, y_ + height_, title_ );
+    }
+}

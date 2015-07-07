@@ -76,17 +76,7 @@ void BitMeter::draw(X11Graphics &g){
 
     g.lineWidth( 0 );
 
-    if (dolegends()){
-        g.setFG( textcolor_ );
-        g.drawString( 0, y_ + height_, title_ );
-        g.setFG( onColor_ );
-        if(docaptions()) {
-            int x = x_;
-            int y = y_ - 1 - g.textDescent() - 1; // the bonus -1 = mystery
-            // think we always have full window clear here
-            g.drawString( x, y, legend_ );
-        }
-    }
+    drawLabels(g);
 
     drawBits(g, true);
 }

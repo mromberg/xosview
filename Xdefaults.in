@@ -33,10 +33,10 @@
 !xosview*display:
 xosview*captions:           True
 xosview*labels:             True
+xosview*usedlabels:         True
 xosview*transparent:        False
 !xosview*pixmapName:         /path/sunshine.xpm  ! tile and xpm as background
 xosview*meterLabelColor:    #EEEEEE
-xosview*usedlabels:         True
 xosview*usedLabelColor:     #EEEEEE
 !xosview*font:               7x13bold      ! X11 core font
 !xosview*font:               Oxygen Mono-8  ! Freetype2 font
@@ -139,7 +139,7 @@ xosview*pageUsedFormat:     autoscale
 
 
 ! ** Network Meter Resources
-! The netBandwidth is not in bytes/sec because... I said so.
+! The netBandwidth is now in bytes/sec because... I said so.
 xosview*net:                 @NetMeter_Default_Setting@
 !xosview*netBandwidth:      64000  ! for 64kbps ISDN
 !xosview*netBandwidth:      57600  ! for up to 57.6kbps modems

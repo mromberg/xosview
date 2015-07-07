@@ -94,6 +94,9 @@ int XOSView::newypos( void ){
 }
 
 void XOSView::dolegends( void ){
+    logDebug << "caption, legend, usedlabels: "
+             << caption_ << "," << legend_ << "," << usedlabels_
+             << std::endl;
     for (size_t i = 0 ; i < _meters.size() ; i++) {
         _meters[i]->docaptions(caption_);
         _meters[i]->dolegends(legend_);

@@ -73,7 +73,7 @@ void BtryMeter::checkevent( void ){
     }
 
     if (legend() != oldLegend)
-        drawlegend(parent_->g());
+        drawLegend(parent_->g());
     drawfields(parent_->g());
 }
 

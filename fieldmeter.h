@@ -51,7 +51,7 @@ protected:
     int numWarnings_;
 
     void setUsedFormat ( const std::string &str );
-    void drawlegend(X11Graphics &g);
+    virtual void drawLegend(X11Graphics &g);
     void drawused(X11Graphics &g, bool manditory);
     bool checkX(int x, int width) const;
 

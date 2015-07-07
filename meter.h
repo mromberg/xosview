@@ -24,6 +24,9 @@ public:
     virtual std::string name( void ) const { return "Meter"; }
     virtual void checkevent( void ) = 0;
     virtual void draw(X11Graphics &g) = 0;
+    virtual void drawLabels(X11Graphics &g);
+    virtual void drawTitle(X11Graphics &g);
+    virtual void drawLegend(X11Graphics &g);
     virtual void checkResources( void );
 
 
@@ -56,7 +59,7 @@ protected:
     double secondsPerSample() { return 1.0/samplesPerSecond(); }
 
     bool docaptions(void) const { return docaptions_; }
-    bool dolegends(void) const { return docaptions_; }
+    bool dolegends(void) const { return dolegends_; }
     bool dousedlegends(void) const { return dousedlegends_; }
 
 private:
