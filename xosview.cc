@@ -43,9 +43,9 @@ XOSView::XOSView(void)
 int XOSView::findx(XOSVFont &font){
     if ( legend_ ){
         if ( !usedlabels_ )
-            return font.textWidth( "XXXXXXXXXXXXXXXXXXXXXXXX" );
+            return font.maxCharWidth() * 24;
         else
-            return font.textWidth( "XXXXXXXXXXXXXXXXXXXXXXXXXXXXX" );
+            return font.maxCharWidth() * 29;
     }
     return 80;
 }
@@ -70,9 +70,9 @@ void XOSView::figureSize(void) {
 
     if ( legend_ ){
         if ( !usedlabels_ )
-            xoff_ = font.textWidth( "XXXXX" );
+            xoff_ = font.maxCharWidth() * 5;
         else
-            xoff_ = font.textWidth( "XXXXXXXXX" );
+            xoff_ = font.maxCharWidth() * 9;
 
         yoff_ = caption_ ? font.textHeight() + font.textHeight() / 4 : 0;
     }

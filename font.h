@@ -21,9 +21,21 @@ public:
     virtual bool setFont(const std::string &name) = 0;
 
     virtual unsigned int textWidth(const std::string &str) = 0;
+    unsigned int maxCharWidth(void);
     virtual unsigned int textHeight(void) const = 0;
     virtual int textAscent(void) const = 0;
     virtual int textDescent(void) const = 0;
 };
+
+inline unsigned int XOSVFont::maxCharWidth(void) {
+    unsigned int rval = 0;
+    // expensive!  Loops through all printable ASCII characters
+    // and returns the widest width.
+    rval = 0;
+    for (unsigned int c = 32 ; c < 127 ; c++)
+        rval = std::max(rval, textWidth(std::string() + (char)c));
+
+    return rval;
+}
 
 #endif

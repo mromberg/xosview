@@ -203,3 +203,7 @@ void X11Graphics::drawString(int x, int y, const std::string &str) {
     XDrawString(_dsp, _drawable, _gc, x, y, str.c_str(), str.size());
 #endif
 }
+
+unsigned int X11Graphics::maxCharWidth(void) {
+    return _font->maxCharWidth();
+}

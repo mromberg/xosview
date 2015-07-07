@@ -35,6 +35,7 @@ public:
     unsigned int width(void) const { return _width; }
     unsigned int height(void) const { return _height; }
     unsigned int textWidth(const std::string &str);
+    unsigned int maxCharWidth(void);  // expensive!
     unsigned int textHeight(void) const;
     int textAscent(void) const;
     int textDescent(void) const;
