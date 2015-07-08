@@ -55,6 +55,7 @@ protected:
     void decayUsed(bool val) { _decayUsed = val; }
     virtual void drawLegend(X11Graphics &g);
     void drawused(X11Graphics &g, bool manditory);
+
     bool checkX(int x, int width) const;
 
     void setNumFields(size_t n);

@@ -110,7 +110,7 @@ xosview*diskIdleColor:	    #03315E
 xosview*diskWriteColor:     #F2EF44
 xosview*diskReadColor:      #56E67B
 xosview*diskBandwidth:      30000000  ! 30MB/s reasonable for IDE and SCSI
-xosview*diskPriority:	    10
+xosview*diskPriority:	    6
 xosview*diskDecay:	    True
 xosview*diskUsedFormat:     autoscale
 xosview*diskUsedDecay:      True

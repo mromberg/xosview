@@ -57,6 +57,9 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool manditory) {
         return;
     }
 
+    if (dousedlegends())
+        drawused(g, manditory);
+
     if ( total_ == 0.0 )
         return;
 
@@ -149,8 +152,7 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool manditory) {
         lastDecayval_[i] = decay_[i];
 
         g.setStippleN(0);	/*  Restore all-bits stipple.  */
-        if (dousedlegends())
-            drawused(g, manditory);
+
         x += twidth;
 
         decayx += decaytwidth;

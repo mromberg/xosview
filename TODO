@@ -5,6 +5,7 @@
 - Make list of tested meters for CHANGELOG
 
 - Make a README.devel for developers
+  (update README files in general)
 
 - Create an rpm spec file (as an example) to hold build package deps if
   nothing else.
@@ -12,7 +13,6 @@
 - Make a "shortcut" -xrm like command line switch that adds "xosview*" for
   you.
 
-- Page meter does not update in usedDecay mode.
 ===================== Post 1.9.0
 
 - VM to run other OSes?

@@ -16,7 +16,7 @@
 // the twitchy cpu meters to stop hammering the X server
 // with text draws yet still give some reasonable
 // update rate.
-static const size_t DECAYN = 25;
+static const size_t DECAYN = 8;
 
 FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
   const std::string &title,
@@ -255,6 +255,8 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
 void FieldMeter::drawfields(X11Graphics &g, bool manditory) {
     int twidth, x = x_;
 
+    drawused( g, manditory );
+
     if ( total_ == 0 )
         return;
 
@@ -285,9 +287,8 @@ void FieldMeter::drawfields(X11Graphics &g, bool manditory) {
             g.setStippleN(0);	/*  Restore all-bits stipple.  */
             lastvals_[i] = twidth;
             lastx_[i] = x;
-
-            drawused( g, manditory );
         }
+
         x += twidth;
     }
 
