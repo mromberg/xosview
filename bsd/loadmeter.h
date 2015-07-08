@@ -1,5 +1,5 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  Most of this code was written by Werner Fink <werner@suse.de>
@@ -27,7 +27,7 @@ public:
   LoadMeter( XOSView *parent );
   ~LoadMeter( void );
 
-  const char *name( void ) const { return "LoadMeter"; }  
+  virtual std::string name( void ) const { return "LoadMeter"; }
   void checkevent( void );
 
   void checkResources( void );

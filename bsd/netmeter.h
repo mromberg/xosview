@@ -1,7 +1,7 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
-//  NetBSD port:  
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -29,7 +29,7 @@ public:
   NetMeter(XOSView *parent, float max);
   ~NetMeter( void );
 
-  const char *name( void ) const { return "NetMeter"; }  
+  virtual std::string name( void ) const { return "NetMeter"; }
   void checkevent( void );
 
   void checkResources( void );

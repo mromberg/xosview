@@ -1,5 +1,5 @@
-//  
-//  Copyright (c) 1999 by Brian Grayson (bgrayson@netbsd.org)
+//
+//  Copyright (c) 1999, 2015 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file may be distributed under terms of the GPL or of the BSD
 //    license, whichever you choose.  The full license notices are
@@ -22,7 +22,7 @@ public:
   IrqRateMeter( XOSView *parent );
   ~IrqRateMeter( void );
 
-  const char *name( void ) const { return "IrqRateMeter"; }  
+  virtual std::string name( void ) const { return "IrqRateMeter"; }
   void checkevent( void );
 
   void checkResources( void );

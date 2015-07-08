@@ -1,5 +1,5 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -22,7 +22,7 @@ IntMeter::IntMeter( XOSView *parent,
   //  out the door.
   //  Same goes for platforms (like Alpha) with more than 16
   //  interrupts.
-  : BitMeter( parent, "INTS", "IRQs", 16 /*BSDNumInts()*/, 
+  : BitMeter( parent, "INTS", "IRQs", 16 /*BSDNumInts()*/,
               dolegends, dousedlegends ) {
   for ( int i = 0 ; i < 16 ; i++ )
     irqs_[i] = lastirqs_[i] = 0;
@@ -48,13 +48,13 @@ void IntMeter::checkevent( void ){
 void IntMeter::checkResources( void ){
   BitMeter::checkResources();
   if (!disabled_) {
-    onColor_  = parent_->allocColor( parent_->getResource( "intOnColor" ) );
-    offColor_ = parent_->allocColor( parent_->getResource( "intOffColor" ) );
-    priority_ = atoi( parent_->getResource( "intPriority" ) );
+      onColor_  = parent_->g().allocColor( parent_->getResource( "intOnColor" ) );
+      offColor_ = parent_->g().allocColor( parent_->getResource( "intOffColor" ) );
+      priority_ = util::stoi( parent_->getResource( "intPriority" ) );
   }
 }
 
-void 
+void
 IntMeter::getirqs( void )
 {
     BSDGetIntrStats (irqs_);

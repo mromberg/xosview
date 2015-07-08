@@ -1,7 +1,7 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
-//  NetBSD port:  
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -19,11 +19,7 @@
 #include "general.h"
 #include "netmeter.h"
 #include "kernel.h"
-
-CVSID("$Id: netmeter.cc,v 1.21 2006/03/01 04:55:55 romberg Exp $");
-CVSID_DOT_H(NETMETER_H_CVSID);
-CVSID_DOT_H2(TIMER_H_CVSID);
-CVSID_DOT_H3(TIMEVAL_H_CVSID);
+#include "strutil.h"
 
 NetMeter::NetMeter( XOSView *parent, float max )
   : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ){
@@ -53,10 +49,10 @@ void NetMeter::checkResources( void ){
     setfieldcolor( 0, parent_->getResource("netInColor") );
     setfieldcolor( 1, parent_->getResource("netOutColor") );
     setfieldcolor( 2, parent_->getResource("netBackground") );
-    priority_ = atoi (parent_->getResource("netPriority") );
+    priority_ = util::stoi (parent_->getResource("netPriority") );
     dodecay_ = parent_->isResourceTrue("netDecay");
     useGraph_ = parent_->isResourceTrue("netGraph");
-    SetUsedFormat (parent_->getResource("netUsedFormat"));
+    setUsedFormat (parent_->getResource("netUsedFormat"));
     netIface_ = parent_->getResource( "netIface" );
   }
 }
@@ -99,7 +95,7 @@ void NetMeter::checkevent( void ){
     setUsed (fields_[0]+fields_[1], total_);
     IntervalTimerStart();
   }
-  drawfields();
+  drawfields(parent_->g());
 }
 
 void NetMeter::adjust(void){

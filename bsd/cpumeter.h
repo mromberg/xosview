@@ -1,7 +1,7 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
-//  NetBSD port:  
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -26,7 +26,7 @@ public:
   CPUMeter( XOSView *parent );
   ~CPUMeter( void );
 
-  const char *name( void ) const { return "CPUMeter"; }
+  virtual std::string name( void ) const { return "CPUMeter"; }
   void checkevent( void );
 
   void checkResources( void );

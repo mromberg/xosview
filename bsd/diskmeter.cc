@@ -1,5 +1,5 @@
-//  
-//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
+//
+//  Copyright (c) 1995, 1996, 1997-2002, 2015 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -79,10 +79,10 @@ void DiskMeter::checkResources( void ){
   if (kernelHasStats_) {
     setfieldcolor( 0, parent_->getResource("diskUsedColor") );
     setfieldcolor( 1, parent_->getResource("diskIdleColor") );
-    priority_ = atoi (parent_->getResource("diskPriority"));
+    priority_ = util::stoi (parent_->getResource("diskPriority"));
     dodecay_ = parent_->isResourceTrue("diskDecay");
     useGraph_ = parent_->isResourceTrue("diskGraph");
-    SetUsedFormat (parent_->getResource("diskUsedFormat"));
+    setUsedFormat (parent_->getResource("diskUsedFormat"));
   }
   fields_[0] = 0.0;
   fields_[1] = 0.0;
@@ -90,7 +90,7 @@ void DiskMeter::checkResources( void ){
 
 void DiskMeter::checkevent( void ){
   getstats();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 void DiskMeter::getstats( void ){
@@ -119,7 +119,7 @@ void DiskMeter::getstats( void ){
     fprintf (stderr, "diskmeter: fields[0] of %f is < 0!\n", fields_[0]);
   if (fields_[1] < 0.0)
     fprintf (stderr, "diskmeter: fields[1] of %f is < 0!\n", fields_[1]);
-    
+
   setUsed ( fields_[0], total_);
 #ifdef HAVE_DEVSTAT
   /*  The devstat library provides a differential value already,

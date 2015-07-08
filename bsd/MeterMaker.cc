@@ -1,5 +1,5 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -28,12 +28,10 @@
 #include "pagemeter.h"
 #include "intmeter.h"
 #include "intratemeter.h"
+#include "strutil.h"
 //  This one is not yet supported under *BSD.
 //#include "serialmeter.h"
 
-CVSID_DOT_H2(PLLIST_H_CVSID);
-CVSID_DOT_H(METERMAKER_H_CVSID);
-CVSID("$Id: MeterMaker.cc,v 1.20 2002/03/22 03:23:40 bgrayson Exp $");
 
 MeterMaker::MeterMaker(XOSView *xos){
   _xos = xos;
@@ -55,14 +53,14 @@ void MeterMaker::makeMeters(void){
     push(new SwapMeter(_xos));
 
   if (_xos->isResourceTrue("page"))
-    push(new PageMeter (_xos, atof(_xos->getResource("pageBandwidth"))));
+      push(new PageMeter (_xos, util::stof(_xos->getResource("pageBandwidth"))));
 
   // check for the net meter
   if (_xos->isResourceTrue("net"))
-    push(new NetMeter(_xos, atof(_xos->getResource("netBandwidth"))));
+      push(new NetMeter(_xos, util::stof(_xos->getResource("netBandwidth"))));
 
   if (_xos->isResourceTrue("disk"))
-    push(new DiskMeter (_xos, atof(_xos->getResource("diskBandwidth"))));
+      push(new DiskMeter (_xos, util::stof(_xos->getResource("diskBandwidth"))));
 
   if (_xos->isResourceTrue("interrupts"))
       push(new IntMeter(_xos));

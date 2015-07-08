@@ -1,5 +1,5 @@
-//  
-//  Copyright (c) 1999 by Brian Grayson (bgrayson@netbsd.org)
+//
+//  Copyright (c) 1999, 2015 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file may be distributed under terms of the GPL or of the BSD
 //    license, whichever you choose.  The full license notices are
@@ -38,16 +38,16 @@ IrqRateMeter::~IrqRateMeter( void ){
 void IrqRateMeter::checkResources( void ){
   FieldMeterGraph::checkResources();
   if (kernelHasStats_) {
-    oncol_ = parent_->allocColor(parent_->getResource("irqrateUsedColor"));
-    idlecol_ = parent_->allocColor(parent_->getResource("irqrateIdleColor"));
+      oncol_ = parent_->g().allocColor(parent_->getResource("irqrateUsedColor"));
+      idlecol_ = parent_->g().allocColor(parent_->getResource("irqrateIdleColor"));
     setfieldcolor( 0, oncol_ );
     setfieldcolor( 1, idlecol_);
   }
 
-  priority_ = atoi (parent_->getResource("irqratePriority"));
+  priority_ = util::stoi (parent_->getResource("irqratePriority"));
   dodecay_ = parent_->isResourceTrue("irqrateDecay");
   useGraph_ = parent_->isResourceTrue("irqrateGraph");
-  SetUsedFormat (parent_->getResource("irqrateUsedFormat"));
+  setUsedFormat (parent_->getResource("irqrateUsedFormat"));
   total_ = 2000;
 
   //  Now, grab a sample.  I don't know if this is needed here.  BCG
@@ -58,7 +58,7 @@ void IrqRateMeter::checkResources( void ){
 
 void IrqRateMeter::checkevent( void ){
   getinfo();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 void IrqRateMeter::getinfo( void ){
@@ -73,7 +73,7 @@ void IrqRateMeter::getinfo( void ){
   }
   /*  Scale delta by the priority.  */
   fields_[0] = delta / IntervalTimeInSecs();
-  
+
   //  Bump total_, if needed.
   if (fields_[0] > total_) total_ = fields_[0];
 

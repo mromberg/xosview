@@ -1,5 +1,5 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  Most of this code was written by Werner Fink <werner@suse.de>.
@@ -33,19 +33,19 @@ LoadMeter::~LoadMeter( void ){
 void LoadMeter::checkResources( void ){
   FieldMeterGraph::checkResources();
 
-  procloadcol_ = parent_->allocColor(parent_->getResource( "loadProcColor" ));
-  warnloadcol_ = parent_->allocColor(parent_->getResource( "loadWarnColor" ));
-  critloadcol_ = parent_->allocColor(parent_->getResource( "loadCritColor" ));
+  procloadcol_ = parent_->g().allocColor(parent_->getResource( "loadProcColor" ));
+  warnloadcol_ = parent_->g().allocColor(parent_->getResource( "loadWarnColor" ));
+  critloadcol_ = parent_->g().allocColor(parent_->getResource( "loadCritColor" ));
 
   setfieldcolor( 0, procloadcol_ );
   setfieldcolor( 1, parent_->getResource( "loadIdleColor" ) );
 
-  priority_ = atoi (parent_->getResource("loadPriority"));
+  priority_ = util::stoi (parent_->getResource("loadPriority"));
   dodecay_ = parent_->isResourceTrue("loadDecay");
   useGraph_ = parent_->isResourceTrue("loadGraph");
-  SetUsedFormat (parent_->getResource("loadUsedFormat"));
-  warnThreshold = atoi (parent_->getResource("loadWarnThreshold"));
-  critThreshold = atoi (parent_->getResource("loadCritThreshold"));
+  setUsedFormat (parent_->getResource("loadUsedFormat"));
+  warnThreshold = util::stoi (parent_->getResource("loadWarnThreshold"));
+  critThreshold = util::stoi (parent_->getResource("loadCritThreshold"));
 
   alarmstate = lastalarmstate = 0;
 
@@ -65,7 +65,7 @@ void LoadMeter::checkResources( void ){
 
 void LoadMeter::checkevent( void ){
   getloadinfo();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 void LoadMeter::getloadinfo( void ){
@@ -86,10 +86,10 @@ void LoadMeter::getloadinfo( void ){
     if ( alarmstate == 1 ) setfieldcolor( 0, warnloadcol_ );
     else
     /* if alarmstate == 2 */ setfieldcolor( 0, critloadcol_ );
-    if (dolegends_) drawlegend();
+    if (dolegends()) drawLegend(parent_->g());
     lastalarmstate = alarmstate;
   }
-    
+
 
   //  This method of auto-adjust is better than the old way.
   //  If fields[0] is less than 20% of display, shrink display to be
@@ -100,10 +100,10 @@ void LoadMeter::getloadinfo( void ){
   //  If fields[0] is larger, then set it to be 1/5th of full.
   if ( fields_[0]>total_ )
     total_ = fields_[0]*5.0;
-      
+
   if ( total_ < 1.0)
     total_ = 1.0;
-    
+
   fields_[1] = (float) (total_ - fields_[0]);
 
   /*  I don't see why anyone would want to use any format besides

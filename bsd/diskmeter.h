@@ -1,6 +1,6 @@
-//  
-//  NetBSD port:  
-//  Copyright (c) 1995,1996,1997 Brian Grayson(bgrayson@netbsd.org)
+//
+//  NetBSD port:
+//  Copyright (c) 1995,1996,1997,2015 Brian Grayson(bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -25,7 +25,7 @@ public:
   DiskMeter( XOSView *parent, float max );
   ~DiskMeter( void );
 
-  const char *name( void ) const { return "DiskMeter"; }
+  virtual std::string name( void ) const { return "DiskMeter"; }
   void checkevent( void );
 
   void checkResources( void );

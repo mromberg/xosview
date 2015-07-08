@@ -1,5 +1,5 @@
-//  
-//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
+//
+//  Copyright (c) 1995, 1996, 1997-2002, 2015 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -24,7 +24,7 @@ public:
   SwapMeter( XOSView *parent );
   ~SwapMeter( void );
 
-  const char *name( void ) const { return "SwapMeter"; }  
+  virtual std::string name( void ) const { return "SwapMeter"; }
   void checkevent( void );
 
   void checkResources( void );

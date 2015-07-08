@@ -1,7 +1,7 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
-//  NetBSD port:  
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was originally written by Brian Grayson for the NetBSD and
@@ -21,6 +21,7 @@
 #include "general.h"
 #include "memmeter.h"
 #include "kernel.h"		/*  For BSD*() helpers.  */
+#include "strutil.h"
 
 #include <sys/param.h>		/*  Needed for sysctl.h include.  */
 #include <sys/sysctl.h>		/*  Needed for kvm_cnt, kvm_uvm_exp.  */
@@ -59,15 +60,15 @@ void MemMeter::checkResources( void ){
   setfieldcolor( 3, parent_->getResource("memBufferColor") );
 #endif
   setfieldcolor( FREE_INDEX, parent_->getResource("memFreeColor") );
-  priority_ = atoi (parent_->getResource("memPriority"));
+  priority_ = util::stoi (parent_->getResource("memPriority"));
   dodecay_ = parent_->isResourceTrue("memDecay");
   useGraph_ = parent_->isResourceTrue("memGraph");
-  SetUsedFormat (parent_->getResource("memUsedFormat"));
+  setUsedFormat (parent_->getResource("memUsedFormat"));
 }
 
 void MemMeter::checkevent( void ){
   getmeminfo();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 void MemMeter::getmeminfo (void) {

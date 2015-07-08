@@ -1,7 +1,7 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
-//  NetBSD port:  
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was originally written by Brian Grayson for the NetBSD and
@@ -53,15 +53,15 @@ void PageMeter::checkResources( void ){
   setfieldcolor( 0, parent_->getResource("pageInColor") );
   setfieldcolor( 1, parent_->getResource("pageOutColor") );
   setfieldcolor( 2, parent_->getResource("pageIdleColor") );
-  priority_ = atoi (parent_->getResource("pagePriority"));
+  priority_ = util::stoi (parent_->getResource("pagePriority"));
   dodecay_ = parent_->isResourceTrue("pageDecay");
   useGraph_ = parent_->isResourceTrue("pageGraph");
-  SetUsedFormat (parent_->getResource("pageUsedFormat"));
+  setUsedFormat (parent_->getResource("pageUsedFormat"));
 }
 
 void PageMeter::checkevent( void ){
   getpageinfo();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 void PageMeter::getpageinfo (void) {

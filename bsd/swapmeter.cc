@@ -1,7 +1,7 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
-//  NetBSD port:  
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -22,6 +22,7 @@
 #include "swapmeter.h"
 #include "swapinternal.h"	/*  For *SwapInfo() functions.  */
 #include "kernel.h"		/*  For BSDSwapInit().  */
+#include "strutil.h"
 
 CVSID("$Id: swapmeter.cc,v 1.23 2003/10/14 01:53:17 bgrayson Exp $");
 CVSID_DOT_H(SWAPMETER_H_CVSID);
@@ -64,15 +65,15 @@ void SwapMeter::checkResources( void ){
 
   setfieldcolor( 0, parent_->getResource("swapUsedColor") );
   setfieldcolor( 1, parent_->getResource("swapFreeColor") );
-  priority_ = atoi (parent_->getResource("swapPriority"));
+  priority_ = util::stoi (parent_->getResource("swapPriority"));
   dodecay_ = parent_->isResourceTrue("swapDecay");
   useGraph_ = parent_->isResourceTrue("swapGraph");
-  SetUsedFormat (parent_->getResource("swapUsedFormat"));
+  setUsedFormat (parent_->getResource("swapUsedFormat"));
 }
 
 void SwapMeter::checkevent( void ){
   getswapinfo();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 void SwapMeter::getswapinfo( void ){

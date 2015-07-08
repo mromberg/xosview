@@ -1,7 +1,7 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
-//  NetBSD port:  
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -21,6 +21,7 @@
 #include "general.h"
 #include "cpumeter.h"
 #include "kernel.h"             //  For NetBSD-specific icky kvm_ code.  BCG
+#include "strutil.h"
 
 //  For CPUSTATES #define.  BCG
 #if defined(XOSVIEW_NETBSD) && (__NetBSD_Version__ >= 104260000)
@@ -67,15 +68,15 @@ void CPUMeter::checkResources( void ){
 #else
   setfieldcolor( 3, parent_->getResource("cpuFreeColor") );
 #endif
-  priority_ = atoi (parent_->getResource("cpuPriority"));
+  priority_ = util::stoi (parent_->getResource("cpuPriority"));
   dodecay_ = parent_->isResourceTrue("cpuDecay");
   useGraph_ = parent_->isResourceTrue("cpuGraph");
-  SetUsedFormat (parent_->getResource("cpuUsedFormat"));
+  setUsedFormat (parent_->getResource("cpuUsedFormat"));
 }
 
 void CPUMeter::checkevent( void ){
   getcputime();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 void CPUMeter::getcputime( void ){
@@ -109,7 +110,7 @@ void CPUMeter::getcputime( void ){
 #endif /* XOSVIEW_FREEBSD */
   //  End NetBSD-specific code...  BCG
 
-  
+
   int oldindex = (cpuindex_+1)%2;
   for ( int i = 0 ; i <= FREE_INDEX ; i++ ){
     fields_[i] = cputime_[cpuindex_][i] - cputime_[oldindex][i];
