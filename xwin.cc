@@ -85,6 +85,7 @@ void XWin::createWindow(void) {
     if(doPixmap) {
 	XSetWindowBackgroundPixmap(display_,window_,background_pixmap);
     }
+#endif
 
     // Do transparency if requested
     if(isResourceTrue("transparent")) {

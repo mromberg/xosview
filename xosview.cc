@@ -401,9 +401,9 @@ void XOSView::loadResources(void) {
     vspacing_ = std::max(0, vspacing_);
 
 #if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
-    opt kname = _xrm->getResource("kernelName");
-    if (opt.first)
-        SetKernelName(opt.second.c_str());
+    Xrm::opt kname(_xrm->getResource("kernelName"));
+    if (kname.first)
+        SetKernelName(kname.second.c_str());
 #endif
 
     xoff_ = hmargin_;
