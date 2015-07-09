@@ -1,3 +1,7 @@
+*.o
+*.a
+*~
+.*.o.d
 configure
 config.log
 config.status
