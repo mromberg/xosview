@@ -82,6 +82,7 @@ std::vector<MemMeter::LineInfo> MemMeter::findLines(
 
         for (size_t i = 0 ; i < tmplate.size() ; i++)
             if (tmplate[i].id() == buf.substr(0, tmplate[i].id().size())) {
+                logDebug << "FOUND line: " << buf << std::endl;
                 rval[inum] = tmplate[i];
                 rval[inum].line(lineNum);
                 inum++;
@@ -98,9 +99,6 @@ void MemMeter::initLineInfo(void){
     infos.push_back(LineInfo("Cached", &fields_[2]));
     infos.push_back(LineInfo("Buffers", &fields_[1]));
     _MIlineInfos = findLines(infos, MEMFILENAME);
-
-    std::vector<LineInfo> msinfos;
-    msinfos.push_back(LineInfo("Shared", &fields_[1]));
 }
 
 void MemMeter::getmemstat(const std::string &fname,
@@ -114,22 +112,24 @@ void MemMeter::getmemstat(const std::string &fname,
 
     // Get the info from the "standard" meminfo file.
     int lineNum = 0;
-    size_t inum = 0;
+    size_t fcount = 0; // found count
     while (!meminfo.eof()){
         std::getline(meminfo, buf);
         lineNum++;
-        if (lineNum != infos[inum].line())
-            continue;
+        for (size_t i = 0 ; i < infos.size() ; i++)
+            if (infos[i].line() == lineNum) {
+                std::istringstream line(buf);
+                unsigned long val;
+                std::string ignore;
+                line >> ignore >> val;
+                // All stats are in KB.
+                // Multiply by 1024 bytes per K
+                infos[i].setVal(val*1024.0);
+                fcount++;
+                break;
+            }
 
-        std::istringstream line(buf);
-        unsigned long val;
-        std::string ignore;
-        line >> ignore >> val;
-        /*  All stats are in KB.  */
-        infos[inum].setVal(val*1024.0);	/*  Multiply by 1024 bytes per K  */
-
-        inum++;
-        if (inum >= infos.size())
+        if (fcount >= infos.size())
             break;
     }
 }
