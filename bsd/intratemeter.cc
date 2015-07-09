@@ -22,6 +22,14 @@ IrqRateMeter::IrqRateMeter( XOSView *parent )
   : FieldMeterGraph( parent, 2, "IRQs", "IRQs per sec/IDLE", 1, 1, 0 ){
   kernelHasStats_ = BSDIntrInit();
 
+
+}
+
+IrqRateMeter::~IrqRateMeter( void ){
+}
+
+void IrqRateMeter::checkResources( void ){
+
   if (!kernelHasStats_) {
   warnx(
   "!!! The kernel does not seem to have the symbols needed for the IrqRateMeter.");
@@ -30,12 +38,6 @@ IrqRateMeter::IrqRateMeter( XOSView *parent )
 
     disableMeter();
   }
-}
-
-IrqRateMeter::~IrqRateMeter( void ){
-}
-
-void IrqRateMeter::checkResources( void ){
   FieldMeterGraph::checkResources();
   if (kernelHasStats_) {
       oncol_ = parent_->g().allocColor(parent_->getResource("irqrateUsedColor"));

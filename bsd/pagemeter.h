@@ -1,62 +1,34 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1996, 2007, 2015
+//  by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
 //
-//  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
-//
-//  This file was written by Brian Grayson for the NetBSD and xosview
-//    projects.
-//  This file may be distributed under terms of the GPL or of the BSD
-//    license, whichever you choose.  The full license notices are
-//    contained in the files COPYING.GPL and COPYING.BSD, which you
-//    should have received.  If not, contact one of the xosview
-//    authors for a copy.
-//
-// $Id: pagemeter.h,v 1.7 2008/02/29 00:06:31 romberg Exp $
+//  This file may be distributed under terms of the GPL
 //
 #ifndef _PAGEMETER_H_
 #define _PAGEMETER_H_
 
-#define PAGEMETER_H_CVSID "$Id: pagemeter.h,v 1.7 2008/02/29 00:06:31 romberg Exp $"
-
 #include "fieldmetergraph.h"
-#if defined(UVM)
-#include <sys/param.h>
-#if defined(XOSVIEW_NETBSD) && (__NetBSD_Version__ > 105010000 /* > 1.5A */)
-// No includes needed -- uvm_extern.h is now self-contained.  Noticed
-// by Bernd Ernesti.
-#else
-// Earlier versions of NetBSD still required vm/vm.h to be included.
-#include <vm/vm.h>
-#endif
-#include <uvm/uvm_extern.h>
-#else
-#include <sys/vmmeter.h>
-#endif
 
 class PageMeter : public FieldMeterGraph {
 public:
-  PageMeter( XOSView *parent, double total );
-  ~PageMeter( void );
+    PageMeter( XOSView *parent, float max );
+    ~PageMeter( void );
 
-  virtual std::string name( void ) const { return "PageMeter"; }
-  void checkevent( void );
+    std::string name( void ) const { return "PageMeter"; }
+    void checkevent( void );
 
-  void checkResources( void );
+    void checkResources( void );
 protected:
+    float pageinfo_[2][2];
+    int pageindex_;
+    float maxspeed_;
+    bool _vmstat;
+    const char *_statFileName;
 
-  void getpageinfo( void );
+    void getpageinfo( void );
+    void getvmpageinfo( void );
+    void updateinfo(void);
 private:
-#if defined(UVM)
-# ifdef VM_UVMEXP2
-  struct uvmexp_sysctl prev_;
-# else
-  struct uvmexp	prev_;
-# endif
-#else
-  struct vmmeter prev_;
-#endif
 };
-
 
 #endif

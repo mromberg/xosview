@@ -26,9 +26,6 @@ IntMeter::IntMeter( XOSView *parent,
               dolegends, dousedlegends ) {
   for ( int i = 0 ; i < 16 ; i++ )
     irqs_[i] = lastirqs_[i] = 0;
-  if (!BSDIntrInit()) {
-    disableMeter();
-  }
 }
 
 IntMeter::~IntMeter( void ){
@@ -46,6 +43,9 @@ void IntMeter::checkevent( void ){
 }
 
 void IntMeter::checkResources( void ){
+  if (!BSDIntrInit()) {
+    disableMeter();
+  }
   BitMeter::checkResources();
   if (!disabled_) {
       onColor_  = parent_->g().allocColor( parent_->getResource( "intOnColor" ) );

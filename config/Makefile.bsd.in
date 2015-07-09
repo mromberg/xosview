@@ -9,23 +9,21 @@ include ../Makefile.config
 
 CXXFLAGS += -I@TOP_SRCDIR@
 
+
+#swapinternal.o \
+#diskmeter.o \
+
 OBJS = \
 MeterMaker.o \
-@BTRYMETER@ \
 cpumeter.o \
 memmeter.o \
 swapmeter.o \
-swapinternal.o \
+pagemeter.o \
 netmeter.o \
 loadmeter.o \
-diskmeter.o \
-pagemeter.o \
 intmeter.o \
 intratemeter.o \
 kernel.o
-
-#  This next one is not yet supported in the NetBSD port.
-#serialmeter.o \
 
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)

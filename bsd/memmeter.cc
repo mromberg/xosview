@@ -1,142 +1,140 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //
-//  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
+//  This file may be distributed under terms of the GPL
 //
-//  This file was originally written by Brian Grayson for the NetBSD and
-//    xosview projects.
-//  The NetBSD memmeter was improved by Tom Pavel (pavel@slac.stanford.edu)
-//    to provide active and inactive values, rather than just "used."
-//
-//  This file may be distributed under terms of the GPL or of the BSD
-//    license, whichever you choose.  The full license notices are
-//    contained in the files COPYING.GPL and COPYING.BSD, which you
-//    should have received.  If not, contact one of the xosview
-//    authors for a copy.
-//
-// $Id: memmeter.cc,v 1.26 2008/02/29 00:06:31 romberg Exp $
-//
-#include <stdlib.h>		//  For atoi().  BCG
-#include "general.h"
+
 #include "memmeter.h"
-#include "kernel.h"		/*  For BSD*() helpers.  */
-#include "strutil.h"
+#include "xosview.h"
+#include <fstream>
+#include <sstream>
+#include <stdlib.h>
+#include <iomanip>
 
-#include <sys/param.h>		/*  Needed for sysctl.h include.  */
-#include <sys/sysctl.h>		/*  Needed for kvm_cnt, kvm_uvm_exp.  */
-#if defined(XOSVIEW_BSDI) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)	/*  Does
-							OpenBSD need this?  */
-# include <sys/vmmeter.h>
-#endif
+static const char MEMFILENAME[] = "/proc/meminfo";
 
-CVSID("$Id: memmeter.cc,v 1.26 2008/02/29 00:06:31 romberg Exp $");
-CVSID_DOT_H(MEMMETER_H_CVSID);
-
-MemMeter::MemMeter( XOSView *parent )
-#ifdef  XOSVIEW_FREEBSD
-: FieldMeterGraph( parent, 5, "MEM", "ACT/INACT/WRD/CA/FRE" ) {
-#define FREE_INDEX 4
-#else
-  //  Once we figure out how to get the buffers field for NetBSD,
-  //  change the next line.
-: FieldMeterGraph( parent, 4, "MEM", "ACT/INACT/WIRE/FREE" ){
-#define FREE_INDEX 3
-#endif
-  BSDPageInit();
+MemMeter::MemMeter( XOSView *parent ) : FieldMeterGraph( parent, 5, "MEM",
+  "USED/BUFF/CACHE/SCACHE/FREE" ){
+    initLineInfo();
 }
 
-MemMeter::~MemMeter( void ){ }
+MemMeter::~MemMeter( void ){
+}
 
 void MemMeter::checkResources( void ){
-  FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources();
 
-  //  The Active and Inactive colors are new.
-  setfieldcolor( 0, parent_->getResource("memActiveColor") );
-  setfieldcolor( 1, parent_->getResource("memInactiveColor") );
-  setfieldcolor( 2, parent_->getResource("memCacheColor") );
-			// use the Linux Cache color (red) for wired mem
-#ifdef XOSVIEW_FREEBSD
-  setfieldcolor( 3, parent_->getResource("memBufferColor") );
-#endif
-  setfieldcolor( FREE_INDEX, parent_->getResource("memFreeColor") );
-  priority_ = util::stoi (parent_->getResource("memPriority"));
-  dodecay_ = parent_->isResourceTrue("memDecay");
-  useGraph_ = parent_->isResourceTrue("memGraph");
-  setUsedFormat (parent_->getResource("memUsedFormat"));
+    setfieldcolor( 0, parent_->getResource( "memUsedColor" ) );
+    setfieldcolor( 1, parent_->getResource( "memBufferColor" ) );
+    setfieldcolor( 2, parent_->getResource( "memCacheColor" ) );
+    setfieldcolor( 3, parent_->getResource( "memSwapCacheColor") );
+    setfieldcolor( 4, parent_->getResource( "memFreeColor" ) );
+    priority_ = util::stoi (parent_->getResource( "memPriority" ));
+    dodecay_ = parent_->isResourceTrue( "memDecay" );
+    useGraph_ = parent_->isResourceTrue( "memGraph" );
+    setUsedFormat (parent_->getResource("memUsedFormat"));
 }
 
 void MemMeter::checkevent( void ){
-  getmeminfo();
-  drawfields(parent_->g());
+    getmeminfo();
+    /* for debugging (see below) */
+    const float TOMEG = 1.0/1024.0/1024.0;
+    logDebug << std::setprecision(1) << std::fixed
+             << "t " << total_ * TOMEG << " "
+             << "used "    << fields_[0] * TOMEG << " "
+             << "buf "     << fields_[1] * TOMEG << " "
+             << "cache "   << fields_[2] * TOMEG << " "
+             << "swcache " << fields_[3] * TOMEG << " "
+             << "free "    << fields_[4] * TOMEG
+             << std::endl;
+
+    drawfields(parent_->g());
 }
 
-void MemMeter::getmeminfo (void) {
-//  Begin *BSD-specific code...
+// FIXME: /proc/memstat and /proc/meminfo don't seem to correspond
+// maybe it is time to fix this in the kernel and get real infos ...
 
-#if 0 /* Old code */
-  struct vmtotal meminfo;
-  int params[] = {CTL_VM, VM_METER};
-  size_t meminfosize = sizeof (struct vmtotal);
-  sysctl (params, 2, &meminfo, &meminfosize, NULL, NULL);
-  /*  Note that the numbers are in terms of 4K pages.  */
+void MemMeter::getmeminfo( void ){
+    getmemstat(MEMFILENAME, _MIlineInfos);
 
-  total_ = 4096*(meminfo.t_free+meminfo.t_rm);
-  fields_[FREE_INDEX] = 4096*meminfo.t_free;
-  fields_[2] = 4096*meminfo.t_rmshr;
-  fields_[1] = 4096*(meminfo.t_rm - meminfo.t_arm - meminfo.t_rmshr);
-  fields_[0] = 4096*meminfo.t_arm;
-#endif
+    fields_[0] = total_ - fields_[4] - fields_[3] - fields_[2] - fields_[1];
 
-  /*  Initialize total_ to 0.0.  FreeBSD will then add some to
-   *  this, and later we'll add all the common fields to this.  */
-  total_ = 0.0;
-#if defined(UVM) && (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_OPENBSD))
-#ifdef VM_UVMEXP2
-  int params[] = {CTL_VM, VM_UVMEXP2};
-  struct uvmexp_sysctl kvm_uvm_exp;
-  size_t kvm_uvm_exp_size = sizeof (kvm_uvm_exp);
-  sysctl (params, 2, &kvm_uvm_exp, &kvm_uvm_exp_size, NULL, 0);
-#else
-  struct uvmexp kvm_uvm_exp;
-  BSDGetUVMPageStats(&kvm_uvm_exp);
-#endif
-  int pgsize = kvm_uvm_exp.pagesize;
-  fields_[0] = kvm_uvm_exp.active*pgsize;
-  fields_[1] = kvm_uvm_exp.inactive*pgsize;
-  fields_[2] = kvm_uvm_exp.wired*pgsize;
-  fields_[FREE_INDEX] = kvm_uvm_exp.free*pgsize;
-  /*  XXX  Should we also look at the kernel or paging pages?  */
-#else
-  // New code.  Use the cnt structure:
-  struct vmmeter kvm_cnt;
-  BSDGetPageStats (&kvm_cnt);
+    if (total_)
+        FieldMeterDecay::setUsed (total_ - fields_[3] - fields_[4], total_);
+}
 
-  /*  Note that the numbers are in terms of pages,
-      and we want fields_ in bytes.  */
-  int pgsize = kvm_cnt.v_page_size;
-  fields_[0] = kvm_cnt.v_active_count * pgsize;
-  fields_[1] = kvm_cnt.v_inactive_count * pgsize;
-  fields_[2] = kvm_cnt.v_wire_count * pgsize;
-# ifdef XOSVIEW_FREEBSD
-  /* I believe v_cache_count is the right answer here, rather than the
-     bufspace variable.  I think that bufspace is a subset of "cache" space
-     that is used for filesystem io, and I think that "cache" pages also
-     include text pages that are inactive.  Empirically, I find I need to use
-     the "cache" pages, though, to get the numbers to add up to the right
-     total memory.  Perhaps a better representation of what is going on would
-     be to subtract bufspace from v_cache_count, and add that difference to
-     v_inactive_count.  (pavel 21-Jan-1998) */
-  total_ = fields_[3] = kvm_cnt.v_cache_count * pgsize;
-  /*total_ = kvm_cnt.v_page_count * pgsize;*/
-# endif	/*  FreeBSD  */
-  fields_[FREE_INDEX] = kvm_cnt.v_free_count * pgsize;
-#endif /*  UVM && NetBSD */
-  /*  Now add to total_ (the cache pages were counted for FreeBSD
-   *  above).  */
-  total_ += fields_[0] + fields_[1] + fields_[2] + fields_[FREE_INDEX];
+std::vector<MemMeter::LineInfo> MemMeter::findLines(
+    const std::vector<LineInfo> &tmplate, const std::string &fname){
+    std::ifstream meminfo(fname.c_str());
+    if (!meminfo){
+        logFatal << "Can not open file : " << fname << std::endl;
+    }
 
-//  End *BSD-specific code...
+    std::vector<LineInfo> rval(tmplate.size());
 
-  setUsed (total_ - fields_[FREE_INDEX], total_);
+    std::string buf;
+
+    // Get the info from the "standard" meminfo file.
+    int lineNum = 0;
+    int inum = 0;  // which info are we going to insert
+    while (!meminfo.eof()){
+        std::getline(meminfo, buf);
+        lineNum++;
+
+        for (size_t i = 0 ; i < tmplate.size() ; i++)
+            if (tmplate[i].id() == buf.substr(0, tmplate[i].id().size())) {
+                logDebug << "FOUND line: " << buf << std::endl;
+                rval[inum] = tmplate[i];
+                rval[inum].line(lineNum);
+                inum++;
+            }
+    }
+
+    return rval;
+}
+
+void MemMeter::initLineInfo(void){
+    std::vector<LineInfo> infos;
+    infos.push_back(LineInfo("MemTotal", &total_));
+    // On NetBSD cached + buffers + free > total..  So...
+    //infos.push_back(LineInfo("Buffers", &fields_[1]));
+    infos.push_back(LineInfo("Cached", &fields_[2]));
+    infos.push_back(LineInfo("SwapCached", &fields_[3]));
+    infos.push_back(LineInfo("MemFree", &fields_[4]));
+
+    _MIlineInfos = findLines(infos, MEMFILENAME);
+}
+
+void MemMeter::getmemstat(const std::string &fname,
+  std::vector<LineInfo> &infos){
+    std::ifstream meminfo(fname.c_str());
+    if (!meminfo){
+        logFatal << "Can not open file : " << fname << std::endl;
+    }
+
+    std::string buf;
+
+    // Get the info from the "standard" meminfo file.
+    int lineNum = 0;
+    size_t fcount = 0; // found count
+    while (!meminfo.eof()){
+        std::getline(meminfo, buf);
+        lineNum++;
+        for (size_t i = 0 ; i < infos.size() ; i++)
+            if (infos[i].line() == lineNum) {
+                std::istringstream line(buf);
+                unsigned long val;
+                std::string ignore;
+                line >> ignore >> val;
+                // All stats are in KB.
+                // Multiply by 1024 bytes per K
+                infos[i].setVal(val*1024.0);
+                fcount++;
+                break;
+            }
+
+        if (fcount >= infos.size())
+            break;
+    }
 }

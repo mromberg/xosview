@@ -2,8 +2,8 @@
 #define __kernel_h__
 
 //
-//  NetBSD port:  
-//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
+//  NetBSD port:
+//  Copyright (c) 1995, 1996, 1997-2002, 2015 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -25,20 +25,10 @@ void
 SetKernelName(const char* const kernelName);
 
 void
-BSDPageInit();
-
-#if defined(UVM)
-void
-BSDGetUVMPageStats(struct uvmexp* uvmp);
-#else
-void
-BSDGetPageStats(struct vmmeter* vmp);
-#endif
-
-void
 BSDCPUInit();
 
-#if defined(XOSVIEW_NETBSD) && (__NetBSD_Version__ >= 104260000)
+//#if defined(XOSVIEW_NETBSD) && (__NetBSD_Version__ >= 104260000)
+#if 0
 void
 BSDGetCPUTimes(u_int64_t* timesArray);
 #else
@@ -53,18 +43,7 @@ void
 BSDGetNetInOut (long long * inbytes, long long * outbytes);
 
 int
-BSDSwapInit();
-
-#ifdef HAVE_SWAPCTL
-void
-BSDGetSwapCtlInfo(unsigned long long* total, unsigned long long* free);
-#endif
-
-int
 BSDDiskInit();
-
-void
-BSDGetDiskXFerBytes (unsigned long long * bytes);
 
 #ifdef XOSVIEW_FREEBSD
 void

@@ -1,6 +1,6 @@
 //
-//  NetBSD port:  
-//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
+//  NetBSD port:
+//  Copyright (c) 1995, 1996, 1997-2002, 2015 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -38,6 +38,7 @@
 
 #ifndef XOSVIEW_FREEBSD
 #include <sys/disk.h>		/*  For disk statistics.  */
+#include <sys/sysctl.h>
 #endif
 
 #ifdef XOSVIEW_OPENBSD
@@ -314,15 +315,17 @@ OpenKDIfNeeded() {
   char unusederrorstring[_POSIX2_LINE_MAX];
 
   if (kd) return; //  kd is non-NULL, so it has been initialized.  BCG
-
+  logDebug << "kernelFileName: " << kernelFileName << std::endl;
     /*  Open it read-only, for a little added safety.  */
     /*  If the first character of kernelFileName is not '\0', then use
 	that kernel file.  Otherwise, use the default kernel, by
 	specifying NULL.  */
-  if ((kd = kvm_openfiles ((kernelFileName[0]) ? kernelFileName : NULL,
-			    NULL, NULL, O_RDONLY, unusederrorstring))
-      == NULL)
-	  err (-1, "OpenKDIfNeeded():kvm-open()");
+  // if ((kd = kvm_openfiles ((kernelFileName[0]) ? kernelFileName : NULL,
+  //       		    NULL, NULL, O_RDONLY, unusederrorstring))
+  if ((kd = kvm_openfiles (NULL, NULL, NULL, O_RDONLY, unusederrorstring))
+    == NULL)
+      err (-1, "OpenKDIfNeeded():kvm-open()");
+  logDebug << "kvm_open() sucess" << std::endl;
   // Parenthetical note:  FreeBSD kvm_openfiles() uses getbootfile() to get
   // the correct kernel file if the 1st arg is NULL.  As far as I can see,
   // one should always use NULL in FreeBSD, but I suppose control is never a
@@ -355,30 +358,6 @@ BSDPageInit() {
 }
 
 
-#if defined(UVM)
-void
-BSDGetUVMPageStats(struct uvmexp* uvm) {
-  size_t size;
-  int mib[2];
-  if (!uvm) errx(-1, "BSDGetUVMPageStats():  passed pointer was null!\n");
-  size = sizeof(uvmexp);
-  mib[0] = CTL_VM;
-  mib[1] = VM_UVMEXP;
-  if (sysctl(mib, 2, uvm, &size, NULL, 0) < 0) {
-    printf("can't get uvmexp: %s\n", strerror(errno));
-    printf("(This is most likely due to a /usr/include/uvm/uvm_extern.h\n"
-	  "file older than /sys/uvm/uvm_extern.h.)\n");
-    memset(&uvm, 0, sizeof(uvmexp));
-  }
-}
-#else
-void
-BSDGetPageStats(struct vmmeter* vmp) {
-  if (!vmp) errx(-1, "BSDGetPageStats():  passed pointer was null!\n");
-  safe_kvm_read_symbol(VMMETER_SYM_INDEX, vmp, sizeof(struct vmmeter));
-// for BSDI - perhaps use kvm_vmmeter ?
-}
-#endif
 #ifdef XOSVIEW_FREEBSD
 // This function returns the num bytes devoted to buffer cache
 void
@@ -397,7 +376,8 @@ BSDCPUInit() {
 }
 
 void
-#if defined(XOSVIEW_NETBSD) && (__NetBSD_Version__ >= 104260000)
+//#if defined(XOSVIEW_NETBSD) && (__NetBSD_Version__ >= 104260000)
+#if 0
 BSDGetCPUTimes (u_int64_t* timeArray) {
 #else
 BSDGetCPUTimes (long* timeArray) {
@@ -500,9 +480,9 @@ void NetMeter::BSDGetNetInOut (long long * inbytes, long long * outbytes) {
 skipif:
     //  Linked-list step taken from if.c in netstat source, line 120.
 #ifdef XOSVIEW_FREEBSD
-#if (__FreeBSD_version >= 300000) 
-    ifnetp = ifnet.if_link.tqe_next; 
-#else 
+#if (__FreeBSD_version >= 300000)
+    ifnetp = ifnet.if_link.tqe_next;
+#else
     ifnetp = (struct ifnet*) ifnet.if_next;
 #endif
 #elif defined(XOSVIEW_BSDI)
@@ -514,76 +494,6 @@ skipif:
 
 }
 
-
-/*  ---------------------- Swap Meter stuff  -----------------  */
-#if defined(HAVE_SWAPCTL)
-struct swapent *sep;
-int nswapAllocd = 0;
-#endif
-
-int
-BSDSwapInit() {
-  OpenKDIfNeeded();
-  /*  Need to merge some of swapinteral.cc here, to be smart about
-   *  missing kvm symbols (due to OS version mismatch, for example).
-   *  */
-  /*return ValidSymbol(*/
-#if defined(HAVE_SWAPCTL)
-  nswapAllocd = 32;	/*  Add buffering, beyond nswap...  */
-  int nswap = swapctl(SWAP_NSWAP, 0, 0);
-  if (nswap >= 0) nswapAllocd += nswap;
-  sep = (struct swapent *) malloc(nswapAllocd * sizeof(*sep));
-#endif
-  return 1;
-}
-
-/*  If we have swapctl, let's enable that stuff.  However, the default
-    is still the old method, so if we compile on a swapctl-capable machine,
-    the binary will still work on an older machine.  */
-#ifdef HAVE_SWAPCTL
-//  This code is based on a patch sent in by Scott Stevens
-//  (s.k.stevens@ic.ac.uk, at the time).
-//
-
-void
-BSDGetSwapCtlInfo(unsigned long long *totalp, unsigned long long *freep) {
-  unsigned long long	totalinuse, totalsize;
-  int rnswap, nswap = swapctl(SWAP_NSWAP, 0, 0);
-  struct swapent *swapiter;
-
-  if (nswap < 1) {
-    *totalp = *freep = 0;
-    return;
-  }
-
-  /*  We did a malloc in the Init routine.  Only realloc if nswap has grown.  */
-  if (nswap > nswapAllocd) {
-    free(sep);
-    nswapAllocd = nswap+32;	/*  Extra space, so we can avoid mallocs.  */
-    sep = (struct swapent *)malloc(nswapAllocd * sizeof(*sep));
-  }
-  if (sep == NULL)
-    err(1, "malloc");
-  rnswap = swapctl(SWAP_STATS, (void *)sep, nswap);
-  if (nswap < 0)
-    errx(1, "SWAP_STATS");
-  if (rnswap < 0)
-    warnx("SWAP_STATS error");
-  else if (nswap != rnswap)
-    warnx("SWAP_STATS gave different value than SWAP_NSWAP "
-    "(nswap=%d versus rnswap=%d)", nswap, rnswap);
-
-  swapiter = sep;
-  totalsize = totalinuse = 0;
-  for (; rnswap-- > 0; swapiter++) {
-    totalsize += swapiter->se_nblks;
-    totalinuse += swapiter->se_inuse;
-  }
-#define BYTES_PER_SWAPBLOCK	512
-  *totalp = totalsize * BYTES_PER_SWAPBLOCK;
-  *freep = (totalsize - totalinuse) * BYTES_PER_SWAPBLOCK;
-}
-#endif	/*  Swapctl info retrieval  */
 
 /*  ---------------------- Disk Meter stuff  -----------------  */
 
@@ -742,7 +652,7 @@ DevStat_Get(void) {
 				  &last.dinfo->devices[di], busy_seconds,
 				  &total_bytes, &total_transfers,
 				  NULL, NULL,
-				  NULL, NULL, 
+				  NULL, NULL,
 				  NULL, NULL)!= 0)
 				  break;
 			total_xfers += (int)total_transfers;
@@ -769,7 +679,7 @@ unsigned int NetBSD_N_Drives = 0;
 
 int
 BSDDiskInit() {
-  OpenKDIfNeeded(); 
+  OpenKDIfNeeded();
 #ifdef XOSVIEW_BSDI
   bsdi_dk_names = kvm_dknames(kd,&bsdi_dk_count);
   if (!(bsdi_dkp = (struct diskstats *)(calloc((bsdi_dk_count + 1) , sizeof (*bsdi_dkp)))))
@@ -797,91 +707,6 @@ BSDDiskInit() {
   return ValidSymbol(DISKLIST_SYM_INDEX);
 #endif
 #endif /* BSDI */
-}
-
-void
-BSDGetDiskXFerBytes (unsigned long long *bytesXferred) {
-#ifdef XOSVIEW_FREEBSD
-#ifdef HAVE_DEVSTAT
-  *bytesXferred = DevStat_Get();
-#else
-  /* FreeBSD still has the old-style disk statistics in global arrays
-     indexed by the disk number (defs are in <sys/dkstat.h> */
-
-  long kvm_dk_wds[DK_NDRIVE];  /* # blocks of 32*16-bit words transferred */
-  int kvm_dk_ndrive;           /* number of installed drives */
-
-  safe_kvm_read_symbol (DK_NDRIVE_SYM_INDEX, &kvm_dk_ndrive, sizeof(int));
-  safe_kvm_read_symbol (DK_WDS_SYM_INDEX, &kvm_dk_wds,
-			sizeof(long)*DK_NDRIVE);
-
-  for (int i=0; i < kvm_dk_ndrive; i++)
-      *bytesXferred += kvm_dk_wds[i] * 64;
-#endif
-#elif defined (XOSVIEW_BSDI)
-  int n,i;
-  if ((n= kvm_disks(kd,bsdi_dkp,bsdi_dk_count+1)) != bsdi_dk_count)
-    warnx ("kvm_disks returned unexpected number of disks");
-  *bytesXferred= 0;
-  for (i=0;i<n;i++)
-    *bytesXferred += bsdi_dkp[i].dk_sectors * bsdi_dkp[i].dk_secsize;
-#else
-#if defined(NETBSD_1_6A)
-  // Use the new sysctl to do this for us.
-  size_t sysctl_sz = NetBSD_N_Drives * dmib[2];
-#ifdef HW_DISKSTATS
-  struct disk_sysctl drive_stats[NetBSD_N_Drives];
-#endif
-#ifdef HW_IOSTATS
-  struct io_sysctl drive_stats[NetBSD_N_Drives];
-#endif
-
-  // Do the sysctl.
-  if (sysctl(dmib, 3, drive_stats, &sysctl_sz, NULL, 0) < 0) {
-    err(1, "sysctl hw.diskstats failed");
-  }
-
-  // Now accumulate the total.
-  unsigned long long xferred = 0;
-  for (unsigned int i = 0; i < NetBSD_N_Drives; i++) {
-#ifdef HW_DISKSTATS
-    xferred += drive_stats[i].dk_rbytes + drive_stats[i].dk_wbytes;
-#endif
-#ifdef HW_IOSTATS
-    if (drive_stats[i].type == IOSTAT_DISK)
-	xferred += drive_stats[i].rbytes + drive_stats[i].wbytes;
-#endif
-  }
-  *bytesXferred = xferred;
-#else
-  /*  This function is a little tricky -- we have to iterate over a
-   *  list in kernel land.  To make things simpler, data structures
-   *  and pointers for objects in kernel-land have kvm tacked on front
-   *  of their names.  Thus, kvmdiskptr points to a disk struct in
-   *  kernel memory.  kvmcurrdisk is a copy of the kernel's struct,
-   *  and it has pointers in it to other structs, so it also is
-   *  prefixed with kvm.  */
-  struct disklist_head kvmdisklist;
-  struct disk *kvmdiskptr;
-  struct disk kvmcurrdisk;
-  safe_kvm_read_symbol (DISKLIST_SYM_INDEX, &kvmdisklist, sizeof(kvmdisklist));
-  kvmdiskptr = kvmdisklist.tqh_first;
-  *bytesXferred = 0;
-  while (kvmdiskptr != NULL) {
-    safe_kvm_read ((u_long)kvmdiskptr, &kvmcurrdisk, sizeof(kvmcurrdisk));
-      /*  Add up the contribution from this disk.  */
-#if defined(__NetBSD_Version__) &&  __NetBSD_Version__ > 106070000 /* > 1.6G */
-    *bytesXferred += kvmcurrdisk.dk_rbytes + kvmcurrdisk.dk_wbytes;
-#else
-    *bytesXferred += kvmcurrdisk.dk_bytes;
-#endif
-#ifdef DEBUG
-    printf ("Got %#x (lower 32bits)\n", (int) (*bytesXferred & 0xffffffff));
-#endif
-    kvmdiskptr = kvmcurrdisk.dk_link.tqe_next;
-  }
-#endif
-#endif
 }
 
 /*  ---------------------- Interrupt Meter stuff  -----------------  */
@@ -931,7 +756,7 @@ BSDIntrInit() {
 int
 BSDNumInts() {
   int nintr;
-  OpenKDIfNeeded(); 
+  OpenKDIfNeeded();
   nintr = (nlst[EINTRCNT_SYM_INDEX].n_value -
 	   nlst[INTRCNT_SYM_INDEX].n_value)   / sizeof(int);
 #ifdef XOSVIEW_FREEBSD
@@ -957,7 +782,7 @@ BSDGetIntrStats (unsigned long intrCount[NUM_INTR]) {
        These are also indirected by IRQ num with intr_countp: */
     safe_kvm_read (nlst[INTRCOUNTP_SYM_INDEX].n_value,
 		   kvm_intrptrs, sizeof(kvm_intrptrs));
-    size_t len =  
+    size_t len =
 	nlst[EINTRCNT_SYM_INDEX].n_value - nlst[INTRCNT_SYM_INDEX].n_value;
     safe_kvm_read (nlst[INTRCNT_SYM_INDEX].n_value, kvm_intrcnt, len);
 

@@ -16,21 +16,33 @@
 #include "general.h"
 #include "MeterMaker.h"
 #include "xosview.h"
+#include "strutil.h"
+
+
+
+#include "cpumeter.h"
+
+// copied from linux
+#include "memmeter.h"
+#include "swapmeter.h"
+#include "pagemeter.h"
+
+// function with the old code.  But ya gotta be root.
+#include "netmeter.h"
+#include "loadmeter.h"
+
+// Old code is broken (looks like kernel changes)
+// prospects to use /proc are not good.
+//#include "diskmeter.h"
+//#include "intmeter.h"
+
+// Can probably work from /proc
+//#include "intratemeter.h"
+
+// No clue but bets are it is non functional.
 #ifdef HAVE_BATTERY_METER
 #include "btrymeter.h"
 #endif
-#include "cpumeter.h"
-#include "memmeter.h"
-#include "swapmeter.h"
-#include "netmeter.h"
-#include "loadmeter.h"
-#include "diskmeter.h"
-#include "pagemeter.h"
-#include "intmeter.h"
-#include "intratemeter.h"
-#include "strutil.h"
-//  This one is not yet supported under *BSD.
-//#include "serialmeter.h"
 
 
 MeterMaker::MeterMaker(XOSView *xos){
@@ -47,28 +59,29 @@ void MeterMaker::makeMeters(void){
     push(new CPUMeter(_xos));
 
   if (_xos->isResourceTrue("mem"))
-    push(new MemMeter(_xos));
+      push(new MemMeter(_xos));
 
   if (_xos->isResourceTrue("swap"))
     push(new SwapMeter(_xos));
 
   if (_xos->isResourceTrue("page"))
-      push(new PageMeter (_xos, util::stof(_xos->getResource("pageBandwidth"))));
+      push(new PageMeter (_xos, util::stof(_xos->getResource("pageBandwidth")))
+          );
 
   // check for the net meter
   if (_xos->isResourceTrue("net"))
       push(new NetMeter(_xos, util::stof(_xos->getResource("netBandwidth"))));
 
-  if (_xos->isResourceTrue("disk"))
-      push(new DiskMeter (_xos, util::stof(_xos->getResource("diskBandwidth"))));
+  // if (_xos->isResourceTrue("disk"))
+  //     push(new DiskMeter (_xos, util::stof(_xos->getResource("diskBandwidth"))));
 
-  if (_xos->isResourceTrue("interrupts"))
-      push(new IntMeter(_xos));
+//  if (_xos->isResourceTrue("interrupts"))
+//      push(new IntMeter(_xos));
 
-  if (_xos->isResourceTrue("irqrate"))
-  {
-      push(new IrqRateMeter(_xos));
-  }
+  // if (_xos->isResourceTrue("irqrate"))
+  // {
+  //     push(new IrqRateMeter(_xos));
+  // }
 
 #ifdef HAVE_BATTERY_METER
   //  NOTE:  Only xosview for NetBSD (out of all the BSDs) currently

@@ -1,109 +1,114 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2006, 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //
-//  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
+//  This file may be distributed under terms of the GPL
 //
-//  This file was written by Brian Grayson for the NetBSD and xosview
-//    projects.
-//  This file may be distributed under terms of the GPL or of the BSD
-//    license, whichever you choose.  The full license notices are
-//    contained in the files COPYING.GPL and COPYING.BSD, which you
-//    should have received.  If not, contact one of the xosview
-//    authors for a copy.
-//
-// $Id: swapmeter.cc,v 1.23 2003/10/14 01:53:17 bgrayson Exp $
-//
-#include <stdlib.h>		//  For atoi().  BCG
-#ifndef HAVE_SWAPCTL
-# include <err.h>		//  For warnx().
-#endif
-#include "general.h"
+
+
 #include "swapmeter.h"
-#include "swapinternal.h"	/*  For *SwapInfo() functions.  */
-#include "kernel.h"		/*  For BSDSwapInit().  */
-#include "strutil.h"
+#include "xosview.h"
+#include <fstream>
+#include <sstream>
+#include <stdlib.h>
 
-CVSID("$Id: swapmeter.cc,v 1.23 2003/10/14 01:53:17 bgrayson Exp $");
-CVSID_DOT_H(SWAPMETER_H_CVSID);
+#ifdef USESYSCALLS
+#if defined(GNULIBC) || defined(__GLIBC__)
+#include <sys/sysinfo.h>
+#else
+#include <syscall.h>
+#include <linux/kernel.h>
+#endif
+#endif
 
-static int doSwap = 1;
+
+static const char MEMFILENAME[] = "/proc/meminfo";
+
 
 SwapMeter::SwapMeter( XOSView *parent )
 : FieldMeterGraph( parent, 2, "SWAP", "USED/FREE" ){
-#ifdef HAVE_SWAPCTL
-  useSwapCtl = 0;
-#endif
-  BSDSwapInit();	//  In kernel.cc
-#if !(defined(XOSVIEW_OPENBSD) || defined(HAVE_SWAPCTL))
-  if (!BSDInitSwapInfo())
-#endif
-  {
-#ifdef HAVE_SWAPCTL
-    //  Set up to use new swap code instead.
-    useSwapCtl = 1;
-#else
-  warnx("The kernel does not seem to have the symbols needed for the\n"
-  "SwapMeter.  If your kernel is newer than 1.2F, but xosview was\n"
-  "compiled on an older system, then recompile xosview on a 1.2G or later\n"
-  "system and it will automatically adjust to using swapctl() when needed.\n"
-  "\nIf this is not the case (kernel before version 1.2G), make sure the\n"
-  "running kernel is /netbsd, or use the -N flag for xosview to specify\n"
-  "an alternate kernel file.\n"
-  "\nThe SwapMeter has been disabled.\n");
-  doSwap = 0;
-  disableMeter();
-#endif
-  }
 }
 
 SwapMeter::~SwapMeter( void ){
 }
 
 void SwapMeter::checkResources( void ){
-  FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources();
 
-  setfieldcolor( 0, parent_->getResource("swapUsedColor") );
-  setfieldcolor( 1, parent_->getResource("swapFreeColor") );
-  priority_ = util::stoi (parent_->getResource("swapPriority"));
-  dodecay_ = parent_->isResourceTrue("swapDecay");
-  useGraph_ = parent_->isResourceTrue("swapGraph");
-  setUsedFormat (parent_->getResource("swapUsedFormat"));
+    setfieldcolor( 0, parent_->getResource( "swapUsedColor" ) );
+    setfieldcolor( 1, parent_->getResource( "swapFreeColor" ) );
+    priority_ = util::stoi (parent_->getResource( "swapPriority" ));
+    dodecay_ = parent_->isResourceTrue( "swapDecay" );
+    useGraph_ = parent_->isResourceTrue( "swapGraph" );
+    setUsedFormat (parent_->getResource("swapUsedFormat"));
+    decayUsed(parent_->isResourceTrue("swapUsedDecay"));
 }
 
 void SwapMeter::checkevent( void ){
-  getswapinfo();
-  drawfields(parent_->g());
+    getswapinfo();
+    drawfields(parent_->g());
 }
 
+
+#ifdef USESYSCALLS
 void SwapMeter::getswapinfo( void ){
-  unsigned long long total_int, free_int;
+    struct sysinfo sinfo;
+    int unit;
 
-  if (doSwap) {
-#ifdef HAVE_SWAPCTL
-    // Allow the option to use either swapctl() or other method.
-    if (useSwapCtl)
-      BSDGetSwapCtlInfo(&total_int, &free_int);
-    else
-#endif
-#if defined(XOSVIEW_OPENBSD) || defined(HAVE_SWAPCTL)
-      // For OpenBSD or HAVE_SWAPCTL systems, _never_ use the older
-      // method if HAVE_SWAPCTL is set.
-      ;
+#if defined(GNULIBC) || defined(__GLIBC__)
+    sysinfo(&sinfo);
 #else
-      BSDGetSwapInfo (&total_int, &free_int);
+    syscall( SYS_sysinfo, &sinfo );
 #endif
-  }
-  else {
-    total_int = 1;	/*  So the meter looks blank.  */
-    free_int = 1;
-  }
 
-  total_ = total_int;
-  if ( total_ == 0 )
-    total_ = 1;	/*  We don't want any division by zero, now, do we?  :)  */
-  fields_[1] = free_int;
-  fields_[0] = total_ - fields_[1];
+    unit = (sinfo.mem_unit ? sinfo.mem_unit : 1);
 
-  setUsed (fields_[0], total_);
+    total_ = sinfo.totalswap * unit;
+    fields_[0] = (sinfo.totalswap - sinfo.freeswap) * unit;
+    fields_[1] = sinfo.freeswap * unit;
+
+    if ( total_ == 0 ){
+        total_ = 1;
+        fields_[0] = 0;
+        fields_[1] = 1;
+    }
+
+    if (total_)
+        setUsed (fields_[0], total_);
 }
+#else
+void SwapMeter::getswapinfo( void ){
+    std::ifstream meminfo( MEMFILENAME );
+    if ( !meminfo ){
+        logFatal << "Cannot open file : " << MEMFILENAME << std::endl;
+    }
+
+    total_ = fields_[0] = fields_[1] = 0;
+
+    std::string ignore;
+
+    // Get the info from the "standard" meminfo file.
+    while (!meminfo.eof()){
+        std::string buf;
+        std::getline(meminfo, buf);
+        std::istringstream line(buf);
+
+        if (buf.substr(0, 9) == "SwapTotal")
+            line >> ignore >> total_;
+
+        if (buf.substr(0, 8) == "SwapFree")
+            line >> ignore >> fields_[1];
+    }
+
+    fields_[0] = total_ - fields_[1];
+
+    if ( total_ == 0 ){
+        total_ = 1;
+        fields_[0] = 0;
+        fields_[1] = 1;
+    }
+
+    if (total_)
+        setUsed (fields_[0], total_);
+}
+#endif
