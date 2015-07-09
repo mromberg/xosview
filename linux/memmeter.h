@@ -25,8 +25,6 @@ protected:
 
     void getmeminfo( void );
 private:
-    int _shAdj;
-
     class LineInfo {
     public:
         LineInfo(const std::string &id, float *val)

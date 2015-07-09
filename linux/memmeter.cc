@@ -13,20 +13,9 @@
 #include <iomanip>
 
 static const char MEMFILENAME[] = "/proc/meminfo";
-static const char MEMSTATFNAME[] = "/proc/memstat";
 
 MemMeter::MemMeter( XOSView *parent ) : FieldMeterGraph( parent, 4, "MEM",
   "USED+SHAR/BUFF/CACHE/FREE" ){
-    _shAdj = -1;
-
-    // Check and see if the memstat module has been loaded
-    std::ifstream test(MEMSTATFNAME);
-    if (test){
-        setNumFields(5);
-        legend("USED/SHAR/BUFF/CACHE/FREE");
-        _shAdj = 0;
-    }
-
     initLineInfo();
 }
 
@@ -37,11 +26,9 @@ void MemMeter::checkResources( void ){
     FieldMeterGraph::checkResources();
 
     setfieldcolor( 0, parent_->getResource( "memUsedColor" ) );
-    if (_shAdj == 0)
-        setfieldcolor( 1, parent_->getResource( "memSharedColor" ) );
-    setfieldcolor( 2 + _shAdj, parent_->getResource( "memBufferColor" ) );
-    setfieldcolor( 3 + _shAdj, parent_->getResource( "memCacheColor" ) );
-    setfieldcolor( 4 + _shAdj, parent_->getResource( "memFreeColor" ) );
+    setfieldcolor( 1, parent_->getResource( "memBufferColor" ) );
+    setfieldcolor( 2, parent_->getResource( "memCacheColor" ) );
+    setfieldcolor( 3, parent_->getResource( "memFreeColor" ) );
     priority_ = util::stoi (parent_->getResource( "memPriority" ));
     dodecay_ = parent_->isResourceTrue( "memDecay" );
     useGraph_ = parent_->isResourceTrue( "memGraph" );
@@ -68,19 +55,11 @@ void MemMeter::checkevent( void ){
 
 void MemMeter::getmeminfo( void ){
     getmemstat(MEMFILENAME, _MIlineInfos);
-    if (_shAdj == 0)
-        getmemstat(MEMSTATFNAME, _MSlineInfos);
 
-    if (_shAdj == 0){
-        fields_[3] -= fields_[1]; // cache size seems to contain shared size !?
-                                  // without this "used" sometimes gets < 0 !
-        fields_[0] = total_ - fields_[4] - fields_[3] - fields_[2] - fields_[1];
-    }else{
-        fields_[0] = total_ - fields_[3] - fields_[2] - fields_[1];
-    }
+    fields_[0] = total_ - fields_[3] - fields_[2] - fields_[1];
 
     if (total_)
-        FieldMeterDecay::setUsed (total_ - fields_[4 + _shAdj], total_);
+        FieldMeterDecay::setUsed (total_ - fields_[3], total_);
 }
 
 std::vector<MemMeter::LineInfo> MemMeter::findLines(
@@ -115,16 +94,13 @@ std::vector<MemMeter::LineInfo> MemMeter::findLines(
 void MemMeter::initLineInfo(void){
     std::vector<LineInfo> infos;
     infos.push_back(LineInfo("MemTotal", &total_));
-    infos.push_back(LineInfo("MemFree", &fields_[4 + _shAdj]));
-    infos.push_back(LineInfo("Buffers", &fields_[2 + _shAdj]));
-    infos.push_back(LineInfo("Cached", &fields_[3 + _shAdj]));
+    infos.push_back(LineInfo("MemFree", &fields_[3]));
+    infos.push_back(LineInfo("Cached", &fields_[2]));
+    infos.push_back(LineInfo("Buffers", &fields_[1]));
     _MIlineInfos = findLines(infos, MEMFILENAME);
 
     std::vector<LineInfo> msinfos;
     msinfos.push_back(LineInfo("Shared", &fields_[1]));
-
-    if (_shAdj == 0)
-        _MSlineInfos = findLines(msinfos, MEMSTATFNAME);
 }
 
 void MemMeter::getmemstat(const std::string &fname,

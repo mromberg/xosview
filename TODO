@@ -6,6 +6,8 @@
 
 - Make a README.devel for developers
   (update README files in general)
+  *** Include a section on what goes in each method of a data
+      collecting meter (No drawing in the constructor!)
 
 - Create an rpm spec file (as an example) to hold build package deps if
   nothing else.
@@ -13,9 +15,11 @@
 - Make a "shortcut" -xrm like command line switch that adds "xosview*" for
   you.
 
+- Update SF website
+
 ===================== Post 1.9.0
 
-- VM to run other OSes?
+- VM to run other OSes (and try to fix bsd meters).
 
 - 32 bit truecolor transparency
 
