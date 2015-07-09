@@ -14,8 +14,8 @@
 
 static const char MEMFILENAME[] = "/proc/meminfo";
 
-MemMeter::MemMeter( XOSView *parent ) : FieldMeterGraph( parent, 4, "MEM",
-  "USED+SHAR/BUFF/CACHE/FREE" ){
+MemMeter::MemMeter( XOSView *parent ) : FieldMeterGraph( parent, 5, "MEM",
+  "USED/BUFF/CACHE/SCACHE/FREE" ){
     initLineInfo();
 }
 
@@ -28,7 +28,8 @@ void MemMeter::checkResources( void ){
     setfieldcolor( 0, parent_->getResource( "memUsedColor" ) );
     setfieldcolor( 1, parent_->getResource( "memBufferColor" ) );
     setfieldcolor( 2, parent_->getResource( "memCacheColor" ) );
-    setfieldcolor( 3, parent_->getResource( "memFreeColor" ) );
+    setfieldcolor( 3, parent_->getResource( "memSwapCacheColor") );
+    setfieldcolor( 4, parent_->getResource( "memFreeColor" ) );
     priority_ = util::stoi (parent_->getResource( "memPriority" ));
     dodecay_ = parent_->isResourceTrue( "memDecay" );
     useGraph_ = parent_->isResourceTrue( "memGraph" );
@@ -38,13 +39,14 @@ void MemMeter::checkResources( void ){
 void MemMeter::checkevent( void ){
     getmeminfo();
     /* for debugging (see below) */
-    logDebug << std::setprecision(1)
-             << "t " << std::setw(4) << total_/1024.0/1024.0 << " "
-             << "used " << std::setw(4) << fields_[0]/1024.0/1024.0 << " "
-             << "shr " << std::setw(4) << fields_[1]/1024.0/1024.0 << " "
-             << "buf " << std::setw(4) << fields_[2]/1024.0/1024.0 << " "
-             << "cache " << std::setw(4) << fields_[3]/1024.0/1024.0 << " "
-             << "free " << std::setw(4) << fields_[4]/1024.0/1024.0
+    const float TOMEG = 1.0/1024.0/1024.0;
+    logDebug << std::setprecision(1) << std::fixed
+             << "t " << total_ * TOMEG << " "
+             << "used "    << fields_[0] * TOMEG << " "
+             << "buf "     << fields_[1] * TOMEG << " "
+             << "cache "   << fields_[2] * TOMEG << " "
+             << "swcache " << fields_[3] * TOMEG << " "
+             << "free "    << fields_[4] * TOMEG
              << std::endl;
 
     drawfields(parent_->g());
@@ -56,10 +58,10 @@ void MemMeter::checkevent( void ){
 void MemMeter::getmeminfo( void ){
     getmemstat(MEMFILENAME, _MIlineInfos);
 
-    fields_[0] = total_ - fields_[3] - fields_[2] - fields_[1];
+    fields_[0] = total_ - fields_[4] - fields_[3] - fields_[2] - fields_[1];
 
     if (total_)
-        FieldMeterDecay::setUsed (total_ - fields_[3], total_);
+        FieldMeterDecay::setUsed (total_ - fields_[3] - fields_[4], total_);
 }
 
 std::vector<MemMeter::LineInfo> MemMeter::findLines(
@@ -95,9 +97,11 @@ std::vector<MemMeter::LineInfo> MemMeter::findLines(
 void MemMeter::initLineInfo(void){
     std::vector<LineInfo> infos;
     infos.push_back(LineInfo("MemTotal", &total_));
-    infos.push_back(LineInfo("MemFree", &fields_[3]));
-    infos.push_back(LineInfo("Cached", &fields_[2]));
     infos.push_back(LineInfo("Buffers", &fields_[1]));
+    infos.push_back(LineInfo("Cached", &fields_[2]));
+    infos.push_back(LineInfo("SwapCached", &fields_[3]));
+    infos.push_back(LineInfo("MemFree", &fields_[4]));
+
     _MIlineInfos = findLines(infos, MEMFILENAME);
 }
 

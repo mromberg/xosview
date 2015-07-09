@@ -89,9 +89,9 @@ xosview*cpuFormat:          auto   ! single, all, auto or both
 xosview*mem:                True
 xosview*memKernelColor:     yellow
 xosview*memUsedColor:       #56E67B
-xosview*memSharedColor:     #56E67B
 xosview*memBufferColor:     #F2EF44
 xosview*memCacheColor:      #0ABBDA
+xosview*memSwapCacheColor:  #AF0BEB
 xosview*memFreeColor:       #03315E
 xosview*memTextColor:       blue
 xosview*memOtherColor:      orange

@@ -145,7 +145,7 @@ an abbreviation for all three of the free BSD operating systems
    HPUX   : user | nice | system | interrupt | idle
 
 \fBMemory Usage\fP
-   Linux  : used | shared | buffers | free
+   Linux  : used | buffers | cached | swap cache | free
    NetBSD : active | inactive | wired | free
    FreeBSD: active | inactive | wired | buffer | free
    OpenBSD: active | inactive | wired | free
@@ -547,13 +547,12 @@ created for multiple CPUs.
 .\"  Do the mem: True resource.
 .xt mem
 
-.\"  mem{Used,Share,Buffer,...}Color resources
+.\"  mem{Used,Cache,Buffer,...}Color resources
 .cc mem Used "used memory"
-.cc mem Shared "shared memory"
 .cc mem Buffer "buffer memory"
 .cc mem Cache "cache memory"
+.cc mem SwapCache "cache memory that has been swaped once"
 .cc mem Free "free memory"
-.cc mem Shared "shared memory"
 .cc mem Text "HP text memory"
 .cc mem Other "HP ``other'' memory"
 .cc mem Active "NetBSD active memory"
