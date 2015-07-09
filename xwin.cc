@@ -218,7 +218,7 @@ bool XWin::getPixmap(Pixmap *pixmap, const std::string &pixmapFName) {
     pixmap_att.colormap=root_att.colormap;
     pixmap_att.valuemask=XpmSize|XpmReturnPixels|XpmColormap|XpmCloseness;
     if(XpmReadFileToPixmap(display_,DefaultRootWindow(display_),
-        pixmapFName.c_str(), pixmap, NULL, &pixmap_att)) {
+        const_cast<char *>(pixmapFName.data()), pixmap, NULL, &pixmap_att)) {
         logProblem << "Pixmap " << pixmapFName << " not found"
                    << std::endl
                    << "Defaulting to blank" << std::endl;
