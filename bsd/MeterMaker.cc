@@ -28,7 +28,7 @@
 
 // copied from linux (uses /proc)
 #include "cpumeter.h"
-#include "memmeter.h"
+#include "memmeter.h"   // one line change (see code)
 #include "swapmeter.h"
 #include "pagemeter.h"
 #include "intratemeter.h"

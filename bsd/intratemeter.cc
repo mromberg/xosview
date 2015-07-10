@@ -54,8 +54,6 @@ void IrqRateMeter::checkevent( void ){
     fields_[0] = rate;
     fields_[1] = total_ - rate;
 
-    logDebug << "curr: " << rate << std::endl;
-
     drawfields(parent_->g());
 }
 
