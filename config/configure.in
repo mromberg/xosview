@@ -45,8 +45,8 @@ AC_PATH_XTRA
 # First add what comes from AC_PATH_XTRA
 XO_CONCAT(CPPFLAGS,$CPPFLAGS,"$X_CFLAGS")
 XO_CONCAT(LDFLAGS,$LDFLAGS,"$X_LIBS")
-XO_CONCAT(LIBS,$LIBS,$X_EXTRA_LIBS)
-XO_CONCAT(LIBS,$LIBS,$X_PRE_LIBS)
+dnl XO_CONCAT(LIBS,$LIBS,$X_EXTRA_LIBS)
+dnl XO_CONCAT(LIBS,$LIBS,$X_PRE_LIBS)
 # This takes care of the paths.  The libraries themselves (like -lX11)
 # will be added later.  First need to check for Xpm, Xft etc.
 
