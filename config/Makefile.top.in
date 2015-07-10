@@ -57,9 +57,10 @@ meterlib:
 
 @TOP_SRCDIR@/@host_dir@/libmeter.a: meterlib
 
-##  Also use LDFLAGS, which is inherited from the system.
+##  CXX_BUILD_FLAGS is here 'cause gcc (and other compilers)
+## can optimize at link time (using profiler data etc).
 xosview: $(OBJS) @TOP_SRCDIR@/@host_dir@/libmeter.a
-	$(CXX) -o xosview $(OBJS) $(LDFLAGS) $(LIBS)
+	$(CXX) $(CXX_BUILD_FLAGS) -o xosview $(OBJS) $(LDFLAGS) $(LIBS)
 
 
 defaultstring.cc: Xdefaults defresources.awk

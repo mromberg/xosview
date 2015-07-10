@@ -26,7 +26,6 @@ CXX      = @CXX@
 DEFS           = @DEFS@
 CPPFLAGS       = @CPPFLAGS@ -I@TOP_SRCDIR@ -I@TOP_SRCDIR@/@host_dir@
 CXXFLAGS       = @CXXFLAGS@
-EXTRA_CXXFLAGS = @EXTRA_CXXFLAGS@
 LDFLAGS        = -L$(TOP)/@host_dir@ @LDFLAGS@
 LIBS           = -lmeter @LIBS@ -lX11
 CPP_DEP        = @CPP_DEP@
@@ -36,7 +35,7 @@ CPP_DEP        = @CPP_DEP@
 # Rules
 #-----------------------------------------------------------------
 
-CXX_BUILD_FLAGS = $(DEFS) $(CPPFLAGS) $(EXTRA_CXXFLAGS) $(CXXFLAGS) $(CPP_DEP)
+CXX_BUILD_FLAGS = $(CXXFLAGS) $(DEFS) $(CPP_DEP) $(CPPFLAGS)
 
 .cc.o:
 	$(CXX) $(CXX_BUILD_FLAGS) -c $< -o $@

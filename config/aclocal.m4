@@ -74,14 +74,18 @@ AC_DEFINE(LONG_LONG,long,[long long is not so long])
 fi
 ])dnl
 
-dnl	For gcc-based (or primarily-gcc) OS's, set EXTRA_CXXFLAGS to -Wall -O4
-AC_DEFUN(AC_GCC_EXTRA_CXXFLAGS, [
-if test "$xosvdebug" = no; then
-	XO_CONCAT(EXTRA_CXXFLAGS,[-W -Wall -O3],$EXTRA_CXXFLAGS)
-else
-      	XO_CONCAT(EXTRA_CXXFLAGS,[-W -Wall -g],$EXTRA_CXXFLAGS)
+dnl	For the gcc compiler
+AC_DEFUN(XO_GCC_CXXFLAGS, [
+if test "$GXX" = "yes"; then
+    if test -z "$CXXFLAGS"; then
+        CXXFLAGS="-Wall -Wextra"
+    fi
+    if test "$xosvdebug" = no; then
+      	 XO_CONCAT(CXXFLAGS,$CXXFLAGS,[-O3])
+    else
+      	 XO_CONCAT(CXXFLAGS,$CXXFLAGS,[-g])
+    fi
 fi
-AC_MSG_NOTICE([EXTRA_CXXFLAGS=$EXTRA_CXXFLAGS])
 ])
 
 AC_DEFUN(SMP_LINUX,

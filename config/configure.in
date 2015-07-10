@@ -24,10 +24,9 @@ AC_CANONICAL_HOST
 # The exception is CXXFLAGS which is special
 # in that it can be overrided at build time.
 # Put nothing into CXXFLAGS that is important
-# to a proper build.  Those go in EXTRA_CXXFLAGS
+# to a proper build.
 CPPFLAGS=""
-#CXXFLAGS=""
-EXTRA_CXXFLAGS=""
+${CXXFLAGS=""}
 LDFLAGS=""
 LIBS=""
 
@@ -35,6 +34,31 @@ LIBS=""
 # Everything is C++ no need to change this again.
 AC_PROG_CXX([c++ g++])
 AC_LANG([C++])
+
+#------------------------------------------------
+# Enable features (which are compiler related)
+#------------------------------------------------
+
+AX_CONFIG_FEATURE_DEFAULT_DISABLED
+
+AX_CONFIG_FEATURE(devel, [turns on debug and auto-depend],
+       HAVE_DEVEL, [Does nothing.  autoconf noise],
+       [AS_IF([true],[AX_CONFIG_FEATURE_ENABLE(debug)
+                      AX_CONFIG_FEATURE_ENABLE(auto-depend)])])
+
+AX_CONFIG_FEATURE_VERBOSE
+
+AX_CONFIG_FEATURE(debug, [turns on/off debug support],
+                  XOSVDEBUG, [Define if you want debug support],
+                  [xosvdebug="yes"],[xosvdebug="no"])
+
+AX_CONFIG_FEATURE(auto-depend, [turns on/off auto-depend support],
+                  AUTO_DEPEND, [Does nothing autoconf noise],
+                  [enable_auto_depend="yes"])
+XO_GCC_AUTO_DEPEND($enable_auto_depend)
+
+XO_GCC_CXXFLAGS
+#-------End Features -----------------------------------------
 
 # compiler tests
 ICE_CXX_BOOL
@@ -63,29 +87,7 @@ AC_PROG_AWK
 AC_PROG_RANLIB
 AC_PROG_INSTALL
 
-#------------------------------------------------
-# Enable features
-#------------------------------------------------
 
-AX_CONFIG_FEATURE_DEFAULT_DISABLED
-
-AX_CONFIG_FEATURE(devel, [turns on debug and auto-depend],
-       HAVE_DEVEL, [Does nothing.  autoconf noise],
-       [AS_IF([true],[AX_CONFIG_FEATURE_ENABLE(debug)
-                      AX_CONFIG_FEATURE_ENABLE(auto-depend)])])
-
-AX_CONFIG_FEATURE_VERBOSE
-
-AX_CONFIG_FEATURE(debug, [turns on/off debug support],
-                  XOSVDEBUG, [Define if you want debug support],
-                  [xosvdebug="yes"],[xosvdebug="no"])
-
-AX_CONFIG_FEATURE(auto-depend, [turns on/off auto-depend support],
-                  AUTO_DEPEND, [Does nothing autoconf noise],
-                  [enable_auto_depend="yes"])
-XO_GCC_AUTO_DEPEND($enable_auto_depend)
-
-#-------End Features -----------------------------------------
 
 #------------------------------------------------
 # Run some tests.  We don't work around failures.
@@ -114,13 +116,6 @@ AC_CHECK_LIB(Xpm, XpmCreateImageFromData,
    XO_CONCAT(LIBS,$LIBS,[-lXpm])],,-lX11))
 
 
-dnl AC_PATH_PROG([FTCONFIG],[freetype-config],[no])
-dnl if test "FTCONFIG" != "no"; then
-dnl     ft_prefix=`$FTCONFIG --prefix`
-dnl     CPPFLAGS="$CPPFLAGS -I$ft_prefix/include/freetype2"
-dnl     AC_CHECK_HEADERS([X11/Xft/Xft.h])
-dnl fi
-
 XO_XFT_SUPPORT
 
 #
@@ -131,7 +126,7 @@ XO_XFT_SUPPORT
 case $host_os in
     linux*)
         AC_XOSV_LINUX
-	AC_GCC_EXTRA_CXXFLAGS
+
 	host_dir=linux
         host_os=linux
         ;;
@@ -140,25 +135,21 @@ case $host_os in
         ;;
     hpux*)
         AC_XOSV_HPUX
-	AC_GCC_EXTRA_CXXFLAGS
 	host_dir=hpux
         host_os=hpux
         ;;
     irix6.5*)
         AC_XOSV_IRIX65
-	EXTRA_CXXFLAGS=-O2
 	host_dir=irix65
 	host_os=irix65
         ;;
     solaris2*)
-	AC_GCC_EXTRA_CXXFLAGS
 	XO_CONCAT(LIBS,$LIBS,[-lsocket -lnsl -lkstat])
 	host_dir=sunos5
 	host_os=sunos5
         ;;
     gnu*)
         AC_XOSV_GNU
-	AC_GCC_EXTRA_CXXFLAGS
 	host_dir=gnu
 	host_os=gnu
         ;;
@@ -174,7 +165,6 @@ esac
 AC_SUBST(XFT_OBJS)
 AC_SUBST(XOSV_FONT)
 AC_SUBST(BTRYMETER)
-AC_SUBST(EXTRA_CXXFLAGS)
 AC_SUBST(INSTALL_ARGS)
 AC_SUBST(host_dir)
 AC_SUBST(xapploaddir)
@@ -190,7 +180,6 @@ AC_CONFIG_FILES([
 echo "DEFS          : $DEFS"
 echo "CPPFLAGS      : $CPPFLAGS"
 echo "CXXFLAGS      : $CXXFLAGS"
-echo "EXTRA_CXXFLAGS: $EXTRA_CXXFLAGS"
 echo "LDFLAGS       : $LDFLAGS"
 echo "LIBS          : $LIBS"
 AC_OUTPUT

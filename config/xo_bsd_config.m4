@@ -23,7 +23,6 @@ netbsd1.[[0123456]]*|netbsdelf1.[[56]]*)
   ## Pull in NetBSD stuff:  set of host_os, INSTALL_ARGS, etc.
   AC_XOSV_NETBSD
 
-  AC_GCC_EXTRA_CXXFLAGS
   ## Check if the network interface supports 64-bit counters.  This
   ## support was committed around 11/19/1999, for 1.4P.
   if test $host_os_full '>' netbsd1.4O  -o $host_os_full '>' netbsdelf1.4O ; then
@@ -44,20 +43,17 @@ netbsd*)
     host_os=netbsd ;;
 
 freebsd[[0123]]*) AC_XOSV_FREEBSD
-	AC_GCC_EXTRA_CXXFLAGS
 	dnl AC_MSG_WARN([
 	dnl ])
 	host_dir=bsd
 	host_os=freebsd ;;
 freebsd[[4]]*) AC_XOSV_FREEBSD
-	AC_GCC_EXTRA_CXXFLAGS
 	AC_DEFINE(USE_KVM_GETSWAPINFO,[1],[Use libkvm getswapinfo])
 	dnl AC_MSG_WARN([
 	dnl ])
 	host_dir=bsd
 	host_os=freebsd ;;
 openbsd2.[[0-5]]*) AC_XOSV_OPENBSD
-	AC_GCC_EXTRA_CXXFLAGS
 	host_dir=bsd
 	host_os=openbsd ;;
 openbsd2.[[6-9]]*) AC_XOSV_OPENBSD
@@ -85,7 +81,6 @@ EOF
 EOF
 	fi
 
-	AC_GCC_EXTRA_CXXFLAGS
 	host_dir=bsd
 	host_os=openbsd ;;
 openbsd2.[[6-9]]*) AC_XOSV_OPENBSD
@@ -113,7 +108,6 @@ EOF
 EOF
 	fi
 
-	AC_GCC_EXTRA_CXXFLAGS
 	host_dir=bsd
 	host_os=openbsd ;;
 openbsd*) AC_XOSV_OPENBSD
@@ -125,11 +119,9 @@ openbsd*) AC_XOSV_OPENBSD
 #define APM_BATT_ABSENT APM_BATTERY_ABSENT
 EOF
 
-	AC_GCC_EXTRA_CXXFLAGS
 	host_dir=bsd
 	host_os=openbsd ;;
 bsdi*) AC_XOSV_BSDI
-	AC_GCC_EXTRA_CXXFLAGS
 	host_dir=bsd
 	host_os=bsdi ;;
 *)       AC_MSG_ERROR([xosview has not been ported to $host_os :(.  Sorry.]) ;;
