@@ -55,8 +55,7 @@ void MeterMaker::makeMeters(void){
     push(new LoadMeter(_xos));
 
   // Standard meters (usually added, but users could turn them off)
-  if (_xos->isResourceTrue("cpu"))
-    push(new CPUMeter(_xos));
+  cpuFactory();
 
   if (_xos->isResourceTrue("mem"))
       push(new MemMeter(_xos));
@@ -92,4 +91,40 @@ void MeterMaker::makeMeters(void){
 #endif
 
   //  The serial meters are not yet available for the BSDs.  BCG
+}
+
+void MeterMaker::cpuFactory(void) {
+    size_t start = 0, end = 0;
+    getRange("cpuFormat", CPUMeter::countCPUs(), start, end);
+
+    logDebug << "start=" << start << ", end=" << end << std::endl;
+
+    for (size_t i = start ; i <= end ; i++)
+        push(new CPUMeter(_xos, i));
+}
+
+void MeterMaker::getRange(const std::string &resource, size_t cpuCount,
+  size_t &start, size_t &end) const {
+    // check the *Format resource if multi-procesor system
+    start = end = 0;
+
+    if (cpuCount > 1) {
+        std::string format(_xos->getResource(resource));
+        logDebug << resource << ": " << format << std::endl;
+        if (format == "single") // single meter for all cpus
+            end = 0;
+        else if (format == "all"){ // seperate but no cumulative
+            start = 1;
+            end = cpuCount;
+        }
+        else if (format == "both") // seperate + cumulative
+            end = cpuCount;
+        else if (format == "auto") // if(cpuCount==1) single else both
+            end = cpuCount;
+        else {
+            logProblem << "Unknown " << resource << ": " << format << ".  "
+                       << "Using auto" << std::endl;
+            end = cpuCount;
+        }
+    }
 }

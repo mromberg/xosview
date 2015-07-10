@@ -1,40 +1,34 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2004, 2006, 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //
-//  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
-//
-//  This file was written by Brian Grayson for the NetBSD and xosview
-//    projects.
-//  This file may be distributed under terms of the GPL or of the BSD
-//    license, whichever you choose.  The full license notices are
-//    contained in the files COPYING.GPL and COPYING.BSD, which you
-//    should have received.  If not, contact one of the xosview
-//    authors for a copy.
-//
-// $Id: cpumeter.h,v 1.11 2002/03/22 03:23:40 bgrayson Exp $
+//  This file may be distributed under terms of the GPL
 //
 #ifndef _CPUMETER_H_
 #define _CPUMETER_H_
-
-#define CPUMETER_H_CVSID "$Id: cpumeter.h,v 1.11 2002/03/22 03:23:40 bgrayson Exp $"
 
 #include "fieldmetergraph.h"
 
 class CPUMeter : public FieldMeterGraph {
 public:
-  CPUMeter( XOSView *parent );
-  ~CPUMeter( void );
+    CPUMeter(XOSView *parent, unsigned int cpu=0);
+    ~CPUMeter(void);
 
-  virtual std::string name( void ) const { return "CPUMeter"; }
-  void checkevent( void );
+    std::string name(void) const { return "CPUMeter"; }
+    void checkevent(void);
 
-  void checkResources( void );
+    void checkResources(void);
+
+    static size_t countCPUs(void);
+    static std::string cpuStr(size_t num);
 protected:
-  long cputime_[2][5];
-  int cpuindex_;
+    size_t _lineNum;
+    std::vector<unsigned long long> _oldStats;
+    unsigned int _cpu;
 
-  void getcputime( void );
+    void getcputime(void);
+    size_t findLine(void);
+    void getStats(std::vector<unsigned long long> &stats) const;
 private:
 };
 

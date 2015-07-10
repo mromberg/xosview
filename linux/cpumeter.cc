@@ -187,6 +187,7 @@ void CPUMeter::getStats(std::vector<unsigned long long> &v) const {
     // Parse the line for this cpu
     std::string tmp; // The cpuID
     stats >> tmp;
+
     for (size_t i = 0 ; i < v.size() ; i++) {
         stats >> v[i];
         if (stats.fail()) {
@@ -199,7 +200,4 @@ void CPUMeter::getStats(std::vector<unsigned long long> &v) const {
             break;
         }
     }
-
-    if (!stats)
-        logBug << "error parsing: " << STATFILENAME << std::endl;
 }

@@ -1,5 +1,5 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -19,6 +19,8 @@
 
 #include "pllist.h"
 
+#include <string>
+
 class Meter;
 class XOSView;
 
@@ -28,6 +30,10 @@ public:
   void makeMeters(void);
 private:
   XOSView *_xos;
+
+  void cpuFactory(void);
+  void getRange(const std::string &resource, size_t cpuCount,
+    size_t &start, size_t &end) const;
 };
 
 #endif
