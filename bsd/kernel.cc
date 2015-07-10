@@ -309,20 +309,24 @@ SetKernelName(const char* const kernelName) {
   strncpy(kernelFileName, kernelName, _POSIX2_LINE_MAX);
 }
 
-void
-OpenKDIfNeeded() {
-  char unusederrorstring[_POSIX2_LINE_MAX];
+bool
+OpenKDIfNeeded(bool fatal) {
+    char unusederrorstring[_POSIX2_LINE_MAX];
 
-  if (kd) return; //  kd is non-NULL, so it has been initialized.  BCG
+    if (kd) return true; //  kd is non-NULL, so it has been initialized.  BCG
 
     /*  Open it read-only, for a little added safety.  */
     /*  If the first character of kernelFileName is not '\0', then use
 	that kernel file.  Otherwise, use the default kernel, by
 	specifying NULL.  */
-  if ((kd = kvm_openfiles ((kernelFileName[0]) ? kernelFileName : NULL,
-			    NULL, NULL, O_RDONLY, unusederrorstring))
-      == NULL)
-	  err (-1, "OpenKDIfNeeded():kvm-open()");
+    if ((kd = kvm_openfiles ((kernelFileName[0]) ? kernelFileName : NULL,
+          NULL, NULL, O_RDONLY, unusederrorstring)) == NULL) {
+        if (fatal) {
+            logFatal << "OpenKDIfNeeded():kvm-open()" << std::endl;
+        }
+        else
+            return false;
+    }
   // Parenthetical note:  FreeBSD kvm_openfiles() uses getbootfile() to get
   // the correct kernel file if the 1st arg is NULL.  As far as I can see,
   // one should always use NULL in FreeBSD, but I suppose control is never a
@@ -343,6 +347,7 @@ OpenKDIfNeeded() {
 #ifdef HAVE_DEVSTAT
   DevStat_Init();
 #endif
+  return true;
 }
 
 

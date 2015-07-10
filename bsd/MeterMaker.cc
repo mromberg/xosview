@@ -10,14 +10,10 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: MeterMaker.cc,v 1.20 2002/03/22 03:23:40 bgrayson Exp $
-//
-#include <stdlib.h>
-#include "general.h"
 #include "MeterMaker.h"
-#include "xosview.h"
 #include "strutil.h"
 
+#include <stdlib.h>
 
 
 //-----------------------------------------------------------
@@ -49,52 +45,55 @@
 
 
 
-MeterMaker::MeterMaker(XOSView *xos){
-  _xos = xos;
+MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
 }
 
 void MeterMaker::makeMeters(void){
-  //  check for the loadmeter
-  if (_xos->isResourceTrue("load"))
-    push(new LoadMeter(_xos));
+    //  check for the loadmeter
+    if (_xos->isResourceTrue("load"))
+        push(new LoadMeter(_xos));
 
-  // Standard meters (usually added, but users could turn them off)
-  cpuFactory();
+    // Standard meters (usually added, but users could turn them off)
+    cpuFactory();
 
-  if (_xos->isResourceTrue("mem"))
-      push(new MemMeter(_xos));
+    if (_xos->isResourceTrue("mem"))
+        push(new MemMeter(_xos));
 
-  if (_xos->isResourceTrue("swap"))
-    push(new SwapMeter(_xos));
+    if (_xos->isResourceTrue("swap"))
+        push(new SwapMeter(_xos));
 
-  if (_xos->isResourceTrue("page"))
-      push(new PageMeter (_xos, util::stof(_xos->getResource("pageBandwidth")))
-          );
+    if (_xos->isResourceTrue("page"))
+        push(new PageMeter (_xos,
+            util::stof(_xos->getResource("pageBandwidth"))));
 
-  // check for the net meter
-  if (_xos->isResourceTrue("net"))
-      push(new NetMeter(_xos, util::stof(_xos->getResource("netBandwidth"))));
+    // check for the net meter
+    if (_xos->isResourceTrue("net")) {
+        if (!NetMeter::checkPerms()) {
+            logProblem << "net init failed.  Are you in kmem?" << std::endl;
+        }
+        else {
+            push(new NetMeter(_xos, util::stof(
+                    _xos->getResource("netBandwidth"))));
+        }
+    }
 
-  // if (_xos->isResourceTrue("disk"))
-  //     push(new DiskMeter (_xos, util::stof(_xos->getResource("diskBandwidth"))));
+    // if (_xos->isResourceTrue("disk"))
+    //     push(new DiskMeter (_xos,
+    //         util::stof(_xos->getResource("diskBandwidth"))));
 
-//  if (_xos->isResourceTrue("interrupts"))
-//      push(new IntMeter(_xos));
+    // if (_xos->isResourceTrue("interrupts"))
+    //     push(new IntMeter(_xos));
 
-  if (_xos->isResourceTrue("irqrate"))
-  {
-      push(new IrqRateMeter(_xos));
-  }
+    if (_xos->isResourceTrue("irqrate"))
+        push(new IrqRateMeter(_xos));
 
 #ifdef HAVE_BATTERY_METER
-  //  NOTE:  Only xosview for NetBSD (out of all the BSDs) currently
-  //  supports the Battery Meter.
-  //  This one is done in its own file, not kernel.cc
-  if (_xos->isResourceTrue("battery"))
-      push(new BtryMeter(_xos));
+    //  NOTE:  Only xosview for NetBSD (out of all the BSDs) currently
+    //  supports the Battery Meter.
+    //  This one is done in its own file, not kernel.cc
+    if (_xos->isResourceTrue("battery"))
+        push(new BtryMeter(_xos));
 #endif
-
-  //  The serial meters are not yet available for the BSDs.  BCG
 }
 
 void MeterMaker::cpuFactory(void) {

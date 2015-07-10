@@ -15,25 +15,25 @@
 #ifndef _MeterMaker_h
 #define _MeterMaker_h
 
-#define METERMAKER_H_CVSID "$Id: MeterMaker.h,v 1.6 2002/03/22 03:23:40 bgrayson Exp $"
 
 #include "pllist.h"
 
 #include <string>
+
 
 class Meter;
 class XOSView;
 
 class MeterMaker : public PLList<Meter *> {
 public:
-  MeterMaker(XOSView *xos);
-  void makeMeters(void);
+    MeterMaker(XOSView *xos);
+    void makeMeters(void);
 private:
-  XOSView *_xos;
+    XOSView *_xos;
 
-  void cpuFactory(void);
-  void getRange(const std::string &resource, size_t cpuCount,
-    size_t &start, size_t &end) const;
+    void cpuFactory(void);
+    void getRange(const std::string &resource, size_t cpuCount,
+      size_t &start, size_t &end) const;
 };
 
 #endif

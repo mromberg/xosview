@@ -12,12 +12,8 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-// $Id: netmeter.h,v 1.13 2006/03/01 04:55:55 romberg Exp $
-//
-#ifndef _NETMETER_H_
-#define _NETMETER_H_
-
-#define NETMETER_H_CVSID "$Id: netmeter.h,v 1.13 2006/03/01 04:55:55 romberg Exp $"
+#ifndef NETMETER_H
+#define NETMETER_H
 
 #include "fieldmetergraph.h"
 #include "timer.h"
@@ -26,28 +22,29 @@ class Host;
 
 class NetMeter : public FieldMeterGraph {
 public:
-  NetMeter(XOSView *parent, float max);
-  ~NetMeter( void );
+    NetMeter(XOSView *parent, float max);
+    ~NetMeter( void );
 
-  virtual std::string name( void ) const { return "NetMeter"; }
-  void checkevent( void );
+    virtual std::string name( void ) const { return "NetMeter"; }
+    void checkevent( void );
 
-  void checkResources( void );
+    void checkResources( void );
 
-  void BSDGetNetInOut (long long * inbytes, long long * outbytes);
-protected:
-  float netBandwidth_;
-  std::string netIface_;
+    void BSDGetNetInOut (long long * inbytes, long long * outbytes);
+
+    static bool checkPerms(void);
 
 private:
-  //  NetBSD:  Use long long, so we won't run into problems after 4 GB
-  //  has been transferred over the net!
-  long long _lastBytesIn, _lastBytesOut;
+    float netBandwidth_;
+    //  NetBSD:  Use long long, so we won't run into problems after 4 GB
+    //  has been transferred over the net!
+    long long _lastBytesIn, _lastBytesOut;
 
-  //  Did the meter initialize properly?
-  bool kernelHasStats_;
+    //  Did the meter initialize properly?
+    bool kernelHasStats_;
+    std::string netIface_;
 
-  void adjust(void);
+    void adjust(void);
 };
 
 #endif

@@ -54,6 +54,9 @@ BSDGetCPUTimes(long* timesArray);
 int
 BSDNetInit();
 
+bool
+OpenKDIfNeeded(bool fatal=true);
+
 void
 BSDGetNetInOut (long long * inbytes, long long * outbytes);
 
