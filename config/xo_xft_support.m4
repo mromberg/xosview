@@ -10,7 +10,17 @@ AC_DEFUN([XO_XFT_SUPPORT],[dnl
         freetype2_inc=`$FT_CONFIG --prefix`
         freetype2_inc="$freetype2_inc/include/freetype2"
     else
-        freetype2_inc="$x_includes/freetype2"
+        # In this case try and see if it is under X11
+        # If X11 is on the standard search path of the compiler
+        # and we are here we also don't have freetype-config
+        # and the user did not help.  So, not even God can find
+        # freetype2 'cause x_includes will be "".
+        if test -n "$x_includes"; then
+            AC_MSG_WARN([SWAG at freetype2 being in /usr/include/freetype2])
+            freetype2_inc="/usr/include/freetype2"
+        else
+            freetype2_inc="$x_includes/freetype2"
+        fi
     fi
     ])
     XFT_OBJS=""
