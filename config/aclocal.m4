@@ -31,7 +31,6 @@ dnl The make headercheck target will search all .h and .cc
 dnl files to help make/maintain this list
 AC_DEFUN(CXX_LIBRARY_SUPPORT,[
 AC_MSG_NOTICE([Examining C++ library support...])
-AC_LANG_PUSH([C++])
 AC_CHECK_HEADERS(
 [algorithm cassert cerrno cmath cstddef cstdlib cstring fstream iomanip iostream limits map sstream stdexcept string utility vector],
 [],
@@ -51,9 +50,7 @@ AC_REQUIRE([AC_PROG_CXX])
 AC_MSG_CHECKING(whether ${CXX} supports bool types)
 AC_CACHE_VAL(ice_cv_have_bool,
 [
-AC_LANG_PUSH([C++])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[bool b = true;]])],[ice_cv_have_bool=yes],[ice_cv_have_bool=no])
-AC_LANG_POP([])
 ])
 AC_MSG_RESULT($ice_cv_have_bool)
 if test "$ice_cv_have_bool" = yes; then
@@ -67,9 +64,7 @@ AC_REQUIRE([AC_PROG_CXX])
 AC_MSG_CHECKING(whether ${CXX} supports long long types)
 AC_CACHE_VAL(ice_cv_have_long_long,
 [
-AC_LANG_PUSH([C++])
 AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[long long x; x = (long long)0;]])],[ice_cv_have_long_long=yes],[ice_cv_have_long_long=no])
-AC_LANG_POP([])
 ])
 AC_MSG_RESULT($ice_cv_have_long_long)
 if test "$ice_cv_have_long_long" = yes; then
@@ -102,18 +97,7 @@ AC_MSG_RESULT($smp)
 ])dnl
 
 
-AC_DEFUN(AC_SYS_LINUX_VERS,[[
-changequote(<<, >>)
-<<
-LVERSION=`uname -r`
-LVERSION=`expr $LVERSION : '\([0-9]*\.[0-9]*\)'`
->>
-changequote([, ])
-]])
-
 AC_DEFUN(AC_XOSV_LINUX, [
-EXTRALIBS="$EXTRALIBS $XPMLIB"
-
 dnl
 dnl Add a switch to add -DUSESYSCALLS for linux.
 dnl
@@ -133,9 +117,7 @@ echo "enabled  Linux system calls by default"
 )
 
 INSTALL_ARGS='-m 755'
-]
-	NetMeter_Default_Setting=True
-)
+])
 
 
 dnl  ***  Below this line are the *BSD/BSDI and HPUX macros.  ***
@@ -143,7 +125,7 @@ dnl  ***  Below this line are the *BSD/BSDI and HPUX macros.  ***
 dnl  ***  This one isn't actually used yet.  - bgrayson  ***
 AC_DEFUN(AC_XOSV_BSD_COMMON, [
 dnl  The BSD versions need to link with libkvm, and have the BSD install flags.
-	EXTRALIBS="-lkvm $XPMLIB"
+	XO_CONCAT(LIBS,$LIBS,[-lkvm])
 	INSTALL_ARGS='-s -g kmem -m 02555'
 ])
 
@@ -156,9 +138,8 @@ dnl  Let's just be lazy -- set host_os to be netbsd.
 dnl
 dnl Netbsd needs to link with libkvm
 dnl
-        EXTRALIBS="-lkvm $XPMLIB"
+        XO_CONCAT(LIBS,$LIBS,[-lkvm])
         INSTALL_ARGS='-s -g kmem -m 02555'
-	NetMeter_Default_Setting=True
 	AC_DEFINE(XOSVIEW_NETBSD,[1],[NetBSD lkvm])
 ])
 
@@ -166,9 +147,8 @@ AC_DEFUN(AC_XOSV_FREEBSD, [
 dnl
 dnl FreeBSD also needs to link with libkvm
 dnl
-        EXTRALIBS="-lkvm $XPMLIB $DEVSTATLIB"
+        XO_CONCAT(LIBS,$LIBS,[-lkvm $DEVSTATLIB])
         INSTALL_ARGS='-s -g kmem -m 02555'
-	NetMeter_Default_Setting=True
 	AC_DEFINE(XOSVIEW_FREEBSD,[1],[FreeBSD lkvm])
 ])
 
@@ -176,9 +156,8 @@ AC_DEFUN(AC_XOSV_OPENBSD, [
 dnl
 dnl OpenBSD also needs to link with libkvm
 dnl
-        EXTRALIBS="-lkvm $XPMLIB"
+        XO_CONCAT(LIBS,$LIBS,[-lkvm])
         INSTALL_ARGS='-s -g kmem -m 02555'
-	NetMeter_Default_Setting=True
 	AC_DEFINE(XOSVIEW_OPENBSD,[1],[OpenBSD lkvm])
 ])
 
@@ -188,9 +167,8 @@ dnl BSDI (surprise, surprise) also needs to link with libkvm
 dnl BSDI before 4.0 should probably have CXX=shlicc++ too so use
 dnl gmake CXX=shlicc++ on bsdi [23].x
 dnl
-	EXTRALIBS="-lkvm $XPMLIB"
+	XO_CONCAT(LIBS,$LIBS,[-lkvm])
 	INSTALL_ARGS='-s -g kmem -m 02555'
-	NetMeter_Default_Setting=True
 	AC_DEFINE(XOSVIEW_BSDI,[1],[BSDI lkvm])
 ])
 
@@ -202,12 +180,11 @@ dnl
 
 AC_DEFUN(AC_XOSV_IRIX65, [
 	dnl
-	EXTRALIBS="-lrpcsvc"
+	XO_CONCAT(LIBS,$LIBS,[-lrpcsvc])
     AC_DEFINE(_G_HAVE_BOOL,[1],[IRIX65 bool])
 ])
 
 AC_DEFUN(AC_XOSV_GNU, [
-EXTRALIBS=$XPMLIB
 ])
 
 dnl MY_C_SWITCH(switch)

@@ -20,7 +20,7 @@ dnl    quote characters.
 dnl  This check is ugly.  Maybe it should be hidden away in aclocal?
 dnl    bgrayson 9/96
 netbsd1.[[0123456]]*|netbsdelf1.[[56]]*)
-  ## Pull in NetBSD stuff:  set of host_os, EXTRALIBS, INSTALL_ARGS, etc.
+  ## Pull in NetBSD stuff:  set of host_os, INSTALL_ARGS, etc.
   AC_XOSV_NETBSD
 
   AC_GCC_EXTRA_CXXFLAGS
@@ -36,23 +36,9 @@ netbsd1.[[0123456]]*|netbsdelf1.[[56]]*)
 
 ;;
 ##  Also check for versions that have not been tested.
-netbsd*)  AC_MSG_WARN([
-***************  Warning  *****************
-  xosview has not been tested on $host_os.
-  So far, it is known to work on the following NetBSD versions:
-    netbsd1.0
-    netbsd1.1
-    netbsd1.2
-    netbsd1.3
-    netbsd1.4
-    netbsd1.5 / netbsdelf1.5
-  If it works for version $host_os, please send mail to:
-	bgrayson@netbsd.org
-  If this message is in error, also notify bgrayson -- we're new
-to autoconf!
-  Thanks!
-*******************************************
-]); AC_XOSV_NETBSD
+netbsd*)
+    # CURRENT CASE
+    AC_XOSV_NETBSD
     host_dir=bsd
     echo host_dir is $host_dir
     host_os=netbsd ;;

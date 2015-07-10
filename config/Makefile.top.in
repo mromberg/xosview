@@ -1,3 +1,10 @@
+#-------------------------------------------------------------------------
+# @configure_input@
+# Any edits of this file will be lost
+# the next time configure is run.
+#-------------------------------------------------------------------------
+
+
 #
 # Top level Makefile Template for xosview.
 #
@@ -52,7 +59,7 @@ meterlib:
 
 ##  Also use LDFLAGS, which is inherited from the system.
 xosview: $(OBJS) @TOP_SRCDIR@/@host_dir@/libmeter.a
-	$(CXX) $(LDFLAGS) $(LFLAGS) -o xosview $(OBJS) $(LIBS)
+	$(CXX) -o xosview $(OBJS) $(LDFLAGS) $(LIBS)
 
 
 defaultstring.cc: Xdefaults defresources.awk
@@ -115,16 +122,18 @@ srcdir = @srcdir@
 # This seems to be the "accepted" way of inserting paths into the binary
 CXXFLAGS += -DXAPPLOADDIR=\"$(xapploaddir)\"
 
-#-------------------------------------------------------
-# New install
-#-------------------------------------------------------
+#-----------------------------------------------------------------------
+# New install (DESTDIR) in a gnu convention that only applies to install
+#-----------------------------------------------------------------------
 install: xosview
-	$(INSTALL) -d $(bindir) $(man1dir) $(docdir) $(xapploaddir)
-	$(INSTALL) -m 0755 $(srcdir)/xosview $(bindir)/xosview
-	$(INSTALL) -m 0644 $(srcdir)/xosview.1 $(man1dir)/xosview.1
-	$(INSTALL) -m 0644 $(srcdir)/README $(docdir)/README
-	$(INSTALL) -m 0644 $(srcdir)/README.linux $(docdir)/README.linux
-	$(INSTALL) -m 0644 $(srcdir)/Xdefaults $(xapploaddir)/XOsview
+	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(man1dir)\
+            $(DESTDIR)$(docdir) $(DESTDIR)$(xapploaddir)
+	$(INSTALL) -m 0755 $(srcdir)/xosview $(DESTDIR)$(bindir)/xosview
+	$(INSTALL) -m 0644 $(srcdir)/xosview.1 $(DESTDIR)$(man1dir)/xosview.1
+	$(INSTALL) -m 0644 $(srcdir)/README $(DESTDIR)$(docdir)/README
+	$(INSTALL) -m 0644 $(srcdir)/README.linux \
+            $(DESTDIR)$(docdir)/README.linux
+	$(INSTALL) -m 0644 $(srcdir)/Xdefaults $(DESTDIR)$(xapploaddir)/XOsview
 
 
 

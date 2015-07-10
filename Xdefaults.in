@@ -1,3 +1,4 @@
+! @configure_input@
 ! ######################################################################
 ! ######################################################################
 ! ##  DO NOT EDIT Xdefaults!!!!
@@ -143,7 +144,7 @@ xosview*pageUsedDecay:      True
 
 ! ** Network Meter Resources
 ! The netBandwidth is now in bytes/sec because... I said so.
-xosview*net:                 @NetMeter_Default_Setting@
+xosview*net:                True
 !xosview*netBandwidth:      64000  ! for 64kbps ISDN
 !xosview*netBandwidth:      57600  ! for up to 57.6kbps modems
 !xosview*netBandwidth:      28800  ! for 28.8kbps modems (no comp) 14.4 (with)

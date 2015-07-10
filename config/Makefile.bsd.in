@@ -1,3 +1,9 @@
+#-------------------------------------------------------------------------
+# @configure_input@
+# Any edits of this file will be lost
+# the next time configure is run.
+#-------------------------------------------------------------------------
+
 #
 # NetBSD Makefile template
 #
