@@ -19,7 +19,7 @@ dnl    according to GNU m4 and autoconf, [ and ] are the
 dnl    quote characters.
 dnl  This check is ugly.  Maybe it should be hidden away in aclocal?
 dnl    bgrayson 9/96
-netbsd1.[[0123456]]*|netbsdelf1.[[56]]*)
+netbsd*)
   ## Pull in NetBSD stuff:  set of host_os, INSTALL_ARGS, etc.
   AC_XOSV_NETBSD
 
@@ -35,7 +35,7 @@ netbsd1.[[0123456]]*|netbsdelf1.[[56]]*)
 
 ;;
 ##  Also check for versions that have not been tested.
-netbsd*)
+netbsdNOT_CHECKED*)
     # CURRENT CASE
     AC_XOSV_NETBSD
     host_dir=bsd

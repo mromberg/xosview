@@ -46,4 +46,6 @@ libmeter.a : $(OBJS)
 	ar cvr libmeter.a $(OBJS)
 	@RANLIB@ $@
 
+CXXFLAGS += -Wno-missing-field-initializers
+
 @AUTODEPEND@
