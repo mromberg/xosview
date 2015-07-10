@@ -16,8 +16,10 @@ include ../Makefile.config
 CXXFLAGS += -I@TOP_SRCDIR@
 
 
+# No longer runs (kernel changes I think)
 #swapinternal.o \
 #diskmeter.o \
+#intmeter.o \
 
 OBJS = \
 MeterMaker.o \
@@ -27,7 +29,6 @@ swapmeter.o \
 pagemeter.o \
 netmeter.o \
 loadmeter.o \
-intmeter.o \
 intratemeter.o \
 kernel.o
 

@@ -26,6 +26,7 @@ swapmeter.o \
 pagemeter.o \
 netmeter.o \
 nfsmeter.o \
+intratemeter.o \
 intmeter.o \
 loadmeter.o \
 btrymeter.o \

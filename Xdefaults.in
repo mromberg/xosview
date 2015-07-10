@@ -163,6 +163,18 @@ xosview*netUsedDecay:       True
 xosview*netIface:           False   ! Linux does not use.  If others do not nuke
 
 
+! ** Interrupt Rate Meter Resources
+xosview*irqrate:	    True
+xosview*irqrateUsedColor:   #56E67B
+xosview*irqrateIdleColor:   #03315E
+xosview*irqratePriority:    4
+xosview*irqratePeak:        100  # irq/sec
+xosview*irqrateUsedFormat:  autoscale
+xosview*irqrateUsedDecay:   True
+xosview*irqrateDecay:       True
+xosview*irqrateGraph:       False
+
+
 ! Interrupt Meter Resources
 xosview*interrupts:         True
 xosview*intOnColor:         #F2EF44
@@ -181,16 +193,6 @@ xosview*batteryFullColor:   #AF0BEB
 xosview*batteryLowColor:    #F2EF44
 xosview*batteryCritColor:   #FF0000
 xosview*batteryNoneColor:   #352E37
-
-
-! ** Interrupt Rate Meter Resources
-xosview*irqrate:	True
-xosview*irqrateUsedColor:	red
-xosview*irqrateIdleColor:	black
-xosview*irqratePriority:	1
-xosview*irqrateUsedFormat:  autoscale
-xosview*irqrateDecay:	True
-xosview*irqrateGraph:	False
 
 
 ! ** Gfx Meter Resources ( Irix )

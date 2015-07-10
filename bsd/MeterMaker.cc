@@ -20,29 +20,33 @@
 
 
 
-#include "cpumeter.h"
+//-----------------------------------------------------------
+// Here is the state of the BSD meters
+//-----------------------------------------------------------
+// Original BSD code
+#include "loadmeter.h"
 
-// copied from linux
+// copied from linux (uses /proc)
+#include "cpumeter.h"
 #include "memmeter.h"
 #include "swapmeter.h"
 #include "pagemeter.h"
+#include "intratemeter.h"
 
 // function with the old code.  But ya gotta be root.
 #include "netmeter.h"
-#include "loadmeter.h"
 
 // Old code is broken (looks like kernel changes)
 // prospects to use /proc are not good.
 //#include "diskmeter.h"
 //#include "intmeter.h"
 
-// Can probably work from /proc
-//#include "intratemeter.h"
-
 // No clue but bets are it is non functional.
 #ifdef HAVE_BATTERY_METER
 #include "btrymeter.h"
 #endif
+//-----------------------------------------------------------
+
 
 
 MeterMaker::MeterMaker(XOSView *xos){
@@ -77,10 +81,10 @@ void MeterMaker::makeMeters(void){
 //  if (_xos->isResourceTrue("interrupts"))
 //      push(new IntMeter(_xos));
 
-  // if (_xos->isResourceTrue("irqrate"))
-  // {
-  //     push(new IrqRateMeter(_xos));
-  // }
+  if (_xos->isResourceTrue("irqrate"))
+  {
+      push(new IrqRateMeter(_xos));
+  }
 
 #ifdef HAVE_BATTERY_METER
   //  NOTE:  Only xosview for NetBSD (out of all the BSDs) currently

@@ -182,7 +182,7 @@ an abbreviation for all three of the free BSD operating systems
 
 \fBInterrupt rate\fP
     interrupts per second
-    Linux  : < Not Supported >
+    Linux  : interrupts | free
     *BSD   : interrupts | free
     HPUX   : < Not Supported >
 
@@ -580,6 +580,22 @@ created for multiple CPUs.
 .dg swap
 .uf swap
 .ud swap
+
+\fBIRQ rate Meter Resources\fP
+
+.xt irqrate
+.cc irqrate Used "used irq rate"
+.cc irqrate Free "free irq rate"
+.pp irqrate
+xosview*irqratePeak: \fIpeakIRQRate\fP
+.RS
+  This number is the peak value for the field meter in irq/sec.  The used
+label will still report values over this peak.
+.RE
+.uf irqrate
+.ud irqrate
+.dc irqrate
+.dg irqrate
 
 \fBPage Swapping Meter Resources\fP
 

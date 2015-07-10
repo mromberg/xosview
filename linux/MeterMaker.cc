@@ -11,6 +11,7 @@
 #include "swapmeter.h"
 #include "pagemeter.h"
 #include "netmeter.h"
+#include "intratemeter.h"
 #include "intmeter.h"
 #include "serialmeter.h"
 #include "loadmeter.h"
@@ -67,6 +68,9 @@ void MeterMaker::makeMeters(void){
 
     // serial factory checks all resources.
     serialFactory();
+
+    if (_xos->isResourceTrue("irqrate"))
+        push(new IrqRateMeter(_xos));
 
     if (_xos->isResourceTrue("interrupts"))
         intFactory();
