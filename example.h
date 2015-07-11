@@ -34,9 +34,8 @@ private:
     // that we use to have it draw the
     // display for us.  This data type is perfectly
     // fine for this purpose.  But may be unsuitable
-    // for use as a storage for our data values.
-    // This is fine.  Define and use any suitable type
-    // here
+    // for storage of our data values.
+    // Define and use any suitable type here.
 
     unsigned long long _warpCoreTemp;   // current value
     unsigned long long _testMaximum;    // test max temp
@@ -54,7 +53,7 @@ private:
 // Constructor.  We initialize our parent and all of our
 // private data.  We can not read any resources or cause
 // any drawing from here because the window and
-// assiciated graphics do not yet exist when a meter
+// associated graphics do not yet exist when a meter
 // is constructed.
 inline ExampleMeter::ExampleMeter(XOSView *parent)
     : FieldMeterGraph(parent, 2, "WCOR", "TEMP/USED", true, true, true),
@@ -98,8 +97,7 @@ inline void ExampleMeter::checkResources( void ) {
     // Set some display properties in the base class
     // based on our specific resources.  Eventually
     // this will all be done like setUsedFormat().
-    // For now some you set directly.  A few I've hardcoded
-    // because isResourceTrue() does not take a default.
+    // For now some you set directly.
     // This is not a complete list of the options.  Look
     // at the parent meter class for more details.
 
@@ -114,6 +112,7 @@ inline void ExampleMeter::checkResources( void ) {
           "examplePriority", "10"));
     setUsedFormat(parent_->getResourceOrUseDefault(
           "exampleUsedFormat", "percent"));
+    useGraph_ = parent_->isResourceTrue("exampleGraph");
 
     // set the color with a string (requires a lookup)
     setfieldcolor(0, "green");
@@ -123,7 +122,6 @@ inline void ExampleMeter::checkResources( void ) {
     // just an example since we are not saving it
     // to show the use of the graphics object
     // from here.  Eventually this object will be passed in
-
     unsigned long color = parent_->g().allocColor("blue");
     setfieldcolor(1, color);
 }
@@ -156,12 +154,12 @@ inline void ExampleMeter::checkevent( void ) {
     fields_[1] = 1.0 - fields_[0];
 
     // Change the field color to show our level of concern
-    if (fields_[0] < .75)
-        setfieldcolor(0, "green");
-    else if (fields_[0] < 1.0)
+    if (percentVal > 0.9)
+        setfieldcolor(0, "red");
+    else if (percentVal > 0.75)
         setfieldcolor(0, "yellow");
     else
-        setfieldcolor(0, "red");
+        setfieldcolor(0, "green");
 
     // we can have the used label report the actual value even
     // if we peak the meter.
@@ -177,6 +175,12 @@ inline std::string ExampleMeter::name( void ) const {
 }
 
 inline void ExampleMeter::readWarpCoreTemp(void) {
+    // Here is where you would collect real data
+    // you could of course use multiple methods to
+    // do it and anything else you'd like.
+    // For this example I will just simulate a bad
+    // day on our star ship.
+
     static size_t count = 0;
 
     count++;
@@ -197,6 +201,10 @@ inline void ExampleMeter::readWarpCoreTemp(void) {
 // To turn on the above meter code just run:
 //
 //      xosview -o "example: True"
+//
+// or as a graphmeter:
+//
+//      xosview -o "example: True" -o "exampleGraph: True"
 //
 //  A real meter would of course put it's .h and .cc files
 // into the config/Makefile.os.in for their os so the code
