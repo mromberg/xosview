@@ -4,11 +4,6 @@
 
 - Make list of tested meters for CHANGELOG
 
-- Make a README.devel for developers
-  (update README files in general)
-  *** Include a section on what goes in each method of a data
-      collecting meter (No drawing in the constructor!)
-
 - Create an rpm spec file (as an example) to hold build package deps if
   nothing else.
 

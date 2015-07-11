@@ -90,7 +90,8 @@ void FieldMeterGraph::checkBackBuffer(void) {
         // the parent window.  The width_ and height_ are for
         // the actual meter graphic display (where x_ and y_ are upper left
         _pmap = parent_->newX11Pixmap(width_, height_);
-        logDebug << "new X11Pixmap: " << width_ <<", " << height_ << std::endl;
+        logDebug << "new X11Pixmap: " << width_ <<", " << height_
+                 << std::endl;
 
         // Fill is with the last "idle" color
         _pmap->g().setBG(colors_[numfields()-1]);
