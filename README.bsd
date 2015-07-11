@@ -1,0 +1,137 @@
+README file for xosview BSD
+
+  In the past xosview has run on several variants of BSD.
+At the moment, it is only known to run on one.  NetBSD.  And
+NetBSD-6.5.1 in particular.  If I have time, I may try others variants.
+Patches are always welcome :).
+
+NetBSD-specific:
+
+  Since xosview was written many changes occurred in the kernel and the
+interface used to gather information no longer works.  Early work on
+getting xosview running on NetBSD-6.1.5 found only three functioning meters
+(cpu, load and net).  All the others no longer compiled or ran.
+
+  The good news.  NetBSD has (or has had for a while) a /proc file-system
+that functions in the same manner as on Linux.  So, the linux memory,
+swap and page meters are now being used on NetBSD right out of the box.
+In turn, the netbsd intrate meter was rewritten to use /proc and given to
+linux :).
+
+  Lastly, the cpu meter was also brought over from linux.  While the bsd cpu
+meter did work, it did not support multiple cpus.  The Linux meter did and
+now so does NetBSD.  There is also the added side benefit that none of the
+meters now require special privileges except for the net meter.
+
+
+*****************************************************************************
+  Note:  xosview needs to run 'setgid kmem' in order to access some of the
+    kernel information (at least until some more statistics are added to
+    the /kern or /proc file systems).  If you do not have root or kmem
+    permission on the machine, xosview will not run.
+*****************************************************************************
+
+  This is now only true for the network meter.  Xosview does have it turned
+on by default.  If you are non in the kmem group xosview will simply complain
+once and then go on working without a network meter.   If you wish to arrange
+for xosview to display the network meter then you can change permissions in
+whatever way you like (such as setting the binary sgid kmem).  Xosview's
+install will not do anything other than a standard package install.
+
+
+  To make xosview:
+
+  Only interesting thing I found was that NetBSD can contain two (possibly
+different) versions of the freetype2 library.  One is installed with X11R7
+and the other in /usr/pkg.  This can be an issue for the configure script
+as it uses the freetype-config binary to attempt to locate the library.
+
+  If configure finds the /usr/pkg/bin/freetype-config on your path then it
+will use the /usr/pkg variant of freetype2 which does not seem to play
+nicely with the Xft library from /usr/X11R7 build with the freetype2 from
+there.  My solution... nuke the /usr/pkg version of freetype2.
+
+
+    Test the executable to make sure it works.  You need to be root, or a
+      member of group 'kmem', to test it at this stage.  Again this is just
+      if you wish to see/use the network meter.  xosview will come up
+      with the default compile-time resources.
+
+  Enjoy!
+
+  Brian Grayson (bgrayson@netbsd.org)
+
+  Further information/FAQs:
+
+1 The new memory meter looks funny.
+
+   Yea.  It kinda does.  This is because the information found in
+   /proc/meminfo looks kinda funny to the developer of xosview.  The
+   math does not work.  If you add buffers + cache + free the number
+   you get is LARGER than total.  So, the numbers we know are total, and
+   free.  We could just display using those two.  It would be boring.
+
+    There would just be total, free and used (used = total - free).  Since
+    swap and cache are clearly trying to tell us something I used one
+    of them (since using both gives silly results).  The current
+    implementation is:
+    used (total - free - cache) | cache | free
+
+    If someone else has any further insight into the /proc/meminfo numbers
+    on netbsd I'm all ears.
+
+2.  Why does xosview need to be setgid kmem, i.e., why doesn't it use
+  user-level system calls, and the optional-but-recommended /kern and
+  /proc file-systems?
+
+    Information such as the breakdown of CPU usage is not yet
+  available (or not available in the kind of detail xosview
+  desires/requires) through any system calls, sysctl,
+  /kern, or /proc (at least not that I know!  If not, let
+  me know.)  Thus, xosview occasionally needs to munge
+  through the kernel's data structures to get its information.
+
+  The above is now only true for the network meter.  The /proc
+  file-system seems to contain nothing there.  There would not
+  have to be much.  Just one more virtual file.  It could be simple
+  with just two numbers bytesIn bytesOut.  That would do it.  Maybe
+  a NetBSD kernel hacker could arrange for this.
+
+3.  Why does the cpumeter show user, nice, system, and idle/free, but
+  not show interrupts?
+
+  Currently the /proc/stat based cpu meter is ready and able to display
+  ten fields (USR/NI/SYS/IO/I/SI/ST/GST/NGST/IDL).  Currently /proc/stat
+  on netbsd only hs usr/ni/sys/idle (like older linux kernels).  So,
+  xosview will never show values for the other fields because they are not
+  there.  But if they were to show up... Then xosview would start
+  to use them.
+
+4.  The swap meter doesn't seem to be working.
+
+    They now should be fixed and working (tested) from values found
+    in /proc/meminfo
+
+5.  The battery meter doesn't display.
+
+    By default, the battery meter is not enabled.  To enable it,
+  put these resources in either your system-wide app-defaults
+  file (probably /usr/X11R6/lib/X11/app-defaults/XOsview) or in
+  your personal ~/.Xdefaults (feel free to change the color
+  scheme!):
+
+  ! Battery meter resources:
+  xosview*battery:	true
+  xosview*batteryLeftColor:	orange
+  xosview*batteryUsedColor:	orange
+  xosview*batteryPriority:	50
+  xosview*batteryUsedFormat:	autoscale
+
+  Currently the battery meter is totally untested (and may not even compile)
+
+6. All of the information gathering code is still in kernel.cc
+   This includes the code for FreeBSD and OpenBSD.  Some if it has
+   been ifdefed out.  But it is all there.  It is possible that someone
+   braver than I can get it working again on the other BSD variants.
+   Or better yet support /proc (or something similar).
+

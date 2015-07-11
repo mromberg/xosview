@@ -1,0 +1,151 @@
+                 Notes for developers
+
+* CONFIGURE
+
+  If you checkout the source from the git repository you will find that
+  there are no Makefiles and no configure script to create the Makefiles.
+  Don't Panic!  This is perfectly normal.  A configure script is built
+  by a developer and distributed in source releases you find on the
+  interwebs so that normal users do not have to install autoconf or build
+  the configure script.
+
+  When you checkout xosview from the source code reposity it will not have
+  the configure script because you are the devoper that will build it.
+  There is one Makefile located in the config subdirectory that will do
+  this.   It uses autoconf installed on your system and the other autoconf
+  files in the conf directory to build a configure script.  Simply cd
+  to config and run make (there is a script called autogen.sh that will
+  do exactly this for you in the base dirctory).
+
+  The configure script needs to be rebuilt any time one of it's
+  dependent files (configure.in, or any .m4 file) are modified.  The
+  normal make targets don't do this for you.  So, run autogen.sh after
+  edits to these files to rebuild the configure script.
+
+  The remaining .in files are used by the configure script to create the
+  rest of the build system.  For example the file config/Makefile.linux.in
+  will be used to create the file linux/Makefile.  So, anytime you edit
+  config/Makefile.linux.in you would need to re-run configure.  This is
+  also not done by the normal make targets
+
+* TURNING ON DEBUGGING
+
+  The configure script has a few options that are of interest to
+  developers.  They are:
+
+  --enable-debug
+
+    This option changes the gcc flags to -g.  It also defines the
+    symbol XOSVDEBUG which enabled logDebug and logAssert
+    (see below).  It may also turn on other helpul debug features in
+    the future.
+
+  --enable-auto-depend
+
+    The xosview makefiles contain no dependency information other
+    than a list of object files needed to build the executable. For
+    a developer this means that make may not recognize that a .cc file
+    needs to be recompiled because you just edited a .h file it
+    includes.  Turning on this option causes gcc (and make) to
+    recognize these changes and rebuild everything that depends on the
+    file that was just edited.
+
+  --enable-devel
+
+   This option turns on both of the above features.
+
+
+* LOGGING
+
+  With only a couple of exceptions (--version --help) all output
+  to stdout and stderr should go through a stream like object
+  found in log.h.  This header has some documentation describing it's
+  use.  If all output is sent using these "streams" then it can be
+  routed (say to files), suppressed and other things.  Of particular note
+  it uses std::ostream which does not suffer the problems inherent in
+  the printf() family of functions.  Use of printf() type functions
+  is discouraged.
+
+  The various log streams each have a short note describing the
+  intended type of message intended to be sent through them and
+  to the user.  Please see the log.h file for details.
+
+  Of particular note are the logDebug and logAssert streams.  These
+  two streams only become active when XOSVDEBUG is defined.  The
+  compiler *should* make them all no-ops when XOSVDEBUG is not defined and
+  the optimizer is enabled.  So, any assert checks you put in will
+  run for developers only.  And the debug messages vanish for non
+  developers.  See DEBUG MESSAGES for thoughts on logDebug
+
+* DEBUG MESSAGES
+
+  When you turn on --enable-debug xosview will start to fill your screen
+  with alot of lines that start with "DEBUG:file:line: ...".  This
+  is normal.  All code such as:
+
+  logDebug << "Hello World!\n";
+
+  is now active.  All of these debug lines can be controlled by the
+  presence of a file called log.conf (see the log.h file).
+
+  This turns off all DEBUG messages (log.conf):
+  - *.cc
+  - *.h
+
+  You can then enable message for just the file you are interested in
+  like so:
+  - *.cc
+  + xosview.cc
+
+  There is a balance to leaving debug messages in the code and filling
+  your fellow developer's screen with the a stream of information
+  resembling the matrix on crack.  The idea should be to leave in debug
+  messages that may be useful later on in understanding what the code
+  is doing but are not too verbose.
+
+* STRINGS and ARRAYS
+
+  char * is DEAD.  Don't use char * for strings unless calling a
+  library function that requires them.  std::string is now in common
+  use and is much safer and easier to understand than playing around
+  with pointers.  The top Makefile contains a target that greps for
+  the use of old C library string methods and squawks about any it
+  finds (make checksource).
+
+  The same thinking applies to standard C arrays.  Use std::vector
+  instead.
+
+* STRUCTURE
+
+ main.cc:     main() makes an instance of xosview and runs it
+
+ xwin.cc:     Basic X11 window code owns a Graphics object used
+              to paint on the window
+
+ xosview.cc:  A subclass of xwin specialized for xosview.
+              Owns a resource database (Xrm) and creates
+              a list of meters
+
+ meter.cc:    A meter base class.  Stubs for configuring
+              the meter and gathering information.
+
+ *meter.cc:   Specialized meter base classes that contain drawing
+              code for displaying information but don't
+              actually gather any.  Examples are fieldmeter which
+              can display an array of values as a bar graph or
+              bitmeter which displays a sequence of binary values
+              as on or off "lights".
+
+ os/*meter.cc: Specialized instances of drawing meters that
+               know how to gather the data to be displayed by their
+               base class.  They don't draw.  They just collect
+               information and let the parent's deal with it's
+               display.
+
+  Since the creation of a new os/*meter is the most common thing
+done I've provided one in the source as example.h.  It has notes
+about how a new meter should be added to xosview.
+
+
+
+  

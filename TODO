@@ -18,8 +18,6 @@
 
 - Make some base classes for the shared linux/bsd meters
 
-- VM to run other OSes (and try to fix bsd meters).
-
 - 32 bit truecolor transparency
 
 - Make all data gathering classes interact through a clear interface.
@@ -73,10 +71,7 @@
 * Make xosview re-check resources when the resources are changed,
     or when a signal is sent to it, or a key is pressed in it?
 
-* Add command-line arg for specifying an instance name, so that we can
-    say "xosview -name xosview-stipple" and have the xosview-stipple*
-    resources read in also.
-  Redo the fieldmeter drawing code -- it (and the decayfieldmeter
+* Redo the fieldmeter drawing code -- it (and the decayfieldmeter
     code) is very ugly.
 
 * Add in stipple support for those stuck with 1-bit displays (black,

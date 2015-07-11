@@ -298,9 +298,8 @@ So, this will also set the xosview*memFreeColor to purple:
 
 --config, -c \fIfileName\fP
 .RS
-Load an XResource file containing overrides.  This file will be overrides
-(not replace) any previous resources.  See the \fBRESOURCES\fP section for more
-details.
+Load an XResource file.  This file will override (not replace) any previous
+resources.  See the \fBRESOURCES\fP section for more details.
 .RE
 
 --xrm-dump, -xrmd

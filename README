@@ -1,8 +1,31 @@
-  To build xosview:
+                          XOSVIEW
 
-    Xosview now uses gnu autoconfig.  There is hope that this will make
-    building and installing it easier.  Still, this is the first attempt.
-    So, if you find any trouble feel free to point it out.
+    xosview is a lightweight program that gathers information
+    from your operating system and displays it in graphical form.
+    It attempts to show you in a quick glance an overview of how
+    your system resources are being utilized.
+
+    It can be configured to be nothing more than a small strip
+    showing a couple of parameters on a desktop task bar.  Or it
+    can display dozens of meters and rolling graphical charts over
+    your entire screen.
+
+    Since xosview renders all graphics with core X11 drawing
+    methods, you can run it on one machine and display it on
+    another.  This works even if your other host is an operating
+    system not running an X server inside a virtual machine running
+    on a physically different host.  If you can connect to it on
+    a network, then you can popup an xosview instance and monitor
+    what is going on.
+
+* Current known working platforms:
+   
+  - Linux
+
+  - NetBSD (6.1.5) but most anything with the /proc file-system should
+    work as well.
+
+* To build xosview:
 
     In general, you should be able to build xosview by following these
     steps:
@@ -11,20 +34,93 @@
     make
     make install    
 
-    Versions 1.4 and later require gcc to compile.  Versions of gcc earlier 
-    than 2.7.0 may fail to build xosview.  Please see the README file for
-    your the platform you are building on for further details.
+    There are a few optional features you may be interested in.  So,
+    you may want to checkout 'configure --help' as it will show you
+    options you can change such as the install prefix.  These options
+    may also be used to help locate optional (or required) libraries
+    if the configure script is unable to do so by itself.
+
+    Please see the README file for the platform you are building on for
+    further details.
 
     Edit Makefile.config for your setup, if you wish to change
     anything from the default settings, such as the optimization
     flags.  This of course, should be done before one runs make.
 
-  To run xosview :
+* To run xosview :
+
+    The binary should start up and run without any fuss after being
+    built.  If you give it a -h or --help command line option it
+    will show a brief list of all the command line options.  For
+    more information (see the man page)
+
+    The xosview binary contains a complete set of default options.  It
+    should run right out of the box from anywhere.  But, it does
+    search for other options in standard locations.  See the man page
+    for full details.  Note: you can read the man page without installing
+    it by running 'zcat xosview.1 | groff -lascii -mandoc - | less -R'
 
     Please see the README file for your platform for any special 
     instructions for running xosview on that platform.
 
-    See the man page for information on the xosview display and
-    how you can customize it.
 
-Revision: $Id: README,v 1.5 1997/07/18 03:31:21 bgrayson Exp $
+* To install xosview
+
+  - short version: 'make install'
+
+  - slightly longer version:
+
+    The xosview configure script and makefile support Gnu conventions.
+    https://www.gnu.org/prep/standards/html_node/Directory-Variables.html
+    So, controlling exactly where the 'make install' will put things.
+    By default configure will use a prefix of /usr/local  you may want
+    to change this by adding a --prefix argument when you run the script.
+
+    Note: xosview will hard code a path to an app-defaults directory into
+    the binary *at compile time*.  This location is based on the prefix
+    *at comiple time*.  If you are later going to change this prefix (by
+    say changing it when you run make install) then you can set the compiled
+    in location with the configure option --with-app-defaults=DIR
+
+* To configure xosview
+
+  Out of the box xosview will start up using it's default configuration
+  of meters colors, fonts and values.   It will also look for X resource
+  values to override these defaults in the normal X locations.  There are
+  at least ten of these places and xosview checks them all (see the man
+  page).
+
+  The default configuration may not be to your taste.  So, you can change
+  one or more of the hundreds of options by setting an X resource
+  (see the man page).  The easiest way to do this is to add a file to
+  your home directory called .Xdefaults (see the man page).  It should
+  be noted that xosview will read this file (if it exsists) even if
+  your desktop environment failed to do so.  So, it will always work.
+
+  There are some alternative Xdefault "themes" you can try out as examples
+  by loading them with the -c option (see the man page).  If you come up
+  with a nice set of options you would like to share with others please
+  contact the developers on the sourceforge website.
+
+  Stipple support:
+    Also, NetBSD-mac68k people (and others) that have monochrome systems
+      may want to try out the new stipple code -- set the enableStipple
+      resource to true, and choose black and white for the various
+      fields.  The fields are automatically stippled 100%, 75%, 50%, and
+      25% in a fixed fashion (future versions may allow the user to
+      specify the stipple percentage).
+
+    Some resources were included with the xosview source code to allow
+      an easy example.  Type 'xrdb -merge Xdefaults.stipple', followed
+      by 'xosview -name xosvstipple &' and 'xosview -name xosvstipplebw &'.
+      This will bring up two xosview windows, one using stippling with
+      color (xosvstipple) and one using only black and white
+      (xosvstipplebw).
+
+    The stipple support is fairly experimental, so provide any
+      feedback you can -- positive, negative, etc.
+
+* To work with the source code as developer:
+
+  See the file README.devel which contains details about git, autoconf
+  gcc, makefiles and code internal workings of the code.
