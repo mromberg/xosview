@@ -75,6 +75,8 @@
     So, controlling exactly where the 'make install' will put things.
     By default configure will use a prefix of /usr/local  you may want
     to change this by adding a --prefix argument when you run the script.
+    One can run 'make -n install' to get a quick priview of what files
+    will be installed and where.  There are not many of them.
 
     Note: xosview will hard code a path to an app-defaults directory into
     the binary *at compile time*.  This location is based on the prefix

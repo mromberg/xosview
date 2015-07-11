@@ -122,7 +122,8 @@ srcdir = @srcdir@
 
 # This seems to be the "accepted" way of inserting paths into the binary
 CXXFLAGS += -DXAPPLOADDIR=\"$(xapploaddir)\"
-
+DOC_FILES = @DOC_FILES@
+DOC_FILES := $(DOC_FILES:%=$(srcdir)/%)
 #-----------------------------------------------------------------------
 # New install (DESTDIR) in a gnu convention that only applies to install
 #-----------------------------------------------------------------------
@@ -131,11 +132,9 @@ install: xosview
             $(DESTDIR)$(docdir) $(DESTDIR)$(xapploaddir)
 	$(INSTALL) -m 0755 $(srcdir)/xosview $(DESTDIR)$(bindir)/xosview
 	$(INSTALL) -m 0644 $(srcdir)/xosview.1 $(DESTDIR)$(man1dir)/xosview.1
-	$(INSTALL) -m 0644 $(srcdir)/README $(DESTDIR)$(docdir)/README
-	$(INSTALL) -m 0644 $(srcdir)/README.linux \
-            $(DESTDIR)$(docdir)/README.linux
-	$(INSTALL) -m 0644 $(srcdir)/Xdefaults $(DESTDIR)$(xapploaddir)/XOsview
-
+	$(INSTALL) -m 0644 $(DOC_FILES) $(DESTDIR)$(docdir)/
+	$(INSTALL) -m 0644 $(srcdir)/Xdefaults\
+            $(DESTDIR)$(xapploaddir)/XOsview
 
 
 #-------------------------------------------------------

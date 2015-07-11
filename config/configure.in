@@ -123,14 +123,19 @@ XO_XFT_SUPPORT
 # options / configuration.
 #
 
+# list of docs to install.  files to place in ${docdir} (See Makefile.top.in)
+DOC_FILES="README"
+
 case $host_os in
     linux*)
+        XO_CONCAT(DOC_FILES,$DOC_FILES,README.linux)
         AC_XOSV_LINUX
 
 	host_dir=linux
         host_os=linux
         ;;
     netbsd*|freebsd*|openbsd*|bsdi*)
+        XO_CONCAT(DOC_FILES,$DOC_FILES,README.bsd)
         XO_BSD_CONFIG
         ;;
     hpux*)
@@ -139,6 +144,7 @@ case $host_os in
         host_os=hpux
         ;;
     irix6.5*)
+        XO_CONCAT(DOC_FILES,$DOC_FILES,README.irix)
         AC_XOSV_IRIX65
 	host_dir=irix65
 	host_os=irix65
@@ -168,6 +174,7 @@ AC_SUBST(BTRYMETER)
 AC_SUBST(INSTALL_ARGS)
 AC_SUBST(host_dir)
 AC_SUBST(xapploaddir)
+AC_SUBST(DOC_FILES)
 
 AC_CONFIG_FILES([
   Makefile:config/Makefile.top.in
