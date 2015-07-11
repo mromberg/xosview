@@ -66,8 +66,15 @@ xosview: $(OBJS) @TOP_SRCDIR@/@host_dir@/libmeter.a
 defaultstring.cc: Xdefaults defresources.awk
 	@AWK@ -f defresources.awk Xdefaults > defaultstring.cc
 
-distrib: checksource distclean
-	echo "FIXME!  Make distrib tarball"
+PKG_NAME = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
+
+distrib: checksource
+	git archive --prefix=stage/ master | tar xf -
+	cd stage && ./autogen.sh
+	mv stage $(PKG_NAME)
+	tar cf - $(PKG_NAME) | gzip -9 > $(PKG_NAME).tar.gz
+	rm -rf $(PKG_NAME)
+
 
 clean :
 	@echo "***  Cleaning..."
