@@ -20,6 +20,7 @@
 #include "raidmeter.h"
 #include "lmstemp.h"
 #include "nfsmeter.h"
+#include "example.h"  // The example meter
 
 #include <sstream>
 #include <iomanip>
@@ -29,8 +30,13 @@ MeterMaker::MeterMaker(XOSView *xos){
 }
 
 void MeterMaker::makeMeters(void){
-    // Standard meters (usually added, but users could turn them off)
 
+    // Add the example meter.  Normally you would use
+    // isResourceTrue.  But example resources are not in Xdefalts
+    if (_xos->getResourceOrUseDefault("example", "False") == "True")
+        push(new ExampleMeter(_xos));
+
+    // Standard meters (usually added, but users could turn them off)
     if (_xos->isResourceTrue("load"))
         push(new LoadMeter(_xos));
 

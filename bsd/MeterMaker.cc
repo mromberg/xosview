@@ -41,6 +41,9 @@
 #ifdef HAVE_BATTERY_METER
 #include "btrymeter.h"
 #endif
+
+#include "example.h"  // The example meter
+
 //-----------------------------------------------------------
 
 
@@ -49,6 +52,11 @@ MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
 }
 
 void MeterMaker::makeMeters(void){
+    // Add the example meter.  Normally you would use
+    // isResourceTrue.  But example resources are not in Xdefalts
+    if (_xos->getResourceOrUseDefault("example", "False") == "True")
+        push(new ExampleMeter(_xos));
+
     //  check for the loadmeter
     if (_xos->isResourceTrue("load"))
         push(new LoadMeter(_xos));
