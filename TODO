@@ -12,12 +12,11 @@
 - Create an rpm spec file (as an example) to hold build package deps if
   nothing else.
 
-- Make a "shortcut" -xrm like command line switch that adds "xosview*" for
-  you.
-
 - Update SF website
 
 ===================== Post 1.9.0
+
+- Make some base classes for the shared linux/bsd meters
 
 - VM to run other OSes (and try to fix bsd meters).
 

@@ -220,12 +220,22 @@ void XOSView::loadConfiguration(int argc, char **argv) {
         _xrm->putResource(xrml[i]);
         logDebug << "ADD: " << xrml[i] << std::endl;
     }
+    // And then those from -o
+    const std::vector<std::string> &ol = clopts.values("xosvxrm");
+    for (size_t i = 0 ; i < ol.size() ; i++) {
+        std::string res(instanceName() + "*" + ol[i]);
+        _xrm->putResource(res);
+        logDebug << "ADD: " << res << std::endl;
+    }
+
 
     // Now all the rest that are set by the user.
     // defaults delt with by getResourceOrUseDefault()
     const std::vector<util::CLOpt> &opts = clopts.opts();
     for (size_t i = 0 ; i < opts.size() ; i++)
-        if (opts[i].name() != "xrm" && !opts[i].missing()) {
+        if (opts[i].name() != "xrm"
+          && opts[i].name() != "xosvxrm"
+          && !opts[i].missing()) {
             std::string rname("." + instanceName() + "*" +opts[i].name());
             _xrm->putResource(rname, opts[i].value());
             logDebug << "ADD: "
@@ -541,7 +551,13 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
       "-x", "-xrm",
       "spec",
       "Set an X resource using the supplied spec.  For example: "
-      "-x '*background: red' would set the background to red.");
+      "-x 'xosview*background: red' would set the background to red.");
+    o.add("xosvxrm",
+      "-o", "--option",
+      "spec",
+      "Same as -xrm but prepends the string 'xosview*' (insance name) "
+      "for you.  So: -o 'background: red' would set the background "
+      "to red.");
 
     // Xosview specific options
     //----------------------------------------------------

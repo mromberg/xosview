@@ -286,6 +286,16 @@ and \'purple\'):
 .RE
 .RE
 
+--option, -o \fIspec\fP
+.RS
+This option is exactly the same as -xrm except that you do not need to
+specify an instance name (such as xosview*).  It will be prepended for you.
+So, this will also set the xosview*memFreeColor to purple:
+.RS
+-o "memFreeColor: purple"
+.RE
+.RE
+
 --config, -c \fIfileName\fP
 .RS
 Load an XResource file containing overrides.  This file will be overrides
