@@ -142,6 +142,19 @@ xosview*pageUsedFormat:     autoscale
 xosview*pageUsedDecay:      True
 
 
+! Wifi Link meter
+xosview*wlink:                False
+xosview*wlinkBackground:      #03315E
+xosview*wlinkGoodColor:       #56E67B
+xosview*wlinkPoorColor:       #F2EF44
+xosview*wlinkPoorValue:       39       ! scale is 0-70 this value is a guess
+xosview*wlinkPriority:        8
+xosview*wlinkDecay:           False
+xosview*wlinkGraph:           False
+xosview*wlinkUsedFormat:      autoscale
+xosview*wlinkUsedDecay:       True
+
+
 ! ** Network Meter Resources
 ! The netBandwidth is now in bytes/sec because... I said so.
 xosview*net:                True
@@ -160,7 +173,7 @@ xosview*netDecay:           True
 xosview*netGraph:           False
 xosview*netUsedFormat:	    autoscale
 xosview*netUsedDecay:       True
-xosview*netIface:           False   ! Linux does not use.  If others do not nuke
+xosview*netIface:           False  ! Linux does not use. If others do not nuke
 
 
 ! ** Interrupt Rate Meter Resources

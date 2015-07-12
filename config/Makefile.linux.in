@@ -24,6 +24,7 @@ cpumeter.o \
 memmeter.o \
 swapmeter.o \
 pagemeter.o \
+wlinkmeter.o \
 netmeter.o \
 nfsmeter.o \
 intratemeter.o \

@@ -10,6 +10,7 @@
 #include "memmeter.h"
 #include "swapmeter.h"
 #include "pagemeter.h"
+#include "wlinkmeter.h"
 #include "netmeter.h"
 #include "intratemeter.h"
 #include "intmeter.h"
@@ -62,6 +63,9 @@ void MeterMaker::makeMeters(void){
     if (_xos->isResourceTrue("page"))
         push(new PageMeter(_xos,
             util::stof(_xos->getResource("pageBandwidth"))));
+
+    if (_xos->isResourceTrue("wlink"))
+        push(new WLinkMeter(_xos));
 
     if (_xos->isResourceTrue("net"))
         push(new NetMeter(_xos));

@@ -30,6 +30,7 @@ public:
     size_t numfields(void) const { return fields_.size() ; }
     void setfieldcolor( int field, const std::string &color );
     void setfieldcolor( int field, unsigned long color);
+    unsigned long fieldcolor(size_t field) const { return colors_[field]; }
     void reset( void );
 
     void setUsed (float val, float total);

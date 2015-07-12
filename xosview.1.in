@@ -689,6 +689,40 @@ does not work in decay mode.
 .\"  gfxUsedFormat resource
 .uf gfx
 
+\fBWireless Link Meter Resouces\fP
+
+xosview*wlink: (True or False)
+.RS
+If True xosview will display a meter showing the wireless link quality.  What
+is quality you might ask?  It is a number between zero and 70.  Beyond that
+you are on your own.  Anway Linux systems will display this value and let
+you set a warning threshold when it is "low".  If this meter is enabled
+and no wireless connections exists it will just sit there and display zero.
+.RE
+xosview*wlinkBackground: \fIcolor\fP
+.RS
+  The \fIcolor\fP to use to display the background area of the meter.
+.RE
+xosview*wlinkGoodColor: \fIcolor\fP
+.RS
+The \fIcolor\fP to use for the display of the link value when it is
+above the \fIwlinkPoorValue\fP threshold.
+.RE
+xosview*wlinkPoorColor:  \fIcolor\fP
+.RS
+The \fIcolor\fP to use for the display of the link value when it is
+below the \fwlinkPoorValue\fP threshold.
+.RE
+xosview*wlinkPoorValue:  \fIvalue\fP
+.RS
+The threshold \fIvalue\fP to use to switch between wlinkGoodColor and
+wlinkPoorColor.
+.RE
+.pp wlink
+.dc wlink
+.dg wlink
+.uf wlink
+.ud wlink
 
 \fBNetwork Meter Resources\fP
 
