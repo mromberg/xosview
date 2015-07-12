@@ -33,6 +33,7 @@ loadmeter.o \
 btrymeter.o \
 diskmeter.o \
 raidmeter.o \
+tzonemeter.o \
 lmstemp.o \
 MeterMaker.o
 

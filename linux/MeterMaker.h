@@ -27,6 +27,7 @@ private:
     void cpuFactory(void);
     void serialFactory(void);
     void intFactory(void);
+    void tzoneFactory(void);
     void lmsTempFactory(void);
     void getRange(const std::string &resource, size_t cpuCount,
       size_t &start, size_t &end) const;

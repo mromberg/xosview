@@ -36,7 +36,7 @@ To install xosview:
   Meters that have been tested (to some extent):
 
     btrymeter, cpumeter, diskmeter, intmeter, intratemeter, loadmeter,
-    memmeter, netmeter, pagemeter, swapmeter, wlinkmeter
+    memmeter, netmeter, pagemeter, swapmeter, wlinkmeter, tzonemeter
 
   Meters that compile.  But untested:
   

@@ -19,6 +19,7 @@
 #include "btrymeter.h"
 #include "diskmeter.h"
 #include "raidmeter.h"
+#include "tzonemeter.h"
 #include "lmstemp.h"
 #include "nfsmeter.h"
 #include "example.h"  // The example meter
@@ -87,6 +88,9 @@ void MeterMaker::makeMeters(void){
 
     if (_xos->isResourceTrue("battery"))
         push(new BtryMeter(_xos));
+
+    if (_xos->isResourceTrue("tzone"))
+        tzoneFactory();
 
     if (_xos->isResourceTrue("lmstemp"))
         lmsTempFactory();
@@ -176,4 +180,14 @@ void MeterMaker::lmsTempFactory(void) {
         std::string lab = _xos->getResourceOrUseDefault(s2.str(), "TMP");
         push(new LmsTemp(_xos, res, lab, caption));
     }
+}
+
+void MeterMaker::tzoneFactory(void) {
+    size_t nzones = TZoneMeter::count();
+
+    if (!nzones)
+        logProblem << "tzone enabled but no thermal zones found.\n";
+
+    for (size_t i = 0 ; i < nzones ; i++)
+        push(new TZoneMeter(_xos, i));
 }

@@ -9,9 +9,15 @@
 
 int main(int argc, char **argv) {
 
-    XOSView xosview;
+    try {
 
-    xosview.run(argc, argv);
+        XOSView xosview;
+        xosview.run(argc, argv);
+
+    } catch (...) {
+        logBug << "Unhandled exception." << std::endl;
+        return 1;
+    }
 
     return 0;
 }

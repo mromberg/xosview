@@ -691,9 +691,9 @@ does not work in decay mode.
 
 \fBWireless Link Meter Resouces\fP
 
-xosview*wlink: (True or False)
+.xt wlink
 .RS
-If True xosview will display a meter showing the wireless link quality.  What
+This meter shows wireless link quality.  What
 is quality you might ask?  It is a number between zero and 70.  Beyond that
 you are on your own.  Anway Linux systems will display this value and let
 you set a warning threshold when it is "low".  If this meter is enabled
@@ -891,6 +891,56 @@ and like both on multiprocessor systems.
 .\"  Do the priority resource
 .pp int
 
+\fBThermal Zone Resources\fP
+
+.RS
+Linux supports WAY TOO MANY ways to read temperature.  This is yet
+another one.   It was my hope to read the hot and critical thermal trip
+points out of /sys directly.  But based on my tests (with a sample size
+of two) this is inconsistant.  So, this meter supports configuratble
+values that are shared by all thermal zones.
+.RE
+
+.xt tzone
+.RS
+Enabling this creates a seperate meter for each thermal zone found.
+.RE
+xosview*tzoneForeGround: \fIcolor\fP
+.RS
+The foreground color for temperatues below the hotTrip point.
+.RE
+xosview*tzoneBackground: \fIcolor\fP
+.RS
+The background color.
+.RE
+xosview*tzoneHotColor: \fIcolor\fP
+.RS
+The foreground color for temperatues over the hotTrip point and under
+the critTrip point.
+.RE
+xosview*tzoneCritColor: \fIcolor\fP
+.RS
+The foreground color for temperatues over the critTrip point.
+.RE
+xosview*tzoneHotTrip:          \fIvalue\fP
+.RS
+  The temperature (in degrees C) to start displaying in the hot color.
+.RE
+xosview*tzoneCritTrip:          \fIvalue\fP
+.RS
+  The temperature (in degrees C) to start displaying in the crit color.
+.RE
+xosview*tzonePeak:             \fIvalue\fP
+.RS
+The value to use as a max for the meters.  Note that the used legends will
+still report the value read from /sys even if the graphical display hits
+this peak.
+.RE
+.pp tzone
+.dc tzone
+.dg tzone
+.uf tzone
+.ud tzone
 
 \fBLm Sensors Temperature Resources\fP
 

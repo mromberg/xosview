@@ -263,6 +263,20 @@ xosview*horizontalMargin:      5  !
 xosview*verticalMargin:        5  ! FIXME: no meter in name
 xosview*verticalSpacing:       5  !
 
+! Thermal Zone
+xosview*tzone:                 True
+xosview*tzoneForeGround:       #56E67B
+xosview*tzoneBackground:       #03315E
+xosview*tzoneHotColor:         #F2EF44
+xosview*tzoneCritColor:        #FC842B
+xosview*tzoneHotTrip:          70
+xosview*tzoneCritTrip:          84
+xosview*tzonePeak:             100  ! peak of scale (total still in used)
+xosview*tzonePriority:         10
+xosview*tzoneDecay:            False
+xosview*tzoneGraph:            False
+xosview*tzoneUsedFormat:       autoscale
+xosview*tzoneUsedDecay:        False
 
 ! ** Lms Temp
 xosview*lmstemp:	False

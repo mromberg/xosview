@@ -32,7 +32,6 @@ private:
 
 TemplateMeter::TemplateMeter(XOSView *parent)
     : FieldMeterGraph(parent, 2, "TMPL", "VALUE/USED", true, true, true) {
-      _warpCoreTemp(0), _testMaximum(0), _designMaximum(0) {
 }
 
 TemplateMeter::~TemplateMeter(void) {
@@ -54,6 +53,11 @@ void TemplateMeter::checkResources( void ) {
 }
 
 void TemplateMeter::checkevent( void ) {
+    total_ = 1.0;
+    fields_[0] = 0.4;
+    fields_[1] = 0.6;
+    setUsed(0.4, 1.0);
+    drawfields(parent_->g());
 }
 
 #endif // REMOVE
