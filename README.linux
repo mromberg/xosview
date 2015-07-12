@@ -32,4 +32,13 @@ To install xosview:
     Some code that was considered really old was removed.  If this was in
   error some of the linux meters may malfunction.  If this occurs reports
   would be appreciated.
+
+  Meters that have been tested (to some extent):
+
+    btrymeter, cpumeter, diskmeter, intmeter, intratemeter, loadmeter,
+    memmeter, netmeter, pagemeter, swapmeter, wlinkmeter
+
+  Meters that compile.  But untested:
+  
+    lmstemp, nfsmeter, raidmeter, serialmeter
   

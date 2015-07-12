@@ -209,6 +209,11 @@ inline void ExampleMeter::readWarpCoreTemp(void) {
 //  A real meter would of course put it's .h and .cc files
 // into the config/Makefile.os.in for their os so the code
 // is only built for the os that supports it.
+//
+// There is a template of this code in template.h which
+// has all the comments (and warp core code) removed.
+// The template does contain resource code for all
+// of the FieldMeterGraph related settings.
 //---------------------------------------------------------
 
 #endif

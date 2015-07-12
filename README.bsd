@@ -135,3 +135,15 @@ there.  My solution... nuke the /usr/pkg version of freetype2.
    braver than I can get it working again on the other BSD variants.
    Or better yet support /proc (or something similar).
 
+  Meters that have been tested (to some extent):
+
+      cpumeter, intratemeter, loadmeter, memmeter, netmeter
+      pagemeter, swapmeter
+
+  Meters that run but require kmem:
+
+      netmeter
+
+  Meters that no longer compile/run:
+
+      btrymeter, diskmeter, intmeter
