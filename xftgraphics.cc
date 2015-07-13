@@ -121,7 +121,18 @@ void XftGraphics::setFG(const std::string &color, unsigned short alpha) {
     setFG(allocColor(color), alpha);
 }
 
+inline static unsigned short premul(unsigned short c, unsigned short alpha) {
+    unsigned int ic = c;
+    ic = (ic * alpha) / 0xffff;
+    return ic;
+}
+
 void XftGraphics::setFG(unsigned long pixVal, unsigned short alpha) {
+    //
+    // Xft (and XRender) use pre-multiplied alpha!  This is not
+    // a fact that jumps out at you reading the documentation for
+    // Xft (because it is not mentioned at all there).
+    //
     _fgPixVal = pixVal;
 
     XColor def;
@@ -129,9 +140,9 @@ void XftGraphics::setFG(unsigned long pixVal, unsigned short alpha) {
     XQueryColor(_dsp, _cmap, &def);
 
     XRenderColor xrc;
-    xrc.red = def.red;
-    xrc.green = def.green;
-    xrc.blue = def.blue;
+    xrc.red = premul(def.red, alpha);
+    xrc.green = premul(def.green, alpha);
+    xrc.blue = premul(def.blue, alpha);
     xrc.alpha = alpha;
 
     if (!_fgxftc)
@@ -156,9 +167,9 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
     XQueryColor(_dsp, _cmap, &def);
 
     XRenderColor xrc;
-    xrc.red = def.red;
-    xrc.green = def.green;
-    xrc.blue = def.blue;
+    xrc.red = premul(def.red, alpha);
+    xrc.green = premul(def.green, alpha);
+    xrc.blue = premul(def.blue, alpha);
     xrc.alpha = alpha;
 
     if (!_bgxftc)
