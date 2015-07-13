@@ -13,7 +13,7 @@
 include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
 
-CXXFLAGS += -I@TOP_SRCDIR@
+CXXFLAGS += -I$(TOP)
 
 
 # No longer runs (kernel changes I think)

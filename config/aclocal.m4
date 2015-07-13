@@ -37,13 +37,6 @@ AC_CHECK_HEADERS(
 [AC_MSG_WARN([Missing C++ library support.  Probably won't build.])])])
 
 
-dnl Make an absolute symbol for the top of the configuration.
-dnl
-AC_DEFUN([CF_TOP_SRCDIR],
-[TOP_SRCDIR=`cd $srcdir;pwd`
-AC_SUBST(TOP_SRCDIR)
-])dnl
-
 AC_DEFUN(ICE_CXX_BOOL,
 [
 AC_REQUIRE([AC_PROG_CXX])

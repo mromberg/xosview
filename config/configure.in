@@ -3,7 +3,6 @@ AC_INIT([xosview],[1.8.4],
         [https://sourceforge.net/p/xosview/_list/tickets],
         [xosview],
         [http://sourceforge.net/projects/xosview/])
-CF_TOP_SRCDIR
 AC_CONFIG_HEADERS(config.h:config.h.in)
 AC_CONFIG_AUX_DIR(config)
 

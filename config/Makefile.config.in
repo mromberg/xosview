@@ -13,7 +13,7 @@
 # version number for release
 VERS = @PACKAGE_VERSION@
 
-TOP = @TOP_SRCDIR@
+TOP = @abs_top_srcdir@
 
 #---------------
 # The compiler
@@ -24,7 +24,7 @@ CXX      = @CXX@
 # Flags
 #-----------------------------------------------------------------
 DEFS           = @DEFS@
-CPPFLAGS       = @CPPFLAGS@ -I@TOP_SRCDIR@ -I@TOP_SRCDIR@/@host_dir@
+CPPFLAGS       = @CPPFLAGS@ -I$(TOP) -I$(TOP)/@host_dir@
 CXXFLAGS       = @CXXFLAGS@
 LDFLAGS        = -L$(TOP)/@host_dir@ @LDFLAGS@
 LIBS           = -lmeter @LIBS@ -lX11
