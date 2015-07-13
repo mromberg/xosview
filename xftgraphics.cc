@@ -4,35 +4,51 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
-//----------------------------------------------------------
-//  Why Henry Ford was right...
-//
- // typedef struct _XftColor {
- //                  unsigned long   pixel;
- //                  XRenderColor    color;
- //              } XftColor;
-//
-// typedef struct {
-// 	unsigned long pixel;			/* pixel value */
-// 	unsigned short red, green, blue;	/* rgb values */
-// 	char flags;				/* DoRed, DoGreen, DoBlue */
-// 	char pad;
-// } XColor;
-//
-// typedef struct {
-// 	    unsigned short   red;
-// 	    unsigned short   green;
-// 	    unsigned short   blue;
-// 	    unsigned short   alpha;
-// 	} XRenderColor;
-//----------------------------------------------------------
-
-
 #include "xftgraphics.h"
 #include "log.h"
 
+#include <iomanip>
+
 #include <X11/Xft/Xft.h>
+
+//----------------------------------------------------------
+// For debugging
+//----------------------------------------------------------
+inline std::ostream &operator<<(std::ostream &os, const XColor &c) {
+    os << std::hex
+       << "[ "
+       << "( " << std::setw(6) << c.red
+       << ", " << std::setw(6) << c.green
+       << ", " << std::setw(6) << c.blue
+       << " ), "
+       << "flags:" << c.flags << ","
+       << "pad:" << c.pad << ","
+       << "pixel:" << c.pixel
+       << " ]";
+    os << std::dec;
+    return os;
+}
+
+inline std::ostream &operator<<(std::ostream &os, const XRenderColor &c) {
+    os << std::hex
+       << "( " << std::setw(6) << c.red
+       << ", " << std::setw(6) << c.green
+       << ", " << std::setw(6) << c.blue
+       << ", " << std::setw(6) << c.alpha
+       << " )";
+    os << std::dec;
+    return os;
+}
+
+inline std::ostream &operator<<(std::ostream &os, const XftColor &c) {
+    os << std::hex
+       << "[ " << c.color
+       << ", " << c.pixel
+       << " ]";
+    os << std::dec;
+    return os;
+}
+//----------------------------------------------------------
 
 
 XftGraphics::XftGraphics(Display *dsp, Drawable d, bool isWindow,
@@ -156,13 +172,6 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
 }
 
 void XftGraphics::drawString(int x, int y, const std::string &str) {
-    XGlyphInfo extents;
-    XftTextExtents8(_dsp, _font.font(), (XftChar8 *)str.c_str(), str.size(),
-      &extents);
-    XClearArea(_dsp, _d, x, y-extents.height,
-      extents.xOff, extents.height, False);
-
-    //XftDrawRect(_draw, _bgxftc, x, y-extents.height, extents.xOff, extents.height);
-    XftDrawString8(_draw, _fgxftc, _font.font(), x, y, (XftChar8 *)str.c_str(),
-      str.size());
+    XftDrawString8(_draw, _fgxftc, _font.font(), x, y,
+      (XftChar8 *)str.c_str(), str.size());
 }

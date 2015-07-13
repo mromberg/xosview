@@ -2,8 +2,6 @@
 
 - Make a couple of example Xdefaults themes/background pixmaps
 
-- Make list of tested meters for CHANGELOG
-
 - Create an rpm spec file (as an example) to hold build package deps if
   nothing else.
 
@@ -16,8 +14,6 @@
 - 32 bit truecolor transparency
 
 - Make all data gathering classes interact through a clear interface.
-
-- Explore the alpha rendering strageness of xft text over pixmap background
 
 - Add -D_GLIBCXX_DEBUG to enable-debug (available with GCC 3.4.0 and later)
 
