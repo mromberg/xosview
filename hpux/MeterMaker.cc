@@ -1,10 +1,8 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
-//
-//
-// $Id: MeterMaker.cc,v 1.3 1997/02/26 18:34:51 mromberg Exp $
 //
 #include "MeterMaker.h"
 #include "xosview.h"
@@ -19,19 +17,20 @@
 
 
 MeterMaker::MeterMaker(XOSView *xos){
-  _xos = xos;
+    _xos = xos;
 }
 
 void MeterMaker::makeMeters(void){
-  if (_xos->isResourceTrue("load"))
-      push(new LoadMeter(_xos));
-  if (_xos->isResourceTrue("cpu"))
-      push(new CPUMeter(_xos));
-  if (_xos->isResourceTrue("mem"))
-      push(new MemMeter(_xos));
-  if (_xos->isResourceTrue("swap"))
-      push(new SwapMeter(_xos));
+    if (_xos->isResourceTrue("load"))
+        push(new LoadMeter(_xos));
+    if (_xos->isResourceTrue("cpu"))
+        push(new CPUMeter(_xos));
+    if (_xos->isResourceTrue("mem"))
+        push(new MemMeter(_xos));
+    if (_xos->isResourceTrue("swap"))
+        push(new SwapMeter(_xos));
 
-  if (_xos->isResourceTrue("page"))
-      push(new PageMeter(_xos, atof(_xos->getResource("pageBandwidth"))));
+    if (_xos->isResourceTrue("page"))
+        push(new PageMeter(_xos, util::stof(_xos->getResource(
+                  "pageBandwidth"))));
 }

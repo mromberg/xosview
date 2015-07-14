@@ -1,33 +1,30 @@
-//  
-//  Copyright (c) 1994, 1995, 1997 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 1997, 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-//
-// $Id: loadmeter.h,v 1.1 1997/02/26 18:34:54 mromberg Exp $
-//
-#ifndef _LOADMETER_H_
-#define _LOADMETER_H_
+#ifndef LOADMETER_H
+#define LOADMETER_H
 
 
 #include "fieldmeterdecay.h"
 
 class LoadMeter : public FieldMeterDecay {
 public:
-  LoadMeter( XOSView *parent );
-  ~LoadMeter( void );
+    LoadMeter( XOSView *parent );
+    ~LoadMeter( void );
 
-  const char *name( void ) const { return "LoadMeter"; }  
-  void checkevent( void );
+    virtual std::string name( void ) const { return "LoadMeter"; }
+    void checkevent( void );
 
-  void checkResources( void );
+    void checkResources( void );
 protected:
 
-  void getloadinfo( void );
-  unsigned long procloadcol_, warnloadcol_;
+    void getloadinfo( void );
+    unsigned long procloadcol_, warnloadcol_;
 private:
-  int alarmThreshold;
+    int alarmThreshold;
 };
-
 
 #endif

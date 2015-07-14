@@ -1,30 +1,25 @@
-//  
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//
+//  Copyright (c) 1994, 1995, 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-//
-// $Id: swapmeter.h,v 1.3 1999/01/23 22:20:40 mromberg Exp $
-//
-#ifndef _SWAPMETER_H_
-#define _SWAPMETER_H_
+#ifndef SWAPMETER_H
+#define SWAPMETER_H
 
 #include "fieldmeterdecay.h"
 
 class SwapMeter : public FieldMeterDecay {
 public:
-  SwapMeter( XOSView *parent );
-  ~SwapMeter( void );
+    SwapMeter( XOSView *parent );
+    ~SwapMeter( void );
 
-  const char *name( void ) const { return "SwapMeter"; }  
-  void checkevent( void );
-  void checkResources(void);
+    virtual std::string name( void ) const { return "SwapMeter"; }
+    void checkevent( void );
+    void checkResources(void);
 
 protected:
-
-  void getswapinfo( void );
-private:
+    void getswapinfo( void );
 };
-
 
 #endif
