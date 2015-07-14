@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1996, 2004 by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
+//  Copyright (c) 1996, 2004, 2015 by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
 //  2007 by Samuel Thibault ( samuel.thibault@ens-lyon.org )
 //
 //  This file may be distributed under terms of the GPL
@@ -40,16 +40,16 @@ void PageMeter::checkResources( void ){
   setfieldcolor( 0, parent_->getResource( "pageInColor" ) );
   setfieldcolor( 1, parent_->getResource( "pageOutColor" ) );
   setfieldcolor( 2, parent_->getResource( "pageIdleColor" ) );
-  priority_ = atoi (parent_->getResource( "pagePriority" ) );
+  priority_ = util::stoi (parent_->getResource( "pagePriority" ) );
   maxspeed_ *= priority_ / 10.0;
   dodecay_ = parent_->isResourceTrue( "pageDecay" );
   useGraph_ = parent_->isResourceTrue( "pageGraph" );
-  SetUsedFormat (parent_->getResource("pageUsedFormat"));
+  setUsedFormat (parent_->getResource("pageUsedFormat"));
 }
 
 void PageMeter::checkevent( void ){
   getpageinfo();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 void PageMeter::updateinfo(void)
@@ -83,11 +83,8 @@ void PageMeter::getpageinfo(void) {
   kern_return_t err;
 
   err = vm_statistics (mach_task_self(), &vmstats);
-  if (err) {
-    error (0, err, "vm_statistics");
-    parent_->done(1);
-    return;
-  }
+  if (err)
+      logFatal << "vm_statistics(): " << util::strerror(err) << std::endl;
 
   pageinfo_[pageindex_][0] = vmstats.pageins;
   pageinfo_[pageindex_][1] = vmstats.pageouts;

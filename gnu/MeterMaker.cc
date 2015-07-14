@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2002, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  2007 by Samuel Thibault ( samuel.thibault@ens-lyon.org )
 //
 //  This file may be distributed under terms of the GPL
@@ -32,5 +32,5 @@ void MeterMaker::makeMeters(void){
     push(new SwapMeter(_xos));
 
   if (_xos->isResourceTrue("page"))
-    push(new PageMeter(_xos, atof(_xos->getResource("pageBandwidth"))));
+      push(new PageMeter(_xos, util::stof(_xos->getResource("pageBandwidth"))));
 }
