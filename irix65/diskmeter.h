@@ -1,26 +1,27 @@
-//  
-// $Id: diskmeter.h,v 1.3 2006/10/11 07:30:53 eile Exp $
+//
+//  Copyright (c) 1994, 1995, 2004, 2006, 2015
 //  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
-
-#ifndef _DISKMETER_H_
-#define _DISKMETER_H_
+//  This file may be distributed under terms of the GPL
+//
+#ifndef DISKMETER_H
+#define DISKMETER_H
 
 #include "fieldmetergraph.h"
 
-class DiskMeter : public FieldMeterGraph 
-{
+class DiskMeter : public FieldMeterGraph {
 public:
     DiskMeter( XOSView *parent, float max );
     ~DiskMeter( void );
-    
-    const char *name( void ) const { return "DiskMeter"; }
+
+    virtual std::string name( void ) const { return "DiskMeter"; }
     void checkevent( void );
-    
+
     void checkResources( void );
+
 protected:
-    
     void getdiskinfo( void );
+
 private:
     float maxspeed_;
 };

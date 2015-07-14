@@ -1,37 +1,36 @@
-//  
-// $Id: sarmeter.h,v 1.7 2006/10/11 07:30:53 eile Exp $
+//
+//  Copyright (c) 1994, 1995, 2004, 2006, 2015
 //  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
-
-#ifndef _SARMETER_H_
-#define _SARMETER_H_
+//  This file may be distributed under terms of the GPL
+//
+#ifndef SARMETER_H
+#define SARMETER_H
 
 #include "fieldmetergraph.h"
+
 #include <unistd.h>
 #include <sys/sysinfo.h>
 #include <sys/elog.h>
 
-// some structs 
+// some structs
 typedef struct {
     unsigned int recsize;
     unsigned int numrec;
-}
-header;
+} header;
 
 typedef struct {
     char           name[12];
     char           pad1[68];
     struct iotime  stat;
     char           pad2[4];
-} 
-diskinfo;
+} diskinfo;
 
 #define MAX_DISKS 16
 #define BUFSIZE   0x2000
 
 // common function for all sar based graphs
-class SarMeter
-{
+class SarMeter {
 public:
     static SarMeter *Instance();
 
@@ -46,17 +45,15 @@ public:
         unsigned int write[MAX_DISKS];
     };
 
-    GfxInfo *getGfxInfo( void )
-        {
-            checkSadc();
-            return &_gi.info;
-        }
+    GfxInfo *getGfxInfo( void ) {
+        checkSadc();
+        return &_gi.info;
+    }
 
-    DiskInfo *getDiskInfo( void )
-        {
-            checkSadc();
-            return &_di.info;
-        }
+    DiskInfo *getDiskInfo( void ) {
+        checkSadc();
+        return &_di.info;
+    }
 
 private:
     SarMeter();

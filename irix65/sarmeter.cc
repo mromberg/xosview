@@ -1,16 +1,17 @@
-//  
-// $Id: sarmeter.cc,v 1.7 2006/10/11 07:30:53 eile Exp $
+//
+//  Copyright (c) 1994, 1995, 2004, 2006, 2015
 //  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
-
+//  This file may be distributed under terms of the GPL
+//
 #include "sarmeter.h"
 
 #include <fcntl.h>
 
 SarMeter *SarMeter::_instance = NULL;
 
-SarMeter *SarMeter::Instance()
-{
+SarMeter *SarMeter::Instance() {
+
     if( _instance == NULL )
         _instance = new SarMeter();
 
@@ -18,28 +19,27 @@ SarMeter *SarMeter::Instance()
 }
 
 SarMeter::SarMeter( void )
-    : _bufSize(0)
-{
+    : _bufSize(0) {
+
     _input = setupSadc();
-    
+
     _gi.last.gswapbuf = 0;
     _gi.info.swapBuf = 0;
-    
-    for( int i=0; i<MAX_DISKS; i++ )
-    {
+
+    for( int i=0; i<MAX_DISKS; i++ ) {
+
         _di.last[i].stat.io_bcnt  = 0;
         _di.last[i].stat.io_wbcnt = 0;
-        
+
         _di.info.nDevices = 0;
         _di.info.read[i] = 0;
         _di.info.write[i] = 0;
     }
 }
 
-bool SarMeter::readLine( void )
-{
-    while( _bufSize < BUFSIZE-100 )
-    {
+bool SarMeter::readLine( void ) {
+
+    while( _bufSize < BUFSIZE-100 ) {
         int ret = read( _input, &_buf[_bufSize], 100);
 
         if( ret < 0 )
@@ -55,27 +55,24 @@ bool SarMeter::readLine( void )
     return true;
 }
 
-void SarMeter::checkSadc( void )
-{
+void SarMeter::checkSadc( void ) {
+
     bool dataInPipe = true;
 
-    while( dataInPipe )
-    {
+    while( dataInPipe ) {
         dataInPipe = readLine();
         parseBuffer();
     }
 }
 
-void SarMeter::parseBuffer( void )
-{
-    while( _bufSize > 100 )
-    {
+void SarMeter::parseBuffer( void ) {
+
+    while( _bufSize > 100 ) {
         // look for 'S' (starting of Sarmagic)
         char *ptr = (char *)memchr( _buf, 'S', _bufSize );
-        
+
         // not found -- discard this buffer
-        if( ptr == NULL )
-        {
+        if( ptr == NULL ) {
             _bufSize = 0;
             return;
         }
@@ -84,10 +81,8 @@ void SarMeter::parseBuffer( void )
         if( (ptr+100) > (_buf+_bufSize) )
             return;
 
-
         // check for SarmagicGFX
-        if( memcmp( ptr, "SarmagicGFX", 11 ) == 0 )
-        {
+        if( memcmp( ptr, "SarmagicGFX", 11 ) == 0 ) {
             forwardBufferTo( ptr );
 
             // data is not complete in buffer
@@ -103,8 +98,7 @@ void SarMeter::parseBuffer( void )
             newGfxInfo();
         }
         // check for SarmagicNEODISK
-        else if( memcmp( ptr, "SarmagicNEODISK", 15 ) == 0 )
-        {
+        else if( memcmp( ptr, "SarmagicNEODISK", 15 ) == 0 ) {
             forwardBufferTo( ptr );
 
             ptr = _buf + 20;
@@ -114,7 +108,8 @@ void SarMeter::parseBuffer( void )
             memcpy( &num, ptr, 4 );
             ptr += 4;
 
-            if( num > MAX_DISKS ) num = MAX_DISKS;
+            if( num > MAX_DISKS )
+                num = MAX_DISKS;
 
             // data is not complete in buffer
             if( _bufSize < 24 + num*sizeof( diskinfo ))
@@ -123,8 +118,7 @@ void SarMeter::parseBuffer( void )
             _di.info.nDevices = num;
 
             // read disk info
-            for( int i=0; i<num; i++ )
-            {
+            for( int i=0; i<num; i++ ) {
                 memcpy( &_di.current[i], ptr, sizeof( diskinfo ));
                 ptr += sizeof( diskinfo );
 
@@ -133,20 +127,20 @@ void SarMeter::parseBuffer( void )
                 fprintf( stderr, "  stat {\n" );
                 fprintf( stderr, "    ios {\n" );
                 fprintf( stderr, "      %d, %d, %d, %d\n",
-                    _di.current[i].stat.ios.io_ops,
-                    _di.current[i].stat.ios.io_misc,
-                    _di.current[i].stat.ios.io_qcnt,
-                    _di.current[i].stat.ios.io_unlog );
+                  _di.current[i].stat.ios.io_ops,
+                  _di.current[i].stat.ios.io_misc,
+                  _di.current[i].stat.ios.io_qcnt,
+                  _di.current[i].stat.ios.io_unlog );
                 fprintf( stderr, "    }\n" );
-                fprintf( stderr, "    %d %d %d %d %d\n", 
-                    _di.current[i].stat.io_bcnt,
-                    _di.current[i].stat.io_resp,
-                    _di.current[i].stat.io_act,
-                    _di.current[i].stat.io_wops,
-                    _di.current[i].stat.io_wbcnt );
+                fprintf( stderr, "    %d %d %d %d %d\n",
+                  _di.current[i].stat.io_bcnt,
+                  _di.current[i].stat.io_resp,
+                  _di.current[i].stat.io_act,
+                  _di.current[i].stat.io_wops,
+                  _di.current[i].stat.io_wbcnt );
 #endif
             }
-            
+
             forwardBufferTo( ptr );
             newDiskInfo();
         }
@@ -155,10 +149,8 @@ void SarMeter::parseBuffer( void )
     }
 }
 
-void SarMeter::newGfxInfo( void )
-{
-    if( _gi.last.gswapbuf == 0 )
-    {
+void SarMeter::newGfxInfo( void ) {
+    if( _gi.last.gswapbuf == 0 ) {
         _gi.last.gswapbuf = _gi.current.gswapbuf;
         return;
     }
@@ -167,27 +159,24 @@ void SarMeter::newGfxInfo( void )
     _gi.last.gswapbuf = _gi.current.gswapbuf;
 }
 
-void SarMeter::newDiskInfo( void )
-{
-    for( int i=0; i<_di.info.nDevices; i++ )
-    {
-        _di.info.read[i]  = 
-            (_di.current[i].stat.io_bcnt - _di.current[i].stat.io_wbcnt) - 
+void SarMeter::newDiskInfo( void ) {
+    for( int i=0; i<_di.info.nDevices; i++ ) {
+        _di.info.read[i]  =
+            (_di.current[i].stat.io_bcnt - _di.current[i].stat.io_wbcnt) -
             (_di.last[i].stat.io_bcnt    - _di.last[i].stat.io_wbcnt) ;
 
-        _di.info.write[i] = 
+        _di.info.write[i] =
             _di.current[i].stat.io_wbcnt - _di.last[i].stat.io_wbcnt;
 
         _di.info.read[i] *= 512;
         _di.info.write[i] *= 512;
 
         _di.last[i].stat.io_bcnt  = _di.current[i].stat.io_bcnt;
-        _di.last[i].stat.io_wbcnt = _di.current[i].stat.io_wbcnt;        
+        _di.last[i].stat.io_wbcnt = _di.current[i].stat.io_wbcnt;
     }
 }
 
-void SarMeter::forwardBufferTo( char *ptr )
-{
+void SarMeter::forwardBufferTo( char *ptr ) {
     size_t moveBytes = ptr-_buf;
     size_t bytesLeft = _bufSize - moveBytes;
     memmove( _buf, ptr, bytesLeft );
@@ -196,20 +185,17 @@ void SarMeter::forwardBufferTo( char *ptr )
 
 
 // starts /usr/bin/sar, from where data is read
-int SarMeter::setupSadc( void )
-{
+int SarMeter::setupSadc( void ) {
     char    sarPath[] = "/usr/lib/sa/sadc";
     int fd[2];
     int input = 0;
 
-    if (pipe(fd) == -1)
-    {
+    if (pipe(fd) == -1) {
         perror("setupSar: pipe");
         return 0;
     }
 
-    if ( fork()==0 )    // child
-    {
+    if ( fork()==0 ) {   // child
         close(1);       // move fd[write] to stdout
         dup(fd[1]);
         close(fd[1]);

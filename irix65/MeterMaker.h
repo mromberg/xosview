@@ -1,9 +1,11 @@
-//  
-// $Id: MeterMaker.h,v 1.4 2006/10/11 07:30:53 eile Exp $
+//
+//  Copyright (c) 1994, 1995, 2004, 2006, 2015
 //  Initial port performed by Stefan Eilemann (eilemann@gmail.com)
 //
-#ifndef _MeterMaker_h
-#define _MeterMaker_h
+//  This file may be distributed under terms of the GPL
+//
+#ifndef METERMAKER_H
+#define METERMAKER_H
 
 #include "pllist.h"
 
@@ -12,12 +14,12 @@ class XOSView;
 
 class MeterMaker : public PLList<Meter *> {
 public:
-  MeterMaker(XOSView *xos);
+    MeterMaker(XOSView *xos);
 
-  void makeMeters(void);
+    void makeMeters(void);
 
 private:
-  XOSView *_xos;
+    XOSView *_xos;
 };
 
 #endif
