@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  2007 by Samuel Thibault ( samuel.thibault@ens-lyon.org )
 //
 //  This file may be distributed under terms of the GPL
@@ -32,19 +32,22 @@ LoadMeter::~LoadMeter( void ){
 void LoadMeter::checkResources( void ){
   FieldMeterGraph::checkResources();
 
-  procloadcol_ = parent_->allocColor(parent_->getResource( "loadProcColor" ));
-  warnloadcol_ = parent_->allocColor(parent_->getResource( "loadWarnColor" ));
-  critloadcol_ = parent_->allocColor(parent_->getResource( "loadCritColor" ));
+  procloadcol_ = parent_->g().allocColor(parent_->getResource(
+        "loadProcColor" ));
+  warnloadcol_ = parent_->g().allocColor(parent_->getResource(
+        "loadWarnColor" ));
+  critloadcol_ = parent_->g().allocColor(parent_->getResource(
+        "loadCritColor" ));
 
   setfieldcolor( 0, procloadcol_ );
   setfieldcolor( 1, parent_->getResource( "loadIdleColor" ) );
-  priority_ = atoi (parent_->getResource( "loadPriority" ) );
+  priority_ = util::stoi (parent_->getResource( "loadPriority" ) );
   useGraph_ = parent_->isResourceTrue( "loadGraph" );
   dodecay_ = parent_->isResourceTrue( "loadDecay" );
-  SetUsedFormat (parent_->getResource("loadUsedFormat"));
+  setUsedFormat (parent_->getResource("loadUsedFormat"));
 
-  warnThreshold = atoi (parent_->getResource("loadWarnThreshold"));
-  critThreshold = atoi (parent_->getResource("loadCritThreshold"));
+  warnThreshold = util::stoi (parent_->getResource("loadWarnThreshold"));
+  critThreshold = util::stoi (parent_->getResource("loadCritThreshold"));
 
 
   if (dodecay_){
@@ -63,7 +66,7 @@ void LoadMeter::checkResources( void ){
 
 void LoadMeter::checkevent( void ){
   getloadinfo();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 
@@ -73,11 +76,9 @@ void LoadMeter::getloadinfo( void ){
   kern_return_t err;
 
   err = host_info(mach_host_self(), HOST_LOAD_INFO, (host_info_t) &info, &count);
-  if (err) {
-    std::cerr << "Can not get host info";
-    parent_->done(1);
-    return;
-  }
+  if (err)
+      logFatal << "Can not get host info" << std::endl;
+
   fields_[0] = (float) info.avenrun[0] / LOAD_SCALE;
 
   if ( fields_[0] <  warnThreshold ) alarmstate = 0;
@@ -92,7 +93,7 @@ void LoadMeter::getloadinfo( void ){
     if ( alarmstate == 1 ) setfieldcolor( 0, warnloadcol_ );
     else
     /* if alarmstate == 2 */ setfieldcolor( 0, critloadcol_ );
-    if (dolegends_) drawlegend();
+    if (dolegends()) drawLegend(parent_->g());
     lastalarmstate = alarmstate;
   }
 

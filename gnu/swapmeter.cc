@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  2007 by Samuel Thibault ( samuel.thibault@ens-lyon.org )
 //
 //  This file may be distributed under terms of the GPL
@@ -35,15 +35,15 @@ void SwapMeter::checkResources( void ){
 
   setfieldcolor( 0, parent_->getResource( "swapUsedColor" ) );
   setfieldcolor( 1, parent_->getResource( "swapFreeColor" ) );
-  priority_ = atoi (parent_->getResource( "swapPriority" ) );
+  priority_ = util::stoi (parent_->getResource( "swapPriority" ) );
   dodecay_ = parent_->isResourceTrue( "swapDecay" );
   useGraph_ = parent_->isResourceTrue( "swapGraph" );
-  SetUsedFormat (parent_->getResource("swapUsedFormat"));
+  setUsedFormat (parent_->getResource("swapUsedFormat"));
 }
 
 void SwapMeter::checkevent( void ){
   getswapinfo();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 
@@ -55,16 +55,12 @@ void SwapMeter::getswapinfo( void ){
 
   if (!MACH_PORT_VALID (def_pager)) {
     def_pager = MACH_PORT_DEAD;
-    parent_->done(1);
-    return;
+    logFatal << "MACH_PORT_VALID is false." << std::endl;
   }
 
   err = default_pager_info (def_pager, &def_pager_info);
-  if (err) {
-    error (0, err, "default_pager_info");
-    parent_->done(1);
-    return;
-  }
+  if (err)
+      logFatal << "default_pager_info(): " << util::strerror(err) << std::endl;
 
   total_ = def_pager_info.dpi_total_space;
   fields_[1] = def_pager_info.dpi_free_space;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  2007 by Samuel Thibault ( samuel.thibault@ens-lyon.org )
 //
 //  This file may be distributed under terms of the GPL
@@ -32,26 +32,23 @@ void MemMeter::checkResources( void ){
   setfieldcolor( 1, parent_->getResource( "memInactiveColor" ) );
   setfieldcolor( 2, parent_->getResource( "memCacheColor" ) );
   setfieldcolor( 3, parent_->getResource( "memFreeColor" ) );
-  priority_ = atoi (parent_->getResource( "memPriority" ) );
+  priority_ = util::stoi (parent_->getResource( "memPriority" ) );
   dodecay_ = parent_->isResourceTrue( "memDecay" );
   useGraph_ = parent_->isResourceTrue( "memGraph" );
-  SetUsedFormat (parent_->getResource("memUsedFormat"));
+  setUsedFormat (parent_->getResource("memUsedFormat"));
 }
 
 void MemMeter::checkevent( void ){
   getmeminfo();
-  drawfields();
+  drawfields(parent_->g());
 }
 
 void MemMeter::getmeminfo( void ){
   kern_return_t err;
 
   err = vm_statistics (mach_task_self(), &vmstats);
-  if (err) {
-    error (0, err, "vm_statistics");
-    parent_->done(1);
-    return;
-  }
+  if (err)
+      logFatal << "vm_statistics(): " << util::strerror(err) << std::endl;
 
   fields_[0] = vmstats.active_count * vmstats.pagesize;
   fields_[1] = vmstats.inactive_count * vmstats.pagesize;;
