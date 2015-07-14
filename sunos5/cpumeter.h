@@ -1,9 +1,12 @@
-//  
-// $Id: cpumeter.h,v 1.4 2006/02/18 07:57:21 romberg Exp $
+//
+//  Copyright (c) 2015
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
-#ifndef _CPUMETER_H_
-#define _CPUMETER_H_
+//  This file may be distributed under terms of the GPL
+//
+
+#ifndef CPUMETER_H
+#define CPUMETER_H
 
 #include "fieldmetergraph.h"
 
@@ -11,28 +14,28 @@
 #include <sys/sysinfo.h>
 
 class CPUMeter : public FieldMeterGraph {
- public:
-	CPUMeter(XOSView *parent, kstat_ctl_t *kcp, int cpuid = 0);
-	~CPUMeter(void);
+public:
+    CPUMeter(XOSView *parent, kstat_ctl_t *kcp, int cpuid = 0);
+    ~CPUMeter(void);
 
-	const char *name(void) const { return "CPUMeter"; }
-	void checkevent(void);
+    virtual std::string name(void) const { return "CPUMeter"; }
+    void checkevent(void);
 
-	void checkResources(void);
+    void checkResources(void);
 
-	static int countCPUs(kstat_ctl_t *kc);
-	static const char *cpuStr(int num);
+    static int countCPUs(kstat_ctl_t *kc);
+    static const char *cpuStr(int num);
 
- protected:
-	float cputime_[2][CPU_STATES];
-	int cpuindex_;
+protected:
+    float cputime_[2][CPU_STATES];
+    int cpuindex_;
 
-	void getcputime(void);
-	const char *toUpper(const char *str);
+    void getcputime(void);
+    const char *toUpper(const char *str);
 
- private:
-	kstat_ctl_t *kc;
-	kstat_t *ksp;
+private:
+    kstat_ctl_t *kc;
+    kstat_t *ksp;
 };
 
 #endif

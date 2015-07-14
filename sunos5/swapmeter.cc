@@ -1,9 +1,12 @@
-//  
-// $Id: swapmeter.cc,v 1.4 1999/01/31 20:26:38 bgrayson Exp $
+//
+//  Copyright (c) 2015
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
+//
+//  This file may be distributed under terms of the GPL
 //
 #include "swapmeter.h"
 #include "xosview.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -12,46 +15,44 @@
 static size_t Pagesize;
 
 SwapMeter::SwapMeter(XOSView *parent, kstat_ctl_t *_kc)
-	: FieldMeterGraph(parent, 3, "SWAP", "USED/RSVD/FREE")
-{
-	if (!Pagesize)
-		Pagesize = sysconf(_SC_PAGESIZE);
+    : FieldMeterGraph(parent, 3, "SWAP", "USED/RSVD/FREE") {
+
+    if (!Pagesize)
+        Pagesize = sysconf(_SC_PAGESIZE);
 }
 
-SwapMeter::~SwapMeter(void)
-{
+SwapMeter::~SwapMeter(void) {
 }
 
-void SwapMeter::checkResources(void)
-{
-	FieldMeterGraph::checkResources();
+void SwapMeter::checkResources(void) {
 
-	setfieldcolor(0, parent_->getResource("swapUsedColor"));
-	setfieldcolor(1, parent_->getResource("swapReservedColor"));
-	setfieldcolor(2, parent_->getResource("swapFreeColor"));
-	priority_ = atoi(parent_->getResource("swapPriority"));
-	dodecay_ = parent_->isResourceTrue("swapDecay");
-	useGraph_ = parent_->isResourceTrue("swapGraph");
-	SetUsedFormat(parent_->getResource("swapUsedFormat"));
+    FieldMeterGraph::checkResources();
+
+    setfieldcolor(0, parent_->getResource("swapUsedColor"));
+    setfieldcolor(1, parent_->getResource("swapReservedColor"));
+    setfieldcolor(2, parent_->getResource("swapFreeColor"));
+    priority_ = util::stoi(parent_->getResource("swapPriority"));
+    dodecay_ = parent_->isResourceTrue("swapDecay");
+    useGraph_ = parent_->isResourceTrue("swapGraph");
+    setUsedFormat(parent_->getResource("swapUsedFormat"));
 }
 
-void SwapMeter::checkevent(void)
-{
-	getswapinfo();
-	drawfields();
+void SwapMeter::checkevent(void) {
+    getswapinfo();
+    drawfields(parent_->g());
 }
 
-void SwapMeter::getswapinfo(void)
-{
-	struct anoninfo ai;
+void SwapMeter::getswapinfo(void) {
 
-	if (swapctl(SC_AINFO, &ai) == -1)
-		return;
+    struct anoninfo ai;
 
-	total_ = ai.ani_max;
-	fields_[0] = (ai.ani_max - ai.ani_free); // allocated
-	fields_[1] = (ai.ani_resv - (ai.ani_max - ai.ani_free)); // reserved
-	fields_[2] = (ai.ani_max - ai.ani_resv); // available
+    if (swapctl(SC_AINFO, &ai) == -1)
+        return;
 
-	setUsed((fields_[0] + fields_[1]) * Pagesize, total_ * Pagesize);
+    total_ = ai.ani_max;
+    fields_[0] = (ai.ani_max - ai.ani_free); // allocated
+    fields_[1] = (ai.ani_resv - (ai.ani_max - ai.ani_free)); // reserved
+    fields_[2] = (ai.ani_max - ai.ani_resv); // available
+
+    setUsed((fields_[0] + fields_[1]) * Pagesize, total_ * Pagesize);
 }

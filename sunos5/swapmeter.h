@@ -1,27 +1,27 @@
-//  
-// $Id: swapmeter.h,v 1.3 1999/01/31 20:26:38 bgrayson Exp $
+//
+//  Copyright (c) 2015
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
-#ifndef _SWAPMETER_H_
-#define _SWAPMETER_H_
+//  This file may be distributed under terms of the GPL
+//
+#ifndef SWAPMETER_H
+#define SWAPMETER_H
 
 #include "fieldmetergraph.h"
+
 #include <kstat.h>
 
 class SwapMeter : public FieldMeterGraph {
- public:
-	SwapMeter(XOSView *parent, kstat_ctl_t *kcp);
-	~SwapMeter(void);
+public:
+    SwapMeter(XOSView *parent, kstat_ctl_t *kcp);
+    ~SwapMeter(void);
 
-	const char *name(void) const { return "SwapMeter"; }  
-	void checkevent(void);
-	void checkResources(void);
+    virtual std::string name(void) const { return "SwapMeter"; }
+    void checkevent(void);
+    void checkResources(void);
 
- protected:
-	void getswapinfo(void);
-
- private:
+protected:
+    void getswapinfo(void);
 };
-
 
 #endif
