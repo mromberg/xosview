@@ -19,7 +19,9 @@ MemMeter::MemMeter(XOSView *parent, kstat_ctl_t *_kc)
     _pageSize = sysconf(_SC_PAGESIZE);
     total_ = sysconf(_SC_PHYS_PAGES);
 
-    ksp = kstat_lookup(kc, "unix", 0, "system_pages");
+    std::string ustr("unix"), spstr("system_pages");
+    ksp = kstat_lookup(kc, const_cast<char *>(ustr.c_str()), 0,
+      const_cast<char *>(spstr.c_str()));
     if (ksp == NULL)
         logFatal << "kstat_lookup() failed" << std::endl;
 }
@@ -50,7 +52,9 @@ void MemMeter::getmeminfo(void) {
     if (kstat_read(kc, ksp, NULL) == -1)
         logFatal << "kstat_read() failed." << std::endl;
 
-    k = (kstat_named_t *)kstat_data_lookup(ksp, "freemem");
+    std::string fmstr("freemem");
+    k = (kstat_named_t *)kstat_data_lookup(ksp,
+      const_cast<char *>(fmstr.c_str()));
     if (k == NULL)
         logFatal << "kstat_data_lookup() failed." << std::endl;
 

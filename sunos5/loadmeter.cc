@@ -40,7 +40,7 @@ void LoadMeter::checkResources(void) {
     useGraph_ = parent_->isResourceTrue("loadGraph");
     setUsedFormat(parent_->getResource("loadUsedFormat"));
 
-    alarmThreshold = util::stoi (parent_->getResource("loadAlarmThreshold"));
+    alarmThreshold = util::stoi (parent_->getResource("loadWarnThreshold"));
 
     if (dodecay_){
         /*

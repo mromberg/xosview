@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <kstat.h>
 #include <sys/sysinfo.h>
+#include <strings.h>
 
 
 PageMeter::PageMeter(XOSView *parent, kstat_ctl_t *_kc, float max)

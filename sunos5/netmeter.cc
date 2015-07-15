@@ -6,6 +6,7 @@
 #include "xosview.h"
 
 #include <stdlib.h>
+#include <strings.h>
 
 NetMeter::NetMeter( XOSView *parent, kstat_ctl_t *_kc, float max )
     : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ){
