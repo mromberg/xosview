@@ -16,7 +16,9 @@ LoadMeter::LoadMeter(XOSView *parent, kstat_ctl_t *_kc)
     : FieldMeterGraph(parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0) {
 
     kc = _kc;
-    ksp = kstat_lookup(kc, "unix", 0, "system_misc");
+    std::string ustr("unix"), smstr("system_misc");
+    ksp = kstat_lookup(kc, const_cast<char *>(ustr.c_str()), 0,
+      const_cast<char *>(smstr.c_str()));
     if (ksp == NULL)
         logFatal << "kstat_lookup() failed." << std::endl;
 }
@@ -73,7 +75,9 @@ void LoadMeter::getloadinfo(void) {
     if (kstat_read(kc, ksp, NULL) == -1)
         logFatal << "kstat_read() failed" << std::endl;
 
-    k = (kstat_named_t *)kstat_data_lookup(ksp, "avenrun_1min");
+    std::string avOneMin("avenrun_1min");
+    k = (kstat_named_t *)kstat_data_lookup(ksp,
+      const_cast<char *>(avOneMin.c_str()));
     if (k == NULL)
         logFatal << "kstat_data_lookup() failed." << std::endl;
 

@@ -14,7 +14,7 @@
 
 static size_t Pagesize;
 
-SwapMeter::SwapMeter(XOSView *parent, kstat_ctl_t *_kc)
+SwapMeter::SwapMeter(XOSView *parent)
     : FieldMeterGraph(parent, 3, "SWAP", "USED/RSVD/FREE") {
 
     if (!Pagesize)

@@ -9,11 +9,10 @@
 
 #include "fieldmetergraph.h"
 
-#include <kstat.h>
 
 class SwapMeter : public FieldMeterGraph {
 public:
-    SwapMeter(XOSView *parent, kstat_ctl_t *kcp);
+    SwapMeter(XOSView *parent);
     ~SwapMeter(void);
 
     virtual std::string name(void) const { return "SwapMeter"; }

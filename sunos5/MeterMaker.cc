@@ -47,7 +47,7 @@ void MeterMaker::makeMeters(void) {
                   "diskBandwidth"))));
 
     if (_xos->isResourceTrue("swap"))
-        push(new SwapMeter(_xos, kc));
+        push(new SwapMeter(_xos));
 
     if (_xos->isResourceTrue("page"))
         push(new PageMeter(_xos, kc,
