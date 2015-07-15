@@ -1,12 +1,14 @@
 //
+//  Copyright (c) 1994, 1995, 2015
+//  by Mike Romberg (mike-romberg@comcast.net)
+//
 //  Rewritten for Solaris by Arno Augustin 1999
 //  augustin@informatik.uni-erlangen.de
 //
+//  This file may be distributed under terms of the GPL
+//
 #include "netmeter.h"
-#include "xosview.h"
 
-#include <stdlib.h>
-#include <strings.h>
 
 NetMeter::NetMeter( XOSView *parent, kstat_ctl_t *_kc, float max )
     : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ){
@@ -19,16 +21,16 @@ NetMeter::NetMeter( XOSView *parent, kstat_ctl_t *_kc, float max )
          ksp = ksp->ks_next) {
         if (ksp->ks_type == KSTAT_TYPE_NAMED ){
             if(kstat_read(kc, ksp, NULL) != -1
-              && strncmp(ksp->ks_name, "lo0",3)) {
+              && std::string(ksp->ks_name).substr(0, 3) != "lo0") {
 
                 k = (kstat_named_t *)(ksp->ks_data);
-                if(!strncmp(k->name, "ipackets",8)) {
+                if (std::string(k->name).substr(0, 8) == "ipackets") {
                     nnets[nnet] = ksp;
                     packetsize[nnet] = GUESS_MTU;
                     // check if bytes r/w also available
                     for(unsigned int j=0; j< ksp->ks_ndata; j++, k++) {
                         // search for byte fields
-                        if(!strncmp(k->name, "obytes", 6)) {
+                        if (std::string(k->name).substr(0, 6) == "obytes") {
                             packetsize[nnet] = 1;
                         }
                     }
@@ -81,11 +83,12 @@ void NetMeter::checkevent( void ){
 
         mtu = packetsize[i];
         for(unsigned int j=0, found=0; j< ksp->ks_ndata && found<2; j++,k++){
-            if(!strncmp(k->name, mtu == 1 ? "rbytes" : "ipackets", 5)) {
+            std::string k_name(k->name);
+            if (k_name.substr(0, 5) == (mtu == 1 ? "rbyte" : "ipack")) {
                 nowBytesIn += k->value.ul*mtu;
                 found++;
             }
-            else if(!strncmp(k->name, mtu == 1 ? "obytes" :"opackets", 5)) {
+            else if (k_name.substr(0, 5) == (mtu == 1 ? "obyte" : "opack")) {
                 nowBytesOut += k->value.ul*mtu;
                 found++;
             }

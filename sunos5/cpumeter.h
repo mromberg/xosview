@@ -24,14 +24,13 @@ public:
     void checkResources(void);
 
     static int countCPUs(kstat_ctl_t *kc);
-    static const char *cpuStr(int num);
+    static std::string cpuStr(int num);
 
 protected:
     float cputime_[2][CPU_STATES];
     int cpuindex_;
 
     void getcputime(void);
-    const char *toUpper(const char *str);
 
 private:
     kstat_ctl_t *kc;

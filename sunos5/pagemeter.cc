@@ -5,12 +5,9 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "pagemeter.h"
-#include "xosview.h"
 
-#include <stdlib.h>
 #include <kstat.h>
 #include <sys/sysinfo.h>
-#include <strings.h>
 
 
 PageMeter::PageMeter(XOSView *parent, kstat_ctl_t *_kc, float max)
@@ -27,7 +24,7 @@ PageMeter::PageMeter(XOSView *parent, kstat_ctl_t *_kc, float max)
 
     ncpus = 0;
     for (kstat_t *ksp = kc->kc_chain; ksp != NULL; ksp = ksp->ks_next) {
-        if (strncmp(ksp->ks_name, "cpu_stat", 8) == 0 &&
+        if (std::string(ksp->ks_name).substr(0, 8) == "cpu_stat" &&
           kstat_read(kc, ksp, NULL) != -1) {
             ksps[ncpus++] = ksp;
         }

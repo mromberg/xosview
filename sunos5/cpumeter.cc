@@ -3,18 +3,12 @@
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 #include "cpumeter.h"
-#include "xosview.h"
 
 #include <sstream>
 
-#include <stdlib.h>
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-
 
 CPUMeter::CPUMeter(XOSView *parent, kstat_ctl_t *_kc, int cpuid)
-    : FieldMeterGraph(parent, CPU_STATES, toUpper(cpuStr(cpuid)),
+    : FieldMeterGraph(parent, CPU_STATES, util::toupper(cpuStr(cpuid)),
       "USER/SYS/WAIT/IDLE") {
 
     kc = _kc;
@@ -25,7 +19,7 @@ CPUMeter::CPUMeter(XOSView *parent, kstat_ctl_t *_kc, int cpuid)
 
     int j = 0;
     for (ksp = kc->kc_chain; ksp != NULL; ksp = ksp->ks_next) {
-        if (strncmp(ksp->ks_name, "cpu_stat", 8) == 0) {
+        if (std::string(ksp->ks_name).substr(0, 8) == "cpu_stat") {
             j++;
             if (j == cpuid)
                 break;
@@ -78,28 +72,14 @@ void CPUMeter::getcputime(void) {
         setUsed(total_ - fields_[3], total_);
 }
 
-const char *CPUMeter::toUpper(const char *str) {
-    static char buffer[256];
-    strncpy(buffer, str, 256);
-    for (char *tmp = buffer ; *tmp != '\0' ; tmp++)
-        *tmp = toupper(*tmp);
-
-    return buffer;
-}
-
-const char *CPUMeter::cpuStr(int num) {
-    static char buffer[32];
+std::string CPUMeter::cpuStr(int num) {
     std::ostringstream str;
 
     str << "cpu";
     if (num != 0)
         str << (num - 1);
-    str << std::ends;
 
-    strncpy(buffer, str.str().c_str(), 32);
-    buffer[31] = '\0';
-
-    return buffer;
+    return str.str();
 }
 
 int CPUMeter::countCPUs(kstat_ctl_t *kc) {
@@ -107,7 +87,7 @@ int CPUMeter::countCPUs(kstat_ctl_t *kc) {
     int i = 0;
 
     for (ksp = kc->kc_chain; ksp != NULL; ksp = ksp->ks_next) {
-        if (strncmp(ksp->ks_name, "cpu_stat", 8) == 0)
+        if (std::string(ksp->ks_name).substr(0, 8) == "cpu_stat")
             i++;
     }
     return (i);
