@@ -19,7 +19,7 @@
 
 namespace util {
 
-std::vector<std::string> FS::listdir(const std::string &path) {
+std::vector<std::string> fs::listdir(const std::string &path) {
     std::vector<std::string> rval;
 
     DIR *d = opendir(path.c_str());
@@ -46,7 +46,7 @@ std::vector<std::string> FS::listdir(const std::string &path) {
     return rval;
 }
 
-bool FS::isdir(const std::string &path) {
+bool fs::isdir(const std::string &path) {
     struct stat sb;
     if (stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode))
         return true;
@@ -54,7 +54,7 @@ bool FS::isdir(const std::string &path) {
     return false;
 }
 
-bool FS::isfile(const std::string &path) {
+bool fs::isfile(const std::string &path) {
     struct stat sb;
     if (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode))
         return true;
@@ -62,7 +62,7 @@ bool FS::isfile(const std::string &path) {
     return false;
 }
 
-bool FS::isexec(const std::string &path) {
+bool fs::isexec(const std::string &path) {
     struct stat sb;
     if (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode)) {
         // Just check if any of the execute bits are set 'cause
@@ -74,7 +74,7 @@ bool FS::isexec(const std::string &path) {
     return false;
 }
 
-bool FS::readAll(const std::string &file, std::string &str) {
+bool fs::readAll(const std::string &file, std::string &str) {
     str = "";
     std::ifstream ifs(file.c_str());
     if (!ifs)
@@ -90,7 +90,7 @@ bool FS::readAll(const std::string &file, std::string &str) {
     return true;
 }
 
-std::string FS::cwd(void) {
+std::string fs::cwd(void) {
     std::string result(1024,'\0');
     while( getcwd(&result[0], result.size()) == 0) {
         if( errno != ERANGE ) {
@@ -103,7 +103,7 @@ std::string FS::cwd(void) {
     return result;
 }
 
-std::string FS::normpath(const std::string &path) {
+std::string fs::normpath(const std::string &path) {
     std::vector<std::string> comps = util::split(path, "/");
 
     // remember if this is an absolute path for later
@@ -151,7 +151,7 @@ std::string FS::normpath(const std::string &path) {
     return rval;
 }
 
-std::string FS::abspath(const std::string &path) {
+std::string fs::abspath(const std::string &path) {
     if (path.size()) {
         if (path[0] == '/')
             return path;
@@ -164,7 +164,7 @@ std::string FS::abspath(const std::string &path) {
     return path;
 }
 
-std::string FS::findCommand(const std::string &command) {
+std::string fs::findCommand(const std::string &command) {
     // Atempt to guess the prefix from argv0, CWD and PATH
 
     // If command has a path component it is already
@@ -179,7 +179,7 @@ std::string FS::findCommand(const std::string &command) {
             std::vector<std::string> path = util::split(p, ":");
             for (size_t i = 0 ; i < path.size() ; i++) {
                 std::string fname(path[i] + '/' + command);
-                if (FS::isexec(fname))
+                if (fs::isexec(fname))
                     return fname;
             }
         }

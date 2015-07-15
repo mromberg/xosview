@@ -48,10 +48,10 @@ int  LmsTemp::checksensors(int isproc, const std::string &dir,
   const std::string &filename) {
     bool found = false;
 
-    if (!util::FS::isdir(dir))
+    if (!util::fs::isdir(dir))
         return false;
     else {
-        std::vector<std::string> d1 = util::FS::listdir(dir);
+        std::vector<std::string> d1 = util::fs::listdir(dir);
         std::string dirname;
 
         for (size_t d1i = 0 ; !found && d1i < d1.size(); d1i++) {
@@ -60,17 +60,17 @@ int  LmsTemp::checksensors(int isproc, const std::string &dir,
             dirname = dir + "/" + ent1;
             if (!isproc)
                 dirname += "/device";
-            if (util::FS::isdir(dirname)) {
-                if (!util::FS::isdir(dirname)) {
+            if (util::fs::isdir(dirname)) {
+                if (!util::fs::isdir(dirname)) {
                     logProblem << "The directory " << dirname
                                << "exists but cannot be read.\n";
                 }
                 else {
-                    std::vector<std::string> d2 = util::FS::listdir(dirname);
+                    std::vector<std::string> d2=util::fs::listdir(dirname);
                     for (size_t d2i = 0 ; d2i < d2.size() ; d2i++) {
                         const std::string &e2dn = d2[d2i];
                         std::string f = dirname + "/" + e2dn;
-                        if (!util::FS::isfile(f))
+                        if (!util::fs::isfile(f))
                             continue;
 
                         if((isproc && filename == e2dn) ||

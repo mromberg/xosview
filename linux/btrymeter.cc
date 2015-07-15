@@ -101,7 +101,7 @@ bool BtryMeter::has_sys(void) {
     // If the directory is there we assume
     // the new sysfs way is supported.
     // There still may or may not be a battery
-    return util::FS::isdir(SYSDIRNAME);
+    return util::fs::isdir(SYSDIRNAME);
 }
 
 // More words of wisdom from the interwebs:
@@ -118,17 +118,17 @@ bool BtryMeter::getsysinfo(void) {
     if (batDir == "") // have sys but no bat dirs
         return false;
 
-    std::vector<std::string> dir = util::FS::listdir(batDir);
+    std::vector<std::string> dir = util::fs::listdir(batDir);
 
     // The star of the show (capacity)
     unsigned int capacity;
-    if (!util::FS::readFirst(batDir + "capacity", capacity)) {
+    if (!util::fs::readFirst(batDir + "capacity", capacity)) {
         logProblem << "error reading : " << batDir + "capacity\n";
         return false;
     }
 
     std::string status;
-    if (!util::FS::readFirst(batDir + "status", status)) {
+    if (!util::fs::readFirst(batDir + "status", status)) {
         logProblem << "Error reading: " << batDir + "status\n";
     }
 
@@ -194,14 +194,14 @@ float BtryMeter::getHoursLeft(const std::string &batDir,
 
     if (std::find(dir.begin(), dir.end(), "energy_now") != dir.end()) {
         unsigned long long energy_now;
-        if (!util::FS::readFirst(batDir + "energy_now", energy_now)) {
+        if (!util::fs::readFirst(batDir + "energy_now", energy_now)) {
             logProblem << "error reading: " << batDir + "energy_now\n";
             return 0.0;
         }
         if (std::find(dir.begin(), dir.end(), "power_now") != dir.end()) {
             // remaining time (energy_now/power_now)
             unsigned long long power_now;
-            if (!util::FS::readFirst(batDir + "power_now", power_now)) {
+            if (!util::fs::readFirst(batDir + "power_now", power_now)) {
                 logProblem << "error reading: " << batDir + "power_now\n";
                 return 0.0;
             }
@@ -210,7 +210,7 @@ float BtryMeter::getHoursLeft(const std::string &batDir,
         else {
             // remaining time is (energy_now/current_now)
             unsigned long long current_now;
-            if (!util::FS::readFirst(batDir + "current_now", current_now)) {
+            if (!util::fs::readFirst(batDir + "current_now", current_now)) {
                 logProblem << "error reading: " << batDir + "current_now\n";
                 return 0.0;
             }
@@ -221,8 +221,8 @@ float BtryMeter::getHoursLeft(const std::string &batDir,
         // remaining time is charge_now/current_now
         unsigned long long charge_now, current_now;
 
-        if (!util::FS::readFirst(batDir + "charge_now", charge_now) ||
-          !util::FS::readFirst(batDir + "current_now", current_now)) {
+        if (!util::fs::readFirst(batDir + "charge_now", charge_now) ||
+          !util::fs::readFirst(batDir + "current_now", current_now)) {
             logProblem << "error reading: " << batDir << "["
                        << "charge_now|current_now]" << std::endl;
             return 0.0;
@@ -253,7 +253,7 @@ std::string BtryMeter::getBatDir(void) const {
 
     // create a list of all the BAT* subdirs
     std::vector<std::string> bats;
-    std::vector<std::string> dir = util::FS::listdir(SYSDIRNAME);
+    std::vector<std::string> dir = util::fs::listdir(SYSDIRNAME);
     for (size_t i = 0 ; i < dir.size() ; i++)
         if (dir[i].substr(0, 3) == "BAT")
             bats.push_back(dir[i]);
@@ -282,7 +282,7 @@ static const char APMFILENAME[] = "/proc/apm";
 // determine if /proc/apm exists and is readable
 bool BtryMeter::has_apm( void ){
 
-    if (!util::FS::isfile(APMFILENAME)) {
+    if (!util::fs::isfile(APMFILENAME)) {
         logDebug << "no APM file" << std::endl;
         return false;
     }
@@ -456,7 +456,7 @@ static const char ACPIBATTERYDIR[] = "/proc/acpi/battery";
 // (XXX: too lazy -  no tests for actual readability is done)
 bool BtryMeter::has_acpi( void ){
 
-    if (!util::FS::isdir(ACPIBATTERYDIR)) {
+    if (!util::fs::isdir(ACPIBATTERYDIR)) {
         logDebug << "has_acpi(): stat failed: " << ACPIBATTERYDIR
                  << std::endl;
         return false;
@@ -474,7 +474,7 @@ bool BtryMeter::has_acpi( void ){
 
 bool BtryMeter::getacpiinfo( void ){
 
-    if (!util::FS::isdir(ACPIBATTERYDIR)) {
+    if (!util::fs::isdir(ACPIBATTERYDIR)) {
         logDebug << "ACPI: Cannot open directory : " <<  ACPIBATTERYDIR
                  << std::endl;
         return false;
@@ -494,7 +494,7 @@ bool BtryMeter::getacpiinfo( void ){
     acpi_charge_state=0; // assume charged
 
     std::string abs_battery_dir = ACPIBATTERYDIR;
-    std::vector<std::string> dir = util::FS::listdir(ACPIBATTERYDIR);
+    std::vector<std::string> dir = util::fs::listdir(ACPIBATTERYDIR);
     for (size_t di = 0 ; di < dir.size(); di++) {
         std::string abs_battery_name = abs_battery_dir + "/" + dir[di];
 

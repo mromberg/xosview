@@ -29,7 +29,7 @@ DiskMeter::DiskMeter( XOSView *parent, float max )
              << std::endl;
 
     // first - try sysfs:
-    if (util::FS::isdir("/sys/block")) {
+    if (util::fs::isdir("/sys/block")) {
         _sysfs = true;
         _statFileName = "/sys/block";
         logDebug << "diskmeter: using sysfs /sys/block" << std::endl;
@@ -37,7 +37,7 @@ DiskMeter::DiskMeter( XOSView *parent, float max )
 
     }
     // try vmstat:
-    else if (util::FS::isfile("/proc/vmstat")) {
+    else if (util::fs::isfile("/proc/vmstat")) {
         _vmstat = true;
         _sysfs  = false;
         _statFileName = "/proc/vmstat";
@@ -276,7 +276,7 @@ void DiskMeter::getsysfsdiskinfo( void ) {
     IntervalTimerStop();
     total_ = maxspeed_;
 
-    if (!util::FS::isdir(_statFileName)) {
+    if (!util::fs::isdir(_statFileName)) {
         logDebug << "sysfs: Cannot find directory : "
                  << _statFileName << std::endl;
         return;
@@ -287,7 +287,7 @@ void DiskMeter::getsysfsdiskinfo( void ) {
     sect_size=0L;
 
     // visit every /sys/block/*/stat and sum up the values:
-    std::vector<std::string> dir = util::FS::listdir(_statFileName);
+    std::vector<std::string> dir = util::fs::listdir(_statFileName);
     for (size_t di = 0 ; di < dir.size(); di++) {
         logDebug << "dirent->d_name: " << dir[di] << std::endl;
         std::string dname(dir[di]);
@@ -297,10 +297,10 @@ void DiskMeter::getsysfsdiskinfo( void ) {
         disk = sysfs_dir + "/" + dname;
         logDebug << "stat(" << disk << ")" << std::endl;
 
-        if (util::FS::isdir(disk)) {
+        if (util::fs::isdir(disk)) {
             // is a dir, locate 'stat' file in it
             disk += "/stat";
-            if (util::FS::isfile(disk)) {
+            if (util::fs::isfile(disk)) {
                 logDebug << "disk stat: " << disk << std::endl;
                 diskstat.open(disk.c_str());
                 if ( diskstat.good() ) {

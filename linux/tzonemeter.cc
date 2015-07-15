@@ -50,7 +50,7 @@ void TZoneMeter::checkevent( void ) {
     // Read the temperature.  The docs say.
     // Unit: millidegree Celsius
     unsigned long long temp = 0;
-    if (!util::FS::readFirst(_tempFName, temp))
+    if (!util::fs::readFirst(_tempFName, temp))
         logFatal << "error reading: " << _tempFName << std::endl;
     float ctemp = static_cast<float>(temp) / 1000.0;
 
@@ -75,8 +75,8 @@ void TZoneMeter::checkevent( void ) {
 }
 
 size_t TZoneMeter::count(void) {
-    if (util::FS::isdir(TZDIR)) {
-        std::vector<std::string> flist = util::FS::listdir(TZDIR);
+    if (util::fs::isdir(TZDIR)) {
+        std::vector<std::string> flist = util::fs::listdir(TZDIR);
         size_t rval = 0;
         std::string tzsdir(TZSDIR);
         for (size_t i = 0 ; i < flist.size() ; i++)

@@ -19,7 +19,7 @@
 
 namespace util {
 
-class FS {
+class fs {
 public:
     // returns a list of names in the specified path (. and .. not included)
     static std::vector<std::string> listdir(const std::string &path);
@@ -60,7 +60,7 @@ public:
 };
 
 template<class X>
-bool FS::readFirst(const std::string &file, X &x) {
+bool fs::readFirst(const std::string &file, X &x) {
     x = X();
     std::ifstream ifs(file.c_str());
     if (!ifs)

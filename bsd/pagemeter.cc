@@ -20,7 +20,7 @@ PageMeter::PageMeter( XOSView *parent, float max ) : FieldMeterGraph( parent,
     maxspeed_ = max;
     pageindex_ = 0;
 
-    if (util::FS::isfile("/proc/vmstat")) {
+    if (util::fs::isfile("/proc/vmstat")) {
         _vmstat = true;
         _statFileName = "/proc/vmstat";
     }
