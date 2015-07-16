@@ -10,8 +10,13 @@
 
 #include "fieldmetergraph.h"
 
-#include <kstat.h>
-#include <sys/sysinfo.h>
+// To keep the header in the .cc file
+struct kstat_ctl;
+typedef kstat_ctl kstat_ctl_t;
+struct kstat;
+typedef kstat kstat_t;
+
+
 
 class CPUMeter : public FieldMeterGraph {
 public:
@@ -27,7 +32,7 @@ public:
     static std::string cpuStr(int num);
 
 protected:
-    float cputime_[2][CPU_STATES];
+    std::vector<std::vector<float> > cputime_;
     int cpuindex_;
 
     void getcputime(void);

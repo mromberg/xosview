@@ -9,7 +9,14 @@
 
 #include "fieldmetergraph.h"
 
-#include <kstat.h>
+
+// To keep the header in the .cc file
+struct kstat_ctl;
+typedef kstat_ctl kstat_ctl_t;
+struct kstat;
+typedef kstat kstat_t;
+
+
 
 class MemMeter : public FieldMeterGraph {
 public:
@@ -22,7 +29,6 @@ public:
     void checkResources(void);
 
 protected:
-    //  struct pst_status *stats_;
     int _pageSize;
 
     void getmeminfo( void );

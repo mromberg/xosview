@@ -9,10 +9,12 @@
 
 #include "fieldmetergraph.h"
 
-#include <kstat.h>
 
-#define NNETS 100
-#define GUESS_MTU 1500
+// To keep the header in the .cc file
+struct kstat_ctl;
+typedef kstat_ctl kstat_ctl_t;
+struct kstat;
+typedef kstat kstat_t;
 
 class Host;
 
@@ -32,10 +34,10 @@ private:
     long long _lastBytesIn, _lastBytesOut;
 
     void adjust(void);
-    int nnet;
+    size_t nnet;
     kstat_ctl_t *kc;
-    kstat_t *nnets[NNETS];
-    int packetsize[NNETS];
+    std::vector<kstat_t *> nnets;
+    std::vector<int> packetsize;
 };
 
 #endif

@@ -5,17 +5,15 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "loadmeter.h"
-#include "xosview.h"
 
-#include <stdlib.h>
 #include <kstat.h>
-//#include <sys/loadavg.h>
 
 
 LoadMeter::LoadMeter(XOSView *parent, kstat_ctl_t *_kc)
-    : FieldMeterGraph(parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0) {
+    : FieldMeterGraph(parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0),
+      procloadcol_(0), warnloadcol_(0), alarmThreshold(0),
+      kc(_kc), ksp(0) {
 
-    kc = _kc;
     std::string ustr("unix"), smstr("system_misc");
     ksp = kstat_lookup(kc, const_cast<char *>(ustr.c_str()), 0,
       const_cast<char *>(smstr.c_str()));

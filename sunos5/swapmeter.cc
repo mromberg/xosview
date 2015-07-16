@@ -5,20 +5,13 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "swapmeter.h"
-#include "xosview.h"
 
-#include <stdlib.h>
 #include <unistd.h>
-#include <sys/stat.h>
 #include <sys/swap.h>
 
-static size_t Pagesize;
 
 SwapMeter::SwapMeter(XOSView *parent)
     : FieldMeterGraph(parent, 3, "SWAP", "USED/RSVD/FREE") {
-
-    if (!Pagesize)
-        Pagesize = sysconf(_SC_PAGESIZE);
 }
 
 SwapMeter::~SwapMeter(void) {
@@ -54,5 +47,16 @@ void SwapMeter::getswapinfo(void) {
     fields_[1] = (ai.ani_resv - (ai.ani_max - ai.ani_free)); // reserved
     fields_[2] = (ai.ani_max - ai.ani_resv); // available
 
-    setUsed((fields_[0] + fields_[1]) * Pagesize, total_ * Pagesize);
+    setUsed((fields_[0] + fields_[1]) * pageSize(), total_ * pageSize());
+}
+
+size_t SwapMeter::pageSize(void) {
+    static size_t ps = 0;
+    static bool first = true;
+    if (first) {
+        first = false;
+        ps = sysconf(_SC_PAGESIZE);
+    }
+
+    return ps;
 }

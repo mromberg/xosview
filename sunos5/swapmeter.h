@@ -21,6 +21,7 @@ public:
 
 protected:
     void getswapinfo(void);
+    static size_t pageSize(void);
 };
 
 #endif

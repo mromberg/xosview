@@ -11,18 +11,10 @@
 
 
 PageMeter::PageMeter(XOSView *parent, kstat_ctl_t *_kc, float max)
-    : FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE") {
+    : FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE"),
+      pageinfo_(2, std::vector<float>(2, 0.0)), pageindex_(0), maxspeed_(max),
+      kc(_kc), ksps(64, static_cast<kstat_t *>(0)), ncpus(0) {
 
-    kc = _kc;
-
-    for (int i = 0 ; i < 2 ; i++)
-        for (int j = 0 ; j < 2 ; j++)
-            pageinfo_[j][i] = 0;
-
-    maxspeed_ = max;
-    pageindex_ = 0;
-
-    ncpus = 0;
     for (kstat_t *ksp = kc->kc_chain; ksp != NULL; ksp = ksp->ks_next) {
         if (std::string(ksp->ks_name).substr(0, 8) == "cpu_stat" &&
           kstat_read(kc, ksp, NULL) != -1) {
@@ -59,7 +51,7 @@ void PageMeter::getpageinfo(void) {
     total_ = 0;
     pageinfo_[pageindex_][0] = 0; // pgin
     pageinfo_[pageindex_][1] = 0; // pgout
-    for (int i = 0; i < ncpus; i++) {
+    for (size_t i = 0; i < ncpus; i++) {
         if (kstat_read(kc, ksps[i], &cs) == -1)
             continue;
         pageinfo_[pageindex_][0] += cs.cpu_vminfo.pgpgin;

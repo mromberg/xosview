@@ -5,7 +5,6 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "MeterMaker.h"
-#include "xosview.h"
 
 #include "cpumeter.h"
 #include "memmeter.h"
@@ -14,8 +13,10 @@
 #include "pagemeter.h"
 #include "diskmeter.h"
 #include "netmeter.h"
+#include "example.h"  // The example meter
 
-#include <stdlib.h>
+
+#include <kstat.h>
 
 
 MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
@@ -27,6 +28,11 @@ void MeterMaker::makeMeters(void) {
     kc = kstat_open();
     if (kc == NULL)
         return;
+
+    // Add the example meter.  Normally you would use
+    // isResourceTrue.  But example resources are not in Xdefalts
+    if (_xos->getResourceOrUseDefault("example", "False") == "True")
+        push(new ExampleMeter(_xos));
 
     if (_xos->isResourceTrue("load"))
         push(new LoadMeter(_xos, kc));

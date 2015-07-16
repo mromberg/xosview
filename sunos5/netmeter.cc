@@ -9,13 +9,17 @@
 //
 #include "netmeter.h"
 
+#include <kstat.h>
+
+static const size_t NNETS = 100;
+static const size_t GUESS_MTU = 1500;
 
 NetMeter::NetMeter( XOSView *parent, kstat_ctl_t *_kc, float max )
-    : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ){
+    : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ),
+      maxpackets_(max),
+      _lastBytesIn(0), _lastBytesOut(0), nnet(0), kc(_kc),
+      nnets(NNETS, 0), packetsize(NNETS, 0) {
 
-    kc = _kc;
-    maxpackets_ = max;
-    nnet=0;
     kstat_named_t     *k;
     for (kstat_t *ksp = kc->kc_chain; ksp != NULL && nnet <NNETS;
          ksp = ksp->ks_next) {
@@ -75,7 +79,7 @@ void NetMeter::checkevent( void ){
 
     IntervalTimerStop();
     kstat_named_t     *k;
-    for (int i = 0; i < nnet; i++) { // see man kstat......
+    for (size_t i = 0; i < nnet; i++) { // see man kstat......
         kstat_t *ksp=nnets[i];
         k = (kstat_named_t *)(ksp->ks_data);
         if (kstat_read(kc, ksp, 0) == -1)

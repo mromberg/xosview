@@ -1,30 +1,32 @@
 //
+//  Copyright (c) 1999, 2015
 //  Rewritten for Solaris by Arno Augustin 1999
 //  augustin@informatik.uni-erlangen.de
 //
+//  This file may be distributed under terms of the GPL
+//
 #include "diskmeter.h"
-#include "xosview.h"
 
-#include <fstream>
-#include <stdlib.h>
+#include <kstat.h>
+
+
+static const size_t NPARTS = 100;
 
 
 DiskMeter::DiskMeter( XOSView *parent, kstat_ctl_t *_kc, float max )
-    : FieldMeterGraph( parent, 3, "DISK", "READ/WRITE/IDLE") {
+    : FieldMeterGraph( parent, 3, "DISK", "READ/WRITE/IDLE"),
+      read_prev_(0), write_prev_(0), maxspeed_(max), kc(_kc),
+      part(NPARTS, 0), _npart(0) {
 
-    kc = _kc;
-    read_prev_ = 0;
-    write_prev_ = 0;
-    maxspeed_ = max;
-    npart=0;
-    for (kstat_t *ksp = kc->kc_chain; ksp != NULL && npart <NPARTS;
+    for (kstat_t *ksp = kc->kc_chain; ksp != NULL && _npart < NPARTS;
 	 ksp = ksp->ks_next) {
 
         if (ksp->ks_type == KSTAT_TYPE_IO ){
             if(kstat_read(kc, ksp, NULL) != -1)
-                part[npart++] = ksp;
+                part[_npart++] = ksp;
         }
     }
+
     getdiskinfo();
 }
 
@@ -57,7 +59,7 @@ void DiskMeter::getdiskinfo( void ) {
 
     IntervalTimerStop();
 
-    for (int i = 0; i < npart; i++) {
+    for (size_t i = 0; i < _npart; i++) {
         if (kstat_read(kc, part[i], &kio) == -1)
             continue;
         read_curr += kio.nread;

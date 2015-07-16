@@ -5,23 +5,21 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "memmeter.h"
-#include "xosview.h"
 
 #include <unistd.h>
-#include <stdlib.h>
+#include <kstat.h>
 
 
 MemMeter::MemMeter(XOSView *parent, kstat_ctl_t *_kc)
-    : FieldMeterGraph(parent, 2, "MEM", "USED/FREE") {
+    : FieldMeterGraph(parent, 2, "MEM", "USED/FREE"),
+      _pageSize(sysconf(_SC_PAGESIZE)), kc(_kc), ksp(0) {
 
-    kc = _kc;
-
-    _pageSize = sysconf(_SC_PAGESIZE);
     total_ = sysconf(_SC_PHYS_PAGES);
 
     std::string ustr("unix"), spstr("system_pages");
     ksp = kstat_lookup(kc, const_cast<char *>(ustr.c_str()), 0,
       const_cast<char *>(spstr.c_str()));
+
     if (ksp == NULL)
         logFatal << "kstat_lookup() failed" << std::endl;
 }

@@ -4,15 +4,18 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
 #ifndef DISKMETER_H
 #define DISKMETER_H
 
 #include "fieldmetergraph.h"
 
-#include <kstat.h>
+// To keep the header in the .cc file
+struct kstat_ctl;
+typedef kstat_ctl kstat_ctl_t;
+struct kstat;
+typedef kstat kstat_t;
 
-#define NPARTS 100
+
 
 class DiskMeter : public FieldMeterGraph {
 public:
@@ -31,9 +34,9 @@ private:
     u_longlong_t read_prev_;
     u_longlong_t write_prev_;
     float maxspeed_;
-    int npart;
     kstat_ctl_t *kc;
-    kstat_t *part[NPARTS];
+    std::vector<kstat_t *>part;
+    size_t _npart;
 };
 
 #endif

@@ -6,16 +6,14 @@
 
 #include <sstream>
 
+#include <kstat.h>
+#include <sys/sysinfo.h>
+
 
 CPUMeter::CPUMeter(XOSView *parent, kstat_ctl_t *_kc, int cpuid)
     : FieldMeterGraph(parent, CPU_STATES, util::toupper(cpuStr(cpuid)),
-      "USER/SYS/WAIT/IDLE") {
-
-    kc = _kc;
-    for (int i = 0 ; i < 2 ; i++)
-        for (int j = 0 ; j < CPU_STATES ; j++)
-            cputime_[i][j] = 0;
-    cpuindex_ = 0;
+      "USER/SYS/WAIT/IDLE"), cputime_(2, std::vector<float>(CPU_STATES, 0)),
+      cpuindex_(0), kc(_kc), ksp(0) {
 
     int j = 0;
     for (ksp = kc->kc_chain; ksp != NULL; ksp = ksp->ks_next) {

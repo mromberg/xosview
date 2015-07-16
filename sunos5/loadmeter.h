@@ -9,7 +9,12 @@
 
 #include "fieldmetergraph.h"
 
-#include <kstat.h>
+// To keep the header in the .cc file
+struct kstat_ctl;
+typedef kstat_ctl kstat_ctl_t;
+struct kstat;
+typedef kstat kstat_t;
+
 
 class LoadMeter : public FieldMeterGraph {
 public:

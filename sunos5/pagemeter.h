@@ -9,7 +9,13 @@
 
 #include "fieldmetergraph.h"
 
-#include <kstat.h>
+// To keep the header in the .cc file
+struct kstat_ctl;
+typedef kstat_ctl kstat_ctl_t;
+struct kstat;
+typedef kstat kstat_t;
+
+
 
 class PageMeter : public FieldMeterGraph {
 public:
@@ -22,7 +28,8 @@ public:
     void checkResources(void);
 
 protected:
-    float pageinfo_[2][2];
+    std::vector<std::vector<float> > pageinfo_;
+    //float pageinfo_[2][2];
     int pageindex_;
     float maxspeed_;
 
@@ -30,8 +37,9 @@ protected:
 
 private:
     kstat_ctl_t *kc;
-    kstat_t *ksps[64];	/* XXX */
-    int ncpus;
+    std::vector<kstat_t *> ksps; /* XXX */
+    // ksps[64];
+    size_t ncpus;
 };
 
 #endif
