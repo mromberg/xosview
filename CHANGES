@@ -1,4 +1,99 @@
-  /*  $Id: CHANGES,v 1.57 2006/03/01 05:36:25 romberg Exp $  */
+Changes since xosview-1.8.4
+
+  - General code cleanup.
+
+  - CPU meter for Hurd
+
+  - Thermal Zone meter for Linux
+
+  - Example meter (example.h)
+
+  - Wireless link quality meter for Linux
+
+  - '-o' command line to add "xosview*" specifc resources
+    using the command line.
+
+  - NetBSD netmeter just prints a message if it is not in
+    the kmem group rather than aborting the application.
+    xosview is no longer installed with special privileges
+    on any platform.
+
+  - BSD intrate meter now uses /proc
+
+  - BSD gets copy of linux CPU meter and as a result now
+    supports SMP.
+
+  - Configure script update to find more libraries without assistance.
+    When it does need help (hopefully rare) command line options are
+    available.
+
+  - Older BSD (libkvm based) systems no longer supported.  The
+    code is still there but no longer compiles.  If someone can
+    get it running... patches are welcome.
+
+  - Add a decay option to "used labels" that smooths out their
+    display and cuts down the load on the X server.  On by default
+    on all meters that recieved the upgrade.
+
+  - Mostly supports *most* non fixed width fonts.  Non mono spaced
+    fonts that have a really extreme range in the height and width of
+    their glyphs will still cause trouble but alot of the more reasonable
+    (and a few of the less reasonable) look fine.
+
+  - Add '-c' option to load an X resource "config" file from the
+    command line.
+
+  - Add an all the standard X command line options such as '-font',
+    '-iconic', etc.
+
+  - The '-h --help' option now prints a short (and complete) summary
+    of all options
+
+  - Support '!' comments at the end of a line rather than just the
+    beginning.  This was never officially allowed in the X standard and
+    it worked sometimes by luck.  Now it should work all the time.
+
+  - General graphics drawing performance improvements.  Xosviews impact
+    on the X server is now a factor of two or three times less.  Mostly
+    due to excessive text rendering.
+  
+  - Xft/freetype2 font support.  Fuzzy fonts have arrived in xosview.
+
+  - Move the drawing code into a seperate Graphics class to ease the
+    ability to render using a library other than X in the future.
+
+  - Remove all memory errors found by valgrind except for one small leak
+    out of Xft that seems to be in the library itself.
+
+  - Linux netmeter uses /proc/net/dev only
+
+  - autoheader support so all configure defines are now in config.h
+    instead of on the compiler command line
+
+  - C++ library support generally brought up to "modernish" standards.
+    All C++ includes are of the <iostream> form and std::string and
+    std::vector are in common use.  Builds with gcc 4.8ish to 5.1.
+    C++-11 is not supported until it becomes more widely avaliable.
+
+  - New logging/debug feature for developers.
+
+  - The graph meters now each have an off screen pixmap and should
+    scroll in a improved fashion.
+
+  - Linux int meter supports the single, auto, all, etc. modes of
+    the cpu meter.  Also now correctly counts the actual interupts
+    found in /proc
+
+  - Revamp Linux battery meter to use /sys/class/power_supply
+    now calculates time remaining at current load.
+
+  - New default color scheme
+
+  - Add new cpu fields to linux for the KVM related items
+    USR/NI/SYS/IO/I/SI/ST/GST/NGST/IDL
+
+  - Linux cpu meter now supports single, auto, both, etc modes
+
 
 Changes since xosview-1.8.3
 

@@ -20,10 +20,14 @@
 
 * Current known working platforms:
    
-  - Linux
+  - Linux (tested on fedora-22 but almost anything should work)
+
+  - Gnu Hurd (debian-hurd)
+
+  - Solaris (tested on OpenIndiana)
 
   - NetBSD (6.1.5) but most anything with the /proc file-system should
-    work as well.
+    work as well.  BSDs lacking /proc... not so much.
 
 * To build xosview:
 
@@ -34,10 +38,16 @@
     make
     make install    
 
+    To successfully build xosview you will most certainly need to
+    use the Gnu C++ compiler and make.  There is no gcc specific
+    code in xosview but that is the only compiler it has been tested
+    with.  There probably are Gnu make specific things in the makefiles.
+    Interest in support other flavors of make is low. :)
+
     There are a few optional features you may be interested in.  So,
     you may want to checkout 'configure --help' as it will show you
-    options you can change such as the install prefix.  These options
-    may also be used to help locate optional (or required) libraries
+    options you can change such as the install prefix.  These switches
+    may be used to help locate optional (or required) libraries
     if the configure script is unable to do so by itself.
 
     Please see the README file for the platform you are building on for

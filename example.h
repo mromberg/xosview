@@ -193,9 +193,9 @@ inline void ExampleMeter::readWarpCoreTemp(void) {
 
 
 //---------------------------------------------------------
-// This meter is compiled into the linux and bsd ports
-// so you can see how to add a new meter to the MeterMaker
-// class.  Look in bsd/MeterMaker.cc or linux/MeterMaker.cc
+// This meter is compiled into the linux, bsd, gnu and sunos5
+// ports so you can see how to add a new meter to the MeterMaker
+// class.  Look in [linux|bsd|gnu|sunos5]/MeterMaker.cc
 // for more.
 //
 // To turn on the above meter code just run:
