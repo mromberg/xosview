@@ -4,7 +4,7 @@
 #  dependencies and installed files.
 #-----------------------------------------------------------
 Name:           xosview
-Version:        1.8.4
+Version:        @PACKAGE_VERSION@
 Release:        1%{?dist}
 Summary:        System resource monitor
 

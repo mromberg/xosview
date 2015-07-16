@@ -95,7 +95,7 @@ distclean: clean
 
 # cleans all build items
 maintainer-clean: distclean
-	rm -f configure config.h.in
+	rm -f configure config.h.in xosview.spec
 
 # For updating configure.in's checks for C++ header files.
 # This finds all uses of '#include <.*>'

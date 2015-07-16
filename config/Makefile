@@ -2,7 +2,7 @@
 # $Id: Makefile,v 1.3 2002/02/18 02:09:21 bgrayson Exp $
 #
 
-all: ../configure ../config.h.in
+all: ../configure ../config.h.in ../xosview.spec
 
 ../configure: configure.in *.m4
 	autoconf -Wall configure.in > ../configure
@@ -10,6 +10,9 @@ all: ../configure ../config.h.in
 
 ../config.h.in: configure.in *.m4
 	autoheader && mv -f config.h.in ..
+
+../xosview.spec: xosview.spec.in configure.in
+	./makespec.sh > ../xosview.spec
 
 clean:
 	rm -f *~
