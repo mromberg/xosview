@@ -71,6 +71,7 @@ PKG_NAME = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 distrib: checksource
 	git archive --prefix=stage/ master | tar xf -
 	cd stage && ./autogen.sh
+	rm -rf stage/config/autom4te.cache
 	mv stage $(PKG_NAME)
 	tar cf - $(PKG_NAME) | gzip -9 > $(PKG_NAME).tar.gz
 	rm -rf $(PKG_NAME)
