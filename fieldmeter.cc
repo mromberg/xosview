@@ -268,11 +268,13 @@ void FieldMeter::drawfields(X11Graphics &g, bool manditory) {
             numWarnings_ ++;
             if (numWarnings_ < 5)
                 logProblem << "meter " << name() <<  " had a negative "
-                           << "value of %f for field " << fields_[i]
-                           << std::endl;
+                           << "value of " << fields_[i]
+                           << " for field " << i << std::endl;
+
             if (numWarnings_ == 5)
-                logProblem << "Future warnings from the " << name() << " meter "
-                           << "will not be displayed." << std::endl;
+                logProblem << "Future warnings from the " << name()
+                           << " meter will not be displayed."
+                           << std::endl;
         }
 
         twidth = (int) ((width_ * (float) fields_[i]) / total_);

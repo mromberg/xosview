@@ -14,7 +14,7 @@ WLinkMeter::WLinkMeter(XOSView *parent)
       _goodColor(0), _poorColor(0), _poorValue(39) {
 
     // scale is always 0 - 70 (I think)
-    total_ = 70;
+    total_ = 70.0;
 }
 
 WLinkMeter::~WLinkMeter(void) {
@@ -43,13 +43,10 @@ void WLinkMeter::checkResources( void ) {
 void WLinkMeter::checkevent( void ) {
 
     int link = getLink();
-    if (link < 0) {
-        fields_[0] = 0;
-        fields_[1] = 70;
-        setUsed(0, total_);
-    }
 
-    if (link > 70)
+    if (link < 0)
+        link = 0;
+    if (link > 70.0)
         link = 70;
 
     unsigned long ocolor = fieldcolor(0);
@@ -60,7 +57,7 @@ void WLinkMeter::checkevent( void ) {
     if (ocolor != fieldcolor(0))
         drawLabels(parent_->g());
 
-
+    total_ = 70.0;
     fields_[0] = link;
     fields_[1] = total_ - link;
     setUsed(link, total_);

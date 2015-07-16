@@ -42,7 +42,7 @@
     use the Gnu C++ compiler and make.  There is no gcc specific
     code in xosview but that is the only compiler it has been tested
     with.  There probably are Gnu make specific things in the makefiles.
-    Interest in support other flavors of make is low. :)
+    Interest in support for other flavors of make is low. :)
 
     There are a few optional features you may be interested in.  So,
     you may want to checkout 'configure --help' as it will show you
