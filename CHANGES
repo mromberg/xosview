@@ -1,5 +1,7 @@
 Changes since xosview-1.8.4
 
+  - Add some experimental themes.
+
   - General code cleanup.
 
   - CPU meter for Hurd

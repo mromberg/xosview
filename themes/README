@@ -1,0 +1,48 @@
+  This directory is a work in progress.  But it still may be useful.
+It is a stab of simplifying setting all the various colors used
+by xosview.  Here is how it works:
+
+  Xdefaults.m4:  A copy of the Xdefaults from the main source tree.  Edited
+                 so that every color falls into a dozen or so categories
+                 (more on this below).  This file acts as a template.
+
+  themeName.m4:  In a nutshell all the other .m4 files are the theme
+                 settings that will be applied to Xdefaults.m4 to
+                 create an X resource file (.xrc) that can be loaded
+                 by xrdb or xosview directly (with the -c switch).
+
+
+  If you run make on this subdirectory it will create all of the .xrc files
+defined in the Makefile (one per .m4 "theme" file).  You can edit
+the color values found in the .m4 theme file and run make again to rebuild
+the .xrc.
+
+  A new one can be created simply by copying an existing .m4 theme file to
+another name, adding it to the Makefile and then running make.  A few
+sample .xpm bacground pixmap images are included as an example.
+
+  The items defined in the .m4 files are of course in the form of m4
+macros.  Nothing fancy (m4 wise) is going on and it should be obvious how
+to edit them.  A quick summary:
+
+BG1:  The background color
+XPMFILE: An optional xpm background image
+FONT: The font
+OUTLINE: The foreground color which is mostly the outline of the meters
+WARN: A color used for warnings
+CRIT: A color used for critical warnings
+DEAD: A color to indicate an inactive/disabled meter
+# These colors are shared for all meters 
+FIELD0:  The unused or meter background color
+FIELD1-10: The colors of the next 10 fields
+LABEL1: The color of the meter label
+LABEL2: The color of the used label
+
+  After the .xrc is created by make it is exactly the same as any other
+X resource file.  So, you can copy it where ever you want and edit
+it to tweak things to your exact taste.  The pixmap file names from these
+examples in particular will probably need to be edited to include a full
+path to where you locate the .xpm file so xosview can find it.
+
+Have fun!
+
