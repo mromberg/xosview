@@ -46,7 +46,7 @@ void WLinkMeter::checkevent( void ) {
 
     if (link < 0)
         link = 0;
-    if (link > 70.0)
+    if (link > 70)
         link = 70;
 
     unsigned long ocolor = fieldcolor(0);
