@@ -988,6 +988,156 @@ N-th label for above temperatures, default is TMP.
 .pp lmstemp
 .uf lmstemp
 
+
+\fBIntel Core / AMD K8+ / VIA C7 Temperature Sensor Resources\fP
+
+.xt coretemp
+
+xosview*coretempHighest: 100
+.RS
+Highest temp value displayed, default 100. If CPU throttling temperature
+(tjMax) is supplied by the operating system, it is used instead.
+.RE
+
+xosview*coretempHigh: \fInumber\fP
+.RS
+Value to use as alarm temperature, default is coretempHighest. If a usable
+value, such as the temperature for which maximum cooling is required, is
+supplied by the operating system, it is used instead.
+.RE
+
+xosview*coretempActColor:  \fIcolor\fP
+.RS
+Color of actual temperature.
+.RE
+
+xosview*coretempHighColor:  \fIcolor\fP
+.RS
+Color above alarm temperature, also used to indicate alarm.
+.RE
+
+xosview*coretempIdleColor:   \fIcolor\fP
+.RS
+Color between actual and alarm temperatures.
+.RE
+
+xosview*coretempDisplayType: (separate, average or maximum)
+.RS
+This resource tells xosview how to display the CPU temperature. The formats
+work as follows:
+
+\fBseparate\fP:
+.RS
+Display one meter for each CPU core of a multi-core CPU. This is the default.
+.RE
+\fBaverage\fP:
+.RS
+Display the average of core temperatures of a multi-core CPU. On multi-socket
+machines, one meter per physical CPU is displayed.
+.RE
+\fBmaximum\fP:
+.RS
+Display the highest core temperature of a multi-core CPU. On multi-socket
+machines, one meter per physical CPU is displayed.
+.RE
+.RE
+
+.pp coretemp
+
+.uf coretemp
+
+
+\fB*BSD Sensor Resources\fP
+
+.xt bsdsensor
+
+xosview*bsdsensorHighest: \fInumber\fP
+.RS
+Highest value displayed. If not given, or too small, the meter will adjust
+to fit actual and alarm values. Can be overridden for any meter with
+bsdsensorHighest\fIN\fP.
+.RE
+
+xosview*bsdsensorActColor: \fIcolor\fP
+.RS
+Color of actual value.
+.RE
+
+xosview*bsdsensorHighColor: \fIcolor\fP
+.RS
+Color above high alarm value, also used to indicate alarm.
+.RE
+
+xosview*bsdsensorLowColor: \fIcolor\fP
+.RS
+Color of actual value, when it is below low alarm value.
+.RE
+
+xosview*bsdsensorIdleColor: \fIcolor\fP
+.RS
+Color between actual and high alarm values.
+.RE
+
+xosview*bsdsensor\fIN\fP:     \fIname.type\fP
+.br
+xosview*bsdsensorHigh\fIN\fP: \fIname.type\fP
+.br
+xosview*bsdsensorLow\fIN\fP:  \fIname.type\fP
+.RS
+These define where the actual value, high alarm value and low alarm value for
+meter N=1,2,3,... will be read from. The name is the sensor driver, and type is
+the wanted value. Both alarm values are optional, and can also be given as
+static numerical values.
+.br
+
+You can find the correct pair for OpenBSD and DragonFly BSD with systat
+command, e.g.
+.br
+xosview*bsdsensor1:     it0.temp1
+.br
+xosview*bsdsensorHigh1: 100
+
+On NetBSD, you can find the driver name with envstat command. Value name for
+the actual reading is typically 'cur-value' and for high alarm 'critical-max'
+and for low alarm 'critical-min', e.g.
+.br
+xosview*bsdsensor2:     coretemp0.cur-value
+.br
+xosview*bsdsensorHigh2: coretemp0.critical-max
+
+For all possible NetBSD value names, refer to envstat source code.
+
+FreeBSD has no usable sensor drivers as of version 9.0. However, ACPI thermal
+zones can be used by defining the sysctl node below hw.acpi.thermal, e.g.
+.br
+xosview*bsdsensor1:     tz0.temperature
+.br
+xosview*bsdsensorHigh1: tz0._CRT
+.br
+
+ACPI thermal zones can be used like this on DragonFly BSD as well.
+.RE
+
+xosview*bsdsensorLabel\fIN\fP: \fIstring\fP
+.RS
+N-th label for above meters, default is SEN\fIN\fP.
+.RE
+
+xosview*bsdsensorHighest\fIN\fP: \fInumber\fP
+.RS
+Override default bsdsensorHighest for meter N.
+.RE
+
+xosview*bsdsensorUsedFormat\fIN\fP: (float, percent or autoscale)
+.RS
+Override default bsdsensorUsedFormat for meter N.
+.RE
+
+.pp bsdsensor
+
+.uf bsdsensor
+
+
 \fBBattery Meter Resources\fP
 
 xosview*battery: (True or False)
