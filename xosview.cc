@@ -492,7 +492,7 @@ std::string XOSView::getResource( const std::string &name ){
         logFatal << "Couldn't find '" << name
                  << "' resource in the resource database!\n";
         /*  Some compilers aren't smart enough to know that exit() exits.  */
-        return '\0';
+        return "";
     }
 }
 

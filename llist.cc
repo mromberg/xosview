@@ -57,7 +57,7 @@ int LList::push( void *data ){
 
 void *LList::pop( void ){
     void *temp;
-    struct LNode *temp2;
+    class LNode *temp2;
 
     if ( !n_ ) return ( NULL );
 
@@ -80,7 +80,7 @@ void *LList::pop( void ){
 
 void *LList::dequeue( void ){
     void *temp;
-    struct LNode *temp2;
+    class LNode *temp2;
 
     if ( !n_ ) return ( NULL );
 

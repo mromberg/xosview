@@ -160,7 +160,7 @@ void BitFieldMeter::drawfieldlegend(X11Graphics &g) {
 
 void BitFieldMeter::drawused(X11Graphics &g, bool manditory) {
     if ( !manditory )
-        if ( (lastused_ == used_) )
+        if ( lastused_ == used_ )
             return;
 
     g.setStippleN(0);	/*  Use all-bits stipple.  */
