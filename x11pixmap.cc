@@ -12,7 +12,7 @@ X11Pixmap::X11Pixmap(Display *dsp, Drawable parent, Colormap cmap,
     : _pmap(0), _dsp(dsp), _parent(parent), _g(0),
       _width(width), _height(height) {
 
-    _pmap = XCreatePixmap(dsp, parent, _width, _height, depth);
+    _pmap = XCreatePixmap(dsp, _parent, _width, _height, depth);
     logDebug << "new pixmap: " << _pmap << std::endl;
     _g = new X11Graphics(_dsp, _pmap, false, cmap, bgPixVal);
 

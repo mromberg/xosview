@@ -46,6 +46,10 @@ std::string CLOpts::useage(void) const {
 }
 
 void CLOpts::parse(void) {
+    // check is mostly to shutdown warning aboout _argc unused
+    if (_argc < 1)
+        return;
+
     char **argp = &_argv[1];
     while (*argp) {
         bool skipTwo = false;
