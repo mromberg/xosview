@@ -1,111 +1,63 @@
 //
-//  Copyright (c) 1996, 2004, 2015
-//  by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
-//  This file may be distributed under terms of the GPL
+//  NetBSD port:
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
+//
+//  This file was originally written by Brian Grayson for the NetBSD and
+//    xosview projects.
+//
+//  This file may be distributed under terms of the GPL or of the BSD
+//    license, whichever you choose.  The full license notices are
+//    contained in the files COPYING.GPL and COPYING.BSD, which you
+//    should have received.  If not, contact one of the xosview
+//    authors for a copy.
 //
 
 #include "pagemeter.h"
-#include "fsutil.h"
+#include "kernel.h"
+#include <stdlib.h>
 
-#include <fstream>
 
-
-PageMeter::PageMeter( XOSView *parent, float max ) : FieldMeterGraph( parent,
-  3, "PAGE", "IN/OUT/IDLE" ), _vmstat(false), _statFileName("/proc/stat"){
-    for ( int i = 0 ; i < 2 ; i++ )
-        for ( int j = 0 ; j < 2 ; j++ )
-            pageinfo_[j][i] = 0;
-
-    maxspeed_ = max;
-    pageindex_ = 0;
-
-    if (util::fs::isfile("/proc/vmstat")) {
-        _vmstat = true;
-        _statFileName = "/proc/vmstat";
-    }
+PageMeter::PageMeter( XOSView *parent, double total )
+	: FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE" ) {
+	total_ = total;
+	BSDPageInit();
+	BSDGetPageStats(NULL, previnfo_);
 }
 
-PageMeter::~PageMeter( void ){
+PageMeter::~PageMeter( void ) {
 }
 
-void PageMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void PageMeter::checkResources( void ) {
+	FieldMeterGraph::checkResources();
 
-    setfieldcolor( 0, parent_->getResource( "pageInColor" ) );
-    setfieldcolor( 1, parent_->getResource( "pageOutColor" ) );
-    setfieldcolor( 2, parent_->getResource( "pageIdleColor" ) );
-    priority_ = util::stoi (parent_->getResource( "pagePriority" ));
-    maxspeed_ *= priority_ / 10.0;
-    dodecay_ = parent_->isResourceTrue( "pageDecay" );
-    useGraph_ = parent_->isResourceTrue( "pageGraph" );
-    setUsedFormat (parent_->getResource("pageUsedFormat"));
-    decayUsed(parent_->isResourceTrue("pageUsedDecay"));
+	setfieldcolor( 0, parent_->getResource("pageInColor") );
+	setfieldcolor( 1, parent_->getResource("pageOutColor") );
+	setfieldcolor( 2, parent_->getResource("pageIdleColor") );
+	priority_ = util::stoi( parent_->getResource("pagePriority") );
+	dodecay_ = parent_->isResourceTrue("pageDecay");
+	useGraph_ = parent_->isResourceTrue("pageGraph");
+	setUsedFormat( parent_->getResource("pageUsedFormat") );
 }
 
-void PageMeter::checkevent( void ){
-    if (_vmstat)
-        getvmpageinfo();
-    else
-        getpageinfo();
-    drawfields(parent_->g());
+void PageMeter::checkevent( void ) {
+	getpageinfo();
+	drawfields(parent_->g());
 }
 
-void PageMeter::updateinfo(void) {
-    int oldindex = (pageindex_+1)%2;
-    for ( int i = 0; i < 2; i++ ) {
-        if ( pageinfo_[oldindex][i] == 0 )
-            pageinfo_[oldindex][i] = pageinfo_[pageindex_][i];
+void PageMeter::getpageinfo( void ) {
+	uint64_t info[2];
+	BSDGetPageStats(NULL, info);
 
-        fields_[i] = pageinfo_[pageindex_][i] - pageinfo_[oldindex][i];
-        total_ += fields_[i];
-    }
+	fields_[0] = info[0] - previnfo_[0];
+	fields_[1] = info[1] - previnfo_[1];
+	previnfo_[0] = info[0];
+	previnfo_[1] = info[1];
 
-    if ( total_ > maxspeed_ )
-        fields_[2] = 0.0;
-    else {
-        fields_[2] = maxspeed_ - total_;
-        total_ = maxspeed_;
-    }
+	if (total_ < fields_[0] + fields_[1])
+		total_ = fields_[0] + fields_[1];
 
-    setUsed (total_ - fields_[2], maxspeed_);
-    pageindex_ = (pageindex_ + 1) % 2;
-}
-
-void PageMeter::getvmpageinfo(void) {
-    total_ = 0;
-    std::string buf;
-    std::ifstream stats(_statFileName);
-    if (!stats) {
-        logFatal << "Cannot open file : " << _statFileName << std::endl;
-    }
-    do {
-        stats >> buf;
-    } while (!stats.eof() && (util::tolower(buf) != "pswpin"));
-    stats >>pageinfo_[pageindex_][0];
-
-    do {
-        stats >> buf;
-    } while (!stats.eof() && (util::tolower(buf) != "pswpout"));
-    stats >> pageinfo_[pageindex_][1];
-
-    updateinfo();
-}
-
-void PageMeter::getpageinfo( void ){
-    total_ = 0;
-    std::string buf;
-    std::ifstream stats(_statFileName);
-
-    if ( !stats ){
-        logFatal << "Cannot open file : " << _statFileName << std::endl;
-    }
-
-    do {
-        stats >>buf;
-    } while (!stats.eof() && (util::tolower(buf) != "swap"));
-
-    stats >>pageinfo_[pageindex_][0] >>pageinfo_[pageindex_][1];
-
-    updateinfo();
+	fields_[2] = total_ - fields_[0] - fields_[1];
+	setUsed(total_ - fields_[2], total_);
 }

@@ -1,7 +1,5 @@
 //
 //  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
-//
-//  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -12,29 +10,30 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-
-#ifndef _MEMMETER_H_
-#define _MEMMETER_H_
-
-#include "fieldmetergraph.h"
-#include "xosview.h"
+// $Id: MeterMaker.h,v 1.6 2002/03/22 03:23:40 bgrayson Exp $
+//
+#ifndef _MeterMaker_h
+#define _MeterMaker_h
 
 
-class MemMeter : public FieldMeterGraph {
+#include "pllist.h"
+
+#include <string>
+
+
+class Meter;
+class XOSView;
+
+class MeterMaker : public PLList<Meter *> {
 public:
-	MemMeter( XOSView *parent );
-	~MemMeter( void );
-
-        std::string name( void ) const { return "MemMeter"; }
-	void checkevent( void );
-	void checkResources( void );
-
-protected:
-	void getmeminfo( void );
-
+    MeterMaker(XOSView *xos);
+    void makeMeters(void);
 private:
-	uint64_t meminfo_[5];
-};
+    XOSView *_xos;
 
+    void cpuFactory(void);
+    void getRange(const std::string &resource, size_t cpuCount,
+      size_t &start, size_t &end) const;
+};
 
 #endif

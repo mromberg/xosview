@@ -102,6 +102,7 @@ xosview*memPriority:        10
 xosview*memDecay:           False
 xosview*memGraph:           False
 xosview*memUsedFormat:	    autoscale
+xosview*memWiredColor: blue
 
 
 ! ** Disk Meter Resources

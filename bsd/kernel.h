@@ -3,8 +3,7 @@
 
 //
 //  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002, 2015
-//  by Brian Grayson (bgrayson@netbsd.org)
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -14,75 +13,47 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-//
 
-#include "config.h"
-
-// To mark code that won't compile
-#define DEAD_CODE 0
+#include "defines.h"
 
 void
 BSDInit();
 
 void
-SetKernelName(const char* const kernelName);
+SetKernelName(const char* kernelName);
+
+int
+BSDGetCPUSpeed();
 
 void
 BSDPageInit();
 
-#if defined(UVM)
-#if DEAD_CODE
 void
-BSDGetUVMPageStats(struct uvmexp* uvmp);
-#endif // DEAD_CODE
-#else
-void
-BSDGetPageStats(struct vmmeter* vmp);
-#endif
+BSDGetPageStats(uint64_t *meminfo, uint64_t *pageinfo);
 
 void
 BSDCPUInit();
 
-#if defined(XOSVIEW_NETBSD) && (__NetBSD_Version__ >= 104260000)
 void
-BSDGetCPUTimes(u_int64_t* timesArray);
-#else
-void
-BSDGetCPUTimes(long* timesArray);
-#endif
+BSDGetCPUTimes(uint64_t *timesArray, unsigned int cpu = 0);
 
 int
 BSDNetInit();
 
-bool
-OpenKDIfNeeded(bool fatal=true);
-
 void
-BSDGetNetInOut (long long * inbytes, long long * outbytes);
+BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes, const char *netIface, bool ignored);
 
 int
 BSDSwapInit();
 
-#ifdef HAVE_SWAPCTL
 void
-BSDGetSwapCtlInfo(unsigned long long* total, unsigned long long* free);
-#endif
+BSDGetSwapInfo(uint64_t *total, uint64_t *free);
 
 int
 BSDDiskInit();
 
-#if DEAD_CODE
-void
-BSDGetDiskXFerBytes (unsigned long long * bytes);
-#endif
-
-#ifdef XOSVIEW_FREEBSD
-void
-FreeBSDGetBufspace(int* bfsp);
-#endif
-
-
-#define NUM_INTR	16
+uint64_t
+BSDGetDiskXFerBytes(uint64_t *read_bytes, uint64_t *write_bytes);
 
 int
 BSDIntrInit();
@@ -91,6 +62,24 @@ int
 BSDNumInts();
 
 void
-BSDGetIntrStats (unsigned long intrCount[NUM_INTR]);
+BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs);
+
+int
+BSDCountCpus(void);
+
+#if defined(__i386__) || defined(__x86_64)
+unsigned int
+BSDGetCPUTemperature(float *temps, float *tjmax);
+#endif
+
+void
+BSDGetSensor(const char *name, const char *valname, float *value, char *unit = NULL);
+
+bool
+BSDHasBattery();
+
+void
+BSDGetBatteryInfo(int *remaining, unsigned int *state);
+
 
 #endif

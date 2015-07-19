@@ -23,14 +23,21 @@ CXXFLAGS += -I$(TOP)
 
 OBJS = \
 MeterMaker.o \
+btrymeter.o \
 cpumeter.o \
-memmeter.o \
-swapmeter.o \
-pagemeter.o \
-netmeter.o \
-loadmeter.o \
+diskmeter.o \
+intmeter.o \
 intratemeter.o \
-kernel.o
+kernel.o \
+loadmeter.o \
+memmeter.o \
+netmeter.o \
+pagemeter.o \
+swapmeter.o \
+sensor.o \
+coretemp.o
+
+
 
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)

@@ -1,29 +1,34 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
-//  by Mike Romberg ( mike-romberg@comcast.net )
+//  Copyright (c) 1995, 1996, 1997-2002, 2015 by Brian Grayson (bgrayson@netbsd.org)
 //
-//  This file may be distributed under terms of the GPL
+//  This file was written by Brian Grayson for the NetBSD and xosview
+//    projects.
+//  This file may be distributed under terms of the GPL or of the BSD
+//    license, whichever you choose.  The full license notices are
+//    contained in the files COPYING.GPL and COPYING.BSD, which you
+//    should have received.  If not, contact one of the xosview
+//    authors for a copy.
 //
+
 #ifndef _SWAPMETER_H_
 #define _SWAPMETER_H_
 
-
 #include "fieldmetergraph.h"
+#include "xosview.h"
 
 
 class SwapMeter : public FieldMeterGraph {
 public:
-    SwapMeter( XOSView *parent );
-    ~SwapMeter( void );
+	SwapMeter( XOSView *parent );
+	~SwapMeter( void );
 
-    std::string name( void ) const { return "SwapMeter"; }
-    void checkevent( void );
+        std::string name( void ) const { return "SwapMeter"; }
+	void checkevent( void );
+	void checkResources( void );
 
-    void checkResources( void );
 protected:
-
-    void getswapinfo( void );
-private:
+	void getswapinfo( void );
 };
+
 
 #endif

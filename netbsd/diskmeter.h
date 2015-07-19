@@ -10,33 +10,31 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-
+// $Id: diskmeter.h,v 1.8 2002/03/22 03:23:40 bgrayson Exp $
+//
 #ifndef _DISKMETER_H_
 #define _DISKMETER_H_
 
-#include "fieldmetergraph.h"
-#include "xosview.h"
-#include "defines.h"
+#define DISKMETER_H_CVSID "$Id: diskmeter.h,v 1.8 2002/03/22 03:23:40 bgrayson Exp $"
 
+#include "fieldmetergraph.h"
+#include <sys/types.h>		//  For u_int64_t
 
 class DiskMeter : public FieldMeterGraph {
 public:
-	DiskMeter( XOSView *parent, double max );
-	~DiskMeter( void );
+  DiskMeter( XOSView *parent, float max );
+  ~DiskMeter( void );
 
-        std::string name( void ) const { return "DiskMeter"; }
-	void checkevent( void );
-	void checkResources( void );
+  virtual std::string name( void ) const { return "DiskMeter"; }
+  void checkevent( void );
 
+  void checkResources( void );
 protected:
-	void getstats( void );
-
+  void getstats( void );
 private:
-#ifndef HAVE_DEVSTAT
-	uint64_t prevreads_, prevwrites_;
-#endif
-	double maxBandwidth_;
+  u_int64_t prevBytes;
+  int kernelHasStats_;
+  float	maxBandwidth_;
 };
-
 
 #endif

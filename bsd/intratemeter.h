@@ -1,33 +1,36 @@
 //
-//  Copyright (c) 2015
-//  by Mike Romberg ( mike-romberg@comcast.net )
+//  Copyright (c) 1999, 2015 by Brian Grayson (bgrayson@netbsd.org)
 //
-//  This file may be distributed under terms of the GPL
+//  This file may be distributed under terms of the GPL or of the BSD
+//    license, whichever you choose.  The full license notices are
+//    contained in the files COPYING.GPL and COPYING.BSD, which you
+//    should have received.  If not, contact one of the xosview
+//    authors for a copy.
 //
 
-#ifndef IRQRATEMETER_H
-#define IRQRATEMETER_H
+#ifndef _IRQRATEMETER_H_
+#define _IRQRATEMETER_H_
 
 #include "fieldmetergraph.h"
-#include "timer.h"
+#include "xosview.h"
 
 
 class IrqRateMeter : public FieldMeterGraph {
 public:
-    IrqRateMeter( XOSView *parent );
-    ~IrqRateMeter( void );
+	IrqRateMeter( XOSView *parent );
+	~IrqRateMeter( void );
 
-    virtual std::string name( void ) const { return "IrqRateMeter"; }
-    void checkevent( void );
-
-    void checkResources( void );
+        std::string name( void ) const { return "IrqRateMeter"; }
+	void checkevent( void );
+	void checkResources( void );
 
 private:
-    unsigned long long _peak;
-    unsigned long long _last;
-    Timer _timer;
+	uint64_t *irqs_, *lastirqs_;
+	unsigned int irqcount_;
 
-    unsigned long long getIntCount(void) const;
+protected:
+	void getinfo( void );
 };
+
 
 #endif

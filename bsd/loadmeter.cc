@@ -12,105 +12,114 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-#include "loadmeter.h"
 
-#include <stdlib.h>  //  for getloadavg()
+#include "loadmeter.h"
+#include "kernel.h"
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <iostream>
 
 
 LoadMeter::LoadMeter( XOSView *parent )
-    : FieldMeterGraph( parent, 2, "LOAD", "PROCS per MIN/IDLE", 1, 1, 0 ),
-      _procloadcol(0), _warnloadcol(0), _critloadcol(0), _warnThreshold(0),
-      _critThreshold(0), _alarmstate(0), _lastalarmstate(0) {
+	: FieldMeterGraph( parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0 ) {
+	total_ = -1.0;
 }
 
-LoadMeter::~LoadMeter( void ){
+LoadMeter::~LoadMeter( void ) {
 }
 
-void LoadMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void LoadMeter::checkResources( void ) {
+	FieldMeterGraph::checkResources();
 
-    _procloadcol = parent_->g().allocColor(
-        parent_->getResource( "loadProcColor" ));
-    _warnloadcol = parent_->g().allocColor(
-        parent_->getResource( "loadWarnColor" ));
-    _critloadcol = parent_->g().allocColor(
-        parent_->getResource( "loadCritColor" ));
+	procloadcol_ = parent_->g().allocColor( parent_->getResource("loadProcColor") );
+	warnloadcol_ = parent_->g().allocColor( parent_->getResource("loadWarnColor") );
+	critloadcol_ = parent_->g().allocColor( parent_->getResource("loadCritColor") );
 
-    setfieldcolor( 0, _procloadcol );
-    setfieldcolor( 1, parent_->getResource( "loadIdleColor" ) );
+	setfieldcolor( 0, procloadcol_ );
+	setfieldcolor( 1, parent_->getResource("loadIdleColor") );
+	priority_ = util::stoi( parent_->getResource("loadPriority") );
+	dodecay_ = parent_->isResourceTrue("loadDecay");
+	useGraph_ = parent_->isResourceTrue("loadGraph");
+	setUsedFormat( parent_->getResource("loadUsedFormat") );
+	do_cpu_speed_ = parent_->isResourceTrue("loadCpuSpeed");
 
-    priority_ = util::stoi (parent_->getResource("loadPriority"));
-    dodecay_ = parent_->isResourceTrue("loadDecay");
-    useGraph_ = parent_->isResourceTrue("loadGraph");
-    setUsedFormat (parent_->getResource("loadUsedFormat"));
-    _warnThreshold = util::stoi (parent_->getResource("loadWarnThreshold"));
-    _critThreshold = util::stoi (parent_->getResource("loadCritThreshold"));
+        std::string warn = parent_->getResource("loadWarnThreshold");
+	if (warn.substr(0, 2) == "au")
+		warnThreshold_ = BSDCountCpus();
+	else
+            warnThreshold_ = util::stoi(warn);
 
-    _alarmstate = _lastalarmstate = 0;
+        std::string crit = parent_->getResource("loadCritThreshold");
+	if (crit.substr(0, 2) == "au")
+		critThreshold_ = warnThreshold_ * 4;
+	else
+            critThreshold_ = util::stoi(crit);
 
-    if (dodecay_){
-        //  Warning:  Since the loadmeter changes scale occasionally, old
-        //  decay values need to be rescaled.  However, if they are rescaled,
-        //  they could go off the edge of the screen.  Thus, for now, to
-        //  prevent this whole problem, the load meter can not be a decay
-        //  meter.  The load is a decaying average kind of thing anyway,
-        //  so having a decaying load average is redundant.
-        logProblem << "The loadmeter can not be configured as a decay\n"
-                   << "  meter.  See the source code (" << __FILE__
-                   << ") for further\n" << "  details.\n";
-        dodecay_ = 0;
-    }
+	alarmstate_ = lastalarmstate_ = 0;
+
+	if (dodecay_) {
+		//  Warning:  Since the loadmeter changes scale occasionally, old
+		//  decay values need to be rescaled.  However, if they are rescaled,
+		//  they could go off the edge of the screen.  Thus, for now, to
+		//  prevent this whole problem, the load meter can not be a decay
+		//  meter.  The load is a decaying average kind of thing anyway,
+		//  so having a decaying load average is redundant.
+		std::cerr << "Warning:  The loadmeter can not be configured as a decay\n"
+		          << "  meter.  See the source code (" << __FILE__ << ") for further\n"
+		          << "  details.\n";
+		dodecay_ = 0;
+	}
 }
 
-void LoadMeter::checkevent( void ){
-    getloadinfo();
-    drawfields(parent_->g());
+void LoadMeter::checkevent( void ) {
+	getloadinfo();
+
+	if (do_cpu_speed_) {
+		old_cpu_speed_ = cur_cpu_speed_;
+		cur_cpu_speed_ = BSDGetCPUSpeed();
+
+		if (old_cpu_speed_ != cur_cpu_speed_) {
+			char l[25];
+			snprintf(l, 25, "PROCS/MIN %d MHz", cur_cpu_speed_);
+			legend(l);
+			drawLegend(parent_->g());
+		}
+	}
+	drawfields(parent_->g());
 }
 
-void LoadMeter::getloadinfo( void ){
-    double oneMinLoad;
+void LoadMeter::getloadinfo( void ) {
+	double oneMinLoad;
 
-    getloadavg (&oneMinLoad, 1);  //  Only get the 1-minute-average sample.
-    fields_[0] = oneMinLoad;  //  Convert from double to float.
+	getloadavg(&oneMinLoad, 1);  //  Only get the 1-minute-average sample.
+	fields_[0] = oneMinLoad;
 
-    if ( fields_[0] <  _warnThreshold )
-        _alarmstate = 0;
-    else
-        if ( fields_[0] >= _critThreshold )
-            _alarmstate = 2;
-        else
-            /* if fields_[0] >= warnThreshold */ _alarmstate = 1;
+	if (fields_[0] <  warnThreshold_)
+		alarmstate_ = 0;
+	else if (fields_[0] >= critThreshold_)
+		alarmstate_ = 2;
+	else
+		alarmstate_ = 1;
 
-    if (_alarmstate != _lastalarmstate) {
-        if ( _alarmstate == 0 )
-            setfieldcolor( 0, _procloadcol );
-        else
-            if ( _alarmstate == 1 )
-                setfieldcolor( 0, _warnloadcol );
-            else
-                /* if alarmstate == 2 */ setfieldcolor( 0, _critloadcol );
-        if (dolegends())
-            drawLegend(parent_->g());
-        _lastalarmstate = _alarmstate;
-    }
+	if (alarmstate_ != lastalarmstate_) {
+		if (alarmstate_ == 0)
+			setfieldcolor(0, procloadcol_);
+		else if (alarmstate_ == 1)
+			setfieldcolor(0, warnloadcol_);
+		else
+			setfieldcolor(0, critloadcol_);
+		drawLegend(parent_->g());
+		lastalarmstate_ = alarmstate_;
+	}
 
+	// Adjust total to next power-of-two of the current load.
+	if ( (fields_[0]*5.0 < total_ && total_ > 1.0) || fields_[0] > total_ ) {
+		unsigned int i = fields_[0];
+		i |= i >> 1; i |= i >> 2; i |= i >> 4; i |= i >> 8; i |= i >> 16;  // i = 2^n - 1
+		total_ = i + 1;
+	}
 
-    //  This method of auto-adjust is better than the old way.
-    //  If fields[0] is less than 20% of display, shrink display to be
-    //  full-width.  Then, if full-width < 1.0, set it to be 1.0.
-    if ( fields_[0]*5.0<total_ )
-        total_ = fields_[0];
-    else
-        //  If fields[0] is larger, then set it to be 1/5th of full.
-        if ( fields_[0]>total_ )
-            total_ = fields_[0]*5.0;
-
-    if ( total_ < 1.0)
-        total_ = 1.0;
-
-    fields_[1] = (float) (total_ - fields_[0]);
-
-    /*  I don't see why anyone would want to use any format besides
-     *  float, but just in case.... */
-    setUsed (fields_[0], total_);
+	fields_[1] = total_ - fields_[0];
+	setUsed(fields_[0], total_);
 }

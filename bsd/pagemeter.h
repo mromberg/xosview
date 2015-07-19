@@ -1,34 +1,40 @@
 //
-//  Copyright (c) 1996, 2007, 2015
-//  by Massimiliano Ghilardi ( ghilardi@cibs.sns.it )
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
-//  This file may be distributed under terms of the GPL
+//  NetBSD port:
+//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
+//  This file was written by Brian Grayson for the NetBSD and xosview
+//    projects.
+//  This file may be distributed under terms of the GPL or of the BSD
+//    license, whichever you choose.  The full license notices are
+//    contained in the files COPYING.GPL and COPYING.BSD, which you
+//    should have received.  If not, contact one of the xosview
+//    authors for a copy.
+//
+
 #ifndef _PAGEMETER_H_
 #define _PAGEMETER_H_
 
 #include "fieldmetergraph.h"
+#include "xosview.h"
+
 
 class PageMeter : public FieldMeterGraph {
 public:
-    PageMeter( XOSView *parent, float max );
-    ~PageMeter( void );
+	PageMeter( XOSView *parent, double total );
+	~PageMeter( void );
 
-    std::string name( void ) const { return "PageMeter"; }
-    void checkevent( void );
+        std::string name( void ) const { return "PageMeter"; }
+	void checkevent( void );
+	void checkResources( void );
 
-    void checkResources( void );
 protected:
-    float pageinfo_[2][2];
-    int pageindex_;
-    float maxspeed_;
-    bool _vmstat;
-    const char *_statFileName;
+	void getpageinfo( void );
 
-    void getpageinfo( void );
-    void getvmpageinfo( void );
-    void updateinfo(void);
 private:
+	uint64_t previnfo_[2];
 };
+
 
 #endif

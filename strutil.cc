@@ -1,11 +1,13 @@
 #include "strutil.h"
 #include "log.h"
+
 #include <algorithm>
 #include <iostream>
 #include <cerrno>
 #include <cstring>
 #include <cassert>
 #include <stdexcept>
+#include <locale.h>
 
 namespace util {
 
@@ -48,7 +50,7 @@ std::vector<std::string> split(const std::string& s,
 static void setLocale(void) {
     static bool first = true;
     if (first) {
-        std::setlocale(LC_CTYPE, "");  // for s2ws() and ws2s()
+        setlocale(LC_CTYPE, "");  // for s2ws() and ws2s()
         first = false;
     }
 }

@@ -12,32 +12,28 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
+#ifndef LOADMETER_H
+#define LOADMETER_H
 
-#ifndef _LOADMETER_H_
-#define _LOADMETER_H_
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
 
 
 class LoadMeter : public FieldMeterGraph {
 public:
-	LoadMeter( XOSView *parent );
-	~LoadMeter( void );
+    LoadMeter( XOSView *parent );
+    ~LoadMeter( void );
 
-        std::string name( void ) const { return "LoadMeter"; }
-	void checkevent( void );
-	void checkResources( void );
+    virtual std::string name( void ) const { return "LoadMeter"; }
+    void checkevent( void );
 
-protected:
-	void getloadinfo( void );
+    void checkResources( void );
 
 private:
-	unsigned long procloadcol_, warnloadcol_, critloadcol_;
-	int warnThreshold_, critThreshold_, alarmstate_, lastalarmstate_;
-	int old_cpu_speed_, cur_cpu_speed_;
-	bool do_cpu_speed_;
-};
+    unsigned long _procloadcol, _warnloadcol, _critloadcol;
+    int _warnThreshold, _critThreshold, _alarmstate, _lastalarmstate;
 
+    void getloadinfo( void );
+};
 
 #endif

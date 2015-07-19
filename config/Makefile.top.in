@@ -29,6 +29,7 @@ Xrm.o \
 defaultstring.o \
 meter.o \
 fieldmeter.o \
+sensorfieldmeter.o \
 fieldmeterdecay.o \
 fieldmetergraph.o \
 bitfieldmeter.o \

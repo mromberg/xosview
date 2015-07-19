@@ -12,39 +12,33 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-#ifndef NETMETER_H
-#define NETMETER_H
+
+#ifndef _NETMETER_H_
+#define _NETMETER_H_
 
 #include "fieldmetergraph.h"
-#include "timer.h"
+#include "xosview.h"
+#include <string>
 
-class Host;
 
 class NetMeter : public FieldMeterGraph {
 public:
-    NetMeter(XOSView *parent, float max);
-    ~NetMeter( void );
+	NetMeter( XOSView *parent, double max );
+	~NetMeter( void );
 
-    virtual std::string name( void ) const { return "NetMeter"; }
-    void checkevent( void );
+        std::string name( void ) const { return "NetMeter"; }
+	void checkevent( void );
+	void checkResources( void );
 
-    void checkResources( void );
-
-    void BSDGetNetInOut (long long * inbytes, long long * outbytes);
-
-    static bool checkPerms(void);
+protected:
+	void getstats(void);
 
 private:
-    float netBandwidth_;
-    //  NetBSD:  Use long long, so we won't run into problems after 4 GB
-    //  has been transferred over the net!
-    long long _lastBytesIn, _lastBytesOut;
-
-    //  Did the meter initialize properly?
-    bool kernelHasStats_;
-    std::string netIface_;
-
-    void adjust(void);
+	uint64_t lastBytesIn_, lastBytesOut_;
+	double netBandwidth_;
+	std::string netIface_;
+	bool ignored_;
 };
+
 
 #endif
