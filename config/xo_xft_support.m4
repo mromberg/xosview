@@ -15,16 +15,18 @@ AC_DEFUN([XO_XFT_SUPPORT],[dnl
         # and we are here we also don't have freetype-config
         # and the user did not help.  So, not even God can find
         # freetype2 'cause x_includes will be "".
-        if test -n "$x_includes"; then
+        if test -z "$x_includes"; then
             AC_MSG_WARN([SWAG at freetype2 being in /usr/include/freetype2])
             freetype2_inc="/usr/include/freetype2"
         else
+            AC_MSG_WARN([guessing freetype in "$x_includes/freetype2"])
             freetype2_inc="$x_includes/freetype2"
         fi
     fi
     ])
     XFT_OBJS=""
     XOSV_FONT="7x13bold"
+    saved_cpp_flags="$CPPFLAGS"
     CPPFLAGS="$CPPFLAGS -I$freetype2_inc"
         AC_CHECK_HEADERS([ft2build.h],[dnl
             AC_CHECK_HEADERS([X11/Xft/Xft.h],[dnl
@@ -35,5 +37,5 @@ AC_DEFUN([XO_XFT_SUPPORT],[dnl
                 XO_CONCAT(LIBS,$LIBS,[-lXft])
                 ])
             ])
-    ])
+    ], [CPPFLAGS="$saved_cpp_flags"])
 ])

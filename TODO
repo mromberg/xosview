@@ -20,8 +20,6 @@
   This way the leaf classes just gather stats and report back.  But don't
   worry about display.
 
-- Move stuff out of aclocal.m4 and into more specific m4 files.
-
 - Transparent almost works.  Windom moves do not update the background
 
 - Pass a Graphics to checkResources

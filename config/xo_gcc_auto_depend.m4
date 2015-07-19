@@ -1,3 +1,33 @@
+# MY_C_SWITCH(switch)
+# -------------------
+# try to compile and link a simple C program with the switch compile switch
+# "${CC-cc} $CFLAGS $1 conftest.c -o conftest"
+# sets my_cc_switch to switch if it worked
+# my_cc_switch is not modified elsewhere
+
+AC_DEFUN(MY_CXX_SWITCH,[
+        AC_MSG_CHECKING(for [$1] as CXX compilation switch)
+        cat > conftest.c <<__EOF
+int main() { return 0;}
+__EOF
+        my_c='${CXX-cc} $CXXFLAGS $1 conftest.c -o conftest${ac_exeext}'
+        (eval echo configure:__oline__: \"$my_c\") 1>&5
+        (eval $my_c 1>/dev/null 2>conftest.log)
+        cat conftest.log 1>&5
+        if grep <conftest.log option  >/dev/null ||
+           grep <conftest.log ERROR >/dev/null
+        then
+                my_cxx_switch="no"
+                AC_MSG_RESULT(no)
+        else
+                my_cxx_switch="yes"
+                AC_MSG_RESULT(yes)
+        fi
+        rm -rf conftest*
+])
+
+
+
 #
 # Sets up AC_SUBST vars for gcc's auto depend
 #

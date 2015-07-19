@@ -9,8 +9,11 @@ AC_CONFIG_AUX_DIR(config)
 #------------------------------------------------
 # Support macros
 #------------------------------------------------
+m4_include([xo_concat.m4])
 m4_include([m4_ax_config_feature.m4])
+m4_include([xo_min_cxx_check.m4])
 m4_include([xo_gcc_auto_depend.m4])
+m4_include([xo_linux_config.m4])
 m4_include([xo_bsd_config.m4])
 m4_include([xo_xft_support.m4])
 
@@ -56,12 +59,12 @@ AX_CONFIG_FEATURE(auto-depend, [turns on/off auto-depend support],
                   [enable_auto_depend="yes"])
 XO_GCC_AUTO_DEPEND($enable_auto_depend)
 
-XO_GCC_CXXFLAGS
 #-------End Features -----------------------------------------
 
-# compiler tests
-ICE_CXX_BOOL
-ICE_CXX_LONG_LONG
+XO_GCC_CXXFLAGS
+
+# C++ compiler tests
+XO_MIN_CXX_CHECK
 
 # Give AC_ thing a shot (for the user to supply paths if nothing else)
 AC_PATH_XTRA
@@ -138,13 +141,12 @@ case $host_os in
         XO_BSD_CONFIG
         ;;
     hpux*)
-        AC_XOSV_HPUX
 	host_dir=hpux
         host_os=hpux
         ;;
     irix6.5*)
         XO_CONCAT(DOC_FILES,$DOC_FILES,README.irix)
-        AC_XOSV_IRIX65
+        XO_CONCAT(LIBS,$LIBS,[-lrpcsvc])
 	host_dir=irix65
 	host_os=irix65
         ;;
@@ -155,7 +157,6 @@ case $host_os in
         ;;
     gnu*)
         XO_CONCAT(DOC_FILES,$DOC_FILES,README.gnu)
-        AC_XOSV_GNU
 	host_dir=gnu
 	host_os=gnu
         ;;
