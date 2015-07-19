@@ -33,8 +33,7 @@ protected:
     void getsensor( void );
 
 private:
-    char name_[NAMESIZE], highname_[NAMESIZE], lowname_[NAMESIZE];
-    char val_[NAMESIZE], highval_[NAMESIZE], lowval_[NAMESIZE];
+    std::string name_, val_, highname_, lowname_, highval_, lowval_;
     int nbr_;
 };
 

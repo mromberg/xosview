@@ -135,7 +135,7 @@ dnl  Let's just be lazy -- set host_os to be netbsd.
 dnl
 dnl Netbsd needs to link with libkvm
 dnl
-        XO_CONCAT(LIBS,$LIBS,[-lkvm])
+        XO_CONCAT(LIBS,$LIBS,[-lkvm -lprop])
         INSTALL_ARGS='-s -g kmem -m 02555'
 	AC_DEFINE(XOSVIEW_NETBSD,[1],[NetBSD lkvm])
 ])

@@ -1365,45 +1365,37 @@ BSDGetSensor(const char *name, const char *valname, float *value,
 			err(EX_USAGE, "Value %s does not exist", valname);
 		if ( strncmp(type, "Temperature", 4) == 0 ) {
 			*value = (val / 1000000.0) - 273.15;  // temperatures are in microkelvins
-			if (unit)
-				strcpy(unit, "\260C");
+                        unit = "\260C";
 		}
 		else if ( strncmp(type, "Fan", 3) == 0 ) {
 			*value = (float)val;                  // plain integer value
-			if (unit)
-				strcpy(unit, "RPM");
+                        unit = "RPM";
 		}
 		else if ( strncmp(type, "Integer", 3) == 0 )
 			*value = (float)val;                  // plain integer value
 		else if ( strncmp(type, "Voltage", 4) == 0 ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
-			if (unit)
-				strcpy(unit, "V");
+                        unit = "V";
 		}
 		else if ( strncmp(type, "Ampere hour", 7) == 0 ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
-			if (unit)
-				strcpy(unit, "Ah");
+                        unit = "Ah";
 		}
 		else if ( strncmp(type, "Ampere", 7) == 0 ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
-			if (unit)
-				strcpy(unit, "A");
+                        unit = "A";
 		}
 		else if ( strncmp(type, "Watt hour", 5) == 0 ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
-			if (unit)
-				strcpy(unit, "Wh");
+                        unit = "Wh";
 		}
 		else if ( strncmp(type, "Watts", 5) == 0 ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
-			if (unit)
-				strcpy(unit, "W");
+                        unit = "W";
 		}
 		else if ( strncmp(type, "Ohms", 4) == 0 ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
-			if (unit)
-				strcpy(unit, "Ohm");
+                        unit = "Ohm";
 		}
 	}
 	prop_object_iterator_release(piter);

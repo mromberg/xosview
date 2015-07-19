@@ -24,29 +24,23 @@ BSDSensor::BSDSensor( XOSView *parent, const std::string &name,
     nbr_ = nbr;
     highname_[0] = highval_[0] = '\0';
     lowname_[0] = lowval_[0] = '\0';
-    std::string n(name), tmp;
-    tmp = n.substr( 0, n.find_first_of('.') );
-    strncpy(name_, tmp.c_str(), NAMESIZE);
-    tmp = n.substr( n.find_first_of('.') + 1 );
-    strncpy(val_, tmp.c_str(), NAMESIZE);
+    std::string n(name);
+    name_ = n.substr( 0, n.find_first_of('.') );
+    val_ = n.substr( n.find_first_of('.') + 1 );
     if (high.size()) {
         has_high_ = true;
         if (!util::fstr(high, high_)) { // high given as number?
             n = high;
-            tmp = n.substr( 0, n.find_first_of('.') );
-            strncpy(highname_, tmp.c_str(), NAMESIZE);
-            tmp = n.substr( n.find_first_of('.') + 1 );
-            strncpy(highval_, tmp.c_str(), NAMESIZE);
+            highname_ = n.substr( 0, n.find_first_of('.') );
+            highval_ = n.substr( n.find_first_of('.') + 1 );
         }
     }
     if (low.size()) {
         has_low_ = true;
         if (!util::fstr(low, low_)) {  // low given as number?
             n = low;
-            tmp = n.substr( 0, n.find_first_of('.') );
-            strncpy(lowname_, tmp.c_str(), NAMESIZE);
-            tmp = n.substr( n.find_first_of('.') + 1 );
-            strncpy(lowval_, tmp.c_str(), NAMESIZE);
+            lowname_ = n.substr( 0, n.find_first_of('.') );
+            lowval_ = n.substr( n.find_first_of('.') + 1 );
         }
     }
 }
@@ -86,7 +80,7 @@ void BSDSensor::checkResources( void ) {
 
     // Get the unit.
     float dummy;
-    BSDGetSensor(name_, val_, &dummy, unit_);
+    BSDGetSensor(name_.c_str(), val_.c_str(), &dummy, unit_);
     updateLegend();
 }
 
@@ -98,11 +92,11 @@ void BSDSensor::checkevent( void ) {
 void BSDSensor::getsensor( void ) {
     float value, high = high_, low = low_;
     std::string emptyStr;
-    BSDGetSensor(name_, val_, &value, emptyStr);
-    if ( strlen(highname_) )
-        BSDGetSensor(highname_, highval_, &high, emptyStr);
-    if ( strlen(lowname_) )
-        BSDGetSensor(lowname_, lowval_, &low, emptyStr);
+    BSDGetSensor(name_.c_str(), val_.c_str(), &value, emptyStr);
+    if ( highname_.size() )
+        BSDGetSensor(highname_.c_str(), highval_.c_str(), &high, emptyStr);
+    if ( lowname_.size() )
+        BSDGetSensor(lowname_.c_str(), lowval_.c_str(), &low, emptyStr);
 
     fields_[0] = value;
     checkFields(low, high);
