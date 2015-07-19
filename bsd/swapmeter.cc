@@ -15,43 +15,44 @@
 
 #include "swapmeter.h"
 #include "kernel.h"
-#include <stdlib.h>
 
 
 SwapMeter::SwapMeter( XOSView *parent )
-	: FieldMeterGraph( parent, 2, "SWAP", "USED/FREE" ) {
-	BSDSwapInit();
+    : FieldMeterGraph( parent, 2, "SWAP", "USED/FREE" ) {
+
+    BSDSwapInit();
 }
 
 SwapMeter::~SwapMeter( void ) {
 }
 
 void SwapMeter::checkResources( void ) {
-	FieldMeterGraph::checkResources();
 
-	setfieldcolor( 0, parent_->getResource("swapUsedColor") );
-	setfieldcolor( 1, parent_->getResource("swapFreeColor") );
-	priority_ = util::stoi( parent_->getResource("swapPriority") );
-	dodecay_ = parent_->isResourceTrue("swapDecay");
-	useGraph_ = parent_->isResourceTrue("swapGraph");
-	setUsedFormat( parent_->getResource("swapUsedFormat") );
+    FieldMeterGraph::checkResources();
+
+    setfieldcolor( 0, parent_->getResource("swapUsedColor") );
+    setfieldcolor( 1, parent_->getResource("swapFreeColor") );
+    priority_ = util::stoi( parent_->getResource("swapPriority") );
+    dodecay_ = parent_->isResourceTrue("swapDecay");
+    useGraph_ = parent_->isResourceTrue("swapGraph");
+    setUsedFormat( parent_->getResource("swapUsedFormat") );
 }
 
 void SwapMeter::checkevent( void ) {
-	getswapinfo();
-	drawfields(parent_->g());
+    getswapinfo();
+    drawfields(parent_->g());
 }
 
 void SwapMeter::getswapinfo( void ) {
-	uint64_t total = 0, used = 0;
+    uint64_t total = 0, used = 0;
 
-	BSDGetSwapInfo(&total, &used);
+    BSDGetSwapInfo(&total, &used);
 
-	total_ = (double)total;
-	if ( total_ == 0.0 )
-		total_ = 1.0;  /* We don't want any division by zero, now, do we?  :) */
-	fields_[0] = (double)used;
-	fields_[1] = total_;
+    total_ = (double)total;
+    if ( total_ == 0.0 )
+        total_ = 1.0;  /* We don't want any division by zero, now, do we?  :) */
+    fields_[0] = (double)used;
+    fields_[1] = total_;
 
-	setUsed(fields_[0], total_);
+    setUsed(fields_[0], total_);
 }

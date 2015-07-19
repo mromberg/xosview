@@ -16,48 +16,51 @@
 
 #include "pagemeter.h"
 #include "kernel.h"
-#include <stdlib.h>
+
 
 
 PageMeter::PageMeter( XOSView *parent, double total )
-	: FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE" ) {
-	total_ = total;
-	BSDPageInit();
-	BSDGetPageStats(NULL, previnfo_);
+    : FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE" ),
+      previnfo_(2, 0) {
+
+    total_ = total;
+    BSDPageInit();
+    BSDGetPageStats(NULL, previnfo_.data());
 }
 
 PageMeter::~PageMeter( void ) {
 }
 
 void PageMeter::checkResources( void ) {
-	FieldMeterGraph::checkResources();
 
-	setfieldcolor( 0, parent_->getResource("pageInColor") );
-	setfieldcolor( 1, parent_->getResource("pageOutColor") );
-	setfieldcolor( 2, parent_->getResource("pageIdleColor") );
-	priority_ = util::stoi( parent_->getResource("pagePriority") );
-	dodecay_ = parent_->isResourceTrue("pageDecay");
-	useGraph_ = parent_->isResourceTrue("pageGraph");
-	setUsedFormat( parent_->getResource("pageUsedFormat") );
+    FieldMeterGraph::checkResources();
+
+    setfieldcolor( 0, parent_->getResource("pageInColor") );
+    setfieldcolor( 1, parent_->getResource("pageOutColor") );
+    setfieldcolor( 2, parent_->getResource("pageIdleColor") );
+    priority_ = util::stoi( parent_->getResource("pagePriority") );
+    dodecay_ = parent_->isResourceTrue("pageDecay");
+    useGraph_ = parent_->isResourceTrue("pageGraph");
+    setUsedFormat( parent_->getResource("pageUsedFormat") );
 }
 
 void PageMeter::checkevent( void ) {
-	getpageinfo();
-	drawfields(parent_->g());
+    getpageinfo();
+    drawfields(parent_->g());
 }
 
 void PageMeter::getpageinfo( void ) {
-	uint64_t info[2];
-	BSDGetPageStats(NULL, info);
+    uint64_t info[2];
+    BSDGetPageStats(NULL, info);
 
-	fields_[0] = info[0] - previnfo_[0];
-	fields_[1] = info[1] - previnfo_[1];
-	previnfo_[0] = info[0];
-	previnfo_[1] = info[1];
+    fields_[0] = info[0] - previnfo_[0];
+    fields_[1] = info[1] - previnfo_[1];
+    previnfo_[0] = info[0];
+    previnfo_[1] = info[1];
 
-	if (total_ < fields_[0] + fields_[1])
-		total_ = fields_[0] + fields_[1];
+    if (total_ < fields_[0] + fields_[1])
+        total_ = fields_[0] + fields_[1];
 
-	fields_[2] = total_ - fields_[0] - fields_[1];
-	setUsed(total_ - fields_[2], total_);
+    fields_[2] = total_ - fields_[0] - fields_[1];
+    setUsed(total_ - fields_[2], total_);
 }

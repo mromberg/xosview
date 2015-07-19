@@ -19,56 +19,66 @@
 #include "memmeter.h"
 #include "defines.h"
 #include "kernel.h"
-#include <stdlib.h>
+
+
+
+#if defined(HAVE_UVM)
+static const char * const LEGEND = "ACT/INACT/WRD/FREE";
+static size_t NFIELDS = 4;
+#else
+static const char * const LEGEND = "ACT/INACT/WRD/CA/FREE";
+static size_t NFIELDS = 5;
+#endif
 
 
 MemMeter::MemMeter( XOSView *parent )
-#if defined(HAVE_UVM)
-	: FieldMeterGraph( parent, 4, "MEM", "ACT/INACT/WRD/FREE" ) {
-#else
-	: FieldMeterGraph( parent, 5, "MEM", "ACT/INACT/WRD/CA/FREE" ) {
-#endif
-	BSDPageInit();
+    : FieldMeterGraph( parent, NFIELDS, "MEM", LEGEND ),
+      meminfo_(5, 0) {
+
+    BSDPageInit();
 }
 
 MemMeter::~MemMeter( void ) {
-
 }
 
 void MemMeter::checkResources( void ) {
-	FieldMeterGraph::checkResources();
 
-	setfieldcolor( 0, parent_->getResource("memActiveColor") );
-	setfieldcolor( 1, parent_->getResource("memInactiveColor") );
-	setfieldcolor( 2, parent_->getResource("memWiredColor") );
+    FieldMeterGraph::checkResources();
+
+    setfieldcolor( 0, parent_->getResource("memActiveColor") );
+    setfieldcolor( 1, parent_->getResource("memInactiveColor") );
+    setfieldcolor( 2, parent_->getResource("memWiredColor") );
 #if defined(HAVE_UVM)
-	setfieldcolor( 3, parent_->getResource("memFreeColor") );
+    setfieldcolor( 3, parent_->getResource("memFreeColor") );
 #else
-	setfieldcolor( 3, parent_->getResource("memCacheColor") );
-	setfieldcolor( 4, parent_->getResource("memFreeColor") );
+    setfieldcolor( 3, parent_->getResource("memCacheColor") );
+    setfieldcolor( 4, parent_->getResource("memFreeColor") );
 #endif
-	priority_ = util::stoi( parent_->getResource("memPriority") );
-	dodecay_ = parent_->isResourceTrue("memDecay");
-	useGraph_ = parent_->isResourceTrue("memGraph");
-	setUsedFormat( parent_->getResource("memUsedFormat") );
+    priority_ = util::stoi( parent_->getResource("memPriority") );
+    dodecay_ = parent_->isResourceTrue("memDecay");
+    useGraph_ = parent_->isResourceTrue("memGraph");
+    setUsedFormat( parent_->getResource("memUsedFormat") );
 }
+
 
 void MemMeter::checkevent( void ) {
-	getmeminfo();
-	drawfields(parent_->g());
+    getmeminfo();
+    drawfields(parent_->g());
 }
 
+
 void MemMeter::getmeminfo( void ) {
-	BSDGetPageStats(meminfo_, NULL);
-	fields_[0] = (double)meminfo_[0];
-	fields_[1] = (double)meminfo_[1];
-	fields_[2] = (double)meminfo_[2];
+    BSDGetPageStats(meminfo_.data(), NULL);
+    fields_[0] = (double)meminfo_[0];
+    fields_[1] = (double)meminfo_[1];
+    fields_[2] = (double)meminfo_[2];
 #if defined(HAVE_UVM)
-	fields_[3] = (double)meminfo_[4];
+    fields_[3] = (double)meminfo_[4];
 #else
-	fields_[3] = (double)meminfo_[3];
-	fields_[4] = (double)meminfo_[4];
+    fields_[3] = (double)meminfo_[3];
+    fields_[4] = (double)meminfo_[4];
 #endif
-	total_ = (double)(meminfo_[0] + meminfo_[1] + meminfo_[2] + meminfo_[3] + meminfo_[4]);
-	setUsed(total_ - (double)meminfo_[4], total_);
+    total_ = (double)(meminfo_[0] + meminfo_[1] + meminfo_[2] + meminfo_[3]
+      + meminfo_[4]);
+    setUsed(total_ - (double)meminfo_[4], total_);
 }

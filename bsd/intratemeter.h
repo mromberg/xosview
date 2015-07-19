@@ -8,29 +8,27 @@
 //    authors for a copy.
 //
 
-#ifndef _IRQRATEMETER_H_
-#define _IRQRATEMETER_H_
+#ifndef IRQRATEMETER_H
+#define IRQRATEMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
 
 
 class IrqRateMeter : public FieldMeterGraph {
 public:
-	IrqRateMeter( XOSView *parent );
-	~IrqRateMeter( void );
+    IrqRateMeter( XOSView *parent );
+    ~IrqRateMeter( void );
 
-        std::string name( void ) const { return "IrqRateMeter"; }
-	void checkevent( void );
-	void checkResources( void );
-
-private:
-	uint64_t *irqs_, *lastirqs_;
-	unsigned int irqcount_;
+    virtual std::string name( void ) const { return "IrqRateMeter"; }
+    void checkevent( void );
+    void checkResources( void );
 
 protected:
-	void getinfo( void );
-};
+    void getinfo( void );
 
+private:
+    unsigned int irqcount_;
+    std::vector<uint64_t> irqs_, lastirqs_;
+};
 
 #endif

@@ -13,28 +13,26 @@
 //    authors for a copy.
 //
 
-#ifndef _PAGEMETER_H_
-#define _PAGEMETER_H_
+#ifndef PAGEMETER_H
+#define PAGEMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
 
 
 class PageMeter : public FieldMeterGraph {
 public:
-	PageMeter( XOSView *parent, double total );
-	~PageMeter( void );
+    PageMeter( XOSView *parent, double total );
+    ~PageMeter( void );
 
-        std::string name( void ) const { return "PageMeter"; }
-	void checkevent( void );
-	void checkResources( void );
+    virtual std::string name( void ) const { return "PageMeter"; }
+    void checkevent( void );
+    void checkResources( void );
 
 protected:
-	void getpageinfo( void );
+    void getpageinfo( void );
 
 private:
-	uint64_t previnfo_[2];
+    std::vector<uint64_t> previnfo_;
 };
-
 
 #endif

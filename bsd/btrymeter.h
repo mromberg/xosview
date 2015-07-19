@@ -7,30 +7,28 @@
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef _BTRYMETER_H_
-#define _BTRYMETER_H_
+#ifndef BTRYMETER_H
+#define BTRYMETER_H
 
 #include "fieldmeter.h"
-#include "xosview.h"
 
 
 class BtryMeter : public FieldMeter {
 public:
-	BtryMeter( XOSView *parent );
-	~BtryMeter( void );
+    BtryMeter( XOSView *parent );
+    ~BtryMeter( void );
 
-        std::string name( void ) const { return "BtryMeter"; }
-	void checkevent( void );
-	void checkResources( void );
+    virtual std::string name( void ) const { return "BtryMeter"; }
+    void checkevent( void );
+    void checkResources( void );
 
 protected:
-	void getstats( void );
+    void getstats( void );
 
 private:
-	unsigned long leftcolor_, usedcolor_, chargecolor_, fullcolor_,
-	              lowcolor_, critcolor_, nonecolor_;
-	unsigned int  old_state_;
+    unsigned long leftcolor_, usedcolor_, chargecolor_, fullcolor_,
+        lowcolor_, critcolor_, nonecolor_;
+    unsigned int  old_state_;
 };
-
 
 #endif

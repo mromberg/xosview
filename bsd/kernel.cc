@@ -1,6 +1,6 @@
 //
 //  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
+//  Copyright (c) 1995, 1996, 1997-2002, 2015 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -1317,7 +1317,8 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 #endif
 
 void
-BSDGetSensor(const char *name, const char *valname, float *value, char *unit) {
+BSDGetSensor(const char *name, const char *valname, float *value,
+  std::string &unit) {
 	if (!name || !valname || !value)
 		errx(EX_SOFTWARE, "NULL pointer passed to BSDGetSensor().");
 #if defined(XOSVIEW_NETBSD)
@@ -1421,8 +1422,8 @@ BSDGetSensor(const char *name, const char *valname, float *value, char *unit) {
 		if ( sysctlbyname(dummy, &val, &size, NULL, 0) < 0 )
 			err(EX_OSERR, "sysctl %s failed", dummy);
 		*value = ((float)val - 2732.0) / 10.0;
-		if (unit)
-			strcpy(unit, "\260C");
+		if (unit.size())
+                        unit = "\260C";
 		return;
 	}
 	// If Dragonfly and tzN specified, return. Otherwise, fall through.

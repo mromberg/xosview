@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -11,22 +11,26 @@
 //    authors for a copy.
 //
 
-#ifndef _MeterMaker_h
-#define _MeterMaker_h
+#ifndef METERMAKER_H
+#define METERMAKER_H
 
 #include "pllist.h"
-#include "meter.h"
-#include "xosview.h"
+
+class Meter;
+class XOSView;
 
 
 class MeterMaker : public PLList<Meter *> {
 public:
-	MeterMaker(XOSView *xos);
-	void makeMeters(void);
+    MeterMaker(XOSView *xos);
+    void makeMeters(void);
 
 private:
-	XOSView *_xos;
-};
+    XOSView *_xos;
 
+    void cpuFactory(void);
+    void coreTempFactory(void);
+    void sensorFactory(void);
+};
 
 #endif

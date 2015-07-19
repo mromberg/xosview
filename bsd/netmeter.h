@@ -13,32 +13,29 @@
 //    authors for a copy.
 //
 
-#ifndef _NETMETER_H_
-#define _NETMETER_H_
+#ifndef NETMETER_H
+#define NETMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
-#include <string>
 
 
 class NetMeter : public FieldMeterGraph {
 public:
-	NetMeter( XOSView *parent, double max );
-	~NetMeter( void );
+    NetMeter( XOSView *parent, double max );
+    ~NetMeter( void );
 
-        std::string name( void ) const { return "NetMeter"; }
-	void checkevent( void );
-	void checkResources( void );
+    virtual std::string name( void ) const { return "NetMeter"; }
+    void checkevent( void );
+    void checkResources( void );
 
 protected:
-	void getstats(void);
+    void getstats(void);
 
 private:
-	uint64_t lastBytesIn_, lastBytesOut_;
-	double netBandwidth_;
-	std::string netIface_;
-	bool ignored_;
+    uint64_t lastBytesIn_, lastBytesOut_;
+    double netBandwidth_;
+    std::string netIface_;
+    bool ignored_;
 };
-
 
 #endif

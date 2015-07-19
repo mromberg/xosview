@@ -6,30 +6,27 @@
 //  Put code common to *BSD and Linux sensor meters here.
 //
 
-#ifndef _SENSORFIELDMETER_H_
-#define _SENSORFIELDMETER_H_
+#ifndef SENSORFIELDMETER_H
+#define SENSORFIELDMETER_H
 
 #include "fieldmeter.h"
-#include "xosview.h"
 
 
 class SensorFieldMeter : public FieldMeter {
 public:
     SensorFieldMeter( XOSView *parent, const std::string &title = "",
-      const std::string &legend = "", int docaptions = 0,
-      int dolegends = 0, int dousedlegends = 0 );
-  ~SensorFieldMeter( void );
+      const std::string &legend = "", bool docaptions = false,
+      bool dolegends = false, bool dousedlegends = false );
+    ~SensorFieldMeter( void );
 
 protected:
-  void updateLegend( void );
-  void checkFields( double low, double high );
-  char unit_[8];
-  double high_, low_;
-  bool has_high_, has_low_, negative_;
-  unsigned long actcolor_, highcolor_, lowcolor_;
+    std::string unit_;
+    double high_, low_;
+    bool has_high_, has_low_, negative_;
+    unsigned long actcolor_, highcolor_, lowcolor_;
 
-private:
-
+    void updateLegend( void );
+    void checkFields( double low, double high );
 };
 
 

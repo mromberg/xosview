@@ -61,11 +61,14 @@ protected:
     bool docaptions(void) const { return docaptions_; }
     bool dolegends(void) const { return dolegends_; }
     bool dousedlegends(void) const { return dousedlegends_; }
+    bool metric(void) const { return metric_; }
+    void setMetric(bool val) { metric_ = val; }
+    double scaleValue(double value, std::string &scale) const;
 
 private:
     // Child classes were caught creating their own
     // setters for these.  So...
-    bool docaptions_, dolegends_, dousedlegends_;
+    bool docaptions_, dolegends_, dousedlegends_, metric_;
 };
 
 #endif

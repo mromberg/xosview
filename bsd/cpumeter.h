@@ -13,11 +13,10 @@
 //    authors for a copy.
 //
 
-#ifndef _CPUMETER_H_
-#define _CPUMETER_H_
+#ifndef CPUMETER_H
+#define CPUMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
 #include "defines.h"
 
 // for CPUSTATES
@@ -32,20 +31,20 @@
 
 class CPUMeter : public FieldMeterGraph {
 public:
-	CPUMeter( XOSView *parent, unsigned int nbr );
-	~CPUMeter( void );
+    CPUMeter( XOSView *parent, unsigned int nbr );
+    ~CPUMeter( void );
 
-        std::string name( void ) const { return "CPUMeter"; }
-	void checkevent( void );
-	void checkResources( void );
+    virtual std::string name( void ) const { return "CPUMeter"; }
+    void checkevent( void );
+    void checkResources( void );
 
 protected:
-	void getcputime( void );
+    void getcputime( void );
 
 private:
-	uint64_t cputime_[2][CPUSTATES];
-	unsigned int cpuindex_, nbr_;
+    //uint64_t cputime_[2][CPUSTATES];
+    std::vector<std::vector<uint64_t> > cputime_;
+    unsigned int cpuindex_, nbr_;
 };
-
 
 #endif

@@ -13,28 +13,26 @@
 //    authors for a copy.
 //
 
-#ifndef _MEMMETER_H_
-#define _MEMMETER_H_
+#ifndef MEMMETER_H
+#define MEMMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
 
 
 class MemMeter : public FieldMeterGraph {
 public:
-	MemMeter( XOSView *parent );
-	~MemMeter( void );
+    MemMeter( XOSView *parent );
+    ~MemMeter( void );
 
-        std::string name( void ) const { return "MemMeter"; }
-	void checkevent( void );
-	void checkResources( void );
+    virtual std::string name( void ) const { return "MemMeter"; }
+    void checkevent( void );
+    void checkResources( void );
 
 protected:
-	void getmeminfo( void );
+    void getmeminfo( void );
 
 private:
-	uint64_t meminfo_[5];
+    std::vector<uint64_t> meminfo_;
 };
-
 
 #endif

@@ -10,25 +10,23 @@
 //    authors for a copy.
 //
 
-#ifndef _SWAPMETER_H_
-#define _SWAPMETER_H_
+#ifndef SWAPMETER_H
+#define SWAPMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
 
 
 class SwapMeter : public FieldMeterGraph {
 public:
-	SwapMeter( XOSView *parent );
-	~SwapMeter( void );
+    SwapMeter( XOSView *parent );
+    ~SwapMeter( void );
 
-        std::string name( void ) const { return "SwapMeter"; }
-	void checkevent( void );
-	void checkResources( void );
+    virtual std::string name( void ) const { return "SwapMeter"; }
+    void checkevent( void );
+    void checkResources( void );
 
 protected:
-	void getswapinfo( void );
+    void getswapinfo( void );
 };
-
 
 #endif

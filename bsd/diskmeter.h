@@ -11,32 +11,31 @@
 //    authors for a copy.
 //
 
-#ifndef _DISKMETER_H_
-#define _DISKMETER_H_
+#ifndef DISKMETER_H
+#define DISKMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
+
 #include "defines.h"
 
 
 class DiskMeter : public FieldMeterGraph {
 public:
-	DiskMeter( XOSView *parent, double max );
-	~DiskMeter( void );
+    DiskMeter( XOSView *parent, double max );
+    ~DiskMeter( void );
 
-        std::string name( void ) const { return "DiskMeter"; }
-	void checkevent( void );
-	void checkResources( void );
+    virtual std::string name( void ) const { return "DiskMeter"; }
+    void checkevent( void );
+    void checkResources( void );
 
 protected:
-	void getstats( void );
+    void getstats( void );
 
 private:
 #ifndef HAVE_DEVSTAT
-	uint64_t prevreads_, prevwrites_;
+    uint64_t prevreads_, prevwrites_;
 #endif
-	double maxBandwidth_;
+    double maxBandwidth_;
 };
-
 
 #endif

@@ -1,10 +1,9 @@
-#ifndef __defines_h__
-#define __defines_h__
+#ifndef defines_h
+#define defines_h
 
 #include "configxosv.h"
 
 #include <sys/param.h>
-
 
 
 #if !( defined(XOSVIEW_FREEBSD) || \

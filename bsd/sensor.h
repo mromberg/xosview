@@ -12,19 +12,20 @@
 #define BSDSENSOR_H
 
 #include "sensorfieldmeter.h"
-#include "xosview.h"
+
 
 #define NAMESIZE 32
 
 
 class BSDSensor : public SensorFieldMeter {
 public:
-    BSDSensor( XOSView *parent, const std::string &name, const std::string &high,
+    BSDSensor( XOSView *parent, const std::string &name,
+      const std::string &high,
       const std::string &low, const std::string &label,
       const std::string &caption, int nbr );
     ~BSDSensor( void );
 
-    std::string name( void ) const { return "BSDSensor"; }
+    virtual std::string name( void ) const { return "BSDSensor"; }
     void checkevent( void );
     void checkResources( void );
 
@@ -36,5 +37,6 @@ private:
     char val_[NAMESIZE], highval_[NAMESIZE], lowval_[NAMESIZE];
     int nbr_;
 };
+
 
 #endif

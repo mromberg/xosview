@@ -3,7 +3,7 @@
 
 //
 //  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
+//  Copyright (c) 1995, 1996, 1997-2002, 2015 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -15,6 +15,7 @@
 //
 
 #include "defines.h"
+#include <string>
 
 void
 BSDInit();
@@ -73,7 +74,8 @@ BSDGetCPUTemperature(float *temps, float *tjmax);
 #endif
 
 void
-BSDGetSensor(const char *name, const char *valname, float *value, char *unit = NULL);
+BSDGetSensor(const char *name, const char *valname, float *value,
+  std::string &unit);
 
 bool
 BSDHasBattery();

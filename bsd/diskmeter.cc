@@ -12,32 +12,34 @@
 
 #include "diskmeter.h"
 #include "kernel.h"
-#include <stdlib.h>
-#include <err.h>
 
 
 DiskMeter::DiskMeter( XOSView *parent, double max )
-	: FieldMeterGraph( parent, 3, "DISK", "READ/WRITE/IDLE" ) {
-	dodecay_ = 0;
-	maxBandwidth_ = max;
-	total_ = max;
-	if (!BSDDiskInit())
-		disableMeter();
+    : FieldMeterGraph( parent, 3, "DISK", "READ/WRITE/IDLE" ),
+#ifndef HAVE_DEVSTAT
+      prevreads_(0), prevwrites_(0),
+#endif
+      maxBandwidth_(max) {
 
-	/* Since at the first call, it will look like we transferred a
-	 * gazillion bytes, let's reset total_ again and do another
-	 * call.  This will force total_ to be something reasonable.  */
-	getstats();
-	total_ = max;
-	getstats();
-	IntervalTimerStart();
-	/* By doing this check, we eliminate the startup situation where
-	 * all fields are 0, and total is 0, leading to nothing being drawn
-	 * on the meter.  So, make it look like nothing was transferred,
-	 * out of a total of 1 bytes.  */
-	fields_[0] = fields_[1] = 0.0;
-	total_ = 1.0;
-	fields_[2] = total_;
+    dodecay_ = 0;
+    total_ = max;
+    if (!BSDDiskInit())
+        disableMeter();
+
+    /* Since at the first call, it will look like we transferred a
+     * gazillion bytes, let's reset total_ again and do another
+     * call.  This will force total_ to be something reasonable.  */
+    getstats();
+    total_ = max;
+    getstats();
+    IntervalTimerStart();
+    /* By doing this check, we eliminate the startup situation where
+     * all fields are 0, and total is 0, leading to nothing being drawn
+     * on the meter.  So, make it look like nothing was transferred,
+     * out of a total of 1 bytes.  */
+    fields_[0] = fields_[1] = 0.0;
+    total_ = 1.0;
+    fields_[2] = total_;
 }
 
 DiskMeter::~DiskMeter( void ) {
@@ -91,12 +93,11 @@ void DiskMeter::getstats( void ) {
 		total_ = fields_[0] + fields_[1];
 
 	fields_[2] = total_ - (fields_[0] + fields_[1]);
-	if (fields_[0] < 0.0)
-		warnx("diskmeter: fields[0] of %f is < 0!", fields_[0]);
-	if (fields_[1] < 0.0)
-		warnx("diskmeter: fields[1] of %f is < 0!", fields_[1]);
-	if (fields_[2] < 0.0)
-		warnx("diskmeter: fields[2] of %f is < 0!", fields_[2]);
+        for (size_t i = 0 ; i < 3 ; i++)
+            if (fields_[i] < 0.0) {
+                logDebug << "diskmeter: fields[" << i << "] of "
+                         << fields_[i] << " is < 0" << std::endl;
+            }
 
 	setUsed(fields_[0] + fields_[1], total_);
 }
