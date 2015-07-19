@@ -63,9 +63,6 @@ XO_GCC_AUTO_DEPEND($enable_auto_depend)
 
 XO_GCC_CXXFLAGS
 
-# C++ compiler tests
-XO_MIN_CXX_CHECK
-
 # Give AC_ thing a shot (for the user to supply paths if nothing else)
 AC_PATH_XTRA
 # First add what comes from AC_PATH_XTRA
@@ -96,7 +93,7 @@ AC_PROG_INSTALL
 # But if the configure script fails then so will
 # the build.  So... early warning.
 #------------------------------------------------
-CXX_LIBRARY_SUPPORT
+XO_MIN_CXX_CHECK
 
 #------------------------------------------------
 # fnmatch is only used in supressing logDebug

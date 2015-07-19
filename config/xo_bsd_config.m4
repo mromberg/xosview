@@ -36,14 +36,15 @@ case $host_os in
         ;;
 
     freebsd*)
-        AC_CHECK_LIB(devstat, main,
+        AC_CHECK_LIB(devstat, main,[dnl
                      AC_DEFINE(HAVE_DEVSTAT,[1],[Have libdevstat])
-                     DEVSTATLIB=-ldevstat)
+                     XO_CONCAT([LIBS],$LIBS,[-ldevstat])])
         AC_DEFINE(XOSVIEW_FREEBSD,[1],[xosview freebsd features])
 	host_dir=bsd
 	;;
 
     openbsd*)
+        # KILROY WAS HERE
         AC_DEFINE(XOSVIEW_OPENBSD,[1],[xosview freebsd features])
 	host_dir=bsd
 	;;
