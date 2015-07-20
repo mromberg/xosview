@@ -44,7 +44,7 @@ case $host_os in
 	;;
 
     openbsd*)
-        # KILROY WAS HERE
+        AC_CHECK_HEADERS([sys/dkstat.h sys/sched.h],[], [])
         AC_DEFINE(XOSVIEW_OPENBSD,[1],[xosview freebsd features])
 	host_dir=bsd
 	;;
