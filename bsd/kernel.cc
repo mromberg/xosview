@@ -64,7 +64,11 @@ static int mib_dsk[3] = { CTL_HW, HW_IOSTATS, sizeof(struct io_sysctl) };
 #if defined(XOSVIEW_OPENBSD)
 #include <sys/sched.h>
 #include <sys/disk.h>
+#if defined(HAVE_SYS_DKSTAT_H)
 #include <sys/dkstat.h>
+#elif defined(HAVE_SYS_SCHED_H)
+#include <sys/sched.h>
+#endif
 #include <sys/mount.h>
 #include <net/route.h>
 #include <net/if_dl.h>
@@ -1461,91 +1465,74 @@ BSDGetSensor(const char *name, const char *valname, float *value,
 				switch (t) {
 				case SENSOR_TEMP:
 					*value = (float)(s.value - 273150000) / 1000000.0;
-					if (unit)
-						strcpy(unit, "\260C");
+                                        unit = "\260C";
 					break;
 				case SENSOR_FANRPM:
 					*value = (float)s.value;
-					if (unit)
-						strcpy(unit, "RPM");
+                                        unit = "RPM";
 					break;
 				case SENSOR_VOLTS_DC:
 				case SENSOR_VOLTS_AC:
 					*value = (float)s.value / 1000000.0;
-					if (unit)
-						strcpy(unit, "V");
+                                        unit = "V";
 					break;
 				case SENSOR_OHMS:
 					*value = (float)s.value;
-					if (unit)
-						strcpy(unit, "Ohm");
+                                        unit = "Ohm";
 					break;
 				case SENSOR_WATTS:
 					*value = (float)s.value / 1000000.0;
-					if (unit)
-						strcpy(unit, "W");
+                                        unit = "W";
 					break;
 				case SENSOR_AMPS:
 					*value = (float)s.value / 1000000.0;
-					if (unit)
-						strcpy(unit, "A");
+                                        unit = "A";
 					break;
 				case SENSOR_WATTHOUR:
 					*value = (float)s.value / 1000000.0;
-					if (unit)
-						strcpy(unit, "Wh");
+                                        unit = "Wh";
 					break;
 				case SENSOR_AMPHOUR:
 					*value = (float)s.value / 1000000.0;
-					if (unit)
-						strcpy(unit, "Ah");
+                                        unit = "Ah";
 					break;
 				case SENSOR_PERCENT:
 					*value = (float)s.value / 1000.0;
-					if (unit)
-						strcpy(unit, "%");
+                                        unit = "%";
 					break;
 				case SENSOR_LUX:
 					*value = (float)s.value / 1000000.0;
-					if (unit)
-						strcpy(unit, "lx");
+                                        unit = "lx";
 					break;
 				case SENSOR_TIMEDELTA:
 					*value = (float)s.value / 1000000000.0;
-					if (unit)
-						strcpy(unit, "s");
+                                        unit = "s";
 					break;
 #if defined(XOSVIEW_OPENBSD)
 				case SENSOR_HUMIDITY:
 					*value = (float)s.value / 1000.0;
-					if (unit)
-						strcpy(unit, "%");
+                                        unit = "%";
 					break;
 				case SENSOR_FREQ:
 					*value = (float)s.value / 1000000.0;
-					if (unit)
-						strcpy(unit, "Hz");
+                                        unit = "Hz";
 					break;
 				case SENSOR_ANGLE:
 					*value = (float)s.value / 1000000.0;
-					if (unit)
-						strcpy(unit, "\260");
+                                        unit = "\260";
 					break;
 #if OpenBSD > 201211
 				case SENSOR_DISTANCE:
 					*value = (float)s.value / 1000000.0;
-					if (unit)
-						strcpy(unit, "m");
+                                        unit = "m";
 					break;
 				case SENSOR_PRESSURE:
 					*value = (float)s.value / 1000.0;
-					if (unit)
-						strcpy(unit, "Pa");
+                                        unit = "Pa";
 					break;
 				case SENSOR_ACCEL:
 					*value = (float)s.value / 1000000.0;
-					if (unit)
-						strcpy(unit, "m\\/s\262"); // m/s²
+                                        unit = "m\\/s\262"; // m/s²
 					break;
 #endif
 #endif
@@ -1589,7 +1576,8 @@ BSDHasBattery() {
 #elif defined(XOSVIEW_OPENBSD)
 	// check if we can get full capacity of the 1st battery
 	float val = -1.0;
-	BSDGetSensor("acpibat0", "amphour0", &val);
+        std::string emptyStr;
+	BSDGetSensor("acpibat0", "amphour0", &val, emptyStr);
 	if (val < 0)
 		return false;
 	return true;
@@ -1719,18 +1707,23 @@ BSDGetBatteryInfo(int *remaining, unsigned int *state) {
 	while (batteries < 1024) {
 		float val = -1.0;
 		snprintf(battery, 15, "acpibat%d", batteries);
-		BSDGetSensor(battery, "amphour0", &val); // full capacity
+                std::string emptyStr;
+		BSDGetSensor(battery, "amphour0", &val, emptyStr); // full capacity
 		if (val < 0) // no more batteries
 			break;
 		batteries++;
 		total_capacity += val;
-		BSDGetSensor(battery, "amphour1", &val); // warning capacity
+                emptyStr = "";
+		BSDGetSensor(battery, "amphour1", &val, emptyStr); // warning capacity
 		total_low += val;
-		BSDGetSensor(battery, "amphour2", &val); // low capacity
+                emptyStr = "";
+		BSDGetSensor(battery, "amphour2", &val, emptyStr); // low capacity
 		total_crit += val;
-		BSDGetSensor(battery, "amphour3", &val); // remaining
+                emptyStr = "";
+		BSDGetSensor(battery, "amphour3", &val, emptyStr); // remaining
 		total_charge += val;
-		BSDGetSensor(battery, "raw0", &val); // state
+                emptyStr = "";
+		BSDGetSensor(battery, "raw0", &val, emptyStr); // state
 		if ((int)val == 1)
 			*state |= XOSVIEW_BATT_DISCHARGING;
 		else if ((int)val == 2)
