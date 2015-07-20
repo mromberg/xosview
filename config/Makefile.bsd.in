@@ -53,6 +53,12 @@ libmeter.a : $(OBJS)
 	ar cvr libmeter.a $(OBJS)
 	@RANLIB@ $@
 
-CXXFLAGS += -Wno-missing-field-initializers
+#----------------------------------------------------------------
+# FIXME: cleanup kernel.cc at some point
+#----------------------------------------------------------------
+SHAME_FLAGS = -Wno-missing-field-initializers -Wno-write-strings
+kernel.o: kernel.cc
+	$(CXX) $(CXX_BUILD_FLAGS) $(SHAME_FLAGS) -c $< -o $@
+#----------------------------------------------------------------
 
 @AUTODEPEND@

@@ -501,7 +501,7 @@ BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes, const char *netIface, bool
 	for (next = buf; next < buf + size; next += ifm->ifm_msglen) {
 		bool skipif = false;
 		ifm = (struct if_msghdr *)next;
-		if (ifm->ifm_type != RTM_IFINFO || ifm->ifm_addrs & RTAX_IFP == 0)
+		if (ifm->ifm_type != RTM_IFINFO || (ifm->ifm_addrs & RTAX_IFP) == 0)
 			continue;
 		ifd = ifm->ifm_data;
 		sdl = (struct sockaddr_dl *)(ifm + 1);
@@ -1185,6 +1185,9 @@ BSDCountCpus(void) {
 unsigned int
 BSDGetCPUTemperature(float *temps, float *tjmax) {
 	unsigned int nbr = 0;
+#ifdef XOSVIEW_OPENBSD
+        (void)tjmax; // openbsd does not use.  Avoid the warning
+#endif
 #if defined(XOSVIEW_NETBSD)
 	// All kinds of sensors are read with libprop. We have to go through them
 	// to find either Intel Core 2 or AMD ones. Actual temperature is in
@@ -1444,7 +1447,8 @@ BSDGetSensor(const char *name, const char *valname, float *value,
 				continue;  // no device with this mib
 			err(EX_OSERR, "sysctl hw.sensors.%d failed", dev);
 		}
-		if ( strncmp(sd.xname, name, sizeof(name)) )
+                std::string sname(name);
+                if (std::string(sd.xname).substr(0, sname.size()) == name)
 			continue;  // sensor name does not match
 
 		for (int t = 0; t < SENSOR_MAX_TYPES; t++) {
