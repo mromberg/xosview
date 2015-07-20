@@ -23,7 +23,7 @@
 #if defined(XOSVIEW_NETBSD)
 #include <sys/sched.h>
 #elif defined(XOSVIEW_OPENBSD)
-#iff defined(HAVE_SYS_DKSTAT_H)
+#if defined(HAVE_SYS_DKSTAT_H)
 #include <sys/dkstat.h>
 #elif defined(HAVE_SYS_SCHED_H)
 #include <sys/sched.h>
