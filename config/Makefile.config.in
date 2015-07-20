@@ -27,7 +27,7 @@ DEFS           = @DEFS@
 CPPFLAGS       = @CPPFLAGS@ -I$(TOP) -I$(TOP)/@host_dir@
 CXXFLAGS       = @CXXFLAGS@
 LDFLAGS        = -L$(TOP)/@host_dir@ @LDFLAGS@
-LIBS           = -lmeter @LIBS@ -lX11
+LIBS           = -lmeter @LIBS@
 CPP_DEP        = @CPP_DEP@
 
 

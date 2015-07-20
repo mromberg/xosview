@@ -68,10 +68,12 @@ AC_PATH_XTRA
 # First add what comes from AC_PATH_XTRA
 XO_CONCAT(CPPFLAGS,$CPPFLAGS,"$X_CFLAGS")
 XO_CONCAT(LDFLAGS,$LDFLAGS,"$X_LIBS")
-dnl XO_CONCAT(LIBS,$LIBS,$X_EXTRA_LIBS)
-dnl XO_CONCAT(LIBS,$LIBS,$X_PRE_LIBS)
+
 # This takes care of the paths.  The libraries themselves (like -lX11)
 # will be added later.  First need to check for Xpm, Xft etc.
+# Any checks for X11 depended LIBS will need to add
+# $X_PRE_LIBS -lX11 $X_EXTRA_LIBS to thier checks.  In reality
+# I've never seen a case where anything but -lX11 is needed.
 
 # Let the user have a stab at app-defaults if they don't
 # like the default (${datarootdir}/X11/app-defaults)
@@ -181,10 +183,24 @@ AC_CONFIG_FILES([
   Makefile.GNU.autodep:config/Makefile.GNU.autodep.in
   Xdefaults:Xdefaults.in
   xosview.1:xosview.1.in
-               ])
-echo "DEFS          : $DEFS"
-echo "CPPFLAGS      : $CPPFLAGS"
-echo "CXXFLAGS      : $CXXFLAGS"
-echo "LDFLAGS       : $LDFLAGS"
-echo "LIBS          : $LIBS"
+])
+
+#-----------------------------------------------
+# Finalize LIBS
+#-----------------------------------------------
+dnl XO_CONCAT(LIBS,$LIBS,$X_PRE_LIBS)
+XO_CONCAT(LIBS,$LIBS,-lX11)
+dnl XO_CONCAT(LIBS,$LIBS,$X_EXTRA_LIBS)
+
+#-----------------------------------------------
+#  Display the flags and then create the files
+#-----------------------------------------------
+if true; then
+    echo "DEFS          : $DEFS"
+    echo "CPPFLAGS      : $CPPFLAGS"
+    echo "CXXFLAGS      : $CXXFLAGS"
+    echo "LDFLAGS       : $LDFLAGS"
+    echo "LIBS          : $LIBS"
+fi
+
 AC_OUTPUT

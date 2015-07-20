@@ -6,13 +6,7 @@
 # string2 is empty "".
 #------------------------------------------------------------------
 AC_DEFUN([XO_CONCAT],[dnl
-if test -n "[$2]"; then
-    if test -n "[$3]"; then
-        $1="[$2] [$3]"
-    else
-        $1="[$2]"
-    fi
-else
-    $1="[$3]"
-fi
+xo_cat_a=`echo $2`
+xo_cat_b=`echo $3`
+$1=`echo $xo_cat_a $xo_cat_b`
 ])
