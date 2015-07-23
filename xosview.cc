@@ -284,7 +284,6 @@ void XOSView::run(int argc, char **argv){
 }
 
 void XOSView::loop(void) {
-    int counter = 0;
 
     while( !done() ){
         checkevent();
@@ -301,29 +300,13 @@ void XOSView::loop(void) {
 
             g().flush();
         }
-#ifdef HAVE_USLEEP
-        /*  First, sleep for the proper integral number of seconds --
-         *  usleep only deals with times less than 1 sec.  */
-        if (sleeptime_)
-            sleep((unsigned int)sleeptime_);
-        if (usleeptime_)
-            usleep( (unsigned int)usleeptime_);
-#else
-        usleep_via_select ( usleeptime_ );
-#endif
-        counter = (counter + 1) % 5;
+
+        slumber();
     }
     logDebug << "leaging run()..." << std::endl;
 }
 
-void XOSView::usleep_via_select( unsigned long usec ){
-    struct timeval time;
 
-    time.tv_sec = (int)(usec / 1000000);
-    time.tv_usec = usec - time.tv_sec * 1000000;
-
-    select( 0, 0, 0, 0, &time );
-}
 
 void XOSView::keyPressEvent( XKeyEvent &event ){
     char c = 0;
@@ -383,24 +366,7 @@ double XOSView::maxSampRate(void) {
     return MAX_SAMPLES_PER_SECOND;
 }
 
-void XOSView::setSleepTime(void) {
-    MAX_SAMPLES_PER_SECOND = util::stof(getResource("samplesPerSec"));
-    if (!MAX_SAMPLES_PER_SECOND)
-        MAX_SAMPLES_PER_SECOND = 10;
 
-    usleeptime_ = (unsigned long) (1000000/MAX_SAMPLES_PER_SECOND);
-    if (usleeptime_ >= 1000000) {
-        /*  The syscall usleep() only takes times less than 1 sec, so
-         *  split into a sleep time and a usleep time if needed.  */
-        sleeptime_ = usleeptime_ / 1000000;
-        usleeptime_ = usleeptime_ % 1000000;
-    } else {
-        sleeptime_ = 0;
-    }
-#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
-    BSDInit();	/*  Needs to be done before processing of -N option.  */
-#endif
-}
 
 void XOSView::loadResources(void) {
     hmargin_  = util::stoi(getResource("horizontalMargin"));
@@ -583,5 +549,45 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
     o.add("kernelName",
       "-N", "--kernel-name", "name",
       "Sets the kernel name for BSD variants.");
+#endif
+}
+
+
+void XOSView::setSleepTime(void) {
+    MAX_SAMPLES_PER_SECOND = util::stof(getResource("samplesPerSec"));
+    if (!MAX_SAMPLES_PER_SECOND)
+        MAX_SAMPLES_PER_SECOND = 10;
+
+    usleeptime_ = (unsigned long) (1000000/MAX_SAMPLES_PER_SECOND);
+    if (usleeptime_ >= 1000000) {
+        /*  The syscall usleep() only takes times less than 1 sec, so
+         *  split into a sleep time and a usleep time if needed.  */
+        sleeptime_ = usleeptime_ / 1000000;
+        usleeptime_ = usleeptime_ % 1000000;
+    }
+    else {
+        sleeptime_ = 0;
+    }
+}
+
+void XOSView::usleep_via_select( unsigned long usec ){
+    struct timeval time;
+
+    time.tv_sec = (int)(usec / 1000000);
+    time.tv_usec = usec - time.tv_sec * 1000000;
+
+    select( 0, 0, 0, 0, &time );
+}
+
+void XOSView::slumber(void) const {
+#ifdef HAVE_USLEEP
+        /*  First, sleep for the proper integral number of seconds --
+         *  usleep only deals with times less than 1 sec.  */
+        if (sleeptime_)
+            sleep((unsigned int)sleeptime_);
+        if (usleeptime_)
+            usleep( (unsigned int)usleeptime_);
+#else
+        usleep_via_select ( usleeptime_ );
 #endif
 }
