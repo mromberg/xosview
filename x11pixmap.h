@@ -17,8 +17,10 @@ class X11Pixmap {
 public:
     X11Pixmap(Display *dsp, Drawable parent, Colormap cmap,
       unsigned long bgPixVal, int width, int height, int depth);
+    X11Pixmap(Display *dsp, Drawable parent, Colormap cmap);
     ~X11Pixmap(void);
 
+    Pixmap pmap(void) const { return _pmap; }
     X11Graphics &g(void) { return *_g; }
 
     int width(void) const { return _width; }
@@ -29,13 +31,24 @@ public:
     void copyTo(X11Graphics &g, int dst_x, int dst_y)
         { copyTo(g, 0, 0, _width, _height, dst_x, dst_y); }
 
+    bool load(const std::string &fileName, bool logfail=true);
+
 private:
     Pixmap _pmap;
     Display *_dsp;
     Drawable _parent;
+    Colormap _cmap;
     X11Graphics *_g;
     int _width;
     int _height;
+
+    void freeObjs(void);
+    bool queryDrawable(Drawable d, unsigned int &width, unsigned int &height,
+      unsigned int &depth) const;
+
+    // Not implemented
+    X11Pixmap(const X11Pixmap &);
+    X11Pixmap &operator=(const X11Pixmap &);
 };
 
 

@@ -13,18 +13,16 @@
 #include <sstream>
 
 #include <X11/Xatom.h>
-#ifdef HAVE_XPM
-#include <X11/xpm.h>
-#endif
 
 
 static std::ostream &operator<<(std::ostream &os, const XEvent &e);
 
 
-XWin::XWin() : _graphics(0), events_(0), done_(false),
-               wm_(None), wmdelete_(None), x_(0), y_(0), width_(1), height_(1),
-               display_(0), window_(0), fgcolor_(0), bgcolor_(0),
-               colormap_(0) {
+XWin::XWin()
+    : _graphics(0), events_(0), done_(false),
+      wm_(None), wmdelete_(None), x_(0), y_(0), width_(1), height_(1),
+      display_(0), window_(0), fgcolor_(0), bgcolor_(0),
+      colormap_(0) {
 }
 
 void XWin::setEvents(void) {
@@ -77,15 +75,11 @@ void XWin::createWindow(void) {
     XChangeWindowAttributes(display_, window_,
       (CWColormap | CWBitGravity), &xswa);
 
-#ifdef HAVE_XPM
-    Pixmap	       background_pixmap;
-    std::string pixmapFName = getResourceOrUseDefault("pixmapName", "");
-    bool doPixmap = getPixmap(&background_pixmap, pixmapFName);
     // If there is a pixmap file, set it as the background
-    if(doPixmap) {
-	XSetWindowBackgroundPixmap(display_,window_,background_pixmap);
-    }
-#endif
+    std::string pixmapFName = getResourceOrUseDefault("pixmapName", "");
+    X11Pixmap x11p(display_, window_, colormap_);
+    if (pixmapFName.size() && x11p.load(pixmapFName))
+	XSetWindowBackgroundPixmap(display_, window_, x11p.pmap());
 
     // Do transparency if requested
     if(isResourceTrue("transparent")) {
@@ -203,31 +197,6 @@ void XWin::setColors( void ){
         fgcolor_ = color.pixel;
 }
 
-#ifdef HAVE_XPM
-bool XWin::getPixmap(Pixmap *pixmap, const std::string &pixmapFName) {
-    if (pixmapFName == "") {
-        pixmap = NULL;
-        return false;
-    }
-
-    XWindowAttributes    root_att;
-    XpmAttributes        pixmap_att;
-
-    XGetWindowAttributes(display_, DefaultRootWindow(display_),&root_att);
-    pixmap_att.closeness=30000;
-    pixmap_att.colormap=root_att.colormap;
-    pixmap_att.valuemask=XpmSize|XpmReturnPixels|XpmColormap|XpmCloseness;
-    if(XpmReadFileToPixmap(display_,DefaultRootWindow(display_),
-        const_cast<char *>(pixmapFName.data()), pixmap, NULL, &pixmap_att)) {
-        logProblem << "Pixmap " << pixmapFName << " not found"
-                   << std::endl
-                   << "Defaulting to blank" << std::endl;
-        pixmap=NULL;
-        return false; // OOps
-    }
-    return true;  // Good, found the pixmap
-}
-#endif
 
 XSizeHints *XWin::getGeometry(void) {
     int                  bitmask;

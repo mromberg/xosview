@@ -71,7 +71,6 @@ protected:
     virtual std::string className(void);
     virtual std::string instanceName(void);
 
-    bool getPixmap(Pixmap *, const std::string &pixmapFName);
     void setDisplayName(const std::string &new_display_name)
         { display_name_ = new_display_name; }
     const std::string &displayName(void) const { return display_name_; }
