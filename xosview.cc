@@ -36,6 +36,15 @@ XOSView::XOSView(void)
 }
 
 
+XOSView::~XOSView( void ){
+    logDebug << "deleting " << _meters.size() << " meters..." << std::endl;
+    for (size_t i = 0 ; i < _meters.size() ; i++)
+        delete _meters[i];
+    _meters.resize(0);
+    delete _xrm;
+}
+
+
 void XOSView::run(int argc, char **argv) {
 
     loadConfiguration(argc, argv);
@@ -51,6 +60,7 @@ void XOSView::run(int argc, char **argv) {
 
     loop();                // enter event loop
 }
+
 
 void XOSView::loop(void) {
 
@@ -76,65 +86,139 @@ void XOSView::loop(void) {
 }
 
 
-void XOSView::checkMeterResources( void ){
-    for (size_t i = 0 ; i < _meters.size() ; i++)
-        _meters[i]->checkResources();
+void XOSView::createMeters(void) {
+    MeterMaker mm(this);
+    mm.makeMeters();
+    for (int i = 1 ; i <= mm.n() ; i++)
+        _meters.push_back(mm[i]);
+
+    if (_meters.size() == 0)
+        logProblem << "No meters were enabled." << std::endl;
+
+    dolegends(); // set global properties based on our resource
 }
 
-void XOSView::dolegends( void ){
-    logDebug << "caption, legend, usedlabels: "
-             << caption_ << "," << legend_ << "," << usedlabels_
-             << std::endl;
-    for (size_t i = 0 ; i < _meters.size() ; i++) {
-        _meters[i]->docaptions(caption_);
-        _meters[i]->dolegends(legend_);
-        _meters[i]->dousedlegends(usedlabels_);
+
+
+
+
+//-----------------------------------------------------------------
+// ** Resource management
+//-----------------------------------------------------------------
+
+bool XOSView::isResourceTrue( const std::string &name ) {
+    Xrm::opt val = _xrm->getResource(name);
+    if (!val.first)
+        return false;
+
+    return val.second == "True";
+}
+
+
+std::string XOSView::getResourceOrUseDefault( const std::string &name,
+  const std::string &defaultVal ){
+
+    Xrm::opt retval = _xrm->getResource (name);
+    if (retval.first)
+        return retval.second;
+
+    return defaultVal;
+}
+
+
+std::string XOSView::getResource( const std::string &name ){
+    Xrm::opt retval = _xrm->getResource (name);
+    if (retval.first)
+        return retval.second;
+    else {
+        logFatal << "Couldn't find '" << name
+                 << "' resource in the resource database!\n";
+        /*  Some compilers aren't smart enough to know that exit() exits.  */
+        return "";
     }
 }
 
 
-std::string XOSView::winname( void ){
-    char host[100];
-    std::string hname("unknown");
-    if (gethostname( host, 99 )) {
-        logProblem << "gethostname() failed" << std::endl;
+void XOSView::dumpResources( std::ostream &os ){
+    _xrm->dump(os);
+}
+
+
+
+//-----------------------------------------------------------------
+// ** Events
+//-----------------------------------------------------------------
+
+void XOSView::setEvents(void) {
+    XWin::setEvents();
+
+    addEvent( new Event( this, ConfigureNotify,
+        (EventCallBack)&XOSView::resizeEvent ) );
+    addEvent( new Event( this, Expose,
+        (EventCallBack)&XOSView::exposeEvent ) );
+    addEvent( new Event( this, KeyPress,
+        (EventCallBack)&XOSView::keyPressEvent ) );
+    addEvent( new Event( this, VisibilityNotify,
+        (EventCallBack)&XOSView::visibilityEvent ) );
+    addEvent( new Event( this, UnmapNotify,
+        (EventCallBack)&XOSView::unmapEvent ) );
+}
+
+
+void XOSView::keyPressEvent( XKeyEvent &event ){
+    char c = 0;
+    KeySym key;
+
+    XLookupString( &event, &c, 1, &key, NULL );
+
+    if ( (c == 'q') || (c == 'Q') )
+        done(true);
+}
+
+
+void XOSView::exposeEvent( XExposeEvent &event ) {
+    _isvisible = true;
+    if ( event.count == 0 ) {
+        expose_flag_ = true;
+        exposed_once_flag_ = true;
+        draw();
+    }
+    logDebug << "Got expose event." << std::endl;
+    if (!exposed_once_flag_) {
+        exposed_once_flag_ = 1;
+        draw();
+    }
+}
+
+
+void XOSView::resizeEvent( XEvent &e ) {
+    g().resize(e.xconfigure.width, e.xconfigure.height);
+    resize();
+    expose_flag_ = true;
+    exposed_once_flag_ = true;
+    draw();
+}
+
+
+void XOSView::visibilityEvent( XVisibilityEvent &event ){
+    _ispartiallyvisible = false;
+    if (event.state == VisibilityPartiallyObscured){
+        _ispartiallyvisible = true;
+    }
+
+    if (event.state == VisibilityFullyObscured){
+        _isvisible = false;
     }
     else {
-        host[99] = '\0';  // POSIX.1-2001 says truncated names not terminated
-        hname = std::string(host);
+        _isvisible = true;
     }
-    std::string name = std::string(NAME) + hname;
-    return getResourceOrUseDefault("title", name);
+    logDebug << "Got visibility event; " << _ispartiallyvisible
+             << " and " << _isvisible << std::endl;
 }
 
 
-void  XOSView::resize( void ){
-    int spacing = vspacing_+1;
-    int topmargin = vmargin_;
-    int rightmargin = hmargin_;
-    int newwidth = width() - xoff_ - rightmargin;
-    size_t nmeters = _meters.size();
-    nmeters = nmeters ? nmeters : 1; // don't divide by zero
-    int newheight =
-        (height() -
-          (topmargin + topmargin + (nmeters-1)*spacing + nmeters*yoff_)
-            ) / nmeters;
-    newheight = (newheight >= 2) ? newheight : 2;
-
-    for (size_t i = 0 ; i < _meters.size() ; i++) {
-        _meters[i]->resize(xoff_,
-          topmargin + (i + 1) * yoff_ + i * (newheight+spacing),
-          newwidth, newheight);
-    }
-}
-
-
-XOSView::~XOSView( void ){
-    logDebug << "deleting " << _meters.size() << " meters..." << std::endl;
-    for (size_t i = 0 ; i < _meters.size() ; i++)
-        delete _meters[i];
-    _meters.resize(0);
-    delete _xrm;
+void XOSView::unmapEvent( XUnmapEvent & ){
+    _isvisible = false;
 }
 
 
@@ -163,6 +247,35 @@ void XOSView::draw ( void ) {
     }
 }
 
+
+void XOSView::usleep_via_select( unsigned long usec ){
+    struct timeval time;
+
+    time.tv_sec = (int)(usec / 1000000);
+    time.tv_usec = usec - time.tv_sec * 1000000;
+
+    select( 0, 0, 0, 0, &time );
+}
+
+
+void XOSView::slumber(void) const {
+#ifdef HAVE_USLEEP
+        /*  First, sleep for the proper integral number of seconds --
+         *  usleep only deals with times less than 1 sec.  */
+        if (sleeptime_)
+            sleep((unsigned int)sleeptime_);
+        if (usleeptime_)
+            usleep( (unsigned int)usleeptime_);
+#else
+        usleep_via_select ( usleeptime_ );
+#endif
+}
+
+
+
+//-----------------------------------------------------------------
+// ** Configure
+//-----------------------------------------------------------------
 
 void XOSView::loadConfiguration(int argc, char **argv) {
     //...............................................
@@ -219,7 +332,6 @@ void XOSView::loadConfiguration(int argc, char **argv) {
         logDebug << "ADD: " << res << std::endl;
     }
 
-
     // Now all the rest that are set by the user.
     // defaults delt with by getResourceOrUseDefault()
     const std::vector<util::CLOpt> &opts = clopts.opts();
@@ -250,62 +362,6 @@ void XOSView::loadConfiguration(int argc, char **argv) {
         _xrm->dump(std::cout);
         exit(0);
     }
-}
-
-
-void XOSView::keyPressEvent( XKeyEvent &event ){
-    char c = 0;
-    KeySym key;
-
-    XLookupString( &event, &c, 1, &key, NULL );
-
-    if ( (c == 'q') || (c == 'Q') )
-        done(true);
-}
-
-
-void XOSView::exposeEvent( XExposeEvent &event ) {
-    _isvisible = true;
-    if ( event.count == 0 ) {
-        expose_flag_ = true;
-        exposed_once_flag_ = true;
-        draw();
-    }
-    logDebug << "Got expose event." << std::endl;
-    if (!exposed_once_flag_) {
-        exposed_once_flag_ = 1;
-        draw();
-    }
-}
-
-void XOSView::resizeEvent( XEvent &e ) {
-    g().resize(e.xconfigure.width, e.xconfigure.height);
-    resize();
-    expose_flag_ = true;
-    exposed_once_flag_ = true;
-    draw();
-}
-
-
-void XOSView::visibilityEvent( XVisibilityEvent &event ){
-    _ispartiallyvisible = false;
-    if (event.state == VisibilityPartiallyObscured){
-        _ispartiallyvisible = true;
-    }
-
-    if (event.state == VisibilityFullyObscured){
-        _isvisible = false;
-    }
-    else {
-        _isvisible = true;
-    }
-    logDebug << "Got visibility event; " << _ispartiallyvisible
-             << " and " << _isvisible << std::endl;
-}
-
-
-void XOSView::unmapEvent( XUnmapEvent & ){
-    _isvisible = false;
 }
 
 
@@ -345,118 +401,16 @@ void XOSView::checkResources(void) {
 }
 
 
-void XOSView::setEvents(void) {
-    XWin::setEvents();
-
-    addEvent( new Event( this, ConfigureNotify,
-        (EventCallBack)&XOSView::resizeEvent ) );
-    addEvent( new Event( this, Expose,
-        (EventCallBack)&XOSView::exposeEvent ) );
-    addEvent( new Event( this, KeyPress,
-        (EventCallBack)&XOSView::keyPressEvent ) );
-    addEvent( new Event( this, VisibilityNotify,
-        (EventCallBack)&XOSView::visibilityEvent ) );
-    addEvent( new Event( this, UnmapNotify,
-        (EventCallBack)&XOSView::unmapEvent ) );
-}
-
-void XOSView::createMeters(void) {
-    MeterMaker mm(this);
-    mm.makeMeters();
-    for (int i = 1 ; i <= mm.n() ; i++)
-        _meters.push_back(mm[i]);
-
-    if (_meters.size() == 0)
-        logProblem << "No meters were enabled." << std::endl;
-
-    dolegends(); // set global properties based on our resource
-}
-
-
-bool XOSView::isResourceTrue( const std::string &name ) {
-    Xrm::opt val = _xrm->getResource(name);
-    if (!val.first)
-        return false;
-
-    return val.second == "True";
-}
-
-
-std::string XOSView::getResourceOrUseDefault( const std::string &name,
-  const std::string &defaultVal ){
-
-    Xrm::opt retval = _xrm->getResource (name);
-    if (retval.first)
-        return retval.second;
-
-    return defaultVal;
-}
-
-
-std::string XOSView::getResource( const std::string &name ){
-    Xrm::opt retval = _xrm->getResource (name);
-    if (retval.first)
-        return retval.second;
-    else {
-        logFatal << "Couldn't find '" << name
-                 << "' resource in the resource database!\n";
-        /*  Some compilers aren't smart enough to know that exit() exits.  */
-        return "";
-    }
-}
-
-void XOSView::dumpResources( std::ostream &os ){
-    _xrm->dump(os);
-}
-
-std::string XOSView::versionStr(void) const {
-    return VersionString;
-}
-
-
-void XOSView::setSleepTime(void) {
-    _sampleRate = util::stof(getResource("samplesPerSec"));
-    if (!_sampleRate)
-        _sampleRate = 10;
-
-    usleeptime_ = (unsigned long) (1000000/_sampleRate);
-    if (usleeptime_ >= 1000000) {
-        /*  The syscall usleep() only takes times less than 1 sec, so
-         *  split into a sleep time and a usleep time if needed.  */
-        sleeptime_ = usleeptime_ / 1000000;
-        usleeptime_ = usleeptime_ % 1000000;
-    }
-    else {
-        sleeptime_ = 0;
-    }
-}
-
-void XOSView::usleep_via_select( unsigned long usec ){
-    struct timeval time;
-
-    time.tv_sec = (int)(usec / 1000000);
-    time.tv_usec = usec - time.tv_sec * 1000000;
-
-    select( 0, 0, 0, 0, &time );
-}
-
-void XOSView::slumber(void) const {
-#ifdef HAVE_USLEEP
-        /*  First, sleep for the proper integral number of seconds --
-         *  usleep only deals with times less than 1 sec.  */
-        if (sleeptime_)
-            sleep((unsigned int)sleeptime_);
-        if (usleeptime_)
-            usleep( (unsigned int)usleeptime_);
-#else
-        usleep_via_select ( usleeptime_ );
-#endif
+void XOSView::checkMeterResources( void ){
+    for (size_t i = 0 ; i < _meters.size() ; i++)
+        _meters[i]->checkResources();
 }
 
 
 int XOSView::newypos( void ){
     return 15 + 25 * _meters.size();
 }
+
 
 int XOSView::findx(XOSVFont &font){
     if ( legend_ ){
@@ -469,12 +423,14 @@ int XOSView::findx(XOSVFont &font){
     return 80;
 }
 
+
 int XOSView::findy(XOSVFont &font){
     if ( legend_ )
         return 10 + font.textHeight() * _meters.size() * ( caption_ ? 2 : 1 );
 
     return 15 * _meters.size();
 }
+
 
 void XOSView::figureSize(void) {
     std::string fname = getResource("font");
@@ -500,6 +456,77 @@ void XOSView::figureSize(void) {
         firsttime = false;
         width(findx(font));
         height(findy(font));
+    }
+}
+
+
+std::string XOSView::versionStr(void) const {
+    return VersionString;
+}
+
+
+void XOSView::setSleepTime(void) {
+    _sampleRate = util::stof(getResource("samplesPerSec"));
+    if (!_sampleRate)
+        _sampleRate = 10;
+
+    usleeptime_ = (unsigned long) (1000000/_sampleRate);
+    if (usleeptime_ >= 1000000) {
+        /*  The syscall usleep() only takes times less than 1 sec, so
+         *  split into a sleep time and a usleep time if needed.  */
+        sleeptime_ = usleeptime_ / 1000000;
+        usleeptime_ = usleeptime_ % 1000000;
+    }
+    else {
+        sleeptime_ = 0;
+    }
+}
+
+
+void XOSView::dolegends( void ){
+    logDebug << "caption, legend, usedlabels: "
+             << caption_ << "," << legend_ << "," << usedlabels_
+             << std::endl;
+    for (size_t i = 0 ; i < _meters.size() ; i++) {
+        _meters[i]->docaptions(caption_);
+        _meters[i]->dolegends(legend_);
+        _meters[i]->dousedlegends(usedlabels_);
+    }
+}
+
+
+std::string XOSView::winname( void ){
+    char host[100];
+    std::string hname("unknown");
+    if (gethostname( host, 99 )) {
+        logProblem << "gethostname() failed" << std::endl;
+    }
+    else {
+        host[99] = '\0';  // POSIX.1-2001 says truncated names not terminated
+        hname = std::string(host);
+    }
+    std::string name = std::string(NAME) + hname;
+    return getResourceOrUseDefault("title", name);
+}
+
+
+void  XOSView::resize( void ){
+    int spacing = vspacing_+1;
+    int topmargin = vmargin_;
+    int rightmargin = hmargin_;
+    int newwidth = width() - xoff_ - rightmargin;
+    size_t nmeters = _meters.size();
+    nmeters = nmeters ? nmeters : 1; // don't divide by zero
+    int newheight =
+        (height() -
+          (topmargin + topmargin + (nmeters-1)*spacing + nmeters*yoff_)
+            ) / nmeters;
+    newheight = (newheight >= 2) ? newheight : 2;
+
+    for (size_t i = 0 ; i < _meters.size() ; i++) {
+        _meters[i]->resize(xoff_,
+          topmargin + (i + 1) * yoff_ + i * (newheight+spacing),
+          newwidth, newheight);
     }
 }
 
