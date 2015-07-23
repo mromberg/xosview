@@ -163,7 +163,7 @@ void SensorFieldMeter::checkFields( double low, double high ){
     if ( highest > fabs(total_) ) {
         do_legend = true;
         int scale = floor(log10(highest));
-        total_ = ceil((highest / pow(10, scale)) * 1.25) * pow(10, scale);
+        total_ = ceil((highest / pow(10.0, scale)) * 1.25) * pow(10.0, scale);
         if (negative_) {
             total_ = -fabs(total_);
             if (!has_low_)
