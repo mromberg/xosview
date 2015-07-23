@@ -47,6 +47,9 @@ public:
       const std::string &defaultVal);
     virtual bool isResourceTrue(const std::string &name);
     virtual void dumpResources(std::ostream &os);
+    typedef std::pair<bool, std::string> opt;
+    opt getOptResource(const std::string &name)
+        { return _xrm->getResource(name); }
     //------------------------------------------------------
 
 protected:

@@ -6,15 +6,12 @@
 //
 #include "xosview.h"
 #include "meter.h"
-#include "x11font.h"
 #include "clopt.h"
-#ifdef HAVE_XFT
-#include "xftfont.h"
-#endif
 #include "MeterMaker.h"
 #include "strutil.h"
-#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
-#include "kernel.h"
+#include "x11font.h"
+#ifdef HAVE_XFT
+#include "xftfont.h"
 #endif
 
 #include <algorithm>
@@ -376,12 +373,6 @@ void XOSView::loadResources(void) {
     vmargin_  = std::max(0, vmargin_);
     vspacing_ = std::max(0, vspacing_);
 
-#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
-    Xrm::opt kname(_xrm->getResource("kernelName"));
-    if (kname.first)
-        SetKernelName(kname.second.c_str());
-#endif
-
     xoff_ = hmargin_;
     yoff_ = 0;
     appName("xosview");
@@ -541,11 +532,7 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
     // as the UNIX ls command.
     //-----------------------------------------------------
 
-    // Near as I can tell this was pretty undocumented.  I only found it
-    // mentioned in passing in the README.netbsd file.  There was
-    // code in here for it.  So, I'll attempt to keep the functionality.
-    // The actual command line syntax may be different.  UNTESTED.
-#if (defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD))
+#ifdef XOSVIEW_BSD
     o.add("kernelName",
       "-N", "--kernel-name", "name",
       "Sets the kernel name for BSD variants.");

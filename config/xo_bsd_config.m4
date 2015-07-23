@@ -21,6 +21,8 @@ AC_CHECK_LIB(prop, prop_object_release,
 #--------------------------------------------------
 AC_DEFUN_ONCE([XO_BSD_CONFIG],[dnl
 
+AC_DEFINE(XOSVIEW_BSD,[1],[xosview bsd variant])
+
 XO_BSD_KERNLIBS
 
 #-----------------------------------------

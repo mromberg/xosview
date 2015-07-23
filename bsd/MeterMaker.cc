@@ -38,6 +38,11 @@ MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
 
 void MeterMaker::makeMeters(void) {
 
+    // Check the kernelName resource
+    XOSView::opt kname(_xos->getOptResource("kernelName"));
+    if (kname.first)
+        SetKernelName(kname.second.c_str());
+
     // Standard meters (usually added, but users could turn them off)
     if ( _xos->isResourceTrue("load") )
         push(new LoadMeter(_xos));
