@@ -26,6 +26,7 @@
 #include "intratemeter.h"
 #include "btrymeter.h"
 #include "sensor.h"
+#include "example.h"  // The example meter
 
 #if defined(__i386__) || defined(__x86_64__)
 #include "coretemp.h"
@@ -42,6 +43,11 @@ void MeterMaker::makeMeters(void) {
     XOSView::opt kname(_xos->getOptResource("kernelName"));
     if (kname.first)
         SetKernelName(kname.second.c_str());
+
+    // Add the example meter.  Normally you would use
+    // isResourceTrue.  But example resources are not in Xdefalts
+    if (_xos->getResourceOrUseDefault("example", "False") == "True")
+        push(new ExampleMeter(_xos));
 
     // Standard meters (usually added, but users could turn them off)
     if ( _xos->isResourceTrue("load") )

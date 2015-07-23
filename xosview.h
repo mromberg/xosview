@@ -26,7 +26,8 @@ public:
 
     void run(int argc, char **argv);
 
-    static double maxSampRate(void); // Samples/sec max
+    // Samples/sec max
+    double sampleRate(void) const { return _sampleRate; }
     std::string winname(void);
 
     // used by meter makers
@@ -77,7 +78,7 @@ protected:
     int findx(XOSVFont &font);
     int findy(XOSVFont &font);
     void setSleepTime(void);
-    void loadResources(void);
+    void checkResources(void);
     virtual void setEvents(void);
     void createMeters(void);
     void dolegends(void);
@@ -88,8 +89,7 @@ protected:
     void unmapEvent(XUnmapEvent &event);
 
 private:
-    //  Take at most n samples per second (default of 10)
-    static double MAX_SAMPLES_PER_SECOND;
+    double _sampleRate; // samples/sec
 
     void slumber(void) const;
     void usleep_via_select(unsigned long usec);

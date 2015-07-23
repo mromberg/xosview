@@ -23,16 +23,15 @@ MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
 }
 
 void MeterMaker::makeMeters(void) {
-    kstat_ctl_t *kc;
-
-    kc = kstat_open();
-    if (kc == NULL)
-        return;
 
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (_xos->getResourceOrUseDefault("example", "False") == "True")
         push(new ExampleMeter(_xos));
+
+    kstat_ctl_t *kc = kstat_open();
+    if (kc == NULL)
+        return;
 
     if (_xos->isResourceTrue("load"))
         push(new LoadMeter(_xos, kc));

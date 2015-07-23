@@ -21,12 +21,10 @@
 
 
 static const char * const VersionString = "xosview version: " PACKAGE_VERSION;
-static const char NAME[] = "xosview@";
+static const char * const NAME = "xosview@";
 
 
-double XOSView::MAX_SAMPLES_PER_SECOND = 10;
 
-//
 XOSView::XOSView(void)
     : XWin(), _xrm(0),
       caption_(false), legend_(false), usedlabels_(false),
@@ -34,61 +32,53 @@ XOSView::XOSView(void)
       hmargin_(0), vmargin_(0), vspacing_(0),
       sleeptime_(1), usleeptime_(1000),
       expose_flag_(false), exposed_once_flag_(false),
-      _isvisible(false), _ispartiallyvisible(false) {
+      _isvisible(false), _ispartiallyvisible(false), _sampleRate(10) {
 }
 
-int XOSView::findx(XOSVFont &font){
-    if ( legend_ ){
-        if ( !usedlabels_ )
-            return font.maxCharWidth() * 24;
-        else
-            return font.maxCharWidth() * 24
-                + font.textWidth("SWAP 999% ");
+
+void XOSView::run(int argc, char **argv) {
+
+    loadConfiguration(argc, argv);
+    checkResources();      // initialize from our resources
+    setEvents();           //  set up the X events
+    createMeters();        // add in the meters
+    figureSize();          // calculate size using number of meters
+    createWindow();        // Graphics should now be up (so can alloc colors)
+    resize();              // initialize size values
+    title(winname());      // Now that the window exists set the title
+    iconname(winname());   // and the icon name
+    checkMeterResources(); // Have the meters check their resources.
+
+    loop();                // enter event loop
+}
+
+void XOSView::loop(void) {
+
+    while( !done() ){
+        checkevent();
+        if (done()) {
+            logDebug << "checkevent() set done" << std::endl;
+            break; // XEvents can set this
+        }
+
+        if (_isvisible){
+            for (size_t i = 0 ; i < _meters.size() ; i++) {
+                if ( _meters[i]->requestevent() )
+                    _meters[i]->checkevent();
+            }
+
+            g().flush();
+        }
+
+        slumber();
     }
-    return 80;
+    logDebug << "leaging run()..." << std::endl;
 }
 
-int XOSView::findy(XOSVFont &font){
-    if ( legend_ )
-        return 10 + font.textHeight() * _meters.size() * ( caption_ ? 2 : 1 );
-
-    return 15 * _meters.size();
-}
-
-void XOSView::figureSize(void) {
-    std::string fname = getResource("font");
-    logDebug << "Font name: " << fname << std::endl;
-#ifdef HAVE_XFT
-    X11ftFont font(display(), fname);
-#else
-    X11Font font(display(), fname);
-#endif
-    if (!font)
-        logFatal << "Could not load font: " << fname << std::endl;
-
-    if ( legend_ ){
-        if ( !usedlabels_ )
-            xoff_ = font.textWidth("INT(9) ");
-        else
-            xoff_ = font.textWidth("SWAP 99%%");
-
-        yoff_ = caption_ ? font.textHeight() + font.textHeight() / 4 : 0;
-    }
-    static bool firsttime = true;
-    if (firsttime) {
-        firsttime = false;
-        width(findx(font));
-        height(findy(font));
-    }
-}
 
 void XOSView::checkMeterResources( void ){
     for (size_t i = 0 ; i < _meters.size() ; i++)
         _meters[i]->checkResources();
-}
-
-int XOSView::newypos( void ){
-    return 15 + 25 * _meters.size();
 }
 
 void XOSView::dolegends( void ){
@@ -101,6 +91,7 @@ void XOSView::dolegends( void ){
         _meters[i]->dousedlegends(usedlabels_);
     }
 }
+
 
 std::string XOSView::winname( void ){
     char host[100];
@@ -146,6 +137,7 @@ XOSView::~XOSView( void ){
     delete _xrm;
 }
 
+
 void XOSView::reallydraw( void ){
     logDebug << "Doing draw." << std::endl;
     g().clear();
@@ -158,6 +150,7 @@ void XOSView::reallydraw( void ){
     expose_flag_ = false;
 }
 
+
 void XOSView::draw ( void ) {
     if (hasBeenExposedAtLeastOnce() && isAtLeastPartiallyVisible())
         reallydraw();
@@ -169,6 +162,7 @@ void XOSView::draw ( void ) {
         }
     }
 }
+
 
 void XOSView::loadConfiguration(int argc, char **argv) {
     //...............................................
@@ -258,52 +252,6 @@ void XOSView::loadConfiguration(int argc, char **argv) {
     }
 }
 
-// Think about having run() return an int
-// so it works just like main.  failures
-// in run() return an exit status for main
-// this way the destructors run.
-void XOSView::run(int argc, char **argv){
-
-    loadConfiguration(argc, argv);
-    setEvents();           //  set up the X events
-    setSleepTime();
-    loadResources();       // initialize from our resources
-    createMeters();        // add in the meters
-    figureSize();          // calculate size using number of meters
-    createWindow();        // Graphics should now be up (so can alloc colors)
-    checkMeterResources(); // Have the meters re-check the resources.
-    title(winname());      // Now that the window exists set the title
-    iconname(winname());   // and the icon name
-    dolegends();
-    resize();
-
-    loop();                // enter event loop
-}
-
-void XOSView::loop(void) {
-
-    while( !done() ){
-        checkevent();
-        if (done()) {
-            logDebug << "checkevent() set done" << std::endl;
-            break; // XEvents can set this
-        }
-
-        if (_isvisible){
-            for (size_t i = 0 ; i < _meters.size() ; i++) {
-                if ( _meters[i]->requestevent() )
-                    _meters[i]->checkevent();
-            }
-
-            g().flush();
-        }
-
-        slumber();
-    }
-    logDebug << "leaging run()..." << std::endl;
-}
-
-
 
 void XOSView::keyPressEvent( XKeyEvent &event ){
     char c = 0;
@@ -355,17 +303,15 @@ void XOSView::visibilityEvent( XVisibilityEvent &event ){
              << " and " << _isvisible << std::endl;
 }
 
+
 void XOSView::unmapEvent( XUnmapEvent & ){
     _isvisible = false;
 }
 
-double XOSView::maxSampRate(void) {
-    return MAX_SAMPLES_PER_SECOND;
-}
 
+void XOSView::checkResources(void) {
+    setSleepTime();
 
-
-void XOSView::loadResources(void) {
     hmargin_  = util::stoi(getResource("horizontalMargin"));
     vmargin_  = util::stoi(getResource("verticalMargin"));
     vspacing_ = util::stoi(getResource("verticalSpacing"));
@@ -398,6 +344,7 @@ void XOSView::loadResources(void) {
         usedlabels_ = 1;
 }
 
+
 void XOSView::setEvents(void) {
     XWin::setEvents();
 
@@ -421,7 +368,10 @@ void XOSView::createMeters(void) {
 
     if (_meters.size() == 0)
         logProblem << "No meters were enabled." << std::endl;
+
+    dolegends(); // set global properties based on our resource
 }
+
 
 bool XOSView::isResourceTrue( const std::string &name ) {
     Xrm::opt val = _xrm->getResource(name);
@@ -430,6 +380,7 @@ bool XOSView::isResourceTrue( const std::string &name ) {
 
     return val.second == "True";
 }
+
 
 std::string XOSView::getResourceOrUseDefault( const std::string &name,
   const std::string &defaultVal ){
@@ -440,6 +391,7 @@ std::string XOSView::getResourceOrUseDefault( const std::string &name,
 
     return defaultVal;
 }
+
 
 std::string XOSView::getResource( const std::string &name ){
     Xrm::opt retval = _xrm->getResource (name);
@@ -460,6 +412,97 @@ void XOSView::dumpResources( std::ostream &os ){
 std::string XOSView::versionStr(void) const {
     return VersionString;
 }
+
+
+void XOSView::setSleepTime(void) {
+    _sampleRate = util::stof(getResource("samplesPerSec"));
+    if (!_sampleRate)
+        _sampleRate = 10;
+
+    usleeptime_ = (unsigned long) (1000000/_sampleRate);
+    if (usleeptime_ >= 1000000) {
+        /*  The syscall usleep() only takes times less than 1 sec, so
+         *  split into a sleep time and a usleep time if needed.  */
+        sleeptime_ = usleeptime_ / 1000000;
+        usleeptime_ = usleeptime_ % 1000000;
+    }
+    else {
+        sleeptime_ = 0;
+    }
+}
+
+void XOSView::usleep_via_select( unsigned long usec ){
+    struct timeval time;
+
+    time.tv_sec = (int)(usec / 1000000);
+    time.tv_usec = usec - time.tv_sec * 1000000;
+
+    select( 0, 0, 0, 0, &time );
+}
+
+void XOSView::slumber(void) const {
+#ifdef HAVE_USLEEP
+        /*  First, sleep for the proper integral number of seconds --
+         *  usleep only deals with times less than 1 sec.  */
+        if (sleeptime_)
+            sleep((unsigned int)sleeptime_);
+        if (usleeptime_)
+            usleep( (unsigned int)usleeptime_);
+#else
+        usleep_via_select ( usleeptime_ );
+#endif
+}
+
+
+int XOSView::newypos( void ){
+    return 15 + 25 * _meters.size();
+}
+
+int XOSView::findx(XOSVFont &font){
+    if ( legend_ ){
+        if ( !usedlabels_ )
+            return font.maxCharWidth() * 24;
+        else
+            return font.maxCharWidth() * 24
+                + font.textWidth("SWAP 999% ");
+    }
+    return 80;
+}
+
+int XOSView::findy(XOSVFont &font){
+    if ( legend_ )
+        return 10 + font.textHeight() * _meters.size() * ( caption_ ? 2 : 1 );
+
+    return 15 * _meters.size();
+}
+
+void XOSView::figureSize(void) {
+    std::string fname = getResource("font");
+    logDebug << "Font name: " << fname << std::endl;
+#ifdef HAVE_XFT
+    X11ftFont font(display(), fname);
+#else
+    X11Font font(display(), fname);
+#endif
+    if (!font)
+        logFatal << "Could not load font: " << fname << std::endl;
+
+    if ( legend_ ){
+        if ( !usedlabels_ )
+            xoff_ = font.textWidth("INT(9) ");
+        else
+            xoff_ = font.textWidth("SWAP 99%%");
+
+        yoff_ = caption_ ? font.textHeight() + font.textHeight() / 4 : 0;
+    }
+    static bool firsttime = true;
+    if (firsttime) {
+        firsttime = false;
+        width(findx(font));
+        height(findy(font));
+    }
+}
+
 
 void XOSView::setCommandLineArgs(util::CLOpts &o) {
 
@@ -536,45 +579,5 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
     o.add("kernelName",
       "-N", "--kernel-name", "name",
       "Sets the kernel name for BSD variants.");
-#endif
-}
-
-
-void XOSView::setSleepTime(void) {
-    MAX_SAMPLES_PER_SECOND = util::stof(getResource("samplesPerSec"));
-    if (!MAX_SAMPLES_PER_SECOND)
-        MAX_SAMPLES_PER_SECOND = 10;
-
-    usleeptime_ = (unsigned long) (1000000/MAX_SAMPLES_PER_SECOND);
-    if (usleeptime_ >= 1000000) {
-        /*  The syscall usleep() only takes times less than 1 sec, so
-         *  split into a sleep time and a usleep time if needed.  */
-        sleeptime_ = usleeptime_ / 1000000;
-        usleeptime_ = usleeptime_ % 1000000;
-    }
-    else {
-        sleeptime_ = 0;
-    }
-}
-
-void XOSView::usleep_via_select( unsigned long usec ){
-    struct timeval time;
-
-    time.tv_sec = (int)(usec / 1000000);
-    time.tv_usec = usec - time.tv_sec * 1000000;
-
-    select( 0, 0, 0, 0, &time );
-}
-
-void XOSView::slumber(void) const {
-#ifdef HAVE_USLEEP
-        /*  First, sleep for the proper integral number of seconds --
-         *  usleep only deals with times less than 1 sec.  */
-        if (sleeptime_)
-            sleep((unsigned int)sleeptime_);
-        if (usleeptime_)
-            usleep( (unsigned int)usleeptime_);
-#else
-        usleep_via_select ( usleeptime_ );
 #endif
 }

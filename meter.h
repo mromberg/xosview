@@ -54,7 +54,7 @@ protected:
     std::string title_, legend_;
     unsigned long textcolor_;
     double samplesPerSecond(void)
-        { return 1.0 * XOSView::maxSampRate() / priority_; }
+        { return 1.0 * parent_->sampleRate() / priority_; }
 
     double secondsPerSample() { return 1.0/samplesPerSecond(); }
 
