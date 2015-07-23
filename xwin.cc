@@ -19,7 +19,7 @@ static std::ostream &operator<<(std::ostream &os, const XEvent &e);
 
 
 XWin::XWin()
-    : _graphics(0), events_(0), done_(false),
+    : _graphics(0), done_(false),
       wm_(None), wmdelete_(None), x_(0), y_(0), width_(1), height_(1),
       display_(0), window_(0), fgcolor_(0), bgcolor_(0),
       colormap_(0) {
@@ -31,14 +31,6 @@ XWin::~XWin( void ){
     delete _graphics;
     _graphics = 0;
 
-    // delete the events
-    Event *event = events_;
-    while ( event != NULL ){
-        Event *save = event->next_;
-        delete event;
-        event = save;
-    }
-
     XDestroyWindow( display_, window_ );
     // close the connection to the display
     XCloseDisplay( display_ );
@@ -47,10 +39,9 @@ XWin::~XWin( void ){
 
 void XWin::setEvents(void) {
     // Set up the default Events
-    events_ = NULL;
-    addEvent( new Event( this, ConfigureNotify, &XWin::configureEvent ) );
-    addEvent( new Event( this, ClientMessage, &XWin::deleteEvent ) );
-    addEvent( new Event( this, MappingNotify, &XWin::mappingNotify ) );
+    addEvent( ConfigureNotify, this, &XWin::configureEvent );
+    addEvent( ClientMessage, this, &XWin::deleteEvent );
+    addEvent( MappingNotify, this, &XWin::mappingNotify  );
 }
 
 
@@ -89,11 +80,8 @@ void XWin::createWindow(void) {
     }
 
     // add the events
-    Event *tmp = events_;
-    while ( tmp != NULL ){
-        selectEvents( tmp->mask_ );
-        tmp = tmp->next_;
-    }
+    for (size_t i = 0 ; i < events_.size() ; i++)
+        selectEvents(events_[i].mask_);
 
     // Create new Graphics interface.
     _graphics = new X11Graphics(display_, window_, true, colormap_,
@@ -285,25 +273,14 @@ void XWin::checkevent( void ){
         logDebug << "EVENT: " << event << ", done=" << done() << std::endl;
 
         // call all of the Event's call back functions to process this event
-        Event *tmp = events_;
-        while ( !done() && (tmp != NULL) ){
-            tmp->callBack( event );
-            tmp = tmp->next_;
-        }
+        for (size_t i = 0 ; i < events_.size() ; i++)
+            events_[i].callBack(event);
     }
 }
 
 
-void XWin::addEvent( Event *event ){
-    Event *tmp = events_;
-
-    if ( events_ == NULL )
-        events_ = event;
-    else {
-        while ( tmp->next_ != NULL )
-            tmp = tmp->next_;
-        tmp->next_ = event;
-    }
+void XWin::addEvent(int eventType, XWin *xwin, EventCallBack callBack){
+    events_.push_back(Event(xwin, eventType, callBack));
 }
 
 
@@ -324,11 +301,9 @@ void XWin::deleteEvent( XEvent &event ){
 }
 
 
-XWin::Event::Event( XWin *parent, int event, EventCallBack callBack ){
-    next_ = NULL;
-    parent_ = parent;
-    event_ = event;
-    callBack_ = callBack;
+XWin::Event::Event( XWin *parent, int event, EventCallBack callBack )
+    : parent_(parent), callBack_(callBack), event_(event),
+      mask_(NoEventMask) {
 
     switch ( event_ ){
     case ButtonPress:

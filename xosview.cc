@@ -152,16 +152,12 @@ void XOSView::dumpResources( std::ostream &os ){
 void XOSView::setEvents(void) {
     XWin::setEvents();
 
-    addEvent( new Event( this, ConfigureNotify,
-        (EventCallBack)&XOSView::resizeEvent ) );
-    addEvent( new Event( this, Expose,
-        (EventCallBack)&XOSView::exposeEvent ) );
-    addEvent( new Event( this, KeyPress,
-        (EventCallBack)&XOSView::keyPressEvent ) );
-    addEvent( new Event( this, VisibilityNotify,
-        (EventCallBack)&XOSView::visibilityEvent ) );
-    addEvent( new Event( this, UnmapNotify,
-        (EventCallBack)&XOSView::unmapEvent ) );
+    addEvent( ConfigureNotify, this, (EventCallBack)&XOSView::resizeEvent );
+    addEvent( Expose, this, (EventCallBack)&XOSView::exposeEvent );
+    addEvent( KeyPress, this, (EventCallBack)&XOSView::keyPressEvent );
+    addEvent( VisibilityNotify, this,
+      (EventCallBack)&XOSView::visibilityEvent );
+    addEvent( UnmapNotify, this, (EventCallBack)&XOSView::unmapEvent );
 }
 
 

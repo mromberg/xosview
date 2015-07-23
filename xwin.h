@@ -89,25 +89,8 @@ protected:
     //-----------------------------------
     //--- Events ------------------------
     //-----------------------------------
-    class Event {
-    public:
-        Event( XWin *parent, int event, EventCallBack callBack );
-        virtual ~Event( void ){}
 
-        friend class XWin;
-
-        void callBack( XEvent &event )
-            { if ( event.type == event_ ) (parent_->*callBack_)( event ); }
-
-    protected:
-        XWin *parent_;
-        EventCallBack callBack_;
-        int event_;
-        long mask_;
-    private:
-        Event *next_;
-    };
-    void addEvent(Event *event);
+    void addEvent(int eventType, XWin *xwin, EventCallBack callBack);
     void selectEvents(long mask);
     void ignoreEvents(long mask);
     void configureEvent(XEvent &event);
@@ -118,8 +101,9 @@ protected:
     //-----------------------------------
 
 private:
+    class Event;  // defined below
+
     X11Graphics *_graphics;       //  New graphics interface
-    Event         *events_;       //  List of Events for this window
     bool           done_;         //  If true the application is finished.
     Atom          wm_, wmdelete_; //  Used to handle delete Events
     std::string	display_name_;    //  Display name string.
@@ -131,6 +115,27 @@ private:
     unsigned long fgcolor_;       //  Foreground color of the window
     unsigned long bgcolor_;       //  Background color of the window
     Colormap      colormap_;      //  The colormap
+    std::vector<Event>  events_;  //  List of Events for this window
+
+
+    class Event {
+    public:
+        Event(void) : parent_(0), callBack_(0), event_(0), mask_(NoEventMask)
+            {}
+        Event( XWin *parent, int event, EventCallBack callBack );
+        ~Event( void ){}
+
+        // use compiler generated copy ctor and op
+
+        void callBack( XEvent &event )
+            { if ( event.type == event_ ) (parent_->*callBack_)( event ); }
+
+        XWin *parent_;
+        EventCallBack callBack_;
+        int event_;
+        long mask_;
+    };
+
 
     XSizeHints *getGeometry(void);
     void setHints(XSizeHints *szHints);
