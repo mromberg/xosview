@@ -69,7 +69,6 @@ protected:
     virtual std::string className(void) { return _xrm->className(); }
     virtual std::string instanceName(void) { return _xrm->instanceName(); }
     void resize(void);
-    void usleep_via_select(unsigned long usec);
     void checkMeterResources(void);
     void figureSize(void);
     int findx(XOSVFont &font);
@@ -88,6 +87,9 @@ protected:
 private:
     //  Take at most n samples per second (default of 10)
     static double MAX_SAMPLES_PER_SECOND;
+
+    void slumber(void) const;
+    void usleep_via_select(unsigned long usec);
 };
 
 #endif

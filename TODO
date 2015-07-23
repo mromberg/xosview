@@ -24,9 +24,6 @@
 
 - Pass a Graphics to checkResources
 
-- Fix any other ports for the new C++ update.  Should
-  be simple"ish".  Mostly char * -> std::string conversion.
-
 - Look into a decay only option on the field meter.
 
 - if using Xft fonts rescale the font based on the height of the meter.
