@@ -265,7 +265,66 @@ void XWin::ignoreEvents( long mask ){
 }
 
 
+std::vector<XEvent> XWin::filterQueue(std::vector<XEvent> &queue) const {
+    // Return a queue where queue[0] is the oldest event
+    // Only include the most recent event of certain types.
+    std::vector<XEvent> rval;
+
+    // Include only the most recent of these types
+    std::vector<std::pair<int,bool> > pone;
+    pone.push_back(std::make_pair(ConfigureNotify, false));
+    pone.push_back(std::make_pair(Expose, false));
+    pone.push_back(std::make_pair(VisibilityNotify, false));
+
+    for (size_t i = 0 ; i < queue.size() ; i++) {
+        // Check each filter
+        bool filteredType = false;
+        for (size_t j = 0 ; j < pone.size() ; j++) {
+            if (pone[j].first == queue[i].type) {
+                if (!pone[j].second) {
+                    // push just the first one found
+                    pone[j].second = true;
+                    rval.push_back(queue[i]);
+                }
+                filteredType = true; // mark it as being a filtered type
+                break;
+            }
+        }
+        // always add all non filtered types
+        if (!filteredType)
+            rval.push_back(queue[i]);
+    }
+
+    return rval;
+}
+
 void XWin::checkevent( void ){
+
+    int qsize = XEventsQueued(display_, QueuedAfterReading);
+
+    if (qsize) {
+        // pull the queue and store it so queue[0] is newest
+        std::vector<XEvent> queue(qsize);
+        for (std::vector<XEvent>::reverse_iterator rit = queue.rbegin() ;
+             rit != queue.rend() ; ++rit)
+            XNextEvent(display_, &(*rit));
+
+        logDebug << "queue: " << queue << std::endl;
+        queue = filterQueue(queue);
+        logDebug << "filtered: " << queue << "\n" << std::endl;
+
+        for (size_t i = 0 ; i < queue.size() ; i++) {
+            for (size_t j = 0 ; j < events_.size() ; j++) {
+                events_[j].callBack(queue[i]);
+                if (done())
+                    return;
+            }
+        }
+    }
+
+
+#if 1
+#else
     XEvent event;
 
     while ( !done() && XEventsQueued( display_, QueuedAfterReading ) ){
@@ -276,6 +335,7 @@ void XWin::checkevent( void ){
         for (size_t i = 0 ; i < events_.size() ; i++)
             events_[i].callBack(event);
     }
+#endif
 }
 
 

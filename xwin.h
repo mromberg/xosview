@@ -139,6 +139,7 @@ private:
 
     XSizeHints *getGeometry(void);
     void setHints(XSizeHints *szHints);
+    std::vector<XEvent> filterQueue(std::vector<XEvent> &queue) const;
 };
 
 #endif
