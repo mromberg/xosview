@@ -11,6 +11,7 @@
 #include "strutil.h"
 
 #include <sstream>
+#include <algorithm>
 
 #include <X11/Xatom.h>
 
@@ -295,6 +296,7 @@ std::vector<XEvent> XWin::filterQueue(std::vector<XEvent> &queue) const {
             rval.push_back(queue[i]);
     }
 
+    std::reverse(rval.begin(), rval.end());
     return rval;
 }
 
