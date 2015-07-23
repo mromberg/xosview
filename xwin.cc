@@ -321,21 +321,6 @@ void XWin::checkevent( void ){
             }
         }
     }
-
-
-#if 1
-#else
-    XEvent event;
-
-    while ( !done() && XEventsQueued( display_, QueuedAfterReading ) ){
-        XNextEvent( display_, &event );
-        logDebug << "EVENT: " << event << ", done=" << done() << std::endl;
-
-        // call all of the Event's call back functions to process this event
-        for (size_t i = 0 ; i < events_.size() ; i++)
-            events_[i].callBack(event);
-    }
-#endif
 }
 
 
