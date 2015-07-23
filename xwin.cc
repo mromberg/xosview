@@ -25,13 +25,6 @@ XWin::XWin()
       colormap_(0) {
 }
 
-void XWin::setEvents(void) {
-    // Set up the default Events
-    events_ = NULL;
-    addEvent( new Event( this, ConfigureNotify, &XWin::configureEvent ) );
-    addEvent( new Event( this, ClientMessage, &XWin::deleteEvent ) );
-    addEvent( new Event( this, MappingNotify, &XWin::mappingNotify ) );
-}
 
 XWin::~XWin( void ){
     // remove the Graphics interface
@@ -49,6 +42,15 @@ XWin::~XWin( void ){
     XDestroyWindow( display_, window_ );
     // close the connection to the display
     XCloseDisplay( display_ );
+}
+
+
+void XWin::setEvents(void) {
+    // Set up the default Events
+    events_ = NULL;
+    addEvent( new Event( this, ConfigureNotify, &XWin::configureEvent ) );
+    addEvent( new Event( this, ClientMessage, &XWin::deleteEvent ) );
+    addEvent( new Event( this, MappingNotify, &XWin::mappingNotify ) );
 }
 
 
@@ -106,6 +108,7 @@ void XWin::createWindow(void) {
     g().flush();
 }
 
+
 void XWin::setHints(XSizeHints *szHints){
     // Set up class hint
     XClassHint    *classhints;   //  Class hint for window manager
@@ -148,8 +151,9 @@ void XWin::setHints(XSizeHints *szHints){
         fargv[i] = const_cast<char *>(clst[i].c_str()); // we'll be careful...
     fargv[clst.size()] = 0; // just in cat argc is ignored
 
-    XSetWMProperties(display_, window_, &titlep, &iconnamep, fargv, clst.size(),
-      szHints, wmhints, classhints);
+    XSetWMProperties(display_, window_, &titlep, &iconnamep, fargv,
+      clst.size(), szHints, wmhints, classhints);
+
     delete[] fargv; // the char* elements here just point into clst
     fargv = 0;
 
@@ -175,6 +179,7 @@ void XWin::openDisplay( void ){
     colormap_ = DefaultColormap( display_, screen() );
 }
 
+
 void XWin::setColors( void ){
     XColor               color;
 
@@ -199,7 +204,6 @@ void XWin::setColors( void ){
 
 
 XSizeHints *XWin::getGeometry(void) {
-    int                  bitmask;
 
     // Fill out a XsizeHints structure to inform the window manager
     // of desired size and location of main window.
@@ -228,7 +232,7 @@ XSizeHints *XWin::getGeometry(void) {
     const char *gptr = NULL;
     if (!geomUnspecified)
         gptr = geomStr.c_str();
-    bitmask =  XGeometry(display_, DefaultScreen(display_), gptr,
+    int bitmask =  XGeometry(display_, DefaultScreen(display_), gptr,
       defgs.str().c_str(),
       0,
       1, 1, 0, 0, &(szHints->x), &(szHints->y),
@@ -250,6 +254,7 @@ XSizeHints *XWin::getGeometry(void) {
     return szHints;
 }
 
+
 void XWin::selectEvents( long mask ){
     XWindowAttributes    xAttr;
     XSetWindowAttributes xSwAttr;
@@ -259,6 +264,7 @@ void XWin::selectEvents( long mask ){
         XChangeWindowAttributes( display_, window_, CWEventMask, &xSwAttr );
     }
 }
+
 
 void XWin::ignoreEvents( long mask ){
     XWindowAttributes    xAttr;
@@ -300,12 +306,14 @@ void XWin::addEvent( Event *event ){
     }
 }
 
+
 void XWin::configureEvent( XEvent &event ){
     x( event.xconfigure.x );
     y( event.xconfigure.y );
     width( event.xconfigure.width );
     height( event.xconfigure.height );
 }
+
 
 void XWin::deleteEvent( XEvent &event ){
     if ( (event.xclient.message_type == wm_ ) &&
@@ -314,6 +322,7 @@ void XWin::deleteEvent( XEvent &event ){
         done(true);
     }
 }
+
 
 XWin::Event::Event( XWin *parent, int event, EventCallBack callBack ){
     next_ = NULL;
@@ -400,10 +409,12 @@ XWin::Event::Event( XWin *parent, int event, EventCallBack callBack ){
     }
 }
 
+
 X11Pixmap *XWin::newX11Pixmap(unsigned int width, unsigned int height) {
     return new X11Pixmap(display_, window_,
       colormap_, bgcolor_, width, height, g().depth());
 }
+
 
 //-------------------------------------------------------------------
 // These are just stubs to make XWin stand alone if a derrived class
@@ -424,18 +435,33 @@ std::string XWin::getResource(const std::string &name) {
     return "";
 }
 
+
 std::string XWin::getResourceOrUseDefault(const std::string &,
   const std::string &) {
     logFatal << "NOT IMPLEMENTED" << std::endl;
     return "";
 }
 
+
 bool XWin::isResourceTrue(const std::string &name) {
     return util::tolower(getResource(name)) == "true";
 }
 
+
 void XWin::dumpResources(std::ostream &) {
     logFatal << "not implemented." << std::endl;
+}
+
+
+std::string XWin::className(void) {
+    logProblem << "className() not overridden using killroy...\n";
+    return "killroy";
+}
+
+
+std::string XWin::instanceName(void) {
+    logProblem << "instanceName() not overridden using killroy...\n";
+    return "killroy";
 }
 //-------------------------------------------------------------------
 
@@ -548,14 +574,4 @@ static std::ostream &operator<<(std::ostream &os, const XEvent &e) {
     };
 
     return os;
-}
-
-std::string XWin::className(void) {
-    logProblem << "className() not overridden using killroy...\n";
-    return "killroy";
-}
-
-std::string XWin::instanceName(void) {
-    logProblem << "instanceName() not overridden using killroy...\n";
-    return "killroy";
 }
