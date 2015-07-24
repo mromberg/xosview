@@ -82,7 +82,7 @@ void XOSView::loop(void) {
 
         slumber();
     }
-    logDebug << "leaging run()..." << std::endl;
+    logDebug << "leaving run()..." << std::endl;
 }
 
 
