@@ -34,13 +34,15 @@ public:
     unsigned long foreground(void) { return fgcolor_; }
     unsigned long background(void) { return bgcolor_; }
 
-    Display *display(void) { return display_; }
-    Window window(void) { return window_; }
+    Visual *visual(void) const { return visual_; }
+    Display *display(void) const { return display_; }
+    Window window(void) const { return window_; }
 
     //------------------------------------------------------
     // Resouce interface
+    // getResource() will logFatal if not found.
     //------------------------------------------------------
-    virtual std::string getResource(const std::string &name); // exit not found
+    virtual std::string getResource(const std::string &name);
     virtual std::string getResourceOrUseDefault(const std::string &name,
       const std::string &defaultVal);
     virtual bool isResourceTrue(const std::string &name);
@@ -109,6 +111,7 @@ private:
     std::string	display_name_;    //  Display name string.
     int x_, y_;                   //  position of the window
     unsigned int width_, height_; //  width and height of the window
+    Visual        *visual_;       //  The X11 visual
     Display       *display_;      //  Connection to X display
     Window        window_;        //  Application's main window
     std::string   name_;          //  Application's name

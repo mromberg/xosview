@@ -22,7 +22,7 @@ static std::ostream &operator<<(std::ostream &os, const XEvent &e);
 XWin::XWin()
     : _graphics(0), done_(false),
       wm_(None), wmdelete_(None), x_(0), y_(0), width_(1), height_(1),
-      display_(0), window_(0), fgcolor_(0), bgcolor_(0),
+      visual_(0), display_(0), window_(0), fgcolor_(0), bgcolor_(0),
       colormap_(0) {
 }
 
@@ -38,32 +38,48 @@ XWin::~XWin( void ){
 }
 
 
-void XWin::setEvents(void) {
-    // Set up the default Events
-    addEvent( ConfigureNotify, this, &XWin::configureEvent );
-    addEvent( ClientMessage, this, &XWin::deleteEvent );
-    addEvent( MappingNotify, this, &XWin::mappingNotify  );
+void XWin::openDisplay( void ){
+    // Open connection to display selected by user
+    const char *dname = display_name_ == "" ? NULL : display_name_.c_str();
+    if ((display_ = XOpenDisplay(dname)) == NULL) {
+        logFatal << "Can't open display named "
+                 << "'" << dname << "'" << std::endl;
+    }
 }
 
 
 void XWin::createWindow(void) {
-    XSetWindowAttributes xswa;
 
-    std::string fontName = getResource("font");
+    visual_ = DefaultVisual(display_, screen());
+    colormap_ = DefaultColormap( display_, screen() );
     setColors();
+
     XSizeHints *szHints = getGeometry();
 
-    window_ = XCreateSimpleWindow(display_, DefaultRootWindow(display_),
-      szHints->x, szHints->y,
-      szHints->width, szHints->height,
-      1,
-      fgcolor_, bgcolor_);
+    XVisualInfo tmplt;
+    tmplt.visualid = XVisualIDFromVisual(visual_);
+    int ninfo = 0;
+    XVisualInfo *vinfo = XGetVisualInfo(display_, VisualIDMask, &tmplt,
+      &ninfo);
+    if (ninfo != 1)
+        logFatal << "Failed to locate XVisualInfo." << std::endl;
+
+    XSetWindowAttributes attr;
+    attr.colormap = colormap_;
+    attr.border_pixel = bgcolor_;
+    attr.background_pixel = bgcolor_;
+    window_ = XCreateWindow(display_, DefaultRootWindow(display_),
+      szHints->x, szHints->y, szHints->width, szHints->height,
+      0, vinfo->depth, InputOutput, visual_,
+      CWColormap | CWBorderPixel | CWBackPixel, &attr);
+    XFree(vinfo);
 
     setHints(szHints);
     XFree(szHints);
     szHints = 0;
 
     // Set main window's attributes (colormap, bit_gravity)
+    XSetWindowAttributes xswa;
     xswa.colormap = colormap_;
     xswa.bit_gravity = NorthWestGravity;
     XChangeWindowAttributes(display_, window_,
@@ -87,7 +103,7 @@ void XWin::createWindow(void) {
     // Create new Graphics interface.
     _graphics = new X11Graphics(display_, window_, true, colormap_,
       bgcolor_);
-    g().setFont(fontName);
+    g().setFont(getResource("font"));
     g().setBG(bgcolor_);
     g().setFG(fgcolor_);
     g().setStippleMode(isResourceTrue("enableStipple"));
@@ -96,6 +112,17 @@ void XWin::createWindow(void) {
     map();
     g().flush();
 }
+
+
+void XWin::setEvents(void) {
+    // Set up the default Events
+    addEvent( ConfigureNotify, this, &XWin::configureEvent );
+    addEvent( ClientMessage, this, &XWin::deleteEvent );
+    addEvent( MappingNotify, this, &XWin::mappingNotify  );
+}
+
+
+
 
 
 void XWin::setHints(XSizeHints *szHints){
@@ -159,14 +186,7 @@ void XWin::setHints(XSizeHints *szHints){
     XFree(classhints);
 }
 
-void XWin::openDisplay( void ){
-    // Open connection to display selected by user
-    if ((display_ = XOpenDisplay (display_name_.c_str())) == NULL) {
-        logFatal << "Can't open display named " << display_name_ << std::endl;
-    }
 
-    colormap_ = DefaultColormap( display_, screen() );
-}
 
 
 void XWin::setColors( void ){
