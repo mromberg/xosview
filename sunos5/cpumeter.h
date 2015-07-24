@@ -1,37 +1,40 @@
 //
+//  Copyright (c) 2015
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
-#ifndef _CPUMETER_H_
-#define _CPUMETER_H_
+//  This file may be distributed under terms of the GPL
+//
+
+#ifndef CPUMETER_H
+#define CPUMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
 #include "kstats.h"
-#include <kstat.h>
-#include <sys/sysinfo.h>
+
 
 
 class CPUMeter : public FieldMeterGraph {
- public:
-	CPUMeter(XOSView *parent, kstat_ctl_t *kcp, int cpuid = 0);
-	~CPUMeter(void);
+public:
+    CPUMeter(XOSView *parent, kstat_ctl_t *kcp, int cpuid = 0);
+    ~CPUMeter(void);
 
-        virtual std::string name(void) const { return "CPUMeter"; }
-	void checkevent(void);
-	void checkResources(void);
-	static const char *cpuStr(int num);
+    virtual std::string name(void) const { return "CPUMeter"; }
+    void checkevent(void);
+    void checkResources(void);
+    static const char *cpuStr(int num);
 
- protected:
-	float cputime_[2][CPU_STATES];
-	int cpuindex_;
+protected:
+    std::vector<std::vector<float> > cputime_;
+    int cpuindex_;
 
-	void getcputime(void);
+    void getcputime(void);
 
- private:
-	KStatList *cpustats;
-	bool aggregate;
-	kstat_ctl_t *kc;
-	kstat_t *ksp;
+private:
+    KStatList *_cpustats;
+    bool _aggregate;
+    kstat_ctl_t *_kc;
+    kstat_t *_ksp;
 };
+
 
 #endif

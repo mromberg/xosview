@@ -157,7 +157,12 @@ case $host_os in
 	host_os=irix65
         ;;
     solaris2*)
-	XO_CONCAT(LIBS,$LIBS,[-lsocket -lnsl -lkstat])
+        AC_CHECK_HEADER(kstat.h,
+            AC_CHECK_LIB(kstat, kstat_open,
+            [AC_DEFINE(HAVE_KSTAT,[1],[Have libkstat])
+             XO_CONCAT(LIBS,$LIBS,[-lkstat])],,))
+        AC_CHECK_HEADER(sys/loadavg.h,
+            AC_CHECK_FUNCS(getloadavg))
 	host_dir=sunos5
 	host_os=sunos5
         ;;
@@ -197,7 +202,7 @@ AC_CONFIG_FILES([
 #-----------------------------------------------
 dnl XO_CONCAT(LIBS,$LIBS,$X_PRE_LIBS)
 XO_CONCAT(LIBS,$LIBS,-lX11)
-dnl XO_CONCAT(LIBS,$LIBS,$X_EXTRA_LIBS)
+XO_CONCAT(LIBS,$LIBS,$X_EXTRA_LIBS)
 
 #-----------------------------------------------
 #  Display the flags and then create the files

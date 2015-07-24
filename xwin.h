@@ -1,3 +1,9 @@
+//
+//  Copyright (c) 2015
+//  by Mike Romberg ( mike-romberg@comcast.net )
+//
+//  This file may be distributed under terms of the GPL
+//
 #ifndef XWIN_H
 #define XWIN_H
 #include "configxosv.h"

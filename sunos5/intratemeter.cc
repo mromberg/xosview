@@ -33,6 +33,7 @@ void IrqRateMeter::checkResources(void)
 	dodecay_ = parent_->isResourceTrue("irqrateDecay");
 	useGraph_ = parent_->isResourceTrue("irqrateGraph");
 	setUsedFormat(parent_->getResource("irqrateUsedFormat"));
+        decayUsed(parent_->isResourceTrue("irqrateUsedDecay"));
 	total_ = 2000;
 }
 

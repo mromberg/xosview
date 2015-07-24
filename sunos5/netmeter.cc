@@ -43,6 +43,7 @@ void NetMeter::checkResources( void ){
   dodecay_ = parent_->isResourceTrue("netDecay");
   useGraph_ = parent_->isResourceTrue("netGraph");
   setUsedFormat( parent_->getResource("netUsedFormat") );
+  decayUsed(parent_->isResourceTrue("netUsedDecay"));
   _netIface = parent_->getResource("netIface");
   if (_netIface[0] == '-') {
     _ignored = true;

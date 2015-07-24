@@ -31,6 +31,7 @@ void DiskMeter::checkResources( void )
     dodecay_ = parent_->isResourceTrue("diskDecay");
     useGraph_ = parent_->isResourceTrue("diskGraph");
     setUsedFormat( parent_->getResource("diskUsedFormat") );
+    decayUsed(parent_->isResourceTrue("diskUsedDecay"));
 }
 
 void DiskMeter::checkevent( void )
