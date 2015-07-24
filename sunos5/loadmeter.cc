@@ -25,7 +25,7 @@ LoadMeter::LoadMeter(XOSView *parent, kstat_ctl_t *_kc)
       warnThreshold(0), critThreshold(0),
       old_cpu_speed(0), cur_cpu_speed(0),
       lastalarmstate(-1), do_cpu_speed(false),
-      cpulist(KStatList::getList(kc, KStatList::CPU_INFO)),
+      cpulist(KStatList::getList(_kc, KStatList::CPU_INFO)),
       kc(_kc), ksp(0) {
 
     total_ = -1;
