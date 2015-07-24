@@ -64,37 +64,32 @@ void XWin::createWindow(void) {
     if (ninfo != 1)
         logFatal << "Failed to locate XVisualInfo." << std::endl;
 
+    // Define the windows attributes
     XSetWindowAttributes attr;
-    attr.colormap = colormap_;
-    attr.border_pixel = bgcolor_;
-    attr.background_pixel = bgcolor_;
+    unsigned long amask = 0;
+    attr.colormap = colormap_;            amask |= CWColormap;
+    attr.border_pixel = fgcolor_;         amask |= CWBorderPixel;
+    attr.background_pixel = bgcolor_;     amask |= CWBackPixel;
+    //attr.backing_store = WhenMapped;      amask |= CWBackingStore;
+    attr.bit_gravity = NorthWestGravity;  amask |= CWBitGravity;
+
     window_ = XCreateWindow(display_, DefaultRootWindow(display_),
       szHints->x, szHints->y, szHints->width, szHints->height,
-      0, vinfo->depth, InputOutput, visual_,
-      CWColormap | CWBorderPixel | CWBackPixel, &attr);
+      1, vinfo->depth, InputOutput, visual_, amask, &attr);
     XFree(vinfo);
 
     setHints(szHints);
     XFree(szHints);
     szHints = 0;
 
-    // Set main window's attributes (colormap, bit_gravity)
-    XSetWindowAttributes xswa;
-    xswa.colormap = colormap_;
-    xswa.bit_gravity = NorthWestGravity;
-    XChangeWindowAttributes(display_, window_,
-      (CWColormap | CWBitGravity), &xswa);
-
-    // If there is a pixmap file, set it as the background
+    // Pixmap backgrounds
     std::string pixmapFName = getResourceOrUseDefault("pixmapName", "");
     X11Pixmap x11p(display_, window_, colormap_);
     if (pixmapFName.size() && x11p.load(pixmapFName))
 	XSetWindowBackgroundPixmap(display_, window_, x11p.pmap());
 
-    // Do transparency if requested
-    if(isResourceTrue("transparent")) {
-        XSetWindowBackgroundPixmap(display_,window_,ParentRelative);
-    }
+    if(isResourceTrue("transparent"))
+        XSetWindowBackgroundPixmap(display_, window_, ParentRelative);
 
     // add the events
     for (size_t i = 0 ; i < events_.size() ; i++)
