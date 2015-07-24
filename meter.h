@@ -71,4 +71,11 @@ private:
     bool docaptions_, dolegends_, dousedlegends_, metric_;
 };
 
+
+inline bool Meter::requestevent( void ){
+    logAssert(priority_ != 0) << "meter " << name() << " invalid priority\n";
+    counter_ = (counter_ + 1) % priority_;
+    return !counter_;
+}
+
 #endif
