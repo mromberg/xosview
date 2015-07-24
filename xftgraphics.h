@@ -21,8 +21,8 @@ typedef _XftColor XftColor;
 
 class XftGraphics {
 public:
-    XftGraphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
-      unsigned long bgPixVal);
+    XftGraphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
+      Colormap cmap, unsigned long bgPixVal);
     ~XftGraphics(void);
 
     void setFont(const std::string &name);
@@ -46,6 +46,7 @@ public:
     X11ftFont &font(void) { return _font; }
 private:
     Display *_dsp;
+    Visual *_vis;
     Drawable _d;
     bool _isWindow;
     Colormap _cmap;

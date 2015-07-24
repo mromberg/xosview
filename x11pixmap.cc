@@ -13,14 +13,14 @@
 
 
 
-X11Pixmap::X11Pixmap(Display *dsp, Drawable parent, Colormap cmap,
+X11Pixmap::X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap,
   unsigned long bgPixVal, int width, int height, int depth)
-    : _pmap(0), _dsp(dsp), _parent(parent), _cmap(cmap), _g(0),
+    : _pmap(0), _dsp(dsp), _vis(v), _parent(parent), _cmap(cmap), _g(0),
       _width(width), _height(height) {
 
     _pmap = XCreatePixmap(dsp, _parent, _width, _height, depth);
     logDebug << "new pixmap: " << _pmap << std::endl;
-    _g = new X11Graphics(_dsp, _pmap, false, _cmap, bgPixVal);
+    _g = new X11Graphics(_dsp, _vis, _pmap, false, _cmap, bgPixVal);
 
     _g->clear(0, 0, _width, _height);
 }
@@ -69,7 +69,7 @@ bool X11Pixmap::load(const std::string &fileName, bool logfail) {
 
     _width = pixmap_att.width;
     _height = pixmap_att.height;
-    _g = new X11Graphics(_dsp, _pmap, false, _cmap, 0); //bgPixVal);
+    _g = new X11Graphics(_dsp, _vis, _pmap, false, _cmap, 0); //bgPixVal);
     return true;
 #else
     return false;

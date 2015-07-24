@@ -13,14 +13,14 @@
 
 std::vector<Pixmap>	X11Graphics::_stipples;
 
-X11Graphics::X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
-  unsigned long bgPixVal)
+X11Graphics::X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
+  Colormap cmap, unsigned long bgPixVal)
     : _dsp(dsp), _drawable(d), _isWindow(isWindow), _cmap(cmap),
       _gc(0), _depth(0),
       _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0), _font(0),
       _xftg(0), _doStippling(false) {
 #if HAVE_XFT
-    _xftg = new XftGraphics(_dsp, _drawable, _isWindow, _cmap, _bgPixel);
+    _xftg = new XftGraphics(_dsp, v, _drawable, _isWindow, _cmap, _bgPixel);
     _font = &_xftg->font();
 #else
     _font = new X11Font(_dsp);

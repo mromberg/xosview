@@ -51,18 +51,17 @@ inline std::ostream &operator<<(std::ostream &os, const XftColor &c) {
 //----------------------------------------------------------
 
 
-XftGraphics::XftGraphics(Display *dsp, Drawable d, bool isWindow,
+XftGraphics::XftGraphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
   Colormap cmap, unsigned long bgPixVal)
-    : _dsp(dsp), _d(d), _isWindow(isWindow), _cmap(cmap), _bgPixVal(bgPixVal),
-      _fgPixVal(bgPixVal), _font(dsp), _draw(0),
+    : _dsp(dsp), _vis(v), _d(d), _isWindow(isWindow), _cmap(cmap),
+      _bgPixVal(bgPixVal), _fgPixVal(bgPixVal), _font(dsp), _draw(0),
       _fgxftc(0), _bgxftc(0) {
 
     setBG(bgPixVal);
     setFG("white");
 
     if (_isWindow) {
-        _draw = XftDrawCreate(_dsp, _d, DefaultVisual(_dsp,
-            DefaultScreen(_dsp)), _cmap);
+        _draw = XftDrawCreate(_dsp, _d, _vis, _cmap);
     }
     else {
         if (depth() == 1) {
@@ -79,13 +78,11 @@ XftGraphics::~XftGraphics(void) {
         XftDrawDestroy(_draw);
 
     if (_fgxftc) {
-        XftColorFree(_dsp, DefaultVisual(_dsp,DefaultScreen(_dsp)),
-          _cmap, _fgxftc);
+        XftColorFree(_dsp, _vis, _cmap, _fgxftc);
         delete _fgxftc;
     }
     if (_bgxftc) {
-        XftColorFree(_dsp, DefaultVisual(_dsp,DefaultScreen(_dsp)),
-          _cmap, _bgxftc);
+        XftColorFree(_dsp, _vis, _cmap, _bgxftc);
         delete _bgxftc;
     }
 }
@@ -148,11 +145,9 @@ void XftGraphics::setFG(unsigned long pixVal, unsigned short alpha) {
     if (!_fgxftc)
         _fgxftc = new XftColor();
     else
-        XftColorFree(_dsp, DefaultVisual(_dsp,DefaultScreen(_dsp)),
-          _cmap, _fgxftc);
+        XftColorFree(_dsp, _vis, _cmap, _fgxftc);
 
-    XftColorAllocValue(_dsp, DefaultVisual(_dsp,DefaultScreen(_dsp)),
-      _cmap, &xrc, _fgxftc);
+    XftColorAllocValue(_dsp, _vis, _cmap, &xrc, _fgxftc);
 }
 
 void XftGraphics::setBG(const std::string &color, unsigned short alpha) {
@@ -175,11 +170,9 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
     if (!_bgxftc)
         _bgxftc = new XftColor();
     else
-        XftColorFree(_dsp, DefaultVisual(_dsp,DefaultScreen(_dsp)),
-          _cmap, _bgxftc);
+        XftColorFree(_dsp, _vis, _cmap, _bgxftc);
 
-    XftColorAllocValue(_dsp, DefaultVisual(_dsp,DefaultScreen(_dsp)),
-      _cmap, &xrc, _bgxftc);
+    XftColorAllocValue(_dsp, _vis, _cmap, &xrc, _bgxftc);
 }
 
 void XftGraphics::drawString(int x, int y, const std::string &str) {

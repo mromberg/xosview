@@ -21,8 +21,8 @@ class XftGraphics;
 
 class X11Graphics {
 public:
-    X11Graphics(Display *dsp, Drawable d, bool isWindow, Colormap cmap,
-      unsigned long bgPixVal);
+    X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
+      Colormap cmap, unsigned long bgPixVal);
     ~X11Graphics(void);
 
     // Inform the Graphics object that the drawable (window)

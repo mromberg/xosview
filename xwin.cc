@@ -75,7 +75,7 @@ void XWin::createWindow(void) {
 
     window_ = XCreateWindow(display_, DefaultRootWindow(display_),
       szHints->x, szHints->y, szHints->width, szHints->height,
-      1, vinfo->depth, InputOutput, visual_, amask, &attr);
+      0, vinfo->depth, InputOutput, visual_, amask, &attr);
     XFree(vinfo);
 
     setHints(szHints);
@@ -96,7 +96,7 @@ void XWin::createWindow(void) {
         selectEvents(events_[i].mask_);
 
     // Create new Graphics interface.
-    _graphics = new X11Graphics(display_, window_, true, colormap_,
+    _graphics = new X11Graphics(display_, visual_, window_, true, colormap_,
       bgcolor_);
     g().setFont(getResource("font"));
     g().setBG(bgcolor_);
@@ -448,7 +448,7 @@ XWin::Event::Event( XWin *parent, int event, EventCallBack callBack )
 
 
 X11Pixmap *XWin::newX11Pixmap(unsigned int width, unsigned int height) {
-    return new X11Pixmap(display_, window_,
+    return new X11Pixmap(display_, visual_, window_,
       colormap_, bgcolor_, width, height, g().depth());
 }
 

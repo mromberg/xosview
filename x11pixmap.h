@@ -15,7 +15,7 @@
 
 class X11Pixmap {
 public:
-    X11Pixmap(Display *dsp, Drawable parent, Colormap cmap,
+    X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap,
       unsigned long bgPixVal, int width, int height, int depth);
     X11Pixmap(Display *dsp, Drawable parent, Colormap cmap);
     ~X11Pixmap(void);
@@ -36,6 +36,7 @@ public:
 private:
     Pixmap _pmap;
     Display *_dsp;
+    Visual *_vis;
     Drawable _parent;
     Colormap _cmap;
     X11Graphics *_g;
