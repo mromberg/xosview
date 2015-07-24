@@ -17,6 +17,7 @@ memmeter.o \
 pagemeter.o \
 netmeter.o \
 diskmeter.o \
+intratemeter.o \
 swapmeter.o
 
 

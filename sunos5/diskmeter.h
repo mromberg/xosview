@@ -1,42 +1,35 @@
 //
-//  Copyright (c) 1999, 2015
-//  by Mike Romberg (mike-romberg@comcast.net)
+//  Copyright (c) 1999, 2015 by Mike Romberg (romberg@fsl.noaa.gov)
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef DISKMETER_H
-#define DISKMETER_H
+
+#ifndef _DISKMETER_H_
+#define _DISKMETER_H_
 
 #include "fieldmetergraph.h"
-
-// To keep the header in the .cc file
-struct kstat_ctl;
-typedef kstat_ctl kstat_ctl_t;
-struct kstat;
-typedef kstat kstat_t;
-
+#include "xosview.h"
+#include "kstats.h"
+#include <kstat.h>
 
 
 class DiskMeter : public FieldMeterGraph {
-public:
-    DiskMeter( XOSView *parent, kstat_ctl_t *_kc, float max );
+ public:
+    DiskMeter( XOSView *parent, kstat_ctl_t *kc, float max );
     ~DiskMeter( void );
 
     virtual std::string name( void ) const { return "DiskMeter"; }
     void checkevent( void );
-
     void checkResources( void );
 
-protected:
+ protected:
     void getdiskinfo( void );
 
-private:
-    u_longlong_t read_prev_;
-    u_longlong_t write_prev_;
-    float maxspeed_;
-    kstat_ctl_t *kc;
-    std::vector<kstat_t *>part;
-    size_t _npart;
+ private:
+    uint64_t _read_prev, _write_prev;
+    float _maxspeed;
+    kstat_ctl_t *_kc;
+    KStatList *_disks;
 };
 
 #endif
