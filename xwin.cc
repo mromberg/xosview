@@ -26,7 +26,7 @@ XWin::XWin()
     : _graphics(0), done_(false),
       wm_(None), wmdelete_(None), x_(0), y_(0), width_(1), height_(1),
       visual_(0), display_(0), window_(0), fgcolor_(0), bgcolor_(0),
-      colormap_(0), _dbe(false), _bb(0) {
+      colormap_(0), _dbe(false), _bb(0), _bgw(0) {
 }
 
 
@@ -39,6 +39,8 @@ XWin::~XWin( void ){
     if (_dbe && _bb)
         XdbeDeallocateBackBufferName(display_, _bb);
 #endif
+    if (_bgw)
+        XDestroyWindow( display_, _bgw );
 
     XDestroyWindow( display_, window_ );
     // close the connection to the display
@@ -84,6 +86,14 @@ void XWin::createWindow(void) {
     window_ = XCreateWindow(display_, DefaultRootWindow(display_),
       szHints->x, szHints->y, szHints->width, szHints->height,
       0, vinfo->depth, InputOutput, visual_, amask, &attr);
+    if (_dbe) {
+        // Make a "stealth" companion window that is never
+        // mapped.  It exists to hold the background pixmap (if any)
+        // So, we can use an alternative to XClearArea().
+        _bgw = XCreateWindow(display_, DefaultRootWindow(display_),
+          szHints->x, szHints->y, szHints->width, szHints->height,
+          0, vinfo->depth, InputOutput, visual_, amask, &attr);
+    }
     XFree(vinfo);
 
 #ifdef HAVE_DBE
@@ -103,12 +113,18 @@ void XWin::createWindow(void) {
 
     // Pixmap backgrounds
     std::string pixmapFName = getResourceOrUseDefault("pixmapName", "");
-    X11Pixmap x11p(display_, window_, colormap_);
-    if (pixmapFName.size() && x11p.load(pixmapFName))
+    X11Pixmap x11p(display_, visual_, window_, colormap_);
+    if (pixmapFName.size() && x11p.load(pixmapFName)) {
 	XSetWindowBackgroundPixmap(display_, window_, x11p.pmap());
+        if (_bgw)
+            XSetWindowBackgroundPixmap(display_, _bgw, x11p.pmap());
+    }
 
-    if(isResourceTrue("transparent"))
+    if(isResourceTrue("transparent")) {
         XSetWindowBackgroundPixmap(display_, window_, ParentRelative);
+        if (_bgw)
+            XSetWindowBackgroundPixmap(display_, _bgw, ParentRelative);
+    }
 
     // add the events
     for (size_t i = 0 ; i < events_.size() ; i++)
@@ -421,6 +437,8 @@ void XWin::configureEvent( XEvent &event ){
     y( event.xconfigure.y );
     width( event.xconfigure.width );
     height( event.xconfigure.height );
+    if (_bgw)
+        XMoveResizeWindow(display_, _bgw, x(), y(), width(), height());
 }
 
 

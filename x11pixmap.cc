@@ -25,8 +25,9 @@ X11Pixmap::X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap,
     _g->clear(0, 0, _width, _height);
 }
 
-X11Pixmap::X11Pixmap(Display *dsp, Drawable parent, Colormap cmap)
-    : _pmap(0), _dsp(dsp), _parent(parent), _cmap(cmap), _g(0),
+
+X11Pixmap::X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap)
+    : _pmap(0), _dsp(dsp), _vis(v), _parent(parent), _cmap(cmap), _g(0),
       _width(0), _height(0) {
 }
 

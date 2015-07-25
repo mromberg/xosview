@@ -128,6 +128,7 @@ private:
     std::vector<Event>  events_;  //  List of Events for this window
     bool          _dbe;           //  If true use double buffering
     Drawable      _bb;            //  The DBE back buffer
+    Window        _bgw;           //  Unmaped background for DBE clear
 
 
     class Event {

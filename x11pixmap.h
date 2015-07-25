@@ -17,7 +17,7 @@ class X11Pixmap {
 public:
     X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap,
       unsigned long bgPixVal, int width, int height, int depth);
-    X11Pixmap(Display *dsp, Drawable parent, Colormap cmap);
+    X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap);
     ~X11Pixmap(void);
 
     Pixmap pmap(void) const { return _pmap; }
