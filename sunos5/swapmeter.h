@@ -1,28 +1,32 @@
 //
+//  Copyright (c) 1999, 2015
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
-#ifndef _SWAPMETER_H_
-#define _SWAPMETER_H_
+//  This file may be distributed under terms of the GPL
+//
+
+#ifndef SWAPMETER_H
+#define SWAPMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
-#include <kstat.h>
+
+
 
 
 class SwapMeter : public FieldMeterGraph {
- public:
-	SwapMeter(XOSView *parent);
-	~SwapMeter(void);
+public:
+    SwapMeter(XOSView *parent);
+    ~SwapMeter(void);
 
-        virtual std::string name(void) const { return "SwapMeter"; }
-	void checkevent(void);
-	void checkResources(void);
+    virtual std::string name(void) const { return "SwapMeter"; }
+    void checkevent(void);
+    void checkResources(void);
 
- protected:
-	void getswapinfo(void);
+protected:
+    void getswapinfo(void);
 
- private:
-	size_t pagesize;
+private:
+    size_t pagesize;
 };
 
 

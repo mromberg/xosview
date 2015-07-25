@@ -8,31 +8,30 @@
 //
 //
 
-#ifndef _IRQRATEMETER_H_
-#define _IRQRATEMETER_H_
+#ifndef IRQRATEMETER_H
+#define IRQRATEMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
 #include "kstats.h"
-#include <kstat.h>
+
 
 
 class IrqRateMeter : public FieldMeterGraph {
 public:
-	IrqRateMeter(XOSView *parent, kstat_ctl_t *kc);
-	~IrqRateMeter(void);
+    IrqRateMeter(XOSView *parent, kstat_ctl_t *kc);
+    ~IrqRateMeter(void);
 
-        virtual std::string name(void) const { return "IrqRateMeter"; }
-	void checkevent(void);
-	void checkResources(void);
+    virtual std::string name(void) const { return "IrqRateMeter"; }
+    void checkevent(void);
+    void checkResources(void);
 
 protected:
-	void getinfo(void);
+    void getinfo(void);
 
 private:
-	uint64_t _lastirqcount;
-	kstat_ctl_t *_kc;
-	KStatList *_cpus;
+    uint64_t _lastirqcount;
+    kstat_ctl_t *_kc;
+    KStatList *_cpus;
 };
 
 
