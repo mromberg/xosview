@@ -14,6 +14,9 @@
 #include <algorithm>
 
 #include <X11/Xatom.h>
+#ifdef HAVE_DBE
+#include <X11/extensions/Xdbe.h>
+#endif
 
 
 static std::ostream &operator<<(std::ostream &os, const XEvent &e);
@@ -23,7 +26,7 @@ XWin::XWin()
     : _graphics(0), done_(false),
       wm_(None), wmdelete_(None), x_(0), y_(0), width_(1), height_(1),
       visual_(0), display_(0), window_(0), fgcolor_(0), bgcolor_(0),
-      colormap_(0) {
+      colormap_(0), _dbe(false), _bb(0) {
 }
 
 
@@ -31,6 +34,11 @@ XWin::~XWin( void ){
     // remove the Graphics interface
     delete _graphics;
     _graphics = 0;
+
+#ifdef HAVE_DBE
+    if (_dbe && _bb)
+        XdbeDeallocateBackBufferName(display_, _bb);
+#endif
 
     XDestroyWindow( display_, window_ );
     // close the connection to the display
@@ -50,7 +58,7 @@ void XWin::openDisplay( void ){
 
 void XWin::createWindow(void) {
 
-    visual_ = DefaultVisual(display_, screen());
+    visual_ = getVisual();
     colormap_ = DefaultColormap( display_, screen() );
     setColors();
 
@@ -78,6 +86,17 @@ void XWin::createWindow(void) {
       0, vinfo->depth, InputOutput, visual_, amask, &attr);
     XFree(vinfo);
 
+#ifdef HAVE_DBE
+    if (_dbe) {
+        _bb = XdbeAllocateBackBufferName(display_, window_, XdbeCopied);
+        logDebug << "BACK BUFFER ID: " << _bb << std::endl;
+    }
+    else
+        _bb = window_;
+#else
+    _bb = window_;
+#endif
+
     setHints(szHints);
     XFree(szHints);
     szHints = 0;
@@ -96,7 +115,7 @@ void XWin::createWindow(void) {
         selectEvents(events_[i].mask_);
 
     // Create new Graphics interface.
-    _graphics = new X11Graphics(display_, visual_, window_, true, colormap_,
+    _graphics = new X11Graphics(display_, visual_, _bb, true, colormap_,
       bgcolor_);
     g().setFont(getResource("font"));
     g().setBG(bgcolor_);
@@ -109,6 +128,48 @@ void XWin::createWindow(void) {
 }
 
 
+Visual *XWin::getVisual(void) {
+
+    Visual *defaultVisual = DefaultVisual(display_, screen());
+    _dbe = isDBE(defaultVisual);
+    if (_dbe)
+        logDebug << "Enabling DBE..." << std::endl;
+    return defaultVisual;
+}
+
+
+bool XWin::isDBE(Visual *v) const {
+    return false;
+    bool rval = false;
+
+#ifdef HAVE_DBE
+    VisualID visID = XVisualIDFromVisual(v);
+
+    int major, minor;
+    if (XdbeQueryExtension(display_, &major, &minor)) {
+        logDebug << "HAVE DBE: " << major << "." << minor << std::endl;
+
+        Window rootWindow = XDefaultRootWindow(display_);
+        int numsp = 1;
+        XdbeScreenVisualInfo *dbeVisuals = XdbeGetVisualInfo(display_,
+          &rootWindow, &numsp);
+
+        if (dbeVisuals != NULL) {
+            for (int i = 0 ; i < dbeVisuals->count ; i++) {
+                if (visID == dbeVisuals->visinfo[i].visual) {
+                    rval = true;
+                    break;
+                }
+            }
+            XdbeFreeVisualInfo(dbeVisuals);
+        }
+    }
+#endif
+
+    return rval;
+}
+
+
 void XWin::setEvents(void) {
     // Set up the default Events
     addEvent( ConfigureNotify, this, &XWin::configureEvent );
@@ -117,7 +178,16 @@ void XWin::setEvents(void) {
 }
 
 
-
+void XWin::swapBB(void) const {
+#ifdef HAVE_DBE
+    if (_dbe) {
+        XdbeSwapInfo swinfo;
+        swinfo.swap_window = window_;
+        swinfo.swap_action = XdbeCopied;
+        XdbeSwapBuffers(display_, &swinfo, 1);
+    }
+#endif
+}
 
 
 void XWin::setHints(XSizeHints *szHints){
@@ -448,8 +518,25 @@ XWin::Event::Event( XWin *parent, int event, EventCallBack callBack )
 
 
 X11Pixmap *XWin::newX11Pixmap(unsigned int width, unsigned int height) {
-    return new X11Pixmap(display_, visual_, window_,
+    return new X11Pixmap(display_, visual_, _bb,
       colormap_, bgcolor_, width, height, g().depth());
+}
+
+
+std::vector<XVisualInfo> XWin::getVisuals(void) {
+    std::vector<XVisualInfo> rval;
+
+    XVisualInfo *visList, visFilter;
+    int numVis;
+    visFilter.screen = DefaultScreen(display_);
+    visList = XGetVisualInfo(display_, VisualScreenMask, &visFilter, &numVis);
+    for (int i = 0 ; i < numVis ; i++)
+        rval.push_back(visList[i]);
+
+    if (numVis)
+        XFree(visList);
+
+    return rval;
 }
 
 

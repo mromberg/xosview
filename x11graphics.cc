@@ -85,6 +85,7 @@ unsigned long X11Graphics::getPixelValue(const std::string &color) const {
     return closest.pixel;
 }
 
+
 void X11Graphics::clear(int x, int y, unsigned int width, unsigned int height) {
     if (_isWindow)
         XClearArea(_dsp, _drawable, x, y, width, height, False);

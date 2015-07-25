@@ -77,6 +77,7 @@ void XOSView::loop(void) {
                     _meters[i]->checkevent();
             }
 
+            swapBB();
             g().flush();
         }
 

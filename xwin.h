@@ -87,6 +87,7 @@ protected:
         { XResizeWindow( display_, window_, width, height ); }
     void map( void ) { XMapWindow( display_, window_ ); }
     void unmap( void ) { XUnmapWindow( display_, window_ ); }
+    void swapBB(void) const;
 
     //-----------------------------------
     //--- Events ------------------------
@@ -119,6 +120,8 @@ private:
     unsigned long bgcolor_;       //  Background color of the window
     Colormap      colormap_;      //  The colormap
     std::vector<Event>  events_;  //  List of Events for this window
+    bool          _dbe;           //  If true use double buffering
+    Drawable      _bb;            //  The DBE back buffer
 
 
     class Event {
@@ -140,6 +143,9 @@ private:
     };
 
 
+    Visual *getVisual(void);
+    bool isDBE(Visual *v) const;
+    std::vector<XVisualInfo> getVisuals(void);
     XSizeHints *getGeometry(void);
     void setHints(XSizeHints *szHints);
     std::vector<XEvent> filterQueue(std::vector<XEvent> &queue) const;

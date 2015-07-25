@@ -116,6 +116,13 @@ AC_CHECK_LIB(Xpm, XpmCreateImageFromData,
    [AC_DEFINE(HAVE_XPM,[1],[Have libXpm])
    XO_CONCAT(LIBS,$LIBS,[-lXpm])],,-lX11))
 
+#------------------------------------------------
+# Double buffering extension
+#------------------------------------------------
+AC_CHECK_HEADER(X11/extensions/Xdbe.h,
+AC_CHECK_LIB(Xext,XdbeQueryExtension,
+    [AC_DEFINE(HAVE_DBE,[1],[Have X11 dbe extension])
+    XO_CONCAT(LIBS,$LIBS,[-lXext])],,-lX11),[],[#include <X11/Xlib.h>])
 
 XO_XFT_SUPPORT
 
