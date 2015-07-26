@@ -156,7 +156,6 @@ Visual *XWin::getVisual(void) {
 
 
 bool XWin::isDBE(Visual *v) const {
-    return false;
     bool rval = false;
 
 #ifdef HAVE_DBE
@@ -427,9 +426,14 @@ void XWin::configureEvent( XEvent &event ){
     if ((width() != origw) || (height() != origh)) {
         logDebug << "XWin::configureEvent(): Dimension change.  CLEAR"
                  << std::endl;
+        logDebug << std::hex << std::showbase
+                 << "Window ID: " << window_ << ", "
+                 << "BB ID: " << _bb << std::endl;
         XClearWindow(display_, window_);
 
         if (_dbe) {
+            // The DBE back buffer is not being cleared by the above
+            // XClearWindow() like the docs say.  This seems to do it.
             logDebug << "DBE Swap (XdbeBackground)." << std::endl;
             XdbeSwapInfo swinfo;
             swinfo.swap_window = window_;

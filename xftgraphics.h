@@ -45,6 +45,8 @@ public:
     void drawString(int x, int y, const std::string &str);
 
     X11ftFont &font(void) { return _font; }
+    void kick(void);
+
 private:
     Display *_dsp;
     Visual *_vis;

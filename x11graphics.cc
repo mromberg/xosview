@@ -91,6 +91,9 @@ unsigned long X11Graphics::allocColor(Display *d, Colormap c,
 
 
 void X11Graphics::clear(int x, int y, unsigned int width, unsigned int height) {
+    // XClearArea is disabled because it does
+    // not work with drawing to offscreen buffers.
+    // FIXME: find some way to draw a pixmap background for clearing
     if (false && _isWindow)
         XClearArea(_dsp, _drawable, x, y, width, height, False);
     else {
@@ -120,16 +123,10 @@ void X11Graphics::setBG(const std::string &color) {
     if (_depth > 1)
         pv = allocColor(color);
 
-    logDebug << "X11Graphics::setBG(): " << color
-             << " -> " << std::hex << std::showbase
-             << pv << std::endl;
-
     setBG(pv);
 }
 
 void X11Graphics::setBG(unsigned long pixVal) {
-    logDebug << "X11Graphics::setBG(): " << std::hex << std::showbase << pixVal
-             << std::endl;
     _bgPixel = pixVal;
     XSetBackground(_dsp, _gc, _bgPixel);
 }
@@ -203,6 +200,20 @@ void X11Graphics::drawString(int x, int y, const std::string &str) {
 #endif
 }
 
+
 unsigned int X11Graphics::maxCharWidth(void) {
     return _font->maxCharWidth();
+}
+
+
+void X11Graphics::resize(unsigned int width, unsigned int height) {
+    _width = width;
+    _height = height;
+#ifdef HAVE_XFT
+    // When running DBE and the window resizes, the back buffer
+    // we are drawing in has the same XID.  But Xft gets bent.  So,
+    // This will reset it.
+    logDebug << "Kick Xft..." << std::endl;
+    _xftg->kick();
+#endif
 }

@@ -136,10 +136,6 @@ inline void X11Graphics::resize(void) {
     updateInfo();
 }
 
-inline void X11Graphics::resize(unsigned int width, unsigned int height) {
-    _width = width;
-    _height = height;
-}
 
 inline void X11Graphics::lineWidth(unsigned int width) {
     XGCValues xgcv;

@@ -138,11 +138,6 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
     xrc.blue = premul(def.blue, alpha);
     xrc.alpha = alpha;
 
-    logDebug << "setBG: " << "X pixVal: "
-             << std::hex << std::showbase << pixVal << "\n"
-             << "xcolor: " << def << "\n"
-             << "xftcolor: " << xrc << std::endl;
-
     if (!_bgxftc)
         _bgxftc = new XftColor();
     else
@@ -152,13 +147,15 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
 }
 
 void XftGraphics::drawString(int x, int y, const std::string &str) {
-    if (str.find("WLNK") != std::string::npos) {
-        logDebug << "draw: '" << str << "'\n"
-                 << "fg: " << *_fgxftc << "\n"
-                 << "bg: " << *_bgxftc << std::endl;
-    }
     XftDrawString8(_draw, _fgxftc, _font.font(), x, y,
       (XftChar8 *)str.c_str(), str.size());
+}
+
+
+void XftGraphics::kick(void) {
+    // For some unknown reason, Xft needs to be reset.
+    // Setting (the same) drawable again seems to do it.
+    XftDrawChange(_draw, _d);
 }
 
 
