@@ -140,7 +140,7 @@ void XWin::createWindow(void) {
 
     // Map the main window
     map();
-    g().flush();
+    //g().flush();
 }
 
 

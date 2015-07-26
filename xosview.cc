@@ -77,8 +77,8 @@ void XOSView::loop(void) {
             }
         }
 
-        g().flush();
         swapBB();
+        g().flush();
         slumber();
     }
     logDebug << "leaving run()..." << std::endl;

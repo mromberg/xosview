@@ -295,8 +295,6 @@ void BitFieldMeter::drawfields(X11Graphics &g, bool manditory) {
         }
         x += twidth;
     }
-
-    //parent_->flush();
 }
 
 void BitFieldMeter::checkevent( void ){

@@ -293,8 +293,6 @@ void FieldMeter::drawfields(X11Graphics &g, bool manditory) {
 
         x += twidth;
     }
-
-    //parent_->flush();
 }
 
 void FieldMeter::checkevent( void ){

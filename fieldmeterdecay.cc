@@ -157,6 +157,4 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool manditory) {
 
         decayx += decaytwidth;
     }
-
-    //parent_->flush();
 }
