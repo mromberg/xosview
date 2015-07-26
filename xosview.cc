@@ -77,8 +77,8 @@ void XOSView::loop(void) {
             }
         }
 
-        swapBB();
         g().flush();
+        swapBB();
         slumber();
     }
     logDebug << "leaving run()..." << std::endl;
@@ -181,9 +181,15 @@ void XOSView::exposeEvent( XExposeEvent &event ) {
 
 
 void XOSView::resizeEvent( XEvent &e ) {
-    g().resize(e.xconfigure.width, e.xconfigure.height);
-    resize();
-    draw();
+    logDebug << "XOSView::resizeEvent()" << std::endl;
+    unsigned int ew = e.xconfigure.width;
+    unsigned int eh = e.xconfigure.height;
+    if ((g().width() != ew) || (g().height() != eh)) {
+        logDebug << "XOSView::resizeEvent(): callin' draw()" << std::endl;
+        g().resize(ew, eh);
+        resize();
+        draw();
+    }
 }
 
 
