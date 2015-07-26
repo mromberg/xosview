@@ -374,9 +374,9 @@ std::vector<XEvent> XWin::filterQueue(std::vector<XEvent> &queue) const {
 
     // Include only the most recent of these types
     std::vector<std::pair<int,bool> > pone;
-    pone.push_back(std::make_pair(ConfigureNotify, false));
-    pone.push_back(std::make_pair(Expose, false));
-    pone.push_back(std::make_pair(VisibilityNotify, false));
+    //pone.push_back(std::make_pair(ConfigureNotify, false));
+    //pone.push_back(std::make_pair(Expose, false));
+    //pone.push_back(std::make_pair(VisibilityNotify, false));
 
     for (size_t i = 0 ; i < queue.size() ; i++) {
         // Check each filter
@@ -412,9 +412,9 @@ void XWin::checkevent( void ){
              rit != queue.rend() ; ++rit)
             XNextEvent(display_, &(*rit));
 
-        logDebug << "queue: " << queue << std::endl;
+        //logDebug << "queue: " << queue << std::endl;
         queue = filterQueue(queue);
-        logDebug << "filtered: " << queue << "\n" << std::endl;
+        logDebug << "Event queue: " << queue << "\n" << std::endl;
 
         for (size_t i = 0 ; i < queue.size() ; i++) {
             for (size_t j = 0 ; j < events_.size() ; j++) {

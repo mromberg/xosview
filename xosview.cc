@@ -151,7 +151,7 @@ void XOSView::dumpResources( std::ostream &os ){
 void XOSView::setEvents(void) {
     XWin::setEvents();
 
-    addEvent( ConfigureNotify, this, (EventCallBack)&XOSView::resizeEvent );
+    addEvent( ConfigureNotify, this, (EventCallBack)&XOSView::configureEvent );
     addEvent( Expose, this, (EventCallBack)&XOSView::exposeEvent );
     addEvent( KeyPress, this, (EventCallBack)&XOSView::keyPressEvent );
     addEvent( VisibilityNotify, this,
@@ -172,7 +172,7 @@ void XOSView::keyPressEvent( XKeyEvent &event ){
 
 
 void XOSView::exposeEvent( XExposeEvent &event ) {
-    logDebug << "XOSView::exposeEvent()" << std::endl;
+    logDebug << "XOSView::exposeEvent(): count=" << event.count << std::endl;
     _isvisible = true;
     if ( event.count == 0 ) {
         draw();
@@ -180,12 +180,11 @@ void XOSView::exposeEvent( XExposeEvent &event ) {
 }
 
 
-void XOSView::resizeEvent( XEvent &e ) {
-    logDebug << "XOSView::resizeEvent()" << std::endl;
+void XOSView::configureEvent( XEvent &e ) {
     unsigned int ew = e.xconfigure.width;
     unsigned int eh = e.xconfigure.height;
     if ((g().width() != ew) || (g().height() != eh)) {
-        logDebug << "XOSView::resizeEvent(): callin' draw()" << std::endl;
+        logDebug << "XOSView::configureEvent(): callin' draw()" << std::endl;
         g().resize(ew, eh);
         resize();
         draw();

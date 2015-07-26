@@ -89,6 +89,7 @@ unsigned long X11Graphics::getPixelValue(const std::string &color) const {
 
 
 void X11Graphics::clear(int x, int y, unsigned int width, unsigned int height) {
+    //return;
     if (_isWindow)
         XClearArea(_dsp, _drawable, x, y, width, height, False);
     else {

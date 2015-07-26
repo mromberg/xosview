@@ -79,7 +79,7 @@ protected:
     virtual void setEvents(void);
     void createMeters(void);
     void dolegends(void);
-    void resizeEvent(XEvent &event);
+    void configureEvent(XEvent &event);
     void exposeEvent(XExposeEvent &event);
     void keyPressEvent(XKeyEvent &event);
     void visibilityEvent(XVisibilityEvent &event);
