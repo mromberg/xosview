@@ -34,8 +34,6 @@ public:
     int xoff(void) const { return xoff_; }
     int newypos(void);
 
-    bool hasBeenExposedAtLeastOnce() const { return exposed_once_flag_; }
-    bool isExposed() const { return expose_flag_; }
     bool isFullyVisible() const { return _isvisible && !_ispartiallyvisible; }
     bool isAtLeastPartiallyVisible() const { return _isvisible; }
     std::string versionStr(void) const;
@@ -59,7 +57,6 @@ protected:
     int xoff_, yoff_;
     int hmargin_, vmargin_, vspacing_;
     unsigned long sleeptime_, usleeptime_;
-    bool expose_flag_, exposed_once_flag_;
     bool _isvisible;
     bool _ispartiallyvisible;
     std::vector<Meter *> _meters;

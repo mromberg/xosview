@@ -145,12 +145,7 @@ void FieldMeterGraph::drawBars(X11Graphics &g, bool) {
         heightfield_[graphpos_*numfields()+i] = a;
     }
 
-    /*  For the first time, we need to draw everything, so
-     *  skip the optimized copyArea case.  Also, if we are
-     *  not fully visible, then the copy-area won't work
-     *  properly.  */
-    if( !firstTimeDrawn_ && parent_->hasBeenExposedAtLeastOnce()
-      && !parent_->isExposed() && parent_->isFullyVisible() ) {
+    if( !firstTimeDrawn_ ) {
         // scroll area
         int col_width = width_/graphNumCols_;
         if( col_width < 1 )
@@ -165,17 +160,14 @@ void FieldMeterGraph::drawBars(X11Graphics &g, bool) {
         drawBar(g, graphNumCols_ - 1);
     }
     else {
-        if (firstTimeDrawn_ &&
-          parent_->isAtLeastPartiallyVisible() &&
-          parent_->hasBeenExposedAtLeastOnce()) {
-            logDebug << "True exposure! " << firstTimeDrawn_ << std::endl;
-            firstTimeDrawn_ = 0;
+        if (firstTimeDrawn_) {
+            logDebug << "firstTimeDrawn_: " << firstTimeDrawn_ << std::endl;
+            firstTimeDrawn_ = false;
         }
         else
             logDebug << "Full draw:  isAtLeastPart "
                      << parent_->isAtLeastPartiallyVisible()
-                     << ", hasBeenExposed "
-                     << parent_->hasBeenExposedAtLeastOnce() << std::endl;
+                     << std::endl;
 
         // need to draw entire graph on expose event
         for( i = 0; i < graphNumCols_; i++ ) {

@@ -31,7 +31,6 @@ XOSView::XOSView(void)
       xoff_(0), yoff_(0),
       hmargin_(0), vmargin_(0), vspacing_(0),
       sleeptime_(1), usleeptime_(1000),
-      expose_flag_(false), exposed_once_flag_(false),
       _isvisible(false), _ispartiallyvisible(false), _sampleRate(10) {
 }
 
@@ -76,11 +75,10 @@ void XOSView::loop(void) {
                 if ( _meters[i]->requestevent() )
                     _meters[i]->checkevent();
             }
-
-            swapBB();
-            g().flush();
         }
 
+        swapBB();
+        g().flush();
         slumber();
     }
     logDebug << "leaving run()..." << std::endl;
@@ -174,15 +172,9 @@ void XOSView::keyPressEvent( XKeyEvent &event ){
 
 
 void XOSView::exposeEvent( XExposeEvent &event ) {
+    logDebug << "XOSView::exposeEvent()" << std::endl;
     _isvisible = true;
     if ( event.count == 0 ) {
-        expose_flag_ = true;
-        exposed_once_flag_ = true;
-        draw();
-    }
-    logDebug << "Got expose event." << std::endl;
-    if (!exposed_once_flag_) {
-        exposed_once_flag_ = 1;
         draw();
     }
 }
@@ -191,8 +183,6 @@ void XOSView::exposeEvent( XExposeEvent &event ) {
 void XOSView::resizeEvent( XEvent &e ) {
     g().resize(e.xconfigure.width, e.xconfigure.height);
     resize();
-    expose_flag_ = true;
-    exposed_once_flag_ = true;
     draw();
 }
 
@@ -220,27 +210,21 @@ void XOSView::unmapEvent( XUnmapEvent & ){
 
 
 void XOSView::reallydraw( void ){
-    logDebug << "Doing draw." << std::endl;
+    logDebug << "Doing full clear/draw." << std::endl;
     g().clear();
 
     for (size_t i = 0 ; i < _meters.size() ; i++)
         _meters[i]->draw(g());
-
-    g().flush();
-
-    expose_flag_ = false;
 }
 
 
 void XOSView::draw ( void ) {
-    if (hasBeenExposedAtLeastOnce() && isAtLeastPartiallyVisible())
+    if (isAtLeastPartiallyVisible())
         reallydraw();
     else {
-        if (!hasBeenExposedAtLeastOnce()) {
-            logDebug << "Skipping draw:  not yet exposed." << std::endl;
-        } else if (!isAtLeastPartiallyVisible()) {
-            logDebug << "Skipping draw:  not visible." << std::endl;
-        }
+        logDebug << "********** FIXME ************\n";
+        logDebug << "DRAW CALLED WHILE NOT VISIBLE\n";
+        logDebug << "*****************************\n";
     }
 }
 
@@ -377,8 +361,6 @@ void XOSView::checkResources(void) {
     appName("xosview");
     _isvisible = false;
     _ispartiallyvisible = false;
-    expose_flag_ = true;
-    exposed_once_flag_ = false;
 
     //  Set 'off' value.  This is not necessarily a default value --
     //    the value in the defaultXResourceString is the default value.

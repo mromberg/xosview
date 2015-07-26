@@ -28,6 +28,8 @@ X11Graphics::X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
     refCount()++;
     updateInfo();
     _gc = XCreateGC(_dsp, _drawable, 0, NULL);
+    // FIXME Turn this back on and fix fieldmetergraph's copyArea
+    XSetGraphicsExposures(_dsp, _gc, False);
     setFont("fixed");
     setBG(_bgPixel);
     setFG("white");
