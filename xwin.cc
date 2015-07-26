@@ -99,7 +99,8 @@ void XWin::createWindow(void) {
 #ifdef HAVE_DBE
     if (_dbe) {
         _bb = XdbeAllocateBackBufferName(display_, window_, XdbeCopied);
-        logDebug << "BACK BUFFER ID: " << _bb << std::endl;
+        logDebug << "BACK BUFFER ID: " << std::hex << std::showbase
+                 << _bb << std::endl;
     }
     else
         _bb = window_;
@@ -433,12 +434,25 @@ void XWin::addEvent(int eventType, XWin *xwin, EventCallBack callBack){
 
 
 void XWin::configureEvent( XEvent &event ){
+    unsigned int origw = width();
+    unsigned int origh = height();
     x( event.xconfigure.x );
     y( event.xconfigure.y );
     width( event.xconfigure.width );
     height( event.xconfigure.height );
-    if (_bgw)
-        XMoveResizeWindow(display_, _bgw, x(), y(), width(), height());
+    if ((width() != origw) || (height() != origh)) {
+        logDebug << "XWin::configureEvent(): Dimension change.  CLEAR"
+                 << std::endl;
+        XClearWindow(display_, window_);
+
+        if (_dbe) {
+            logDebug << "DBE Swap (XdbeBackground)." << std::endl;
+            XdbeSwapInfo swinfo;
+            swinfo.swap_window = window_;
+            swinfo.swap_action = XdbeBackground;
+            XdbeSwapBuffers(display_, &swinfo, 1);
+        }
+    }
 }
 
 

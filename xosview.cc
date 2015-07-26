@@ -184,10 +184,10 @@ void XOSView::configureEvent( XEvent &e ) {
     unsigned int ew = e.xconfigure.width;
     unsigned int eh = e.xconfigure.height;
     if ((g().width() != ew) || (g().height() != eh)) {
-        logDebug << "XOSView::configureEvent(): callin' draw()" << std::endl;
+        logDebug << "XOSView::configureEvent(): set sizes..." << std::endl;
         g().resize(ew, eh);
         resize();
-        draw();
+        //draw();
     }
 }
 
