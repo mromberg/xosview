@@ -1,20 +1,20 @@
 //
-//  Copyright (c) 1999, 2015 by Mike Romberg (romberg@fsl.noaa.gov)
+//  Copyright (c) 1999, 2015
+//  by Mike Romberg (romberg@fsl.noaa.gov)
 //
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef _DISKMETER_H_
-#define _DISKMETER_H_
+#ifndef DISKMETER_H
+#define DISKMETER_H
 
 #include "fieldmetergraph.h"
-#include "xosview.h"
 #include "kstats.h"
-#include <kstat.h>
+
 
 
 class DiskMeter : public FieldMeterGraph {
- public:
+public:
     DiskMeter( XOSView *parent, kstat_ctl_t *kc, float max );
     ~DiskMeter( void );
 
@@ -22,14 +22,15 @@ class DiskMeter : public FieldMeterGraph {
     void checkevent( void );
     void checkResources( void );
 
- protected:
+protected:
     void getdiskinfo( void );
 
- private:
+private:
     uint64_t _read_prev, _write_prev;
     float _maxspeed;
     kstat_ctl_t *_kc;
     KStatList *_disks;
 };
+
 
 #endif

@@ -1,27 +1,30 @@
 //
+//  Copyright (c) 1999, 2015
 //  Rewritten for Solaris by Arno Augustin 1999
 //  augustin@informatik.uni-erlangen.de
 //
+//  This file may be distributed under terms of the GPL
+//
 
 #include "diskmeter.h"
-#include <stdlib.h>
+
 
 
 DiskMeter::DiskMeter( XOSView *parent, kstat_ctl_t *kc, float max )
-    : FieldMeterGraph( parent, 3, "DISK", "READ/WRITE/IDLE" )
-{
-    _kc = kc;
-    _read_prev = _write_prev = 0;
-    _maxspeed = max;
-    _disks = KStatList::getList(_kc, KStatList::DISKS);
+    : FieldMeterGraph( parent, 3, "DISK", "READ/WRITE/IDLE" ),
+      _read_prev(0), _write_prev(0),
+      _maxspeed(max),
+      _kc(kc),
+      _disks(KStatList::getList(_kc, KStatList::DISKS)) {
 }
 
-DiskMeter::~DiskMeter( void )
-{
+
+DiskMeter::~DiskMeter( void ) {
 }
 
-void DiskMeter::checkResources( void )
-{
+
+void DiskMeter::checkResources( void ) {
+
     FieldMeterGraph::checkResources();
 
     setfieldcolor( 0, parent_->getResource("diskReadColor") );
@@ -34,14 +37,14 @@ void DiskMeter::checkResources( void )
     decayUsed(parent_->isResourceTrue("diskUsedDecay"));
 }
 
-void DiskMeter::checkevent( void )
-{
+
+void DiskMeter::checkevent( void ) {
     getdiskinfo();
     drawfields(parent_->g());
 }
 
-void DiskMeter::getdiskinfo( void )
-{
+
+void DiskMeter::getdiskinfo( void ) {
     total_ = _maxspeed;
     kstat_io_t kio;
     uint64_t read_curr = 0, write_curr = 0;
