@@ -91,7 +91,7 @@ unsigned long X11Graphics::allocColor(Display *d, Colormap c,
 
 
 void X11Graphics::clear(int x, int y, unsigned int width, unsigned int height) {
-    if (_isWindow)
+    if (false && _isWindow)
         XClearArea(_dsp, _drawable, x, y, width, height, False);
     else {
         XSetForeground(_dsp, _gc, _bgPixel);

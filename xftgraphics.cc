@@ -152,7 +152,7 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
 }
 
 void XftGraphics::drawString(int x, int y, const std::string &str) {
-    if (str.find("LOAD") != std::string::npos) {
+    if (str.find("WLNK") != std::string::npos) {
         logDebug << "draw: '" << str << "'\n"
                  << "fg: " << *_fgxftc << "\n"
                  << "bg: " << *_bgxftc << std::endl;

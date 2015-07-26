@@ -23,12 +23,8 @@ public:
 
     virtual std::string name( void ) const { return "Meter"; }
     virtual void checkevent( void ) = 0;
-    virtual void draw(X11Graphics &g) = 0;
-    virtual void drawLabels(X11Graphics &g);
-    virtual void drawTitle(X11Graphics &g);
-    virtual void drawLegend(X11Graphics &g);
+    virtual void drawLegend(X11Graphics &g); // make this go away
     virtual void checkResources( void );
-
 
     void resize( int x, int y, int width, int height );
     void title( const std::string &title ) { title_ = title; }
@@ -45,7 +41,17 @@ public:
     int getWidth() const { return width_; }
     int getHeight() const { return height_; }
 
-
+    // ----------------------------------------------------
+    // Find some way to prevent anything but immediade
+    // "drawing" sub classes implement these.  Possibly
+    // make a meter drawing base class/interface.
+    // IF YOU ARE NOT A DRAWING METER (draw lines rectanges
+    // etc).  Do not call.
+    // ----------------------------------------------------
+    virtual void draw(X11Graphics &g) = 0;
+    virtual void drawLabels(X11Graphics &g);
+    virtual void drawTitle(X11Graphics &g);
+    // ----------------------------------------------------
 
 protected:
     XOSView *parent_;
@@ -53,6 +59,9 @@ protected:
     int priority_, counter_;
     std::string title_, legend_;
     unsigned long textcolor_;
+
+
+
     double samplesPerSecond(void)
         { return 1.0 * parent_->sampleRate() / priority_; }
 

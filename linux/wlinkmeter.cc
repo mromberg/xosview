@@ -55,7 +55,7 @@ void WLinkMeter::checkevent( void ) {
     else
         setfieldcolor(0, _goodColor);
     if (ocolor != fieldcolor(0))
-        drawLabels(parent_->g());
+        drawLegend(parent_->g());
 
     total_ = 70.0;
     fields_[0] = link;

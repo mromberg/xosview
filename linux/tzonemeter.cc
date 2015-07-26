@@ -69,7 +69,7 @@ void TZoneMeter::checkevent( void ) {
         setfieldcolor(0, _normColor);
 
     if (ocolor != fieldcolor(0))
-        drawLabels(parent_->g());
+        drawLegend(parent_->g());
     setUsed(ctemp, 1.0);
     drawfields(parent_->g());
 }
