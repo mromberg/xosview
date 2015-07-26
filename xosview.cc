@@ -215,8 +215,8 @@ void XOSView::unmapEvent( XUnmapEvent & ){
 
 
 void XOSView::reallydraw( void ){
-    logDebug << "Doing full clear/draw." << std::endl;
-    g().clear();
+    logDebug << "Doing full draw." << std::endl;
+    //g().clear();
 
     for (size_t i = 0 ; i < _meters.size() ; i++)
         _meters[i]->draw(g());

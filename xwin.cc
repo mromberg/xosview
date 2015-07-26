@@ -80,8 +80,8 @@ void XWin::createWindow(void) {
     attr.colormap = colormap_;            amask |= CWColormap;
     attr.border_pixel = fgcolor_;         amask |= CWBorderPixel;
     attr.background_pixel = bgcolor_;     amask |= CWBackPixel;
-    //attr.backing_store = WhenMapped;      amask |= CWBackingStore;
-    attr.bit_gravity = NorthWestGravity;  amask |= CWBitGravity;
+    attr.backing_store = WhenMapped;      amask |= CWBackingStore;
+    attr.bit_gravity = ForgetGravity;     amask |= CWBitGravity;
 
     window_ = XCreateWindow(display_, DefaultRootWindow(display_),
       szHints->x, szHints->y, szHints->width, szHints->height,
