@@ -42,7 +42,10 @@ public:
 
     void flush(void) { XFlush(_dsp); }
 
-    unsigned long allocColor(const std::string &name);
+    static unsigned long allocColor(Display *d, Colormap c,
+      const std::string &color);
+    unsigned long allocColor(const std::string &name)
+        { return allocColor(_dsp, _cmap, name); }
     void setFG(const std::string &color);
     void setFG(unsigned long pixVal);
     void setBG(const std::string &color);
@@ -90,7 +93,6 @@ private:
     XftGraphics *_xftg;
 
     void updateInfo(void); // update _width, _height, _depth
-    unsigned long getPixelValue(const std::string &color) const;
 
     //------------------------------------------------------------
     // Depricated interface

@@ -269,28 +269,12 @@ void XWin::setHints(XSizeHints *szHints){
 }
 
 
-
-
 void XWin::setColors( void ){
-    XColor               color;
+    bgcolor_ = X11Graphics::allocColor(display_, colormap_,
+      getResource("background"));
 
-    // Main window's background color
-    if (XParseColor(display_, colormap_,
-        getResource("background").c_str(),
-        &color) == 0 ||
-      XAllocColor(display_, colormap_, &color) == 0)
-        bgcolor_ = WhitePixel(display_, DefaultScreen(display_));
-    else
-        bgcolor_ = color.pixel;
-
-    // Main window's foreground color */
-    if (XParseColor(display_, colormap_,
-        getResource("foreground").c_str(),
-        &color) == 0 ||
-      XAllocColor(display_, colormap_, &color) == 0)
-        fgcolor_ = BlackPixel(display_, DefaultScreen(display_));
-    else
-        fgcolor_ = color.pixel;
+    fgcolor_ = X11Graphics::allocColor(display_, colormap_,
+      getResource("foreground"));
 }
 
 

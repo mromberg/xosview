@@ -11,44 +11,9 @@
 
 #include <X11/Xft/Xft.h>
 
-//----------------------------------------------------------
-// For debugging
-//----------------------------------------------------------
-inline std::ostream &operator<<(std::ostream &os, const XColor &c) {
-    os << std::hex
-       << "[ "
-       << "( " << std::setw(6) << c.red
-       << ", " << std::setw(6) << c.green
-       << ", " << std::setw(6) << c.blue
-       << " ), "
-       << "flags:" << c.flags << ","
-       << "pad:" << c.pad << ","
-       << "pixel:" << c.pixel
-       << " ]";
-    os << std::dec;
-    return os;
-}
+static std::ostream &operator<<(std::ostream &os, const XRenderColor &c);
+static std::ostream &operator<<(std::ostream &os, const XftColor &c);
 
-inline std::ostream &operator<<(std::ostream &os, const XRenderColor &c) {
-    os << std::hex
-       << "( " << std::setw(6) << c.red
-       << ", " << std::setw(6) << c.green
-       << ", " << std::setw(6) << c.blue
-       << ", " << std::setw(6) << c.alpha
-       << " )";
-    os << std::dec;
-    return os;
-}
-
-inline std::ostream &operator<<(std::ostream &os, const XftColor &c) {
-    os << std::hex
-       << "[ " << c.color
-       << ", " << c.pixel
-       << " ]";
-    os << std::dec;
-    return os;
-}
-//----------------------------------------------------------
 
 
 XftGraphics::XftGraphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
@@ -61,13 +26,19 @@ XftGraphics::XftGraphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
     setFG("white");
 
     if (_isWindow) {
+        logDebug << "XftDrawCreate(): "
+                 << std::hex << std::showbase << _d << std::endl;
         _draw = XftDrawCreate(_dsp, _d, _vis, _cmap);
     }
     else {
         if (depth() == 1) {
+            logDebug << "XftDrawCreateBitmap(): "
+                     << std::hex << std::showbase << _d << std::endl;
             _draw = XftDrawCreateBitmap(_dsp, _d);
         }
         else {
+            logDebug << "XftDrawCreateAlpha(): "
+                     << std::hex << std::showbase << _d << std::endl;
             _draw = XftDrawCreateAlpha(_dsp, _d, depth());
         }
     }
@@ -167,6 +138,11 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
     xrc.blue = premul(def.blue, alpha);
     xrc.alpha = alpha;
 
+    logDebug << "setBG: " << "X pixVal: "
+             << std::hex << std::showbase << pixVal << "\n"
+             << "xcolor: " << def << "\n"
+             << "xftcolor: " << xrc << std::endl;
+
     if (!_bgxftc)
         _bgxftc = new XftColor();
     else
@@ -176,6 +152,51 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
 }
 
 void XftGraphics::drawString(int x, int y, const std::string &str) {
+    if (str.find("LOAD") != std::string::npos) {
+        logDebug << "draw: '" << str << "'\n"
+                 << "fg: " << *_fgxftc << "\n"
+                 << "bg: " << *_bgxftc << std::endl;
+    }
     XftDrawString8(_draw, _fgxftc, _font.font(), x, y,
       (XftChar8 *)str.c_str(), str.size());
 }
+
+
+//----------------------------------------------------------
+// For debugging
+//----------------------------------------------------------
+std::ostream &operator<<(std::ostream &os, const XColor &c) {
+    os << std::hex << std::showbase
+       << "[ "
+       << "( " << std::setw(6) << c.red
+       << ", " << std::setw(6) << c.green
+       << ", " << std::setw(6) << c.blue
+       << " ), "
+       << "flags:" << (unsigned)c.flags << ","
+       << "pad:" << (unsigned)c.pad << ","
+       << "pixel:" << c.pixel
+       << " ]";
+    os << std::dec << std::noshowbase;
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const XRenderColor &c) {
+    os << std::hex << std::showbase
+       << "( " << std::setw(6) << c.red
+       << ", " << std::setw(6) << c.green
+       << ", " << std::setw(6) << c.blue
+       << ", " << std::setw(6) << c.alpha
+       << " )";
+    os << std::dec << std::noshowbase;
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const XftColor &c) {
+    os << std::hex << std::showbase
+       << "[ " << c.color
+       << ", " << c.pixel
+       << " ]";
+    os << std::dec << std::noshowbase;
+    return os;
+}
+//----------------------------------------------------------

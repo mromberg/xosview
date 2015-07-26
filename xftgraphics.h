@@ -19,6 +19,7 @@ typedef _XftColor XftColor;
 
 
 
+
 class XftGraphics {
 public:
     XftGraphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
@@ -57,5 +58,9 @@ private:
     XftColor *_fgxftc;
     XftColor *_bgxftc;
 };
+
+// color printing operators.
+std::ostream &operator<<(std::ostream &os, const XColor &c);
+
 
 #endif

@@ -11,7 +11,11 @@
 #include "xftgraphics.h"
 #endif
 
+#include <iomanip>
+
 std::vector<Pixmap>	X11Graphics::_stipples;
+
+
 
 X11Graphics::X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
   Colormap cmap, unsigned long bgPixVal)
@@ -67,29 +71,26 @@ void X11Graphics::updateInfo(void) {
     }
 }
 
-unsigned long X11Graphics::getPixelValue(const std::string &color) const {
-    // unsigned long val = 0;
-    // if (_pixelCache.map(color, val))
-    //     return val;
-
+unsigned long X11Graphics::allocColor(Display *d, Colormap c,
+  const std::string &color) {
     XColor exact, closest;
 
-    if (XAllocNamedColor(_dsp, _cmap, color.c_str(),
+    if (XAllocNamedColor(d, c, color.c_str(),
         &closest, &exact) == 0) {
         logProblem << "X11Graphics::getPixelValue() : "
                    << "Could not allocate a pixel value for " << color
                    << std::endl;
-        return WhitePixel(_dsp, DefaultScreen(_dsp));
+        return WhitePixel(d, DefaultScreen(d));
     }
 
-    //_pixelCache.add(color, closest.pixel);
+    // logDebug << "alloc: " << color
+    //          << " -> " << closest << std::endl;
 
     return closest.pixel;
 }
 
 
 void X11Graphics::clear(int x, int y, unsigned int width, unsigned int height) {
-    //return;
     if (_isWindow)
         XClearArea(_dsp, _drawable, x, y, width, height, False);
     else {
@@ -103,7 +104,7 @@ void X11Graphics::setFG(const std::string &color) {
     unsigned long pv = 1;
 
     if (_depth > 1)
-        pv = getPixelValue(color);
+        pv = allocColor(color);
 
     setFG(pv);
 }
@@ -117,12 +118,18 @@ void X11Graphics::setBG(const std::string &color) {
     unsigned long pv = 0;
 
     if (_depth > 1)
-        pv = getPixelValue(color);
+        pv = allocColor(color);
+
+    logDebug << "X11Graphics::setBG(): " << color
+             << " -> " << std::hex << std::showbase
+             << pv << std::endl;
 
     setBG(pv);
 }
 
 void X11Graphics::setBG(unsigned long pixVal) {
+    logDebug << "X11Graphics::setBG(): " << std::hex << std::showbase << pixVal
+             << std::endl;
     _bgPixel = pixVal;
     XSetBackground(_dsp, _gc, _bgPixel);
 }
@@ -164,18 +171,6 @@ Pixmap X11Graphics::createPixmap(const std::string &data,
   unsigned int w, unsigned int h) {
     return XCreatePixmapFromBitmapData(_dsp, _drawable,
       const_cast<char *>(data.data()), w, h, 0, 1, 1);
-}
-
-unsigned long X11Graphics::allocColor(const std::string &name) {
-    XColor exact, closest;
-
-    if (XAllocNamedColor(_dsp, _cmap, name.c_str(), &closest, &exact ) == 0) {
-        logProblem << "allocColor() : failed to alloc : "
-                   << name << std::endl;
-        return WhitePixel(_dsp, DefaultScreen(_dsp));
-    }
-
-    return exact.pixel;
 }
 
 void X11Graphics::setFont(const std::string &name) {
