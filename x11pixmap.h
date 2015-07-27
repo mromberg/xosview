@@ -18,17 +18,21 @@ public:
     X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap,
       unsigned long bgPixVal, int width, int height, int depth);
     X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap);
+    X11Pixmap(const X11Pixmap &rhs);
+
     ~X11Pixmap(void);
 
+    X11Pixmap &operator=(const X11Pixmap &rhs);
+
     Pixmap pmap(void) const { return _pmap; }
-    X11Graphics &g(void) { return *_g; }
+    X11Graphics &g(void) const { return *_g; }
 
     int width(void) const { return _width; }
     int height(void) const { return _height; }
 
     void copyTo(X11Graphics &g, int src_x, int src_y,
-      unsigned int width, unsigned int height, int dst_x, int dst_y);
-    void copyTo(X11Graphics &g, int dst_x, int dst_y)
+      unsigned int width, unsigned int height, int dst_x, int dst_y) const;
+    void copyTo(X11Graphics &g, int dst_x, int dst_y) const
         { copyTo(g, 0, 0, _width, _height, dst_x, dst_y); }
 
     bool load(const std::string &fileName, bool logfail=true);
@@ -46,10 +50,7 @@ private:
     void freeObjs(void);
     bool queryDrawable(Drawable d, unsigned int &width, unsigned int &height,
       unsigned int &depth) const;
-
-    // Not implemented
-    X11Pixmap(const X11Pixmap &);
-    X11Pixmap &operator=(const X11Pixmap &);
+    void copy(const X11Pixmap &rhs);
 };
 
 

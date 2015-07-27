@@ -31,9 +31,49 @@ X11Pixmap::X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap)
       _width(0), _height(0) {
 }
 
+
+X11Pixmap::X11Pixmap(const X11Pixmap &rhs)
+    : _pmap(0), _dsp(0), _vis(0), _parent(0), _cmap(0), _g(0),
+      _width(0), _height(0) {
+
+    copy(rhs);
+}
+
+
 X11Pixmap::~X11Pixmap(void) {
     freeObjs();
 }
+
+
+X11Pixmap &X11Pixmap::operator=(const X11Pixmap &rhs) {
+    if (&rhs == this)
+        return *this;
+
+    copy(rhs);
+
+    return *this;
+}
+
+
+void X11Pixmap::copy(const X11Pixmap &rhs) {
+    freeObjs();
+
+    _dsp = rhs._dsp;
+    _vis = rhs._vis;
+    _parent = rhs._parent;
+    _cmap = rhs._cmap;
+
+    unsigned int w, h, depth;
+    queryDrawable(rhs._pmap, w, h, depth);
+    _width = w;
+    _height = h;
+
+    _pmap = XCreatePixmap(_dsp, _parent, _width, _height, depth);
+    _g = new X11Graphics(_dsp, _vis, _pmap, false, _cmap, rhs.g().bgPixel());
+
+    rhs.copyTo(g(), 0, 0, _width, _height, 0, 0);
+}
+
 
 void X11Pixmap::freeObjs(void) {
     delete _g;
@@ -79,7 +119,7 @@ bool X11Pixmap::load(const std::string &fileName, bool logfail) {
 
 
 void X11Pixmap::copyTo(X11Graphics &g, int src_x, int src_y,
-  unsigned int width, unsigned int height, int dst_x, int dst_y) {
+  unsigned int width, unsigned int height, int dst_x, int dst_y) const {
     XCopyArea(g._dsp, _pmap, g._drawable, g._gc, src_x, src_y,
       width, height, dst_x, dst_y);
 }
