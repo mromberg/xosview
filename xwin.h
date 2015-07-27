@@ -155,7 +155,6 @@ private:
     std::vector<XVisualInfo> getVisuals(void);
     XSizeHints *getGeometry(void);
     void setHints(XSizeHints *szHints);
-    std::vector<XEvent> filterQueue(std::vector<XEvent> &queue) const;
 };
 
 #endif
