@@ -40,6 +40,7 @@ X11Graphics::X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
     initStipples();
 }
 
+
 X11Graphics::~X11Graphics(void) {
     logDebug << "~X11Graphics(): " << refCount() << std::endl;
 
@@ -57,6 +58,26 @@ X11Graphics::~X11Graphics(void) {
         XFreeGC(_dsp, _gc);
 }
 
+
+void X11Graphics::clipMask(int x, int y,
+  unsigned int width, unsigned int height) {
+
+    XRectangle rectangle;
+
+    rectangle.x = x;
+    rectangle.y = y;
+    rectangle.width = width;
+    rectangle.height = height;
+
+    XSetClipRectangles(_dsp, _gc, 0, 0, &rectangle, 1, YXBanded);
+}
+
+
+void X11Graphics::unsetClipMask(void) {
+    XSetClipMask(_dsp, _gc, None);
+}
+
+
 void X11Graphics::updateInfo(void) {
     if (_depth && !_isWindow)
         return; // Got it already and it ain't gonna change
@@ -70,6 +91,7 @@ void X11Graphics::updateInfo(void) {
           &_width, &_height, &border, &_depth);
     }
 }
+
 
 unsigned long X11Graphics::allocColor(Display *d, Colormap c,
   const std::string &color) {
@@ -103,6 +125,7 @@ void X11Graphics::clear(int x, int y, unsigned int width, unsigned int height) {
     }
 }
 
+
 void X11Graphics::setFG(const std::string &color) {
     unsigned long pv = 1;
 
@@ -112,10 +135,12 @@ void X11Graphics::setFG(const std::string &color) {
     setFG(pv);
 }
 
+
 void X11Graphics::setFG(unsigned long pixVal) {
     _fgPixel = pixVal;
     XSetForeground(_dsp, _gc, _fgPixel);
 }
+
 
 void X11Graphics::setBG(const std::string &color) {
     unsigned long pv = 0;
@@ -126,10 +151,12 @@ void X11Graphics::setBG(const std::string &color) {
     setBG(pv);
 }
 
+
 void X11Graphics::setBG(unsigned long pixVal) {
     _bgPixel = pixVal;
     XSetBackground(_dsp, _gc, _bgPixel);
 }
+
 
 unsigned int X11Graphics::depth(void) {
     Window root;
@@ -141,6 +168,7 @@ unsigned int X11Graphics::depth(void) {
 
     return depth;
 }
+
 
 void X11Graphics::initStipples(void) {
     if (!_stipples.size()) {

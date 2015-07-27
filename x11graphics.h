@@ -58,6 +58,10 @@ public:
 
     void clear(int x, int y, unsigned int width, unsigned int height);
     void clear(void) { clear(0, 0, _width, _height); }
+
+    void clipMask(int x, int y, unsigned int width, unsigned int height);
+    void unsetClipMask(void);
+
     void drawString(int x, int y, const std::string &str);
     void drawRectangle(int x, int y, unsigned int width, unsigned int height);
     void drawFilledRectangle(int x, int y,
