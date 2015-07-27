@@ -26,7 +26,7 @@ XWin::XWin()
     : _graphics(0), done_(false),
       wm_(None), wmdelete_(None), x_(0), y_(0), width_(1), height_(1),
       visual_(0), display_(0), window_(0), fgcolor_(0), bgcolor_(0),
-      colormap_(0), _dbe(false), _bb(0), _bgw(0) {
+      colormap_(0), _dbe(false), _bb(0) {
 }
 
 
@@ -39,8 +39,6 @@ XWin::~XWin( void ){
     if (_dbe && _bb)
         XdbeDeallocateBackBufferName(display_, _bb);
 #endif
-    if (_bgw)
-        XDestroyWindow( display_, _bgw );
 
     XDestroyWindow( display_, window_ );
     // close the connection to the display
@@ -86,14 +84,7 @@ void XWin::createWindow(void) {
     window_ = XCreateWindow(display_, DefaultRootWindow(display_),
       szHints->x, szHints->y, szHints->width, szHints->height,
       0, vinfo->depth, InputOutput, visual_, amask, &attr);
-    if (_dbe) {
-        // Make a "stealth" companion window that is never
-        // mapped.  It exists to hold the background pixmap (if any)
-        // So, we can use an alternative to XClearArea().
-        _bgw = XCreateWindow(display_, DefaultRootWindow(display_),
-          szHints->x, szHints->y, szHints->width, szHints->height,
-          0, vinfo->depth, InputOutput, visual_, amask, &attr);
-    }
+
     XFree(vinfo);
 
 #ifdef HAVE_DBE
@@ -112,21 +103,6 @@ void XWin::createWindow(void) {
     XFree(szHints);
     szHints = 0;
 
-    // Pixmap backgrounds
-    std::string pixmapFName = getResourceOrUseDefault("pixmapName", "");
-    X11Pixmap x11p(display_, visual_, window_, colormap_);
-    if (pixmapFName.size() && x11p.load(pixmapFName)) {
-	XSetWindowBackgroundPixmap(display_, window_, x11p.pmap());
-        if (_bgw)
-            XSetWindowBackgroundPixmap(display_, _bgw, x11p.pmap());
-    }
-
-    if(isResourceTrue("transparent")) {
-        XSetWindowBackgroundPixmap(display_, window_, ParentRelative);
-        if (_bgw)
-            XSetWindowBackgroundPixmap(display_, _bgw, ParentRelative);
-    }
-
     // Create Graphics interface.
     _graphics = new X11Graphics(display_, visual_, _bb, true, colormap_,
       bgcolor_);
@@ -135,13 +111,23 @@ void XWin::createWindow(void) {
     g().setFG(fgcolor_);
     g().setStippleMode(isResourceTrue("enableStipple"));
 
+    // Pixmap backgrounds
+    std::string pixmapFName = getResourceOrUseDefault("pixmapName", "");
+    X11Pixmap x11p(display_, visual_, window_, colormap_);
+    if (pixmapFName.size() && x11p.load(pixmapFName)) {
+	XSetWindowBackgroundPixmap(display_, window_, x11p.pmap());
+    }
+
+    if(isResourceTrue("transparent")) {
+        XSetWindowBackgroundPixmap(display_, window_, ParentRelative);
+    }
+
     // add the events
     for (size_t i = 0 ; i < events_.size() ; i++)
         selectEvents(events_[i].mask_);
 
     // Map the main window
     map();
-    //g().flush();
 }
 
 
