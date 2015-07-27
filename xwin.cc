@@ -127,17 +127,17 @@ void XWin::createWindow(void) {
             XSetWindowBackgroundPixmap(display_, _bgw, ParentRelative);
     }
 
-    // add the events
-    for (size_t i = 0 ; i < events_.size() ; i++)
-        selectEvents(events_[i].mask_);
-
-    // Create new Graphics interface.
+    // Create Graphics interface.
     _graphics = new X11Graphics(display_, visual_, _bb, true, colormap_,
       bgcolor_);
     g().setFont(getResource("font"));
     g().setBG(bgcolor_);
     g().setFG(fgcolor_);
     g().setStippleMode(isResourceTrue("enableStipple"));
+
+    // add the events
+    for (size_t i = 0 ; i < events_.size() ; i++)
+        selectEvents(events_[i].mask_);
 
     // Map the main window
     map();
@@ -357,7 +357,7 @@ void XWin::checkevent( void ){
         XEvent event;
         XNextEvent(display_, &event);
 
-        logDebug << "EVENT: " << event << std::endl;
+        logDebug << "XWin::checkevent *** : " << event << std::endl;
 
         for (size_t j = 0 ; j < events_.size() ; j++) {
             events_[j].callBack(event);
