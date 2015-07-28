@@ -50,6 +50,7 @@ public:
     void setFG(unsigned long pixVal);
     void setBG(const std::string &color);
     void setBG(unsigned long pixVal);
+    void setBG(const X11Pixmap &pmap);
     unsigned long fgPixel(void) const { return _fgPixel; }
     unsigned long bgPixel(void) const { return _bgPixel; }
 
@@ -91,6 +92,7 @@ private:
     unsigned int _depth;
     unsigned long _fgPixel;
     unsigned long _bgPixel;
+    X11Pixmap *_bgPixmap;
     unsigned int _width;
     unsigned int _height;
     XOSVFont *_font;
@@ -118,7 +120,9 @@ inline void X11Graphics::drawRectangle(int x, int y,
 
 inline void X11Graphics::drawFilledRectangle(int x, int y,
   unsigned int width, unsigned int height) {
-    XFillRectangle(_dsp, _drawable, _gc, x, y, width + 1, height + 1);
+    // Add one to match XDrawRectangle()  the fill width/height is one short
+    // by design.  The design is stupid.
+    XFillRectangle(_dsp, _drawable, _gc, x, y, width+1, height+1);
 }
 
 inline void X11Graphics::setStipple(Pixmap stipple) {

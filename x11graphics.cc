@@ -6,6 +6,7 @@
 //
 #include "x11graphics.h"
 #include "log.h"
+#include "x11pixmap.h"
 #include "x11font.h"
 #ifdef HAVE_XFT
 #include "xftgraphics.h"
@@ -21,7 +22,8 @@ X11Graphics::X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
   Colormap cmap, unsigned long bgPixVal)
     : _dsp(dsp), _drawable(d), _isWindow(isWindow), _cmap(cmap),
       _gc(0), _depth(0),
-      _fgPixel(0), _bgPixel(bgPixVal), _width(0), _height(0), _font(0),
+      _fgPixel(0), _bgPixel(bgPixVal), _bgPixmap(0),
+      _width(0), _height(0), _font(0),
       _xftg(0), _doStippling(false) {
 #if HAVE_XFT
     _xftg = new XftGraphics(_dsp, v, _drawable, _isWindow, _cmap, _bgPixel);
@@ -50,6 +52,8 @@ X11Graphics::~X11Graphics(void) {
     delete _font;
 #endif
 
+    delete _bgPixmap;
+
     // The refCount is used to free global cached stipples
     refCount()--;
     releaseStipples();
@@ -66,10 +70,11 @@ void X11Graphics::clipMask(int x, int y,
 
     rectangle.x = x;
     rectangle.y = y;
-    rectangle.width = width;
-    rectangle.height = height;
+    // Add one to match XDrawRectangle
+    rectangle.width = width + 1;
+    rectangle.height = height + 1;
 
-    XSetClipRectangles(_dsp, _gc, 0, 0, &rectangle, 1, YXBanded);
+    XSetClipRectangles(_dsp, _gc, 0, 0, &rectangle, 1, YSorted);
 }
 
 
@@ -112,15 +117,29 @@ unsigned long X11Graphics::allocColor(Display *d, Colormap c,
 }
 
 
+void X11Graphics::setBG(const X11Pixmap &pmap) {
+    delete _bgPixmap;
+    _bgPixmap = new X11Pixmap(pmap);
+}
+
+
 void X11Graphics::clear(int x, int y, unsigned int width, unsigned int height) {
-    // XClearArea is disabled because it does
-    // not work with drawing to offscreen buffers.
-    // FIXME: find some way to draw a pixmap background for clearing
-    if (false && _isWindow)
-        XClearArea(_dsp, _drawable, x, y, width, height, False);
+
+    if (_bgPixmap) {
+        clipMask(x, y, width, height);
+
+        unsigned int j = 0;
+        while (j <= _height) {
+            for (unsigned int i = 0 ; i <= _width ; i += _bgPixmap->width())
+                _bgPixmap->copyTo(*this, i, j);
+            j += _bgPixmap->height();
+        }
+
+        unsetClipMask();
+    }
     else {
         XSetForeground(_dsp, _gc, _bgPixel);
-        XFillRectangle(_dsp, _drawable, _gc, x, y, width, height);
+        XFillRectangle(_dsp, _drawable, _gc, x, y, width+1, height+1);
         XSetForeground(_dsp, _gc, _fgPixel);
     }
 }

@@ -122,15 +122,13 @@ void FieldMeter::drawLegend(X11Graphics &g) {
     // So make the text draw on y_ - 1 - desent of the text (y=0 is top of)
     //
     // x + textWidth() is the location to start the next glyph
-    //
-    // And something funky is going on (I think) with the width
-    // height of rectangles/clear areas.  off by one.
+
     size_t pos = 0;
     int x = x_;
-    int y = y_ - 1 - g.textDescent() - 1; // the bonus -1 I can't explain
+    int y = y_ - 2 - g.textDescent();
 
     g.clear(x, y - g.textAscent(), g.textWidth(legend()),
-      g.textHeight()+1); // again the bonus + 1 is a mystery
+      g.textHeight());
 
     for (unsigned int i = 0 ; i < numfields() ; i++) {
         size_t fpos = legend_.find("/", pos); // string::npos if not found
@@ -235,18 +233,14 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
 
     unsigned int twidth = g.textWidth(buf);
     unsigned int cwidth = std::max(g.textWidth(_lastUsedStr), twidth);
-    unsigned int sheight = g.textAscent();
-    int sx = x_ - (cwidth + 2);
+    unsigned int sheight = g.textHeight();
+    int sx = x_ - (cwidth + 2) - 1;
     int tx = x_ - (twidth + 2);
     int sy = y_ + height_ + 1;
 
-    g.clear(sx, sy-g.textAscent(), cwidth+1, sheight+1);
-    g.setFG( usedcolor_ );
+    g.clear(sx, sy-g.textAscent(), cwidth, sheight);
 
-    // drawing text is expensive on the X server
-    // If this message is too annoying someting is drawing too much
-    // uncomment to check
-    //logDebug << "draw used: " << name() << std::endl;
+    g.setFG( usedcolor_ );
     g.drawString( tx, sy, buf);
 
     _lastUsedStr = buf;

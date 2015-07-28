@@ -115,7 +115,8 @@ void XWin::createWindow(void) {
     std::string pixmapFName = getResourceOrUseDefault("pixmapName", "");
     X11Pixmap x11p(display_, visual_, window_, colormap_);
     if (pixmapFName.size() && x11p.load(pixmapFName)) {
-	XSetWindowBackgroundPixmap(display_, window_, x11p.pmap());
+        g().setBG(x11p);
+	//XSetWindowBackgroundPixmap(display_, window_, x11p.pmap());
     }
 
     if(isResourceTrue("transparent")) {
