@@ -65,7 +65,6 @@ protected:
     void loop(void);
     void loadConfiguration(int argc, char **argv);
     void setCommandLineArgs(util::CLOpts &o);
-    void reallydraw(void);
     void draw(void);
     virtual std::string className(void) { return _xrm->className(); }
     virtual std::string instanceName(void) { return _xrm->instanceName(); }
@@ -87,7 +86,9 @@ protected:
 
 private:
     double _sampleRate; // samples/sec
+    bool _doFullDraw;   // schedule full clear/draw
 
+    void scheduleDraw(bool full) { _doFullDraw = full; }
     void slumber(void) const;
     void usleep_via_select(unsigned long usec);
 };

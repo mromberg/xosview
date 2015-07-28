@@ -340,6 +340,8 @@ void XWin::ignoreEvents( long mask ){
 
 void XWin::checkevent( void ){
 
+    if (XEventsQueued(display_, QueuedAfterReading))
+        logDebug << "++++++++++++ event sequence +++++++++++++" << std::endl;
     while (XEventsQueued(display_, QueuedAfterReading)) {
         XEvent event;
         XNextEvent(display_, &event);
@@ -351,6 +353,9 @@ void XWin::checkevent( void ){
             if (done())
                 return;
         }
+
+        if (!XEventsQueued(display_, QueuedAfterReading))
+            logDebug << "------------ event sequence -------------" << std::endl;
     }
 }
 
@@ -367,24 +372,6 @@ void XWin::configureEvent( XEvent &event ){
     y( event.xconfigure.y );
     width( event.xconfigure.width );
     height( event.xconfigure.height );
-    if ((width() != origw) || (height() != origh)) {
-        logDebug << "XWin::configureEvent(): Dimension change.  CLEAR"
-                 << std::endl;
-        logDebug << std::hex << std::showbase
-                 << "Window ID: " << window_ << ", "
-                 << "BB ID: " << _bb << std::endl;
-        XClearWindow(display_, window_);
-
-        if (_dbe) {
-            // The DBE back buffer is not being cleared by the above
-            // XClearWindow() like the docs say.  This seems to do it.
-            logDebug << "DBE Swap (XdbeBackground)." << std::endl;
-            XdbeSwapInfo swinfo;
-            swinfo.swap_window = window_;
-            swinfo.swap_action = XdbeBackground;
-            XdbeSwapBuffers(display_, &swinfo, 1);
-        }
-    }
 }
 
 

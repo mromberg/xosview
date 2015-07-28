@@ -31,7 +31,8 @@ XOSView::XOSView(void)
       xoff_(0), yoff_(0),
       hmargin_(0), vmargin_(0), vspacing_(0),
       sleeptime_(1), usleeptime_(1000),
-      _isvisible(false), _ispartiallyvisible(false), _sampleRate(10) {
+      _isvisible(false), _ispartiallyvisible(false), _sampleRate(10),
+      _doFullDraw(true) {
 }
 
 
@@ -64,7 +65,9 @@ void XOSView::run(int argc, char **argv) {
 void XOSView::loop(void) {
 
     while( !done() ){
+        _doFullDraw = false;
         checkevent();
+
         if (done()) {
             logDebug << "checkevent() set done" << std::endl;
             break; // XEvents can set this
@@ -76,6 +79,9 @@ void XOSView::loop(void) {
                     _meters[i]->checkevent();
             }
         }
+
+        if (_doFullDraw)
+            draw();
 
         swapBB();
         g().flush();
@@ -174,9 +180,8 @@ void XOSView::keyPressEvent( XKeyEvent &event ){
 void XOSView::exposeEvent( XExposeEvent &event ) {
     logDebug << "XOSView::exposeEvent(): count=" << event.count << std::endl;
     _isvisible = true;
-    if ( event.count == 0 ) {
-        draw();
-    }
+    if ( event.count == 0 )
+        scheduleDraw(true);
 }
 
 
@@ -214,18 +219,14 @@ void XOSView::unmapEvent( XUnmapEvent & ){
 }
 
 
-void XOSView::reallydraw( void ){
-    logDebug << "Doing full draw." << std::endl;
-    g().clear();
-
-    for (size_t i = 0 ; i < _meters.size() ; i++)
-        _meters[i]->draw(g());
-}
-
-
 void XOSView::draw ( void ) {
-    if (isAtLeastPartiallyVisible())
-        reallydraw();
+    if (isAtLeastPartiallyVisible()) {
+        logDebug << "Doing full clear/draw." << std::endl;
+        g().clear();
+
+        for (size_t i = 0 ; i < _meters.size() ; i++)
+            _meters[i]->draw(g());
+    }
     else {
         logDebug << "********** FIXME ************\n";
         logDebug << "DRAW CALLED WHILE NOT VISIBLE\n";
