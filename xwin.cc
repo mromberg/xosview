@@ -366,8 +366,6 @@ void XWin::addEvent(int eventType, XWin *xwin, EventCallBack callBack){
 
 
 void XWin::configureEvent( XEvent &event ){
-    unsigned int origw = width();
-    unsigned int origh = height();
     x( event.xconfigure.x );
     y( event.xconfigure.y );
     width( event.xconfigure.width );

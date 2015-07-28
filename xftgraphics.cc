@@ -24,6 +24,7 @@ XftGraphics::XftGraphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
 
     setBG(bgPixVal);
     setFG("white");
+    logDebug << "XftGraphics: fg: " << *_fgxftc << ", bg: " << *_bgxftc << "\n";
 
     if (_isWindow) {
         logDebug << "XftDrawCreate(): "
