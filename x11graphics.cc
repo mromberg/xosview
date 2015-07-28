@@ -126,21 +126,28 @@ void X11Graphics::setBG(const X11Pixmap &pmap) {
 void X11Graphics::clear(int x, int y, unsigned int width, unsigned int height) {
 
     if (_bgPixmap) {
+        // Set a "stencil" clipmask and then stamp the pixmap tiles
+        // that overlap the clear area.
         clipMask(x, y, width, height);
 
-        unsigned int j = 0;
-        while (j <= _height) {
-            for (unsigned int i = 0 ; i <= _width ; i += _bgPixmap->width())
-                _bgPixmap->copyTo(*this, i, j);
-            j += _bgPixmap->height();
-        }
+        // calculate the box in "tile" coordinates
+        int tx1 = x / _bgPixmap->width();
+        int tx2 = ((x + width) / _bgPixmap->width()) + 1;
+        int ty1 = y / _bgPixmap->height();
+        int ty2 = ((y + height) / _bgPixmap->height()) + 1;
+
+        for (int i = tx1 ; i <= tx2 ; i++)
+            for (int j = ty1 ; j <= ty2 ; j++)
+                _bgPixmap->copyTo(*this, i * _bgPixmap->width(),
+                  j * _bgPixmap->height());
 
         unsetClipMask();
     }
     else {
-        XSetForeground(_dsp, _gc, _bgPixel);
-        XFillRectangle(_dsp, _drawable, _gc, x, y, width+1, height+1);
-        XSetForeground(_dsp, _gc, _fgPixel);
+        unsigned long fgPix = fgPixel();
+        setFG(_bgPixel);
+        drawFilledRectangle(x, y, width, height);
+        setFG(fgPix);
     }
 }
 
