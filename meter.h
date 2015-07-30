@@ -22,11 +22,8 @@ public:
     virtual ~Meter( void );
 
     virtual std::string name( void ) const { return "Meter"; }
-    virtual void checkevent( void ) = 0;
-    virtual void drawLegend(X11Graphics &g); // make this go away
-    virtual void checkResources( void );
 
-    void resize( int x, int y, int width, int height );
+    virtual void checkResources( void );
     void title( const std::string &title ) { title_ = title; }
     const std::string &title( void ) const { return title_; }
     void legend( const std::string &legend ) { legend_ = legend; }
@@ -34,7 +31,8 @@ public:
     void docaptions(bool val ) { docaptions_ = val; }
     void dolegends(bool val) { dolegends_ = val; }
     void dousedlegends(bool val) { dousedlegends_ = val; }
-    bool requestevent(void);
+
+    virtual void checkevent( void ) = 0;
 
     int getX() const { return x_; }
     int getY() const { return y_; }
@@ -51,6 +49,10 @@ public:
     virtual void draw(X11Graphics &g) = 0;
     virtual void drawLabels(X11Graphics &g);
     virtual void drawTitle(X11Graphics &g);
+    virtual void drawLegend(X11Graphics &g); // make this go away
+
+    bool requestevent(void);  // if true wants to sample at this tick
+    void resize( int x, int y, int width, int height );
     // ----------------------------------------------------
 
 protected:
