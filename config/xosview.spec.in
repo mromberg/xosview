@@ -25,7 +25,7 @@ It attempts to show you in a quick glance an overview of how
 your system resources are being utilized.
 
 %prep
-%setup -q -n xosview-1.8.4
+%setup -q -n @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
 %build
 configure --prefix=/usr
@@ -50,7 +50,7 @@ echo "RERUN createrepo -c cache_dir --update ~/rpmbuild/RPMS if --sign used"
 %{_bindir}/*
 %{_mandir}/man1/*
 %{_datadir}/X11/app-defaults/*
-%{_docdir}/xosview/*
+%{_docdir}/@PACKAGE_TARNAME@/*
 
 %changelog
 * Sat Jul 11 2015 Mike Romberg <mike-romerg@comcast.net> 2.8-1
