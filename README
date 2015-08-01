@@ -26,8 +26,11 @@
 
   - Solaris (tested on OpenIndiana)
 
-  - NetBSD (6.1.5) but most anything with the /proc file-system should
-    work as well.  BSDs lacking /proc... not so much.
+  - NetBSD (6.1.5)
+
+  - FreeBSD
+
+  - OpenBSD
 
 * To build xosview:
 

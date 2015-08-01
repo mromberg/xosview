@@ -1,11 +1,16 @@
 README file for xosview BSD
 
   In the past xosview has run on several variants of BSD.
-At the moment, it is only known to run on one.  NetBSD.  And
-NetBSD-6.5.1 in particular.  If I have time, I may try others variants.
-Patches are always welcome :).
+
 
 NetBSD-specific:
+
+  These notes mainly apply to the files found in the netbsd subdirectory.
+It was an experiment in using the /proc filesystem so as to eliminate
+the need for running xosview sgid kmem.  Since this experiment was done
+the code from Mark Hills xosview branch was brought in.  So, all bsd
+variants use the kstats library to get information.  It may still be worthwhile
+to use /proc if it is available.
 
   Since xosview was written many changes occurred in the kernel and the
 interface used to gather information no longer works.  Early work on
