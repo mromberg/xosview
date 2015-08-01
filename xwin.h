@@ -126,6 +126,7 @@ private:
     unsigned long bgcolor_;       //  Background color of the window
     Colormap      colormap_;      //  The colormap
     std::vector<Event>  events_;  //  List of Events for this window
+    bool          _transparent;   //  If true has an ARGB visual
     bool          _dbe;           //  If true use double buffering
     Drawable      _bb;            //  The DBE back buffer
 

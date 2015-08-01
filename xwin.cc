@@ -26,7 +26,7 @@ XWin::XWin()
     : _graphics(0), done_(false),
       wm_(None), wmdelete_(None), x_(0), y_(0), width_(1), height_(1),
       visual_(0), display_(0), window_(0), fgcolor_(0), bgcolor_(0),
-      colormap_(0), _dbe(false), _bb(0) {
+      colormap_(0), _transparent(false), _dbe(false), _bb(0) {
 }
 
 
@@ -41,6 +41,11 @@ XWin::~XWin( void ){
 #endif
 
     XDestroyWindow( display_, window_ );
+
+    if (XVisualIDFromVisual(visual_)
+      != XVisualIDFromVisual(DefaultVisual(display_, screen())))
+        XFreeColormap(display_, colormap_);
+
     // close the connection to the display
     XCloseDisplay( display_ );
 }
@@ -58,8 +63,6 @@ void XWin::openDisplay( void ){
 
 void XWin::createWindow(void) {
 
-    visual_ = getVisual();
-    colormap_ = DefaultColormap( display_, screen() );
     setColors();
 
     XSizeHints *szHints = getGeometry();
@@ -76,7 +79,7 @@ void XWin::createWindow(void) {
     XSetWindowAttributes attr;
     unsigned long amask = 0;
     attr.colormap = colormap_;            amask |= CWColormap;
-    attr.border_pixel = fgcolor_;         amask |= CWBorderPixel;
+    attr.border_pixel = bgcolor_;         amask |= CWBorderPixel;
     attr.background_pixel = bgcolor_;     amask |= CWBackPixel;
     attr.backing_store = WhenMapped;      amask |= CWBackingStore;
     attr.bit_gravity = ForgetGravity;     amask |= CWBitGravity;
@@ -114,14 +117,8 @@ void XWin::createWindow(void) {
     // Pixmap backgrounds
     std::string pixmapFName = getResourceOrUseDefault("pixmapName", "");
     X11Pixmap x11p(display_, visual_, window_, colormap_);
-    if (pixmapFName.size() && x11p.load(pixmapFName)) {
+    if (pixmapFName.size() && x11p.load(pixmapFName))
         g().setBG(x11p);
-	//XSetWindowBackgroundPixmap(display_, window_, x11p.pmap());
-    }
-
-    if(isResourceTrue("transparent")) {
-        XSetWindowBackgroundPixmap(display_, window_, ParentRelative);
-    }
 
     // add the events
     for (size_t i = 0 ; i < events_.size() ; i++)
@@ -134,11 +131,25 @@ void XWin::createWindow(void) {
 
 Visual *XWin::getVisual(void) {
 
-    Visual *defaultVisual = DefaultVisual(display_, screen());
-    _dbe = isDBE(defaultVisual);
+    Visual *rval = DefaultVisual(display_, screen());
+
+    if(isResourceTrue("transparent")) {
+        XVisualInfo vinfo;
+        if (XMatchVisualInfo(display_, DefaultScreen(display_),
+            32, TrueColor, &vinfo)) {
+            logDebug << "Found 32 bit ARGB visual: "
+                     << std::hex << std::showbase
+                     << vinfo.visualid << std::endl;
+            _transparent = true;
+            rval = vinfo.visual;
+        }
+    }
+
+    _dbe = isDBE(rval);
     if (_dbe)
         logDebug << "Enabling DBE..." << std::endl;
-    return defaultVisual;
+
+    return rval;
 }
 
 
@@ -256,8 +267,21 @@ void XWin::setHints(XSizeHints *szHints){
 
 
 void XWin::setColors( void ){
-    bgcolor_ = X11Graphics::allocColor(display_, colormap_,
-      getResource("background"));
+
+    visual_ = getVisual();
+
+    if (XVisualIDFromVisual(visual_)
+      == XVisualIDFromVisual(DefaultVisual(display_, screen())))
+        colormap_ = DefaultColormap( display_, screen() );
+    else
+        colormap_ = XCreateColormap(display_, DefaultRootWindow(display_),
+          visual_, AllocNone);
+
+    if(_transparent)
+        bgcolor_ = 0;
+    else
+        bgcolor_ = X11Graphics::allocColor(display_, colormap_,
+          getResource("background"));
 
     fgcolor_ = X11Graphics::allocColor(display_, colormap_,
       getResource("foreground"));
@@ -355,7 +379,8 @@ void XWin::checkevent( void ){
         }
 
         if (!XEventsQueued(display_, QueuedAfterReading))
-            logDebug << "------------ event sequence -------------" << std::endl;
+            logDebug << "------------ event sequence -------------"
+                     << std::endl;
     }
 }
 
@@ -495,7 +520,7 @@ std::vector<XVisualInfo> XWin::getVisuals(void) {
 //-------------------------------------------------------------------
 std::string XWin::getResource(const std::string &name) {
     if (name == "transparent")
-        return "True";
+        return "False";
     else if (name == "enableStipple")
         return "True";
     else if (name == "font")

@@ -1,14 +1,10 @@
-=========== For 1.20.0
+=========== For 2.0.0
 
 - Update SF website
 
-sunos5/MeterMaker.cc
-
-===================== Post 1.20.0
+===================== Post 2.0.0
 
 - Make some base classes for the shared linux/bsd meters
-
-- 32 bit truecolor transparency
 
 - Make all data gathering classes interact through a clear interface.
 
@@ -21,8 +17,6 @@ sunos5/MeterMaker.cc
   like drawfields() drawlegend() etc only if the values have not changed.
   This way the leaf classes just gather stats and report back.  But don't
   worry about display.
-
-- Transparent almost works.  Windom moves do not update the background
 
 - Pass a Graphics to checkResources
 

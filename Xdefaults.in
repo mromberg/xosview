@@ -182,7 +182,7 @@ xosview*irqrate:	    True
 xosview*irqrateUsedColor:   #56E67B
 xosview*irqrateIdleColor:   #03315E
 xosview*irqratePriority:    4
-xosview*irqratePeak:        100  # irq/sec
+xosview*irqratePeak:        100  ! irq/sec
 xosview*irqrateUsedFormat:  autoscale
 xosview*irqrateUsedDecay:   True
 xosview*irqrateDecay:       True

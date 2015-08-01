@@ -1,6 +1,8 @@
 Changes since xosview-1.8.4
 
-  - Double buffered redering via the Xdbe library/extenstion
+  - 32 bit ARGB transparency.
+
+  - Double buffered redering via the Xdbe extenstion
 
   - Add some experimental themes.
 
