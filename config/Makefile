@@ -11,7 +11,7 @@ all: ../configure ../config.h.in ../xosview.spec
 ../config.h.in: configure.in *.m4
 	autoheader && mv -f config.h.in ..
 
-../xosview.spec: xosview.spec.in configure.in
+../xosview.spec: xosview.spec.in configure.in makespec.sh
 	./makespec.sh > ../xosview.spec
 
 clean:

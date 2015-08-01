@@ -3,7 +3,7 @@
 #  repository.  It may be usefule to look at for build
 #  dependencies and installed files.
 #-----------------------------------------------------------
-Name:           xosview
+Name:           @PACKAGE_TARNAME@
 Version:        @PACKAGE_VERSION@
 Release:        1%{?dist}
 Summary:        System resource monitor
@@ -12,8 +12,8 @@ License:        GPLv2, BSD
 # RPM ingnores everything on the Source: line up to the last file name
 # which must match the file to find in the SOURCES dir. RPM lint checks it.
 # This is a perfect example of trying to overload one thing to do two jobs.
-#Source: http://sourceforge.net/projects/gfed/files/1.2.0/gfe-1.2.0.tar.gz/download
-Source: xosview-1.8.4.tar.gz
+#Source: http://sourceforge.net/projects/xosview/files/
+Source: @PACKAGE_TARNAME@-@PACKAGE_VERSION@.tar.gz
 URL: https://sourceforge.net/projects/xosview/files/latest/download
 
 BuildRequires: gawk libXext-devel gcc-c++ libXft-devel libXpm-devel
@@ -47,9 +47,9 @@ echo "RERUN createrepo -c cache_dir --update ~/rpmbuild/RPMS if --sign used"
 
 %files
 %defattr(-,root,root,-)
-%{_bindir}/xosview
-%{_mandir}/man1/xosview.1.gz
-%{_datadir}/X11/app-defaults/XOsview
+%{_bindir}/*
+%{_mandir}/man1/*
+%{_datadir}/X11/app-defaults/*
 %{_docdir}/xosview/*
 
 %changelog

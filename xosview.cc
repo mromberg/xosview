@@ -288,7 +288,7 @@ void XOSView::loadConfiguration(int argc, char **argv) {
     //...............................................
     // X resources
     //...............................................
-    _xrm = new Xrm("xosview", clopts.value("name", "xosview"));
+    _xrm = new Xrm(PACKAGE_CLASSNAME, clopts.value("name", "xosview"));
 
     //  Open the Display and load the X resources
     setDisplayName(clopts.value("displayName", ""));

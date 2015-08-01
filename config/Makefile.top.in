@@ -115,6 +115,7 @@ INSTALL            = @INSTALL@
 # Gnu Makefile conventions (subset really)
 #-----------------------------------------------
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_CLASSNAME = @PACKAGE_CLASSNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -133,18 +134,22 @@ srcdir = @srcdir@
 CXXFLAGS += -DXAPPLOADDIR=\"$(xapploaddir)\"
 DOC_FILES = @DOC_FILES@
 DOC_FILES := $(DOC_FILES:%=$(srcdir)/%)
+
 #-----------------------------------------------------------------------
 # New install (DESTDIR) in a gnu convention that only applies to install
 #-----------------------------------------------------------------------
-install: xosview
-	$(INSTALL) -d $(DESTDIR)$(bindir) $(DESTDIR)$(man1dir)\
+INST_DIRS = $(DESTDIR)$(bindir) $(DESTDIR)$(man1dir)\
             $(DESTDIR)$(docdir) $(DESTDIR)$(xapploaddir)
-	$(INSTALL) -m 0755 $(srcdir)/xosview $(DESTDIR)$(bindir)/xosview
-	$(INSTALL) -m 0644 $(srcdir)/xosview.1 $(DESTDIR)$(man1dir)/xosview.1
-	$(INSTALL) -m 0644 $(DOC_FILES) $(DESTDIR)$(docdir)/
-	$(INSTALL) -m 0644 $(srcdir)/Xdefaults\
-            $(DESTDIR)$(xapploaddir)/XOsview
+BIN_FNAME = $(DESTDIR)$(bindir)/$(PACKAGE_TARNAME)
+MAN_FNAME = $(DESTDIR)$(man1dir)/$(PACKAGE_TARNAME).1
+RES_FNAME = $(DESTDIR)$(xapploaddir)/$(PACKAGE_CLASSNAME)
 
+install: xosview
+	$(INSTALL) -d $(INST_DIRS)
+	$(INSTALL) -m 0755 $(srcdir)/xosview $(BIN_FNAME)
+	$(INSTALL) -m 0644 $(srcdir)/xosview.1 $(MAN_FNAME)
+	$(INSTALL) -m 0644 $(DOC_FILES) $(DESTDIR)$(docdir)/
+	$(INSTALL) -m 0644 $(srcdir)/Xdefaults $(RES_FNAME)
 
 #-------------------------------------------------------
 

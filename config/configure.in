@@ -1,7 +1,7 @@
 #!/bin/bash
 AC_INIT([xosview],[1.8.4],
         [https://sourceforge.net/p/xosview/_list/tickets],
-        [xosview],
+        [xosview2],
         [http://sourceforge.net/projects/xosview/])
 AC_CONFIG_HEADERS(config.h:config.h.in)
 AC_CONFIG_AUX_DIR(config)
@@ -176,10 +176,23 @@ case $host_os in
         ;;
 esac
 
+
+#
+# Set the X resource class name based on the PACKAGE_TARNAME
+# (first two letters capitalized. This is the X11 standard)
+#
+xclass_first=`echo $PACKAGE_TARNAME | cut -c1-2 | tr [a-z] [A-Z]`
+xclass_second=`echo $PACKAGE_TARNAME | cut -c3-`
+PACKAGE_CLASSNAME="$xclass_first$xclass_second"
+AC_DEFINE_UNQUOTED([PACKAGE_CLASSNAME],["$PACKAGE_CLASSNAME"],dnl
+    [X11 resource class name])
+
+
 #
 # The netbsd and linux ports modify these variables which
 # are exported by AC_OUTPUT.
 #
+AC_SUBST(PACKAGE_CLASSNAME)
 AC_SUBST(XFT_OBJS)
 AC_SUBST(XOSV_FONT)
 AC_SUBST(BTRYMETER)
