@@ -26,8 +26,9 @@ public:
     virtual void checkResources( void );
     void title( const std::string &title ) { title_ = title; }
     const std::string &title( void ) const { return title_; }
-    void legend( const std::string &legend ) { legend_ = legend; }
+    void legend( const std::string &legend, const std::string &delimiter="/" );
     const std::string &legend( void ) const { return legend_; }
+    const std::string &legendDelimiter(void) const { return _legendDelimiter; }
     void docaptions(bool val ) { docaptions_ = val; }
     void dolegends(bool val) { dolegends_ = val; }
     void dousedlegends(bool val) { dousedlegends_ = val; }
@@ -80,6 +81,7 @@ private:
     // Child classes were caught creating their own
     // setters for these.  So...
     bool docaptions_, dolegends_, dousedlegends_, metric_;
+    std::string _legendDelimiter;
 };
 
 
@@ -87,6 +89,14 @@ inline bool Meter::requestevent( void ){
     logAssert(priority_ != 0) << "meter " << name() << " invalid priority\n";
     counter_ = (counter_ + 1) % priority_;
     return !counter_;
+}
+
+
+inline void Meter::legend( const std::string &legend,
+  const std::string &delimiter ) {
+    legend_ = legend;
+    _legendDelimiter = delimiter;
+    logAssert(_legendDelimiter.size() == 1) << "delimiter not 1 char string\n";
 }
 
 #endif

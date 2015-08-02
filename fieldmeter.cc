@@ -131,7 +131,8 @@ void FieldMeter::drawLegend(X11Graphics &g) {
       g.textHeight());
 
     for (unsigned int i = 0 ; i < numfields() ; i++) {
-        size_t fpos = legend_.find("/", pos); // string::npos if not found
+        // string::npos if not found
+        size_t fpos = legend_.find(legendDelimiter(), pos);
         std::string li = legend_.substr(pos, fpos - pos);
         pos = fpos + 1;
 
@@ -142,8 +143,8 @@ void FieldMeter::drawLegend(X11Graphics &g) {
 
         g.setFG( parent_->foreground() );
         if ( i != numfields() - 1 )
-            g.drawString( x, y, "/" );
-        x += g.textWidth("/");
+            g.drawString( x, y, legendDelimiter() );
+        x += g.textWidth(legendDelimiter());
     }
     g.setStippleN(0);	/*  Restore default all-bits stipple.  */
 }

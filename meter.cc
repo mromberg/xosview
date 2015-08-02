@@ -15,7 +15,8 @@ Meter::Meter( XOSView *parent, const std::string &title,
     : parent_(parent), x_(0), y_(0), width_(1), height_(1),
       priority_(1), counter_(0), title_(title), legend_(legend),
       textcolor_(0), docaptions_(docaptions),
-      dolegends_(dolegends), dousedlegends_(dousedlegends), metric_(false) {
+      dolegends_(dolegends), dousedlegends_(dousedlegends), metric_(false),
+      _legendDelimiter("/") {
 
     resize( parent->xoff(), parent->newypos(), parent->width() - 10, 10 );
 }
