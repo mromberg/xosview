@@ -4,6 +4,14 @@
 
 ===================== Post 2.0.0
 
+- Add cpu powersave policy display
+
+- Use the pixmap in graph meter for expose events/draws
+
+- Opton for labels/used on same line as caption
+
+- Disk/Filesystem free meter
+
 - Make some base classes for the shared linux/bsd meters
 
 - Make all data gathering classes interact through a clear interface.

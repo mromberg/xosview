@@ -63,9 +63,9 @@ void SwapMeter::getswapinfo( void ){
 
     unit = (sinfo.mem_unit ? sinfo.mem_unit : 1);
 
-    total_ = sinfo.totalswap * unit;
-    fields_[0] = (sinfo.totalswap - sinfo.freeswap) * unit;
-    fields_[1] = sinfo.freeswap * unit;
+    total_ = static_cast<float>(sinfo.totalswap) * unit;
+    fields_[0] = static_cast<float>(sinfo.totalswap - sinfo.freeswap) * unit;
+    fields_[1] = static_cast<float>(sinfo.freeswap) * unit;
 
     if ( total_ == 0 ){
         total_ = 1;
