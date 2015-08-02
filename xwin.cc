@@ -143,6 +143,8 @@ Visual *XWin::getVisual(void) {
             _transparent = true;
             rval = vinfo.visual;
         }
+        else
+            logProblem << "transparent set but no 32bit ARGB visual.\n";
     }
 
     _dbe = isDBE(rval);
