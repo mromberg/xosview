@@ -22,6 +22,7 @@
 #include "tzonemeter.h"
 #include "lmstemp.h"
 #include "nfsmeter.h"
+#include "fsmeter.h"
 #include "example.h"  // The example meter
 
 #include <sstream>
@@ -56,6 +57,12 @@ void MeterMaker::makeMeters(void){
         int RAIDCount = util::stoi(_xos->getResource("RAIDdevicecount"));
         for (int i = 0 ; i < RAIDCount ; i++)
             push(new RAIDMeter(_xos, i));
+    }
+
+    if (_xos->isResourceTrue("filesys")) {
+        std::vector<std::string> fs = FSMeter::mounts(_xos);
+        for (size_t i = 0 ; i < fs.size() ; i++)
+            push(new FSMeter(_xos, fs[i]));
     }
 
     if (_xos->isResourceTrue("swap"))

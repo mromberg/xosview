@@ -35,6 +35,7 @@ diskmeter.o \
 raidmeter.o \
 tzonemeter.o \
 lmstemp.o \
+fsmeter.o \
 MeterMaker.o
 
 FAIL_ARCHS = arm m68k powerpc s390 sparc 3D s390x powerpc64

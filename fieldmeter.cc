@@ -62,7 +62,8 @@ void FieldMeter::setUsedFormat ( const std::string &fmt ) {
         print_ = FLOAT;
     else {
         logFatal << "could not parse format of " <<  fmt << "\n"
-                 << "  I expected one of 'percent', 'bytes', or 'float' \n"
+                 << "  for meter: " << name() << "\n"
+                 << "  I expected one of 'percent', 'autoscale', or 'float' \n"
                  << "  (Case-insensitive)" << std::endl;
     }
 }

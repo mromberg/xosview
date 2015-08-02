@@ -118,6 +118,15 @@ xosview*diskUsedFormat:     autoscale
 xosview*diskUsedDecay:      True
 xosview*diskGraph:	    False
 
+! Filesystem meter(s)
+xosview*filesys:            True
+xosview*filesysForeGround:  #56E67B
+xosview*filesysBackground:  #03315E
+xosview*filesysPriority:    20
+xosview*filesysDecay:       False
+xosview*filesysGraph:       False
+xosview*filesysUsedFormat:  autoscale
+
 
 ! ** Swap Meter Resources
 xosview*swap:               True

@@ -16,6 +16,8 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <sys/statvfs.h>
+
 
 namespace util {
 
@@ -188,5 +190,43 @@ std::string fs::findCommand(const std::string &command) {
     return "";
 }
 
+
+size_t fs::fnameMax(const std::string &path) {
+    struct statvfs stat;
+
+    if (statvfs(path.c_str(), &stat) != 0) {
+        logProblem << "statvfs(" << path << ") failed." << std::endl;
+        long rval = pathconf(path.c_str(),_PC_PATH_MAX);
+        if (rval == -1) {
+            logProblem << "pathconf() failed too.  returning SWAG...\n";
+            return 4096;
+        }
+        return rval;
+
+    }
+
+    return stat.f_namemax;
+}
+
+
+std::pair<size_t, size_t> fs::getSpace(const std::string &path,
+  bool privileged) {
+
+    struct statvfs stat;
+
+    if (statvfs(path.c_str(), &stat) != 0) {
+        logProblem << "statvfs(" << path << ") failed." << std::endl;
+        return std::make_pair(0, 0);
+    }
+
+    // the available size is f_bsize * f_bavail
+    // total is f_blocks (in f_frsize units)
+    if (!privileged)
+        return std::make_pair(stat.f_bsize * stat.f_bavail,
+          stat.f_blocks * stat.f_frsize);
+
+    return std::make_pair(stat.f_bsize * stat.f_bfree,
+      stat.f_blocks * stat.f_frsize);
+}
 
 } // end namespace util
