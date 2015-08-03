@@ -24,7 +24,13 @@ public:
     static std::vector<std::string> mounts(XOSView *xosv);
 
 private:
+    unsigned long _bgColor;
+    unsigned long _umountColor;
     std::string _path;
+
+    void setBGColor(unsigned long c);
+    static std::vector<std::string> getAuto(void);
+    static bool isMount(const std::string &path);
 };
 
 

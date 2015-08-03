@@ -117,6 +117,18 @@ xosview*diskUsedFormat:     autoscale
 xosview*diskUsedDecay:      True
 xosview*diskGraph:	    False
 
+! Filesystem meter(s)
+xosview*filesys:            True
+xosview*filesysMounts:      auto
+!xosview*filesysMounts:      / /tmp /boot /home
+xosview*filesysFGColor:     FIELD1
+xosview*filesysBGColor:     FIELD0
+xosview*filesysNoneColor:   DEAD
+xosview*filesysPriority:    20
+xosview*filesysDecay:       False
+xosview*filesysGraph:       False
+xosview*filesysUsedFormat:  autoscale
+
 
 ! ** Swap Meter Resources
 xosview*swap:               True

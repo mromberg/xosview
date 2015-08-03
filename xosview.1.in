@@ -1226,6 +1226,38 @@ This color will be used for the linux meter to show reads.
 .uf disk
 .ud disk
 
+\fBFile System Meter Resources\fP
+
+.\"  Do the filesys: True resource.
+.xt filesys
+
+xosview*filesysMounts: \fIlist\fP
+.RS
+This value can be either auto or a space seperated list of mount points.
+If a mount point is not actually mounted then the meter will display
+the background using filesysNoneColor and continue to monitor the location.
+When a mount is made on that location then the meter will display normally.
+If the value of filesysMouts is auto, then meters will be created for every
+filesystem that has an absolute path as a source.  For example
+"/dev/sda1 -> /" would be monitored but "tmpfs -> /tmp" would not be.
+.RE
+
+.\"  filesys colors
+.cc filesys FG "used space"
+
+.cc filesys BG "free space"
+
+.cc filesys None "bg color when path is unmounted"
+
+.pp filesys
+
+.dc filesys
+
+.dg filesys
+
+.uf filesys
+
+
 \fBRAID Meter Resources\fP
 
 .\"  Do the RAID: True resource.

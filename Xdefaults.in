@@ -120,8 +120,11 @@ xosview*diskGraph:	    False
 
 ! Filesystem meter(s)
 xosview*filesys:            True
-xosview*filesysForeGround:  #56E67B
-xosview*filesysBackground:  #03315E
+xosview*filesysMounts:      auto
+!xosview*filesysMounts:      / /tmp /boot /home
+xosview*filesysFGColor:     #56E67B
+xosview*filesysBGColor:     #03315E
+xosview*filesysNoneColor:   #888888
 xosview*filesysPriority:    20
 xosview*filesysDecay:       False
 xosview*filesysGraph:       False
