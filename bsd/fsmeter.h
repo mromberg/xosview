@@ -2,10 +2,8 @@
 //  Copyright (c) 2015
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
-
-//-------------------------------------------------------
-// BASIC Data Meter Template.  See example.h for comments
-//-------------------------------------------------------
+//  This file may be distributed under terms of the GPL
+//
 
 #ifndef FSMETER_H
 #define FSMETER_H

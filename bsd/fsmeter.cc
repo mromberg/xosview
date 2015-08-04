@@ -2,6 +2,8 @@
 //  Copyright (c) 2015
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
+//  This file may be distributed under terms of the GPL
+//
 #include "fsmeter.h"
 #include "fsutil.h"
 #include "strutil.h"
@@ -123,6 +125,7 @@ std::vector<std::string> FSMeter::getAuto(void) {
 #elif defined (XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
     struct statfs *mntbufp;
 #endif
+
     int n = getmntinfo(&mntbufp, XOS_NO_WAIT);
     if (n == 0) {
         logProblem << "getmntinfo() failed: " << util::strerror(errno)
@@ -144,11 +147,13 @@ std::vector<std::string> FSMeter::getAuto(void) {
 
 
 bool FSMeter::isMount(const std::string &path) {
+
 #if defined(XOSVIEW_NETBSD)
     struct statvfs *mntbufp;
 #elif defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
     struct statfs *mntbufp;
 #endif
+
     int n = getmntinfo(&mntbufp, XOS_NO_WAIT);
     if (n == 0) {
         logProblem << "getmntinfo() failed: " << util::strerror(errno)
