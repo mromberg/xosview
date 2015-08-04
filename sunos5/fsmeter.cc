@@ -11,7 +11,7 @@
 #include <fstream>
 
 
-static const char * const MOUNT_FNAME = "/proc/mounts";
+static const char * const MOUNT_FNAME = "/etc/mnttab";
 
 
 FSMeter::FSMeter(XOSView *parent, const std::string &path)
@@ -103,8 +103,8 @@ std::vector<std::string> FSMeter::mounts(XOSView *xosv) {
 
 
 std::vector<std::string> FSMeter::getAuto(void) {
-    //  Create a list of entries in mounts where the device
-    //  and mount point are absolute paths.
+    //  Create a list of entries in mounts where
+    //  the type is zfs or tmpfs
 
     std::vector<std::string> rval;
 
@@ -117,11 +117,10 @@ std::vector<std::string> FSMeter::getAuto(void) {
     while (!ifs.eof()) {
         std::string dev, path, type, line;
         ifs >> dev >> path >> type;
+        logDebug << dev << " -> " << path << " : " << type << std::endl;
         std::getline(ifs, line);
-        if (ifs) {
-            if (dev[0] == '/' && path[0] == '/')
+        if (ifs && (type == "zfs" || type == "tmpfs"))
                 rval.push_back(path);
-        }
     }
 
     return rval;

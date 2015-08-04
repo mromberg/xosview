@@ -16,6 +16,7 @@
 #include "diskmeter.h"
 #include "netmeter.h"
 #include "intratemeter.h"
+#include "fsmeter.h"
 #include "example.h"  // The example meter
 
 #include "kstats.h"
@@ -50,6 +51,13 @@ void MeterMaker::makeMeters(void) {
     if (_xos->isResourceTrue("disk"))
         push(new DiskMeter(_xos, kc, util::stof(_xos->getResource(
                   "diskBandwidth"))));
+
+    if (_xos->isResourceTrue("filesys")) {
+        std::vector<std::string> fs = FSMeter::mounts(_xos);
+        for (size_t i = 0 ; i < fs.size() ; i++)
+            push(new FSMeter(_xos, fs[i]));
+    }
+
     if (_xos->isResourceTrue("swap"))
         push(new SwapMeter(_xos));
 
