@@ -22,10 +22,16 @@ PKGNAME_OUTPUT VERSION_OUTPUT PKGTARNAME_OUTPUT
 EOF
 )"
 
-pkg_args=($pkg_args)
-pkg_name="${pkg_args[0]}"
-pkg_version="${pkg_args[1]}"
-pkg_tarname="${pkg_args[2]}"
+n=0
+for word in $pkg_args
+do
+    n=`expr $n + 1`
+    eval arg$n="$word"
+done
+pkg_name="$arg1"
+pkg_version="$arg2"
+pkg_tarname="$arg3"
+
 # Now pump xosview.spec.in through sed to inject the version number
 sed_cmd="sed s/@PACKAGE_VERSION@/$pkg_version/;s/@PACKAGE_TARNAME@/$pkg_tarname/"
 
