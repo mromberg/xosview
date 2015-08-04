@@ -209,7 +209,7 @@ size_t fs::fnameMax(const std::string &path) {
 }
 
 
-std::pair<unsigned long long, unsigned long long> fs::getSpace(
+std::pair<uint64_t, uint64_t> fs::getSpace(
     const std::string &path, bool privileged) {
 
     struct statvfs stat;
@@ -219,12 +219,16 @@ std::pair<unsigned long long, unsigned long long> fs::getSpace(
         return std::make_pair(0, 0);
     }
 
-    if (!privileged)
-        return std::make_pair(stat.f_bavail * stat.f_frsize,
-          stat.f_blocks * stat.f_frsize);
+    // copy them into big vars before math for 32 bit os.
+    uint64_t total = stat.f_blocks;
+    uint64_t avail = stat.f_bavail;
+    uint64_t free = stat.f_bfree;
+    uint64_t frsize = stat.f_frsize;
 
-    return std::make_pair(stat.f_bfree * stat.f_frsize,
-      stat.f_blocks * stat.f_frsize);
+    if (!privileged)
+        return std::make_pair(avail * frsize, total * frsize);
+
+    return std::make_pair(free * frsize, total * frsize);
 }
 
 } // end namespace util

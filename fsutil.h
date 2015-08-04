@@ -13,6 +13,8 @@
 #ifndef FSUTIL_H
 #define FSUTIL_H
 
+#include "configxosv.h"
+
 #include <string>
 #include <vector>
 #include <fstream>
@@ -64,7 +66,7 @@ public:
     // returns first = bytes free, second = bytes total
     // path is any file or directory on the filesystem
     // if privileged is true report free space for privileged user
-    static std::pair<unsigned long long, unsigned long long> getSpace(
+    static std::pair<uint64_t, uint64_t> getSpace(
         const std::string &path, bool privileged=false);
 };
 

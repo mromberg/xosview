@@ -63,7 +63,7 @@ void FSMeter::checkevent( void ) {
         setBGColor(_bgColor);
 
         // free, total (for root)
-        std::pair<size_t, size_t> fsSize = util::fs::getSpace(_path, true);
+        std::pair<uint64_t, uint64_t> fsSize = util::fs::getSpace(_path, true);
 
         logDebug << _path << ":\t" << fsSize << std::endl;
 
