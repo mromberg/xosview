@@ -8,8 +8,18 @@
 
 #include <cerrno>
 
+
 #include <sys/types.h>
 #include <sys/statvfs.h>
+
+#if defined(XOSVIEW_NETBSD)
+static const int XOS_NO_WAIT = ST_NOWAIT;
+#elif defined(XOSVIEW_FREEBSD)
+#include <sys/param.h>
+#include <sys/ucred.h>
+#include <sys/mount.h>
+static const int XOS_NO_WAIT = MNT_NOWAIT;
+#endif
 
 
 
@@ -108,8 +118,12 @@ std::vector<std::string> FSMeter::getAuto(void) {
 
     std::vector<std::string> rval;
 
+#if defined(XOSVIEW_NETBSD)
     struct statvfs *mntbufp;
-    int n = getmntinfo(&mntbufp, ST_NOWAIT);
+#elif defined (XOSVIEW_FREEBSD)
+    struct statfs *mntbufp;
+#endif
+    int n = getmntinfo(&mntbufp, XOS_NO_WAIT);
     if (n == 0) {
         logProblem << "getmntinfo() failed: " << util::strerror(errno)
                    << std::endl;
@@ -130,8 +144,12 @@ std::vector<std::string> FSMeter::getAuto(void) {
 
 
 bool FSMeter::isMount(const std::string &path) {
+#if defined(XOSVIEW_NETBSD)
     struct statvfs *mntbufp;
-    int n = getmntinfo(&mntbufp, ST_NOWAIT);
+#elif defined(XOSVIEW_FREEBSD)
+    struct statfs *mntbufp;
+#endif
+    int n = getmntinfo(&mntbufp, XOS_NO_WAIT);
     if (n == 0) {
         logProblem << "getmntinfo() failed: " << util::strerror(errno)
                    << std::endl;
