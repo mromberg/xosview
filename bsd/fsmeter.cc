@@ -14,7 +14,7 @@
 
 #if defined(XOSVIEW_NETBSD)
 static const int XOS_NO_WAIT = ST_NOWAIT;
-#elif defined(XOSVIEW_FREEBSD)
+#elif defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
 #include <sys/param.h>
 #include <sys/ucred.h>
 #include <sys/mount.h>
@@ -68,7 +68,7 @@ void FSMeter::checkevent( void ) {
         fields_[0] = (float)(fsSize.second - fsSize.first)
             / (float)fsSize.second;
         fields_[1] = (float)fsSize.first / (float)fsSize.second;
-        logDebug << fields_[0] << ", " << fields_[1] << std::endl;
+
         setUsed(fsSize.second - fsSize.first, fsSize.second);
     }
     else {
@@ -120,7 +120,7 @@ std::vector<std::string> FSMeter::getAuto(void) {
 
 #if defined(XOSVIEW_NETBSD)
     struct statvfs *mntbufp;
-#elif defined (XOSVIEW_FREEBSD)
+#elif defined (XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
     struct statfs *mntbufp;
 #endif
     int n = getmntinfo(&mntbufp, XOS_NO_WAIT);
@@ -146,7 +146,7 @@ std::vector<std::string> FSMeter::getAuto(void) {
 bool FSMeter::isMount(const std::string &path) {
 #if defined(XOSVIEW_NETBSD)
     struct statvfs *mntbufp;
-#elif defined(XOSVIEW_FREEBSD)
+#elif defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
     struct statfs *mntbufp;
 #endif
     int n = getmntinfo(&mntbufp, XOS_NO_WAIT);
