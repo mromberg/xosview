@@ -6,14 +6,11 @@
 #include "fsutil.h"
 #include "strutil.h"
 
-#include <fstream>
 #include <cerrno>
 
 #include <sys/types.h>
 #include <sys/statvfs.h>
 
-
-static const char * const MOUNT_FNAME = "/proc/mounts";
 
 
 FSMeter::FSMeter(XOSView *parent, const std::string &path)
