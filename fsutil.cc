@@ -209,8 +209,8 @@ size_t fs::fnameMax(const std::string &path) {
 }
 
 
-std::pair<size_t, size_t> fs::getSpace(const std::string &path,
-  bool privileged) {
+std::pair<unsigned long long, unsigned long long> fs::getSpace(
+    const std::string &path, bool privileged) {
 
     struct statvfs stat;
 
@@ -219,13 +219,11 @@ std::pair<size_t, size_t> fs::getSpace(const std::string &path,
         return std::make_pair(0, 0);
     }
 
-    // the available size is f_bsize * f_bavail
-    // total is f_blocks (in f_frsize units)
     if (!privileged)
-        return std::make_pair(stat.f_bsize * stat.f_bavail,
+        return std::make_pair(stat.f_bavail * stat.f_frsize,
           stat.f_blocks * stat.f_frsize);
 
-    return std::make_pair(stat.f_bsize * stat.f_bfree,
+    return std::make_pair(stat.f_bfree * stat.f_frsize,
       stat.f_blocks * stat.f_frsize);
 }
 

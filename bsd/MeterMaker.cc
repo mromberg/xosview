@@ -25,6 +25,7 @@
 #include "intmeter.h"
 #include "intratemeter.h"
 #include "btrymeter.h"
+#include "fsmeter.h"
 #include "sensor.h"
 #include "example.h"  // The example meter
 
@@ -58,6 +59,12 @@ void MeterMaker::makeMeters(void) {
 
     if ( _xos->isResourceTrue("mem") )
         push(new MemMeter(_xos));
+
+    if (_xos->isResourceTrue("filesys")) {
+        std::vector<std::string> fs = FSMeter::mounts(_xos);
+        for (size_t i = 0 ; i < fs.size() ; i++)
+            push(new FSMeter(_xos, fs[i]));
+    }
 
     if ( _xos->isResourceTrue("swap") )
         push(new SwapMeter(_xos));

@@ -64,8 +64,8 @@ public:
     // returns first = bytes free, second = bytes total
     // path is any file or directory on the filesystem
     // if privileged is true report free space for privileged user
-    static std::pair<size_t, size_t> getSpace(const std::string &path,
-      bool privileged=false);
+    static std::pair<unsigned long long, unsigned long long> getSpace(
+        const std::string &path, bool privileged=false);
 };
 
 template<class X>
