@@ -18,6 +18,7 @@ memmeter.o \
 swapmeter.o \
 pagemeter.o \
 loadmeter.o \
+fsmeter.o \
 MeterMaker.o
 
 OBJS = $(CXXOBJS) get_def_pager.o
