@@ -13,11 +13,12 @@
 #ifndef FSUTIL_H
 #define FSUTIL_H
 
-#include "configxosv.h"
-
 #include <string>
 #include <vector>
 #include <fstream>
+//#include <cstdint>  // c++11 for uint64_t for 32 bit systems
+
+#include <stdint.h>  // for uint64_t for 32 bit systems
 
 namespace util {
 
