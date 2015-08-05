@@ -711,7 +711,7 @@ above the \fIwlinkPoorValue\fP threshold.
 xosview*wlinkPoorColor:  \fIcolor\fP
 .RS
 The \fIcolor\fP to use for the display of the link value when it is
-below the \fwlinkPoorValue\fP threshold.
+below the \fIlinkPoorValue\fP threshold.
 .RE
 xosview*wlinkPoorValue:  \fIvalue\fP
 .RS

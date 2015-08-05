@@ -64,6 +64,9 @@ xosview: $(OBJS) $(TOP)/@host_dir@/libmeter.a
 	$(CXX) $(CXX_BUILD_FLAGS) -o xosview $(OBJS) $(LDFLAGS) $(LIBS)
 
 
+xosview.html: xosview.1
+	groff -mandoc -Thtml xosview.1 > xosview.html
+
 defaultstring.cc: Xdefaults defresources.awk
 	@AWK@ -f defresources.awk Xdefaults > defaultstring.cc
 
@@ -82,7 +85,7 @@ clean :
 	@echo "***  Cleaning..."
 	cd @host_dir@ && $(MAKE) clean
 	cd config && $(MAKE) clean
-	rm -f xosview $(OBJS) $(DEPFILES) *~ defaultstring.cc
+	rm -f xosview $(OBJS) $(DEPFILES) *~ defaultstring.cc xosview.html
 
 checksource:
 	$(TOP)/chk-src.sh
