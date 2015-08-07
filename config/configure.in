@@ -172,7 +172,10 @@ case $host_os in
 	host_os=gnu
         ;;
     *)
-        AC_MSG_ERROR([xosview has not been ported to $host_os :(.  Sorry.])
+        AC_MSG_WARN([xosview has not been ported to $host_os])
+        AC_MSG_WARN([configuring as default platform...])
+        host_dir=default
+        host_os=default
         ;;
 esac
 
@@ -201,14 +204,12 @@ AC_SUBST(host_dir)
 AC_SUBST(xapploaddir)
 AC_SUBST(DOC_FILES)
 
-AC_CONFIG_FILES([
-  Makefile:config/Makefile.top.in
-  $host_dir/Makefile:config/Makefile.$host_dir.in
-  Makefile.config:config/Makefile.config.in
-  Makefile.GNU.autodep:config/Makefile.GNU.autodep.in
-  Xdefaults:Xdefaults.in
-  xosview.1:xosview.1.in
-])
+AC_CONFIG_FILES([Makefile:config/Makefile.top.in])
+AC_CONFIG_FILES([$host_dir/Makefile:config/Makefile.$host_dir.in])
+AC_CONFIG_FILES([Makefile.config:config/Makefile.config.in])
+AC_CONFIG_FILES([Makefile.GNU.autodep:config/Makefile.GNU.autodep.in])
+AC_CONFIG_FILES([Xdefaults:Xdefaults.in])
+AC_CONFIG_FILES([xosview.1:xosview.1.in])
 
 #-----------------------------------------------
 # Finalize LIBS
