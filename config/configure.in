@@ -171,6 +171,9 @@ case $host_os in
 	host_dir=gnu
 	host_os=gnu
         ;;
+    cygwin)
+        host_dir=cygwin
+        ;;
     *)
         AC_MSG_WARN([xosview has not been ported to $host_os])
         AC_MSG_WARN([configuring as default platform...])
