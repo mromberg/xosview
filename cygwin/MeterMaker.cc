@@ -8,6 +8,7 @@
 #include "MeterMaker.h"
 
 #include "cpumeter.h"
+#include "memmeter.h"
 #include "example.h"  // The example meter
 
 
@@ -24,6 +25,9 @@ void MeterMaker::makeMeters(void) {
 
     if (_xos->isResourceTrue("cpu"))
         cpuFactory();
+
+    if (_xos->isResourceTrue("mem"))
+        push(new MemMeter(_xos));
 }
 
 
