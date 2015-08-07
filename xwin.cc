@@ -180,6 +180,8 @@ bool XWin::isDBE(Visual *v) const {
             XdbeFreeVisualInfo(dbeVisuals);
         }
     }
+#else
+    (void) v; // avoid the warning
 #endif
 
     return rval;
