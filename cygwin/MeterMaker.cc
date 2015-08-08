@@ -12,6 +12,7 @@
 #include "fsmeter.h"
 #include "swapmeter.h"
 #include "pagemeter.h"
+#include "intratemeter.h"
 #include "example.h"  // The example meter
 
 
@@ -44,6 +45,9 @@ void MeterMaker::makeMeters(void) {
     if (_xos->isResourceTrue("page"))
         push(new PageMeter(_xos,
             util::stof(_xos->getResource("pageBandwidth"))));
+
+    if (_xos->isResourceTrue("irqrate"))
+        push(new IrqRateMeter(_xos));
 }
 
 
