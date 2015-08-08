@@ -22,8 +22,8 @@ MemMeter::MemMeter( XOSView *parent ) : FieldMeterGraph( parent, 5, "MEM",
 MemMeter::~MemMeter( void ){
 }
 
-void MemMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void MemMeter::checkResources(const ResDB &rdb){
+    FieldMeterGraph::checkResources(rdb);
 
     setfieldcolor( 0, parent_->getResource( "memUsedColor" ) );
     setfieldcolor( 1, parent_->getResource( "memBufferColor" ) );

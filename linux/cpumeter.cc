@@ -54,25 +54,25 @@ CPUMeter::CPUMeter(XOSView *parent, unsigned int cpu)
 CPUMeter::~CPUMeter( void ){
 }
 
-void CPUMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void CPUMeter::checkResources(const ResDB &rdb){
+    FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, parent_->getResource( "cpuUserColor" ) );
-    setfieldcolor( 1, parent_->getResource( "cpuNiceColor" ) );
-    setfieldcolor( 2, parent_->getResource( "cpuSystemColor" ) );
-    setfieldcolor( 3, parent_->getResource( "cpuWaitColor" ) );
-    setfieldcolor( 4, parent_->getResource( "cpuInterruptColor" ) );
-    setfieldcolor( 5, parent_->getResource( "cpuSoftIntColor" ) );
-    setfieldcolor( 6, parent_->getResource( "cpuStolenColor" ) );
-    setfieldcolor( 7, parent_->getResource( "cpuGuestColor" ) );
-    setfieldcolor( 8, parent_->getResource( "cpuNiceGuestColor" ) );
-    setfieldcolor( 9, parent_->getResource( "cpuFreeColor" ) );
+    setfieldcolor( 0, rdb.getResource( "cpuUserColor" ) );
+    setfieldcolor( 1, rdb.getResource( "cpuNiceColor" ) );
+    setfieldcolor( 2, rdb.getResource( "cpuSystemColor" ) );
+    setfieldcolor( 3, rdb.getResource( "cpuWaitColor" ) );
+    setfieldcolor( 4, rdb.getResource( "cpuInterruptColor" ) );
+    setfieldcolor( 5, rdb.getResource( "cpuSoftIntColor" ) );
+    setfieldcolor( 6, rdb.getResource( "cpuStolenColor" ) );
+    setfieldcolor( 7, rdb.getResource( "cpuGuestColor" ) );
+    setfieldcolor( 8, rdb.getResource( "cpuNiceGuestColor" ) );
+    setfieldcolor( 9, rdb.getResource( "cpuFreeColor" ) );
 
-    decayUsed(parent_->isResourceTrue("cpuUsedDecay"));
-    priority_ = util::stoi (parent_->getResource( "cpuPriority" ));
-    dodecay_ = parent_->isResourceTrue( "cpuDecay" );
-    useGraph_ = parent_->isResourceTrue( "cpuGraph" );
-    setUsedFormat (parent_->getResource("cpuUsedFormat"));
+    decayUsed(rdb.isResourceTrue("cpuUsedDecay"));
+    priority_ = util::stoi (rdb.getResource( "cpuPriority" ));
+    dodecay_ = rdb.isResourceTrue( "cpuDecay" );
+    useGraph_ = rdb.isResourceTrue( "cpuGraph" );
+    setUsedFormat (rdb.getResource("cpuUsedFormat"));
 }
 
 void CPUMeter::checkevent( void ){

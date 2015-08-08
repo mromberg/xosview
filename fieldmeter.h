@@ -22,7 +22,7 @@ public:
     // virtual from Meter
     virtual void checkevent( void );
     virtual void draw(X11Graphics &g);
-    virtual void checkResources( void );
+    virtual void checkResources(const ResDB &rdb);
 
     // Virtual starting here.
     virtual void drawfields(X11Graphics &g, bool manditory=false);

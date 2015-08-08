@@ -109,13 +109,14 @@ void XWin::createWindow(void) {
     // Create Graphics interface.
     _graphics = new X11Graphics(display_, visual_, _bb, true, colormap_,
       bgcolor_);
-    g().setFont(getResource("font"));
+    g().setFont(resdb().getResource("font"));
     g().setBG(bgcolor_);
     g().setFG(fgcolor_);
-    g().setStippleMode(isResourceTrue("enableStipple"));
+    g().setStippleMode(resdb().isResourceTrue("enableStipple"));
 
     // Pixmap backgrounds
-    std::string pixmapFName = getResourceOrUseDefault("pixmapName", "");
+    std::string pixmapFName = resdb().getResourceOrUseDefault(
+        "pixmapName", "");
     X11Pixmap x11p(display_, visual_, window_, colormap_);
     if (pixmapFName.size() && x11p.load(pixmapFName))
         g().setBG(x11p);
@@ -133,7 +134,7 @@ Visual *XWin::getVisual(void) {
 
     Visual *rval = DefaultVisual(display_, screen());
 
-    if(isResourceTrue("transparent")) {
+    if(resdb().isResourceTrue("transparent")) {
         XVisualInfo vinfo;
         if (XMatchVisualInfo(display_, DefaultScreen(display_),
             32, TrueColor, &vinfo)) {
@@ -215,8 +216,8 @@ void XWin::setHints(XSizeHints *szHints){
         logFatal << "Error allocating class hint!" << std::endl;
     }
     //  We have to cast away the const's.
-    std::string cname = className();
-    std::string iname = instanceName();
+    std::string cname = resdb().className();
+    std::string iname = resdb().instanceName();
     classhints->res_name = const_cast<char *>(iname.c_str());
     classhints->res_class = const_cast<char *>(cname.c_str());
 
@@ -229,7 +230,7 @@ void XWin::setHints(XSizeHints *szHints){
     wmhints->flags = (InputHint|StateHint);
     wmhints->input = True;
     wmhints->initial_state = NormalState;
-    if (isResourceTrue("iconic"))
+    if (resdb().isResourceTrue("iconic"))
         wmhints->initial_state = IconicState;
 
     // Set up XTextProperty for window name and icon name
@@ -244,7 +245,8 @@ void XWin::setHints(XSizeHints *szHints){
     }
 
     // First make a "fake" argument list
-    std::vector<std::string> clst = util::split(getResource("command"), " ");
+    std::vector<std::string> clst = util::split(resdb().getResource(
+          "command"), " ");
     char **fargv = new char*[clst.size()+1];
     for (size_t i = 0 ; i < clst.size() ; i++)
         fargv[i] = const_cast<char *>(clst[i].c_str()); // we'll be careful...
@@ -285,10 +287,10 @@ void XWin::setColors( void ){
         bgcolor_ = 0;
     else
         bgcolor_ = X11Graphics::allocColor(display_, colormap_,
-          getResource("background"));
+          resdb().getResource("background"));
 
     fgcolor_ = X11Graphics::allocColor(display_, colormap_,
-      getResource("foreground"));
+      resdb().getResource("foreground"));
 }
 
 
@@ -314,7 +316,8 @@ XSizeHints *XWin::getGeometry(void) {
           << szHints->x << "+" << szHints->y;
 
     // Process the geometry specification
-    std::string geomStr = getResourceOrUseDefault("geometry", "<!UNSP!>");
+    std::string geomStr = resdb().getResourceOrUseDefault(
+        "geometry", "<!UNSP!>");
     bool geomUnspecified = false;
     if (geomStr == "<!UNSP!>")
         geomUnspecified = true;
@@ -517,55 +520,6 @@ std::vector<XVisualInfo> XWin::getVisuals(void) {
     return rval;
 }
 
-
-//-------------------------------------------------------------------
-// These are just stubs to make XWin stand alone if a derrived class
-// does not implement a resource data base
-//-------------------------------------------------------------------
-std::string XWin::getResource(const std::string &name) {
-    if (name == "transparent")
-        return "False";
-    else if (name == "enableStipple")
-        return "True";
-    else if (name == "font")
-        return "fixed";
-    else if (name == "background")
-        return "black";
-    else if (name == "foreground")
-        return "white";
-    logFatal << "Resource " << name << "not found." << std::endl;
-    return "";
-}
-
-
-std::string XWin::getResourceOrUseDefault(const std::string &,
-  const std::string &) {
-    logFatal << "NOT IMPLEMENTED" << std::endl;
-    return "";
-}
-
-
-bool XWin::isResourceTrue(const std::string &name) {
-    return util::tolower(getResource(name)) == "true";
-}
-
-
-void XWin::dumpResources(std::ostream &) {
-    logFatal << "not implemented." << std::endl;
-}
-
-
-std::string XWin::className(void) {
-    logProblem << "className() not overridden using killroy...\n";
-    return "killroy";
-}
-
-
-std::string XWin::instanceName(void) {
-    logProblem << "instanceName() not overridden using killroy...\n";
-    return "killroy";
-}
-//-------------------------------------------------------------------
 
 static std::ostream &operator<<(std::ostream &os, const XEvent &e) {
     os << "XEvent: type=";

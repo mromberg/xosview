@@ -22,7 +22,7 @@ public:
     // when we should take action (more below)
     virtual std::string name( void ) const;
     virtual void checkevent( void );
-    virtual void checkResources( void );
+    virtual void checkResources(const ResDB &rdb);
 
 private:
     // Everything specific to our meter goes here
@@ -80,11 +80,11 @@ inline ExampleMeter::~ExampleMeter(void) {
 // safe to use the parents resource methods
 // and allocate colors.  But you should not cause
 // a draw to happen yet.
-inline void ExampleMeter::checkResources( void ) {
+inline void ExampleMeter::checkResources(const ResDB &rdb) {
 
     // First call our parent to have it check any resources
     // it needs.
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
     // Normally you would add your new resource
     // items to Xdefaults.in and then be able to

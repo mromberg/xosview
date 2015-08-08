@@ -146,7 +146,8 @@ void MeterMaker::serialFactory(void) {
 #else
     for (int i = 0 ; i < SerialMeter::numDevices() ; i++) {
         bool ok ;  unsigned long val ;
-        const char *res = SerialMeter::getResourceName((SerialMeter::Device)i);
+        std::string res = SerialMeter::getResourceName(
+            (SerialMeter::Device)i);
         if ( !(ok = _xos->isResourceTrue(res)) ) {
             std::istringstream is(_xos->getResource(res));
             is >> std::setbase(0) >> val;

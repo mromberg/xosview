@@ -2,8 +2,8 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _NFSMETER_H_
-#define _NFSMETER_H_
+#ifndef NFSMETER_H
+#define NFSMETER_H
 
 #include "fieldmetergraph.h"
 #include "timer.h"
@@ -21,7 +21,7 @@ public:
     ~NFSMeter( void );
 
     std::string name( void ) const { return _statname; }
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
     void starttimer(void) { return _timer.start(); };
     void stoptimer(void) { return _timer.stop(); };
     double usecs(void) { return _timer.report_usecs(); };
@@ -41,7 +41,8 @@ public:
 
     void checkevent( void );
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
+
 private:
     unsigned long _lastcalls, _lastretrns, _lastauthrefresh;
 };
@@ -53,7 +54,7 @@ public:
 
     void checkevent( void );
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
 
 protected:
     float maxpackets_;

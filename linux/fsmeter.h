@@ -17,7 +17,7 @@ public:
 
     virtual std::string name( void ) const { return "FSMeter"; }
     virtual void checkevent( void );
-    virtual void checkResources( void );
+    virtual void checkResources(const ResDB &rdb);
 
     static std::vector<std::string> mounts(XOSView *xosv);
 

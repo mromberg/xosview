@@ -45,9 +45,9 @@ void BitFieldMeter::disableMeter ( ) {
 BitFieldMeter::~BitFieldMeter( void ){
 }
 
-void BitFieldMeter::checkResources( void ){
-    Meter::checkResources();
-    usedcolor_ = parent_->g().allocColor( parent_->getResource(
+void BitFieldMeter::checkResources(const ResDB &rdb){
+    Meter::checkResources(rdb);
+    usedcolor_ = parent_->g().allocColor( rdb.getResource(
           "usedLabelColor"));
 }
 

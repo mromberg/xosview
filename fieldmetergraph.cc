@@ -210,11 +210,11 @@ void FieldMeterGraph::drawBar(X11Graphics &g, int i) {
     }
 }
 
-void FieldMeterGraph::checkResources( void ) {
-    FieldMeterDecay::checkResources();
+void FieldMeterGraph::checkResources(const ResDB &rdb) {
+    FieldMeterDecay::checkResources(rdb);
 
     // exit(1) if does not exist
-    std::string ptr = parent_->getResource( "graphNumCols" );
+    std::string ptr = rdb.getResource( "graphNumCols" );
 
     int i;
     if (util::fstr(ptr, i)) {

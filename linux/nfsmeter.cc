@@ -44,8 +44,8 @@ NFSMeter::NFSMeter(XOSView *parent, const char *name, int nfields,
 NFSMeter::~NFSMeter( void ){
 }
 
-void NFSMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void NFSMeter::checkResources(const ResDB &rdb){
+    FieldMeterGraph::checkResources(rdb);
 }
 
 NFSDStats::NFSDStats(XOSView *parent)
@@ -56,8 +56,8 @@ NFSDStats::NFSDStats(XOSView *parent)
 NFSDStats::~NFSDStats( void ) {
 }
 
-void NFSDStats::checkResources( void ){
-    NFSMeter::checkResources();
+void NFSDStats::checkResources(const ResDB &rdb){
+    NFSMeter::checkResources(rdb);
 
     setfieldcolor( 0, parent_->getResource( "NFSDStatBadCallsColor" ) );
     setfieldcolor( 1, parent_->getResource( "NFSDStatUDPColor" ) );
@@ -148,8 +148,8 @@ NFSStats::NFSStats(XOSView *parent)
 NFSStats::~NFSStats( void ) {
 }
 
-void NFSStats::checkResources( void ){
-    NFSMeter::checkResources();
+void NFSStats::checkResources(const ResDB &rdb){
+    NFSMeter::checkResources(rdb);
 
     setfieldcolor( 0, parent_->getResource( "NFSStatReTransColor" ) );
     setfieldcolor( 1, parent_->getResource( "NFSStatAuthRefrshColor" ) );

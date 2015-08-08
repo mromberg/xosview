@@ -9,24 +9,27 @@
 //    by Scott McNab ( jedi@tartarus.uwa.edu.au )
 //
 
-#ifndef _FIELDMETERGRAPH_H_
-#define _FIELDMETERGRAPH_H_
+#ifndef FIELDMETERGRAPH_H
+#define FIELDMETERGRAPH_H
 
 #include "meter.h"
 #include "fieldmeterdecay.h"
+
 #include <vector>
 
 class X11Pixmap;
+
 
 class FieldMeterGraph : public FieldMeterDecay {
 public:
     FieldMeterGraph( XOSView *parent, size_t numfields,
       const std::string &title = "", const std::string &legend = "",
-      bool docaptions=false, bool dolegends=false, bool dousedlegends=false);
+      bool docaptions=false, bool dolegends=false,
+      bool dousedlegends=false);
     virtual ~FieldMeterGraph( void );
 
     // virtual from Meter
-    virtual void checkResources( void );
+    virtual void checkResources(const ResDB &rdb);
 
     // virtual from FieldMeter
     virtual void drawfields(X11Graphics &g, bool manditory=false);

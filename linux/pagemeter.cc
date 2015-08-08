@@ -29,8 +29,8 @@ PageMeter::PageMeter( XOSView *parent, float max ) : FieldMeterGraph( parent,
 PageMeter::~PageMeter( void ){
 }
 
-void PageMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void PageMeter::checkResources(const ResDB &rdb){
+    FieldMeterGraph::checkResources(rdb);
 
     setfieldcolor( 0, parent_->getResource( "pageInColor" ) );
     setfieldcolor( 1, parent_->getResource( "pageOutColor" ) );

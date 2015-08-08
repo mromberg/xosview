@@ -20,8 +20,8 @@ IrqRateMeter::~IrqRateMeter( void ) {
 }
 
 
-void IrqRateMeter::checkResources( void ) {
-    FieldMeterGraph::checkResources();
+void IrqRateMeter::checkResources(const ResDB &rdb) {
+    FieldMeterGraph::checkResources(rdb);
     setfieldcolor(0, parent_->g().allocColor(parent_->getResource(
             "irqrateUsedColor")));
     setfieldcolor(1, parent_->g().allocColor(parent_->getResource(

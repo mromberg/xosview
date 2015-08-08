@@ -35,8 +35,8 @@ void BitMeter::disableMeter ( void ) {
     Meter::legend ("Disabled");
 }
 
-void BitMeter::checkResources( void ){
-    Meter::checkResources();
+void BitMeter::checkResources(const ResDB &rdb){
+    Meter::checkResources(rdb);
 }
 
 void BitMeter::checkevent( void ){

@@ -4,10 +4,11 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _BITMETER_H_
-#define _BITMETER_H_
+#ifndef BITMETER_H
+#define BITMETER_H
 
 #include "meter.h"
+
 #include <string>
 #include <vector>
 
@@ -24,7 +25,7 @@ public:
     // virtual from Meter
     virtual void checkevent( void );
     virtual void draw(X11Graphics &g);
-    virtual void checkResources( void );
+    virtual void checkResources(const ResDB &rdb);
 
     void disableMeter ( void );
 

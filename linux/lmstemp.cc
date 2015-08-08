@@ -92,8 +92,8 @@ int  LmsTemp::checksensors(int isproc, const std::string &dir,
     return found;
 }
 
-void LmsTemp::checkResources( void ){
-    FieldMeter::checkResources();
+void LmsTemp::checkResources(const ResDB &rdb) {
+    FieldMeter::checkResources(rdb);
 
     setfieldcolor( 0, parent_->getResource( "lmstempActColor" ) );
     setfieldcolor( 1, parent_->getResource( "lmstempIdleColor") );

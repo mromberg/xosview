@@ -7,8 +7,8 @@
 //  Most of this code was written by Werner Fink <werner@suse.de>
 //  Only small changes were made on my part (M.R.)
 //
-#ifndef _LOADMETER_H_
-#define _LOADMETER_H_
+#ifndef LOADMETER_H
+#define LOADMETER_H
 
 
 #include "fieldmetergraph.h"
@@ -22,7 +22,7 @@ public:
     std::string name( void ) const { return "LoadMeter"; }
     void checkevent( void );
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
 
 protected:
     void getloadinfo( void );

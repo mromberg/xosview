@@ -50,8 +50,8 @@ DiskMeter::DiskMeter( XOSView *parent, float max )
 DiskMeter::~DiskMeter( void ){
 }
 
-void DiskMeter::checkResources( void ) {
-    FieldMeterGraph::checkResources();
+void DiskMeter::checkResources(const ResDB &rdb) {
+    FieldMeterGraph::checkResources(rdb);
 
     setfieldcolor( 0, parent_->getResource("diskReadColor") );
     setfieldcolor( 1, parent_->getResource("diskWriteColor") );

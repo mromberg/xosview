@@ -52,8 +52,8 @@ void RAIDMeter::checkevent( void ){
     BitFieldMeter::checkevent();
 }
 
-void RAIDMeter::checkResources( void ){
-    BitFieldMeter::checkResources();
+void RAIDMeter::checkResources(const ResDB &rdb){
+    BitFieldMeter::checkResources(rdb);
     onColor_ = parent_->g().allocColor(parent_->getResource(
           "RAIDdiskOnlineColor"));
     offColor_ = parent_->g().allocColor(

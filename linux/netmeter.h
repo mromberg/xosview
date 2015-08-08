@@ -20,7 +20,7 @@ public:
     std::string name( void ) const { return "NetMeter"; }
     void checkevent( void );
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
 
     // first=total in second=total out
     // There may be some new C++ way to make this

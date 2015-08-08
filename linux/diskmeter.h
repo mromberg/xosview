@@ -5,8 +5,8 @@
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef _DISKMETER_H_
-#define _DISKMETER_H_
+#ifndef DISKMETER_H
+#define DISKMETER_H
 
 #include "fieldmetergraph.h"
 
@@ -18,7 +18,7 @@ public:
     std::string name( void ) const { return "DiskMeter"; }
     void checkevent( void );
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
 protected:
 
     // sysfs:

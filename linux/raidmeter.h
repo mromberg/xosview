@@ -5,8 +5,8 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _RAIDMETER_H_
-#define _RAIDMETER_H_
+#ifndef RAIDMETER_H
+#define RAIDMETER_H
 
 #include "bitfieldmeter.h"
 
@@ -19,7 +19,7 @@ public:
 
     void checkevent( void );
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
 
     static int countRAIDs( void );
 

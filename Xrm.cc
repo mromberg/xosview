@@ -39,7 +39,7 @@ Xrm::Xrm(const std::string &className, const std::string &instanceName)
 }
 
 
-Xrm::opt Xrm::getResource(const std::string &rname) const{
+ResDB::opt Xrm::getOptResource(const std::string &rname) const{
     std::string frn = std::string(instanceName()) + std::string(".") + rname;
     std::string fcn = std::string(className()) + std::string(".") + rname;
 

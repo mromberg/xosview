@@ -22,9 +22,9 @@ TZoneMeter::TZoneMeter(XOSView *parent, size_t zoneNum)
 TZoneMeter::~TZoneMeter(void) {
 }
 
-void TZoneMeter::checkResources( void ) {
+void TZoneMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
     // change "tzone" to real meter name
     _normColor = parent_->g().allocColor(parent_->getResource(

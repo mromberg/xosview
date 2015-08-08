@@ -27,8 +27,8 @@ NetMeter::NetMeter( XOSView *parent)
 NetMeter::~NetMeter( void ){
 }
 
-void NetMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void NetMeter::checkResources(const ResDB &rdb){
+    FieldMeterGraph::checkResources(rdb);
 
     _maxBandwidth = util::stof(parent_->getResource( "netBandwidth" ));
     setfieldcolor( 0, parent_->getResource( "netInColor" ) );

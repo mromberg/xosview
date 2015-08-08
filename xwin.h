@@ -8,6 +8,7 @@
 #define XWIN_H
 #include "configxosv.h"
 #include "x11graphics.h"
+#include "rdb.h"
 
 #include <string>
 
@@ -44,17 +45,6 @@ public:
     Display *display(void) const { return display_; }
     Window window(void) const { return window_; }
 
-    //------------------------------------------------------
-    // Resouce interface
-    // getResource() will logFatal if not found.
-    //------------------------------------------------------
-    virtual std::string getResource(const std::string &name);
-    virtual std::string getResourceOrUseDefault(const std::string &name,
-      const std::string &defaultVal);
-    virtual bool isResourceTrue(const std::string &name);
-    virtual void dumpResources(std::ostream &os);
-    //------------------------------------------------------
-
     void title(const std::string &str)
         { XStoreName( display_, window_, str.c_str() ); }
     void iconname(const std::string &str)
@@ -75,10 +65,6 @@ public:
 protected:
     virtual void setEvents(void);
     void createWindow(void);
-
-    virtual std::string className(void);
-    virtual std::string instanceName(void);
-
     void setDisplayName(const std::string &new_display_name)
         { display_name_ = new_display_name; }
     const std::string &displayName(void) const { return display_name_; }
@@ -94,6 +80,12 @@ protected:
     void map( void ) { XMapWindow( display_, window_ ); }
     void unmap( void ) { XUnmapWindow( display_, window_ ); }
     void swapBB(void) const;
+
+    //------------------------------------------------------
+    // Resouce interface
+    //------------------------------------------------------
+    virtual ResDB &resdb(void) = 0;
+    //------------------------------------------------------
 
     //-----------------------------------
     //--- Events ------------------------

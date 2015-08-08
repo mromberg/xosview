@@ -19,7 +19,7 @@ public:
 
     virtual std::string name( void ) const { return "TZoneMeter"; }
     virtual void checkevent( void );
-    virtual void checkResources( void );
+    virtual void checkResources(const ResDB &rdb);
 
     // Number of thermal zones
     static size_t count(void);

@@ -13,18 +13,22 @@
 //    authors for a copy.
 //
 
-#ifndef _FIELDMETERDECAY_H_
-#define _FIELDMETERDECAY_H_
+#ifndef FIELDMETERDECAY_H
+#define FIELDMETERDECAY_H
 
 #include "meter.h"
 #include "fieldmeter.h"
+
 #include <vector>
+
+
 
 class FieldMeterDecay : public FieldMeter {
 public:
     FieldMeterDecay(XOSView *parent, size_t numfields,
       const std::string &title = "", const std::string &legend = "",
-      bool docaptions=false, bool dolegends=false, bool dousedlegends=false);
+      bool docaptions=false, bool dolegends=false,
+      bool dousedlegends=false);
     virtual ~FieldMeterDecay( void );
 
     // Virtual from FieldMeter
@@ -32,10 +36,9 @@ public:
 
 protected:
     bool dodecay_;
-    bool firsttime_;  //  Used to set up decaying fields right the first time.
+    bool firsttime_;  //Used to set up decaying fields right the first time.
     std::vector<float> decay_;
     std::vector<float> lastDecayval_;
-private:
 };
 
 #endif

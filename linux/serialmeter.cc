@@ -59,8 +59,8 @@ void SerialMeter::checkevent( void ){
     BitMeter::checkevent();
 }
 
-void SerialMeter::checkResources( void ){
-    BitMeter::checkResources();
+void SerialMeter::checkResources(const ResDB &rdb){
+    BitMeter::checkResources(rdb);
     onColor_  = parent_->g().allocColor( parent_->getResource(
           "serialOnColor" ) );
     offColor_ = parent_->g().allocColor( parent_->getResource(
@@ -101,7 +101,7 @@ const char *SerialMeter::getTitle(Device dev) const {
     return names[dev];
 }
 
-const char *SerialMeter::getResourceName(Device dev){
+std::string SerialMeter::getResourceName(Device dev){
     static const char *names[] = { "serial0", "serial1",
                                    "serial2", "serial3",
                                    "serial4", "serial5",

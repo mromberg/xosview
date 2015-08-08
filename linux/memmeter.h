@@ -4,10 +4,11 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _MEMMETER_H_
-#define _MEMMETER_H_
+#ifndef MEMMETER_H
+#define MEMMETER_H
 
 #include "fieldmetergraph.h"
+
 #include <vector>
 #include <string>
 
@@ -18,12 +19,13 @@ public:
     ~MemMeter( void );
 
     std::string name( void ) const { return "MemMeter"; }
-    void checkevent( void );
+    void checkevent(void);
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
+
 protected:
-
     void getmeminfo( void );
+
 private:
     class LineInfo {
     public:

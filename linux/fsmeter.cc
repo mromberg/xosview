@@ -26,9 +26,9 @@ FSMeter::~FSMeter(void) {
 }
 
 
-void FSMeter::checkResources( void ) {
+void FSMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
 
     _bgColor = parent_->g().allocColor(parent_->getResource(

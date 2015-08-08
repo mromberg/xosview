@@ -21,13 +21,16 @@ Meter::Meter( XOSView *parent, const std::string &title,
     resize( parent->xoff(), parent->newypos(), parent->width() - 10, 10 );
 }
 
+
 Meter::~Meter( void ){
 }
 
-void Meter::checkResources( void ){
-    textcolor_ = parent_->g().allocColor(parent_->getResource(
+
+void Meter::checkResources(const ResDB &rdb) {
+    textcolor_ = parent_->g().allocColor(rdb.getResource(
           "meterLabelColor"));
 }
+
 
 void Meter::resize( int x, int y, int width, int height ){
     x_ = x;

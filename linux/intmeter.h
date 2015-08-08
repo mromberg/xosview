@@ -20,7 +20,7 @@ public:
 
     void checkevent( void );
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
 
 private:
     unsigned int _cpu;     // which cpu are we displaying

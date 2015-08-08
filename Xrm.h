@@ -7,27 +7,29 @@
 #ifndef XRM_H
 #define XRM_H
 
+#include "rdb.h"
+
 #include <string>
 #include <utility>
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
-class Xrm {
+class Xrm : public ResDB {
 public:
     Xrm(const std::string &className, const std::string &instanceName);
-    ~Xrm();
+    virtual ~Xrm();
 
-    std::string className(void) const
+    virtual std::string className(void) const
         { return std::string(XrmQuarkToString(_class)); }
-    std::string instanceName(void) const
+    virtual std::string instanceName(void) const
         { return std::string(XrmQuarkToString(_instance)); }
 
     // At some point ISO C++ may adopt std::optional.  At which point
     // optional would be slightly clearner.  For now, this works ok
     // to indicate non-existant resources.
-    typedef std::pair<bool, std::string> opt;
+    //typedef std::pair<bool, std::string> opt;
 
-    opt getResource(const std::string &rname) const;
+    virtual opt getOptResource(const std::string &rname) const;
     void putResource(const std::string &line);
     void putResource(const std::string &specifier, const std::string &val);
     bool loadResources(const std::string &fname);

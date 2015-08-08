@@ -15,7 +15,7 @@ public:
 
     virtual std::string name( void ) const { return "WLinkMeter"; }
     virtual void checkevent( void );
-    virtual void checkResources( void );
+    virtual void checkResources(const ResDB &rdb);
 
 private:
     unsigned long _goodColor;

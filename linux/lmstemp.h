@@ -7,8 +7,8 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _LMSTEMP_H_
-#define _LMSTEMP_H_
+#ifndef LMSTEMP_H
+#define LMSTEMP_H
 
 
 #include "fieldmeter.h"
@@ -24,9 +24,9 @@ public:
     std::string name( void ) const { return "LmsTemp"; }
     void checkevent( void );
 
-    void checkResources( void );
-protected:
+    void checkResources(const ResDB &rdb);
 
+protected:
     void getlmstemp( void );
     int  checksensors(int isproc, const std::string &dir,
       const std::string &filename);

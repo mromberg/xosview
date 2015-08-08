@@ -34,8 +34,8 @@ LoadMeter::LoadMeter( XOSView *parent )
 LoadMeter::~LoadMeter( void ){
 }
 
-void LoadMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void LoadMeter::checkResources(const ResDB &rdb){
+    FieldMeterGraph::checkResources(rdb);
 
     _procloadcol = parent_->g().allocColor(parent_->getResource(
           "loadProcColor" ));

@@ -114,7 +114,7 @@ void XOSView::createMeters(void) {
 //-----------------------------------------------------------------
 
 bool XOSView::isResourceTrue( const std::string &name ) {
-    Xrm::opt val = _xrm->getResource(name);
+    ResDB::opt val = _xrm->getOptResource(name);
     if (!val.first)
         return false;
 
@@ -125,7 +125,7 @@ bool XOSView::isResourceTrue( const std::string &name ) {
 std::string XOSView::getResourceOrUseDefault( const std::string &name,
   const std::string &defaultVal ){
 
-    Xrm::opt retval = _xrm->getResource (name);
+    ResDB::opt retval = _xrm->getOptResource (name);
     if (retval.first)
         return retval.second;
 
@@ -134,7 +134,7 @@ std::string XOSView::getResourceOrUseDefault( const std::string &name,
 
 
 std::string XOSView::getResource( const std::string &name ){
-    Xrm::opt retval = _xrm->getResource (name);
+    Xrm::opt retval = _xrm->getOptResource (name);
     if (retval.first)
         return retval.second;
     else {
@@ -390,7 +390,7 @@ void XOSView::checkResources(void) {
 
 void XOSView::checkMeterResources( void ){
     for (size_t i = 0 ; i < _meters.size() ; i++)
-        _meters[i]->checkResources();
+        _meters[i]->checkResources(resdb());
 }
 
 

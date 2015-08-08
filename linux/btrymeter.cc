@@ -50,8 +50,8 @@ BtryMeter::StatType BtryMeter::statType(void) {
     return NONE;
 }
 
-void BtryMeter::checkResources( void ){
-    FieldMeter::checkResources();
+void BtryMeter::checkResources(const ResDB &rdb) {
+    FieldMeter::checkResources(rdb);
 
     setfieldcolor( 0, parent_->getResource( "batteryLeftColor" ) );
     setfieldcolor( 1, parent_->getResource( "batteryUsedColor" ) );

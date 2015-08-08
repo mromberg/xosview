@@ -4,8 +4,8 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _SWAPMETER_H_
-#define _SWAPMETER_H_
+#ifndef SWAPMETER_H
+#define SWAPMETER_H
 
 
 #include "fieldmetergraph.h"
@@ -19,11 +19,10 @@ public:
     std::string name( void ) const { return "SwapMeter"; }
     void checkevent( void );
 
-    void checkResources( void );
-protected:
+    void checkResources(const ResDB &rdb);
 
+protected:
     void getswapinfo( void );
-private:
 };
 
 #endif

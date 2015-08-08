@@ -38,17 +38,15 @@ public:
     bool isAtLeastPartiallyVisible() const { return _isvisible; }
     std::string versionStr(void) const;
 
-    //------------------------------------------------------
-    // Resouce interface
-    //------------------------------------------------------
-    virtual std::string getResource(const std::string &name); // exit not found
+    // exit not found
+    virtual std::string getResource(const std::string &name);
     virtual std::string getResourceOrUseDefault(const std::string &name,
       const std::string &defaultVal);
     virtual bool isResourceTrue(const std::string &name);
     virtual void dumpResources(std::ostream &os);
     typedef std::pair<bool, std::string> opt;
     opt getOptResource(const std::string &name)
-        { return _xrm->getResource(name); }
+        { return _xrm->getOptResource(name); }
     //------------------------------------------------------
 
 protected:
@@ -61,6 +59,10 @@ protected:
     bool _ispartiallyvisible;
     std::vector<Meter *> _meters;
 
+    //------------------------------------------------------
+    // Resouce interface
+    //------------------------------------------------------
+    virtual ResDB &resdb(void) { return *_xrm; }
 
     void loop(void);
     void loadConfiguration(int argc, char **argv);

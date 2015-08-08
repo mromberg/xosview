@@ -32,8 +32,8 @@ SwapMeter::SwapMeter( XOSView *parent )
 SwapMeter::~SwapMeter( void ){
 }
 
-void SwapMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void SwapMeter::checkResources(const ResDB &rdb){
+    FieldMeterGraph::checkResources(rdb);
 
     setfieldcolor( 0, parent_->getResource( "swapUsedColor" ) );
     setfieldcolor( 1, parent_->getResource( "swapFreeColor" ) );

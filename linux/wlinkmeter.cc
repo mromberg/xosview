@@ -20,9 +20,9 @@ WLinkMeter::WLinkMeter(XOSView *parent)
 WLinkMeter::~WLinkMeter(void) {
 }
 
-void WLinkMeter::checkResources( void ) {
+void WLinkMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
     _goodColor = parent_->g().allocColor(parent_->getResource(
           "wlinkGoodColor"));

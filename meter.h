@@ -17,13 +17,14 @@
 class Meter {
 public:
     Meter( XOSView *parent, const std::string &title = "",
-      const std::string &legend ="",
-      bool docaptions=false, bool dolegends=false, bool dousedlegends=false);
+      const std::string &legend ="", bool docaptions=false,
+      bool dolegends=false, bool dousedlegends=false);
+
     virtual ~Meter( void );
 
     virtual std::string name( void ) const { return "Meter"; }
 
-    virtual void checkResources( void );
+    virtual void checkResources(const ResDB &rdb);
     void title( const std::string &title ) { title_ = title; }
     const std::string &title( void ) const { return title_; }
     void legend( const std::string &legend, const std::string &delimiter="/" );

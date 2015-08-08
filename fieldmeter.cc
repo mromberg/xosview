@@ -44,9 +44,10 @@ void FieldMeter::disableMeter(void) {
 FieldMeter::~FieldMeter( void ){
 }
 
-void FieldMeter::checkResources( void ){
-    Meter::checkResources();
-    usedcolor_ = parent_->g().allocColor(parent_->getResource(
+
+void FieldMeter::checkResources(const ResDB &rdb){
+    Meter::checkResources(rdb);
+    usedcolor_ = parent_->g().allocColor(rdb.getResource(
           "usedLabelColor"));
 }
 

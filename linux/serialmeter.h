@@ -4,8 +4,8 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _SERIALMETER_H_
-#define _SERIALMETER_H_
+#ifndef SERIALMETER_H
+#define SERIALMETER_H
 
 // hack for not having linux/serial_reg.h, (Debian bug #427599)
 #define UART_LSR        5
@@ -21,11 +21,11 @@ public:
     SerialMeter( XOSView *parent, Device device);
     ~SerialMeter( void );
 
-    static const char *getResourceName(Device dev);
+    static std::string getResourceName(Device dev);
 
     void checkevent( void );
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
 
 private:
     unsigned short int _port;
