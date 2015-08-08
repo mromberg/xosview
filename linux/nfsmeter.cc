@@ -59,19 +59,19 @@ NFSDStats::~NFSDStats( void ) {
 void NFSDStats::checkResources(const ResDB &rdb){
     NFSMeter::checkResources(rdb);
 
-    setfieldcolor( 0, parent_->getResource( "NFSDStatBadCallsColor" ) );
-    setfieldcolor( 1, parent_->getResource( "NFSDStatUDPColor" ) );
-    setfieldcolor( 2, parent_->getResource( "NFSDStatTCPColor" ) );
-    setfieldcolor( 3, parent_->getResource( "NFSDStatIdleColor" ) );
+    setfieldcolor( 0, rdb.getResource( "NFSDStatBadCallsColor" ) );
+    setfieldcolor( 1, rdb.getResource( "NFSDStatUDPColor" ) );
+    setfieldcolor( 2, rdb.getResource( "NFSDStatTCPColor" ) );
+    setfieldcolor( 3, rdb.getResource( "NFSDStatIdleColor" ) );
 
-    useGraph_ = parent_->isResourceTrue( "NFSDStatGraph" );
-    dodecay_ = parent_->isResourceTrue( "NFSDStatDecay" );
-    setUsedFormat (parent_->getResource("NFSDStatUsedFormat"));
-    decayUsed(parent_->isResourceTrue("NFSDStatUsedDecay"));
+    useGraph_ = rdb.isResourceTrue( "NFSDStatGraph" );
+    dodecay_ = rdb.isResourceTrue( "NFSDStatDecay" );
+    setUsedFormat (rdb.getResource("NFSDStatUsedFormat"));
+    decayUsed(rdb.isResourceTrue("NFSDStatUsedDecay"));
     //useGraph_ = 1;
     //dodecay_ = 1;
-    //SetUsedFormat ("autoscale");
-    //SetUsedFormat ("percent");
+    //setUsedFormat ("autoscale");
+    //setUsedFormat ("percent");
 }
 
 void NFSDStats::checkevent(void) {
@@ -151,16 +151,16 @@ NFSStats::~NFSStats( void ) {
 void NFSStats::checkResources(const ResDB &rdb){
     NFSMeter::checkResources(rdb);
 
-    setfieldcolor( 0, parent_->getResource( "NFSStatReTransColor" ) );
-    setfieldcolor( 1, parent_->getResource( "NFSStatAuthRefrshColor" ) );
-    setfieldcolor( 2, parent_->getResource( "NFSStatCallsColor" ) );
-    setfieldcolor( 3, parent_->getResource( "NFSStatIdleColor" ) );
+    setfieldcolor( 0, rdb.getResource( "NFSStatReTransColor" ) );
+    setfieldcolor( 1, rdb.getResource( "NFSStatAuthRefrshColor" ) );
+    setfieldcolor( 2, rdb.getResource( "NFSStatCallsColor" ) );
+    setfieldcolor( 3, rdb.getResource( "NFSStatIdleColor" ) );
 
-    useGraph_ = parent_->isResourceTrue( "NFSStatGraph" );
-    dodecay_ = parent_->isResourceTrue( "NFSStatDecay" );
-    setUsedFormat (parent_->getResource("NFSStatUsedFormat"));
-    //SetUsedFormat ("autoscale");
-    //SetUsedFormat ("percent");
+    useGraph_ = rdb.isResourceTrue( "NFSStatGraph" );
+    dodecay_ = rdb.isResourceTrue( "NFSStatDecay" );
+    setUsedFormat (rdb.getResource("NFSStatUsedFormat"));
+    //setUsedFormat ("autoscale");
+    //setUsedFormat ("percent");
 }
 
 void NFSStats::checkevent(void) {

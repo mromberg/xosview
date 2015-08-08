@@ -95,7 +95,7 @@ void XOSView::loop(void) {
 
 void XOSView::createMeters(void) {
     MeterMaker mm(this);
-    mm.makeMeters();
+    mm.makeMeters(resdb());
     for (int i = 1 ; i <= mm.n() ; i++)
         _meters.push_back(mm[i]);
 
@@ -106,52 +106,6 @@ void XOSView::createMeters(void) {
 }
 
 
-
-
-
-//-----------------------------------------------------------------
-// ** Resource management
-//-----------------------------------------------------------------
-
-bool XOSView::isResourceTrue( const std::string &name ) {
-    ResDB::opt val = _xrm->getOptResource(name);
-    if (!val.first)
-        return false;
-
-    return val.second == "True";
-}
-
-
-std::string XOSView::getResourceOrUseDefault( const std::string &name,
-  const std::string &defaultVal ){
-
-    ResDB::opt retval = _xrm->getOptResource (name);
-    if (retval.first)
-        return retval.second;
-
-    return defaultVal;
-}
-
-
-std::string XOSView::getResource( const std::string &name ){
-    Xrm::opt retval = _xrm->getOptResource (name);
-    if (retval.first)
-        return retval.second;
-    else {
-        logFatal << "Couldn't find '" << name
-                 << "' resource in the resource database!\n";
-        /*  Some compilers aren't smart enough to know that exit() exits.  */
-        return "";
-    }
-}
-
-
-void XOSView::dumpResources( std::ostream &os ){
-    _xrm->dump(os);
-}
-
-
-
 //-----------------------------------------------------------------
 // ** Events
 //-----------------------------------------------------------------
@@ -159,7 +113,8 @@ void XOSView::dumpResources( std::ostream &os ){
 void XOSView::setEvents(void) {
     XWin::setEvents();
 
-    addEvent( ConfigureNotify, this, (EventCallBack)&XOSView::configureEvent );
+    addEvent( ConfigureNotify, this,
+      (EventCallBack)&XOSView::configureEvent );
     addEvent( Expose, this, (EventCallBack)&XOSView::exposeEvent );
     addEvent( KeyPress, this, (EventCallBack)&XOSView::keyPressEvent );
     addEvent( VisibilityNotify, this,
@@ -347,8 +302,8 @@ void XOSView::loadConfiguration(int argc, char **argv) {
     // No use of clopts beyond this point.  It is all in
     // the resource database now.  Example immediately follows...
     //---------------------------------------------------
-    if (isResourceTrue("xrmdump")) {
-        _xrm->dump(std::cout);
+    if (resdb().isResourceTrue("xrmdump")) {
+        resdb().dump(std::cout);
         exit(0);
     }
 }
@@ -357,9 +312,9 @@ void XOSView::loadConfiguration(int argc, char **argv) {
 void XOSView::checkResources(void) {
     setSleepTime();
 
-    hmargin_  = util::stoi(getResource("horizontalMargin"));
-    vmargin_  = util::stoi(getResource("verticalMargin"));
-    vspacing_ = util::stoi(getResource("verticalSpacing"));
+    hmargin_  = util::stoi(resdb().getResource("horizontalMargin"));
+    vmargin_  = util::stoi(resdb().getResource("verticalMargin"));
+    vspacing_ = util::stoi(resdb().getResource("verticalSpacing"));
     hmargin_  = std::max(0, hmargin_);
     vmargin_  = std::max(0, vmargin_);
     vspacing_ = std::max(0, vspacing_);
@@ -375,15 +330,15 @@ void XOSView::checkResources(void) {
     usedlabels_ = legend_ = caption_ = false;
 
     // use captions
-    if ( isResourceTrue("captions") )
+    if ( resdb().isResourceTrue("captions") )
         caption_ = 1;
 
     // use labels
-    if ( isResourceTrue("labels") )
+    if ( resdb().isResourceTrue("labels") )
         legend_ = 1;
 
     // use "free" labels
-    if ( isResourceTrue("usedlabels") )
+    if ( resdb().isResourceTrue("usedlabels") )
         usedlabels_ = 1;
 }
 
@@ -420,7 +375,7 @@ int XOSView::findy(XOSVFont &font){
 
 
 void XOSView::figureSize(void) {
-    std::string fname = getResource("font");
+    std::string fname = resdb().getResource("font");
     logDebug << "Font name: " << fname << std::endl;
 #ifdef HAVE_XFT
     X11ftFont font(display(), fname);
@@ -453,7 +408,7 @@ std::string XOSView::versionStr(void) const {
 
 
 void XOSView::setSleepTime(void) {
-    _sampleRate = util::stof(getResource("samplesPerSec"));
+    _sampleRate = util::stof(resdb().getResource("samplesPerSec"));
     if (!_sampleRate)
         _sampleRate = 10;
 
@@ -493,7 +448,7 @@ std::string XOSView::winname( void ){
         hname = std::string(host);
     }
     std::string name = std::string(NAME) + hname;
-    return getResourceOrUseDefault("title", name);
+    return resdb().getResourceOrUseDefault("title", name);
 }
 
 

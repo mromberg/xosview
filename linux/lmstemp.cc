@@ -23,8 +23,10 @@ static const char PROC_SENSORS_24[] = "/proc/sys/dev/sensors";
 static const char PROC_SENSORS_26[] = "/sys/class/hwmon";
 
 LmsTemp::LmsTemp( XOSView *parent, const std::string &filename,
-  const std::string &label, const std::string &caption) : FieldMeter( parent,
-    3, label, caption, 1, 1, 0 ) {
+  const std::string &label, const std::string &caption)
+    : FieldMeter( parent, 3, label, caption, 1, 1, 0 ),
+      _highColor(0), _actColor(0) {
+
     if(!checksensors(1, PROC_SENSORS_24, filename)) {
 	if(!checksensors(0, PROC_SENSORS_26, filename)) {
 	    logFatal << "Can not find file : " << PROC_SENSORS_24 << "/*/"
@@ -95,12 +97,17 @@ int  LmsTemp::checksensors(int isproc, const std::string &dir,
 void LmsTemp::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
 
-    setfieldcolor( 0, parent_->getResource( "lmstempActColor" ) );
-    setfieldcolor( 1, parent_->getResource( "lmstempIdleColor") );
-    setfieldcolor( 2, parent_->getResource( "lmstempHighColor" ) );
+    _highColor = parent_->g().allocColor(rdb.getResource(
+          "lmstempHighColor"));
+    _actColor = parent_->g().allocColor(rdb.getResource(
+          "lmstempActColor"));
 
-    priority_ = util::stoi (parent_->getResource( "lmstempPriority" ));
-    setUsedFormat(parent_->getResource( "lmstempUsedFormat" ) );
+    setfieldcolor( 0, _actColor );
+    setfieldcolor( 1, rdb.getResource( "lmstempIdleColor") );
+    setfieldcolor( 2, _highColor );
+
+    priority_ = util::stoi (rdb.getResource( "lmstempPriority" ));
+    setUsedFormat(rdb.getResource( "lmstempUsedFormat" ) );
 }
 
 void LmsTemp::checkevent( void ){
@@ -167,17 +174,17 @@ void LmsTemp::getlmstemp( void ){
     fields_[1] = high - fields_[0];
     if(fields_[1] <= 0) {	// alarm
         fields_[1] = 0;
-        setfieldcolor( 0, parent_->getResource( "lmstempHighColor" ) );
+        setfieldcolor( 0, _highColor );
     }
     else
-        setfieldcolor( 0, parent_->getResource( "lmstempActColor" ) );
+        setfieldcolor( 0, _actColor );
 
     fields_[2] = total_ - fields_[1] - fields_[0];
     if(fields_[2] <= 0) {	// alarm, high was set above 100
         fields_[2] = 0;
-        setfieldcolor( 0, parent_->getResource( "lmstempHighColor" ) );
+        setfieldcolor( 0, _highColor );
     }
     else
-        setfieldcolor( 0, parent_->getResource( "lmstempActColor" ) );
+        setfieldcolor( 0, _actColor );
     setUsed (fields_[0], total_);
 }

@@ -61,13 +61,13 @@ void SerialMeter::checkevent( void ){
 
 void SerialMeter::checkResources(const ResDB &rdb){
     BitMeter::checkResources(rdb);
-    onColor_  = parent_->g().allocColor( parent_->getResource(
+    onColor_  = parent_->g().allocColor( rdb.getResource(
           "serialOnColor" ) );
-    offColor_ = parent_->g().allocColor( parent_->getResource(
+    offColor_ = parent_->g().allocColor( rdb.getResource(
           "serialOffColor" ) );
-    priority_ = util::stoi (parent_->getResource( "serialPriority" ));
+    priority_ = util::stoi (rdb.getResource( "serialPriority" ));
 
-    _port = getPortBase(_device);
+    _port = getPortBase(rdb, _device);
     if (!getport(_port + UART_LSR) || !getport(_port + UART_MSR)){
         logFatal << "SerialMeter::SerialMeter() : "
                  << "xosview must be suid root to use the serial meter."
@@ -111,7 +111,9 @@ std::string SerialMeter::getResourceName(Device dev){
     return names[dev];
 }
 
-unsigned short int SerialMeter::getPortBase(Device dev) const {
+unsigned short int SerialMeter::getPortBase(const ResDB &rdb,
+  Device dev) const {
+
     static const char *deviceFile[] = { "/dev/ttyS0",
                                         "/dev/ttyS1",
                                         "/dev/ttyS2",
@@ -123,7 +125,7 @@ unsigned short int SerialMeter::getPortBase(Device dev) const {
                                         "/dev/ttyS8",
                                         "/dev/ttyS9"};
 
-    std::string res = parent_->getResource(getResourceName(dev));
+    std::string res = rdb.getResource(getResourceName(dev));
 
     if (util::tolower(res) == "true"){ // Autodetect portbase.
         int fd;
@@ -132,7 +134,8 @@ unsigned short int SerialMeter::getPortBase(Device dev) const {
         // get the real serial port (code stolen from setserial 2.11)
         if ((fd = open(deviceFile[dev], O_RDONLY|O_NONBLOCK)) < 0) {
             logFatal << "SerialMeter::SerialMeter() : "
-                     << "failed to open " << deviceFile[dev] <<"." <<std::endl;
+                     << "failed to open " << deviceFile[dev] <<"."
+                     << std::endl;
         }
         if (ioctl(fd, TIOCGSERIAL, &serinfo) < 0) {
             close(fd);

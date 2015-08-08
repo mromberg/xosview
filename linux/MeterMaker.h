@@ -8,6 +8,7 @@
 #define _MeterMaker_h
 
 #include "pllist.h"
+#include "rdb.h"
 
 #include <string>
 
@@ -19,18 +20,18 @@ class MeterMaker : public PLList<Meter *> {
 public:
     MeterMaker(XOSView *xos);
 
-    void makeMeters(void);
+    void makeMeters(const ResDB &rdb);
 
 private:
     XOSView *_xos;
 
-    void cpuFactory(void);
-    void serialFactory(void);
-    void intFactory(void);
+    void cpuFactory(const ResDB &rdb);
+    void serialFactory(const ResDB &rdb);
+    void intFactory(const ResDB &rdb);
     void tzoneFactory(void);
-    void lmsTempFactory(void);
-    void getRange(const std::string &resource, size_t cpuCount,
-      size_t &start, size_t &end) const;
+    void lmsTempFactory(const ResDB &rdb);
+    void getRange(const ResDB &rdb, const std::string &resource,
+      size_t cpuCount, size_t &start, size_t &end) const;
 };
 
 #endif

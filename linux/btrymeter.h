@@ -31,6 +31,8 @@ private:
     // for a while
     enum StatType { NONE, SYS, APM, ACPI };
     StatType _stype;
+    unsigned long _critColor, _lowColor, _leftColor, _chargeColor;
+    unsigned long _fullColor, _noneColor;
 
     StatType statType(void);
 

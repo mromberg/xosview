@@ -60,7 +60,7 @@ protected:
     std::vector<char> lastbits_;
     unsigned int numbits(void) const { return bits_.size(); }
 
-    void SetUsedFormat ( const std::string &str );
+    void setUsedFormat ( const std::string &str );
     void drawfieldlegend(X11Graphics &g);
     void drawused(X11Graphics &g, bool manditory);
     bool checkX(int x, int width) const;

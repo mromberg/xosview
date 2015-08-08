@@ -30,15 +30,15 @@ NetMeter::~NetMeter( void ){
 void NetMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    _maxBandwidth = util::stof(parent_->getResource( "netBandwidth" ));
-    setfieldcolor( 0, parent_->getResource( "netInColor" ) );
-    setfieldcolor( 1, parent_->getResource( "netOutColor" ) );
-    setfieldcolor( 2, parent_->getResource( "netBackground" ) );
-    priority_ = util::stoi (parent_->getResource( "netPriority" ));
-    useGraph_ = parent_->isResourceTrue( "netGraph" );
-    dodecay_ = parent_->isResourceTrue( "netDecay" );
-    setUsedFormat (parent_->getResource("netUsedFormat"));
-    decayUsed(parent_->isResourceTrue("netUsedDecay"));
+    _maxBandwidth = util::stof(rdb.getResource( "netBandwidth" ));
+    setfieldcolor( 0, rdb.getResource( "netInColor" ) );
+    setfieldcolor( 1, rdb.getResource( "netOutColor" ) );
+    setfieldcolor( 2, rdb.getResource( "netBackground" ) );
+    priority_ = util::stoi (rdb.getResource( "netPriority" ));
+    useGraph_ = rdb.isResourceTrue( "netGraph" );
+    dodecay_ = rdb.isResourceTrue( "netDecay" );
+    setUsedFormat (rdb.getResource("netUsedFormat"));
+    decayUsed(rdb.isResourceTrue("netUsedDecay"));
 }
 
 void NetMeter::checkevent(void) {

@@ -19,7 +19,7 @@ public:
     virtual void checkevent( void );
     virtual void checkResources(const ResDB &rdb);
 
-    static std::vector<std::string> mounts(XOSView *xosv);
+    static std::vector<std::string> mounts(const ResDB &rdb);
 
 private:
     unsigned long _bgColor;

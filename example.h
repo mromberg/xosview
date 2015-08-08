@@ -102,17 +102,17 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
     // at the parent meter class for more details.
 
     // First our own private values.
-    _testMaximum = util::stoi(parent_->getResourceOrUseDefault(
+    _testMaximum = util::stoi(rdb.getResourceOrUseDefault(
           "exampleTestMax", "500"));
-    _designMaximum = util::stoi(parent_->getResourceOrUseDefault(
+    _designMaximum = util::stoi(rdb.getResourceOrUseDefault(
           "exampleDesignMax", "550"));
 
     // And our parent's to control display
-    priority_ = util::stoi(parent_->getResourceOrUseDefault(
+    priority_ = util::stoi(rdb.getResourceOrUseDefault(
           "examplePriority", "10"));
-    setUsedFormat(parent_->getResourceOrUseDefault(
+    setUsedFormat(rdb.getResourceOrUseDefault(
           "exampleUsedFormat", "percent"));
-    useGraph_ = parent_->isResourceTrue("exampleGraph");
+    useGraph_ = rdb.isResourceTrue("exampleGraph");
 
     // set the color with a string (requires a lookup)
     setfieldcolor(0, "green");

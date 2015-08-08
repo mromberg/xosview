@@ -46,9 +46,9 @@ void IntMeter::checkevent( void ){
 
 void IntMeter::checkResources(const ResDB &rdb){
     BitMeter::checkResources(rdb);
-    onColor_  = parent_->g().allocColor( parent_->getResource( "intOnColor" ) );
-    offColor_ = parent_->g().allocColor(parent_->getResource( "intOffColor"));
-    priority_ = util::stoi(parent_->getResource("intPriority"));
+    onColor_  = parent_->g().allocColor( rdb.getResource( "intOnColor" ) );
+    offColor_ = parent_->g().allocColor(rdb.getResource( "intOffColor"));
+    priority_ = util::stoi(rdb.getResource("intPriority"));
 }
 
 unsigned int IntMeter::irqcount( void ){
@@ -60,7 +60,8 @@ unsigned int IntMeter::irqcount( void ){
 
     // Check and see if any IntMeter has done this before
     if (_irqmap.size()) {
-        for (std::map<size_t, unsigned int>::const_iterator i=_irqmap.begin() ;
+        for (std::map<size_t,
+                 unsigned int>::const_iterator i=_irqmap.begin() ;
              i != _irqmap.end() ; ++i) {
             rval = std::max(rval, static_cast<int>(i->second));
         }

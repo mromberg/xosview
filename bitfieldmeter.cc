@@ -60,7 +60,7 @@ void BitFieldMeter::setNumBits(int n){
         bits_[i] = lastbits_[i] = 0;
 }
 
-void BitFieldMeter::SetUsedFormat ( const std::string &fmt ) {
+void BitFieldMeter::setUsedFormat ( const std::string &fmt ) {
     std::string lfmt(util::tolower(fmt));
     /*  Do case-insensitive compares.  */
     if (lfmt == "percent")

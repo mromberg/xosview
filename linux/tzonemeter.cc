@@ -27,22 +27,22 @@ void TZoneMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
     // change "tzone" to real meter name
-    _normColor = parent_->g().allocColor(parent_->getResource(
+    _normColor = parent_->g().allocColor(rdb.getResource(
           "tzoneForeGround"));
-    _hotColor = parent_->g().allocColor(parent_->getResource(
+    _hotColor = parent_->g().allocColor(rdb.getResource(
           "tzoneHotColor"));
-    _critColor = parent_->g().allocColor(parent_->getResource(
+    _critColor = parent_->g().allocColor(rdb.getResource(
           "tzoneCritColor"));
     setfieldcolor(0, _normColor);
-    setfieldcolor(1, parent_->getResource("tzoneBackground"));
-    _peak = util::stof(parent_->getResource("tzonePeak"));
-    _hotTrip = util::stof(parent_->getResource("tzoneHotTrip"));
-    _critTrip = util::stof(parent_->getResource("tzoneCritTrip"));
-    priority_ = util::stoi(parent_->getResource("tzonePriority"));
-    dodecay_ = parent_->isResourceTrue("tzoneDecay");
-    useGraph_ = parent_->isResourceTrue("tzoneGraph");
-    setUsedFormat(parent_->getResource("tzoneUsedFormat"));
-    decayUsed(parent_->isResourceTrue("tzoneUsedDecay"));
+    setfieldcolor(1, rdb.getResource("tzoneBackground"));
+    _peak = util::stof(rdb.getResource("tzonePeak"));
+    _hotTrip = util::stof(rdb.getResource("tzoneHotTrip"));
+    _critTrip = util::stof(rdb.getResource("tzoneCritTrip"));
+    priority_ = util::stoi(rdb.getResource("tzonePriority"));
+    dodecay_ = rdb.isResourceTrue("tzoneDecay");
+    useGraph_ = rdb.isResourceTrue("tzoneGraph");
+    setUsedFormat(rdb.getResource("tzoneUsedFormat"));
+    decayUsed(rdb.isResourceTrue("tzoneUsedDecay"));
 }
 
 void TZoneMeter::checkevent( void ) {

@@ -32,84 +32,85 @@ MeterMaker::MeterMaker(XOSView *xos){
     _xos = xos;
 }
 
-void MeterMaker::makeMeters(void){
+void MeterMaker::makeMeters(const ResDB &rdb){
 
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
-    if (_xos->getResourceOrUseDefault("example", "False") == "True")
+    if (rdb.getResourceOrUseDefault("example", "False") == "True")
         push(new ExampleMeter(_xos));
 
     // Standard meters (usually added, but users could turn them off)
-    if (_xos->isResourceTrue("load"))
+    if (rdb.isResourceTrue("load"))
         push(new LoadMeter(_xos));
 
-    if (_xos->isResourceTrue("cpu"))
-        cpuFactory();
+    if (rdb.isResourceTrue("cpu"))
+        cpuFactory(rdb);
 
-    if (_xos->isResourceTrue("mem"))
+    if (rdb.isResourceTrue("mem"))
         push(new MemMeter(_xos));
 
-    if (_xos->isResourceTrue("disk"))
+    if (rdb.isResourceTrue("disk"))
         push(new DiskMeter(_xos,
-            util::stof(_xos->getResource("diskBandwidth"))));
+            util::stof(rdb.getResource("diskBandwidth"))));
 
-    if (_xos->isResourceTrue("RAID")){
-        int RAIDCount = util::stoi(_xos->getResource("RAIDdevicecount"));
+    if (rdb.isResourceTrue("RAID")){
+        int RAIDCount = util::stoi(rdb.getResource("RAIDdevicecount"));
         for (int i = 0 ; i < RAIDCount ; i++)
             push(new RAIDMeter(_xos, i));
     }
 
-    if (_xos->isResourceTrue("filesys")) {
-        std::vector<std::string> fs = FSMeter::mounts(_xos);
+    if (rdb.isResourceTrue("filesys")) {
+        std::vector<std::string> fs = FSMeter::mounts(rdb);
         for (size_t i = 0 ; i < fs.size() ; i++)
             push(new FSMeter(_xos, fs[i]));
     }
 
-    if (_xos->isResourceTrue("swap"))
+    if (rdb.isResourceTrue("swap"))
         push(new SwapMeter(_xos));
 
-    if (_xos->isResourceTrue("page"))
+    if (rdb.isResourceTrue("page"))
         push(new PageMeter(_xos,
-            util::stof(_xos->getResource("pageBandwidth"))));
+            util::stof(rdb.getResource("pageBandwidth"))));
 
-    if (_xos->isResourceTrue("wlink"))
+    if (rdb.isResourceTrue("wlink"))
         push(new WLinkMeter(_xos));
 
-    if (_xos->isResourceTrue("net"))
+    if (rdb.isResourceTrue("net"))
         push(new NetMeter(_xos));
 
-    if (_xos->isResourceTrue("NFSDStats"))
+    if (rdb.isResourceTrue("NFSDStats"))
         push(new NFSDStats(_xos));
 
-    if (_xos->isResourceTrue("NFSStats"))
+    if (rdb.isResourceTrue("NFSStats"))
         push(new NFSStats(_xos));
 
     // serial factory checks all resources.
-    serialFactory();
+    serialFactory(rdb);
 
-    if (_xos->isResourceTrue("irqrate"))
+    if (rdb.isResourceTrue("irqrate"))
         push(new IrqRateMeter(_xos));
 
-    if (_xos->isResourceTrue("interrupts"))
-        intFactory();
+    if (rdb.isResourceTrue("interrupts"))
+        intFactory(rdb);
 
-    if (_xos->isResourceTrue("battery"))
+    if (rdb.isResourceTrue("battery"))
         push(new BtryMeter(_xos));
 
-    if (_xos->isResourceTrue("tzone"))
+    if (rdb.isResourceTrue("tzone"))
         tzoneFactory();
 
-    if (_xos->isResourceTrue("lmstemp"))
-        lmsTempFactory();
+    if (rdb.isResourceTrue("lmstemp"))
+        lmsTempFactory(rdb);
 }
 
-void MeterMaker::getRange(const std::string &resource, size_t cpuCount,
-  size_t &start, size_t &end) const {
+void MeterMaker::getRange(const ResDB &rdb, const std::string &resource,
+  size_t cpuCount, size_t &start, size_t &end) const {
+
     // check the *Format resource if multi-procesor system
     start = end = 0;
 
     if (cpuCount > 1) {
-        std::string format(_xos->getResource(resource));
+        std::string format(rdb.getResource(resource));
         logDebug << resource << ": " << format << std::endl;
         if (format == "single") // single meter for all cpus
             end = 0;
@@ -130,9 +131,9 @@ void MeterMaker::getRange(const std::string &resource, size_t cpuCount,
 }
 
 
-void MeterMaker::cpuFactory(void) {
+void MeterMaker::cpuFactory(const ResDB &rdb) {
     size_t start = 0, end = 0;
-    getRange("cpuFormat", CPUMeter::countCPUs(), start, end);
+    getRange(rdb, "cpuFormat", CPUMeter::countCPUs(), start, end);
 
     logDebug << "start=" << start << ", end=" << end << std::endl;
 
@@ -140,7 +141,7 @@ void MeterMaker::cpuFactory(void) {
         push(new CPUMeter(_xos, i));
 }
 
-void MeterMaker::serialFactory(void) {
+void MeterMaker::serialFactory(const ResDB &rdb) {
 // these architectures have no ioperm()
 #if defined (__arm__) || defined(__mc68000__) || defined(__powerpc__) || defined(__sparc__) || defined(__s390__) || defined(__s390x__)
 #else
@@ -148,8 +149,8 @@ void MeterMaker::serialFactory(void) {
         bool ok ;  unsigned long val ;
         std::string res = SerialMeter::getResourceName(
             (SerialMeter::Device)i);
-        if ( !(ok = _xos->isResourceTrue(res)) ) {
-            std::istringstream is(_xos->getResource(res));
+        if ( !(ok = rdb.isResourceTrue(res)) ) {
+            std::istringstream is(rdb.getResource(res));
             is >> std::setbase(0) >> val;
             if (!is)
                 ok = false;
@@ -163,10 +164,10 @@ void MeterMaker::serialFactory(void) {
 #endif
 }
 
-void MeterMaker::intFactory(void) {
+void MeterMaker::intFactory(const ResDB &rdb) {
     size_t start = 0, end = 0;
     size_t cpuCount = CPUMeter::countCPUs();
-    getRange("intFormat", cpuCount, start, end);
+    getRange(rdb, "intFormat", cpuCount, start, end);
 
     logDebug << "int range: " << start << ", " << end << std::endl;
 
@@ -174,18 +175,18 @@ void MeterMaker::intFactory(void) {
         push(new IntMeter(_xos, i, cpuCount));
 }
 
-void MeterMaker::lmsTempFactory(void) {
+void MeterMaker::lmsTempFactory(const ResDB &rdb) {
     std::string caption = "ACT/HIGH/"
-        + _xos->getResourceOrUseDefault("lmstempHighest", "100");
+        + rdb.getResourceOrUseDefault("lmstempHighest", "100");
     for (int i = 0 ; ; i++) {
         std::ostringstream s;
         s << "lmstemp" << i;
-        std::string res = _xos->getResourceOrUseDefault(s.str(), "<nil>");
+        std::string res = rdb.getResourceOrUseDefault(s.str(), "<nil>");
         if(res == "<nil>")
             break;
         std::ostringstream s2;
         s2 << "lmstempLabel" << i;
-        std::string lab = _xos->getResourceOrUseDefault(s2.str(), "TMP");
+        std::string lab = rdb.getResourceOrUseDefault(s2.str(), "TMP");
         push(new LmsTemp(_xos, res, lab, caption));
     }
 }

@@ -24,20 +24,20 @@ void WLinkMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    _goodColor = parent_->g().allocColor(parent_->getResource(
+    _goodColor = parent_->g().allocColor(rdb.getResource(
           "wlinkGoodColor"));
-    _poorColor = parent_->g().allocColor(parent_->getResource(
+    _poorColor = parent_->g().allocColor(rdb.getResource(
           "wlinkPoorColor"));
-    _poorValue = util::stoi(parent_->getResource(
+    _poorValue = util::stoi(rdb.getResource(
           "wlinkPoorValue"));
     setfieldcolor(0, _goodColor);
-    setfieldcolor(1, parent_->getResource("wlinkBackground"));
+    setfieldcolor(1, rdb.getResource("wlinkBackground"));
 
-    priority_ = util::stoi(parent_->getResource("wlinkPriority"));
-    dodecay_ = parent_->isResourceTrue("wlinkDecay");
-    useGraph_ = parent_->isResourceTrue("wlinkGraph");
-    setUsedFormat(parent_->getResource("wlinkUsedFormat"));
-    decayUsed(parent_->isResourceTrue("wlinkUsedDecay"));
+    priority_ = util::stoi(rdb.getResource("wlinkPriority"));
+    dodecay_ = rdb.isResourceTrue("wlinkDecay");
+    useGraph_ = rdb.isResourceTrue("wlinkGraph");
+    setUsedFormat(rdb.getResource("wlinkUsedFormat"));
+    decayUsed(rdb.isResourceTrue("wlinkUsedDecay"));
 }
 
 void WLinkMeter::checkevent( void ) {

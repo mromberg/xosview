@@ -21,7 +21,9 @@ static const char LEGEND[] = "CAP/USED";
 static const char SYSDIRNAME[] = "/sys/class/power_supply/";
 
 BtryMeter::BtryMeter( XOSView *parent )
-    : FieldMeter( parent, 2, "BTRY", LEGEND, 1, 1, 0 ), _stype(NONE) {
+    : FieldMeter( parent, 2, "BTRY", LEGEND, 1, 1, 0 ), _stype(NONE),
+      _critColor(0), _lowColor(0), _leftColor(0),
+      _chargeColor(0), _fullColor(0), _noneColor(0) {
 
     _stype = statType();
     logDebug << "Battery state type: " << _stype << std::endl;
@@ -53,11 +55,24 @@ BtryMeter::StatType BtryMeter::statType(void) {
 void BtryMeter::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
 
-    setfieldcolor( 0, parent_->getResource( "batteryLeftColor" ) );
-    setfieldcolor( 1, parent_->getResource( "batteryUsedColor" ) );
+    _critColor = parent_->g().allocColor(rdb.getResource(
+          "batteryCritColor"));
+    _lowColor = parent_->g().allocColor(rdb.getResource(
+          "batteryLowColor"));
+    _leftColor = parent_->g().allocColor(rdb.getResource(
+          "batteryLeftColor"));
+    _chargeColor = parent_->g().allocColor(rdb.getResource(
+          "batteryChargeColor"));
+    _fullColor = parent_->g().allocColor(rdb.getResource(
+          "batteryFullColor"));
+    _noneColor = parent_->g().allocColor(rdb.getResource(
+          "batteryNoneColor"));
 
-    priority_ = util::stoi(parent_->getResource( "batteryPriority" ));
-    setUsedFormat(parent_->getResource( "batteryUsedFormat" ) );
+    setfieldcolor( 0, _leftColor);
+    setfieldcolor( 1, rdb.getResource( "batteryUsedColor" ) );
+
+    priority_ = util::stoi(rdb.getResource( "batteryPriority" ));
+    setUsedFormat(rdb.getResource( "batteryUsedFormat" ) );
 }
 
 void BtryMeter::checkevent( void ){
@@ -152,12 +167,11 @@ bool BtryMeter::getsysinfo(void) {
     // I just makde these numbers up.  Perhaps
     // another resource?
     if (capacity <= 10)
-        setfieldcolor( 0, parent_->getResource("batteryCritColor"));
+        setfieldcolor( 0, _critColor );
     else if (capacity <= 35)
-        setfieldcolor( 0, parent_->getResource("batteryLowColor"));
+        setfieldcolor( 0, _lowColor );
     else
-        setfieldcolor( 0, parent_->getResource("batteryLeftColor"));
-
+        setfieldcolor( 0, _leftColor );
 
     setUsed(fields_[0], total_);
 
@@ -399,32 +413,32 @@ bool BtryMeter::getapminfo( void ){
 
 	case 0: /* high (e.g. over 25% on my box) */
             logDebug << "battery_status HIGH" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryLeftColor"));
+            setfieldcolor( 0, _leftColor );
             newLegend = "High CAP/USED";
             break;
 
 	case 1: /* low  ( e.g. under 25% on my box ) */
             logDebug << "battery_status LOW" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryLowColor"));
+            setfieldcolor( 0, _lowColor );
             newLegend = "LOW avail/used";
             break;
 
 	case 2: /* critical ( less than  5% on my box ) */
             logDebug << "battery_status CRITICAL" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryCritColor"));
+            setfieldcolor( 0, _critColor );
             newLegend = "Crit LOW/Used";
             break;
 
 	case 3: /* Charging */
             logDebug << "battery_status CHARGING" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryChargeColor"));
+            setfieldcolor( 0, _chargeColor );
             newLegend = "AC/Charging";
             break;
 
 	case 4: /* selected batt not present */
 		/* no idea how this state ever could happen with APM */
             logDebug << "battery_status not present" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryNoneColor"));
+            setfieldcolor( 0, _noneColor );
             newLegend = "Not Present/N.A.";
             break;
 
@@ -432,7 +446,7 @@ bool BtryMeter::getapminfo( void ){
             // on my system this state comes if you pull both batteries
             // ( while on AC of course :-)) )
             logDebug << "apm battery_state not known" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryNoneColor"));
+            setfieldcolor( 0, _noneColor );
             newLegend = "Unknown/N.A.";
             break;
 	}
@@ -566,27 +580,27 @@ bool BtryMeter::getacpiinfo( void ){
 	switch ( acpi_charge_state ) {
 	case 0:  // charged
             logDebug << "battery_status CHARGED" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryFullColor"));
+            setfieldcolor( 0, _fullColor );
             newLegend = "CHARGED/FULL";
             break;
 	case -1: // discharging
             logDebug << "battery_status DISCHARGING" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryLeftColor"));
+            setfieldcolor( 0, _leftColor );
             newLegend = "CAP/USED";
             break;
 	case -2: // discharging - below alarm
             logDebug << "battery_status ALARM DISCHARGING" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryCritColor"));
+            setfieldcolor( 0, _critColor );
             newLegend = "LOW/ALARM";
             break;
 	case -3: // not present
             logDebug << "battery_status NOT PRESENT" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryNoneColor"));
+            setfieldcolor( 0, _noneColor );
             newLegend = "NONE/NONE";
             break;
 	case 1:  // charging
             logDebug << "battery_status CHARGING" << std::endl;
-            setfieldcolor( 0, parent_->getResource("batteryChargeColor"));
+            setfieldcolor( 0, _chargeColor );
             newLegend = "AC/Charging";
             break;
 	}

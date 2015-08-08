@@ -54,20 +54,20 @@ void RAIDMeter::checkevent( void ){
 
 void RAIDMeter::checkResources(const ResDB &rdb){
     BitFieldMeter::checkResources(rdb);
-    onColor_ = parent_->g().allocColor(parent_->getResource(
+    onColor_ = parent_->g().allocColor(rdb.getResource(
           "RAIDdiskOnlineColor"));
     offColor_ = parent_->g().allocColor(
-        parent_->getResource("RAIDdiskFailureColor"));
+        rdb.getResource("RAIDdiskFailureColor"));
     doneColor_ = parent_->g().allocColor(
-        parent_->getResource("RAIDresyncdoneColor"));
+        rdb.getResource("RAIDresyncdoneColor"));
     todoColor_ = parent_->g().allocColor(
-        parent_->getResource("RAIDresynctodoColor"));
+        rdb.getResource("RAIDresynctodoColor"));
     completeColor_= parent_->g().allocColor(
-        parent_->getResource("RAIDresynccompleteColor"));
-    priority_  = util::stoi(parent_->getResource("RAIDPriority"));
+        rdb.getResource("RAIDresynccompleteColor"));
+    priority_  = util::stoi(rdb.getResource("RAIDPriority"));
     setfieldcolor( 0, doneColor_ );
     setfieldcolor( 1, todoColor_ );
-    SetUsedFormat(parent_->getResource( "RAIDUsedFormat" ) );
+    setUsedFormat(rdb.getResource( "RAIDUsedFormat" ) );
 }
 
 // parser for /proc/mdstat

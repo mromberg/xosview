@@ -34,6 +34,7 @@ private:
     std::string _filename;
     int _highest;
     int _isproc;
+    unsigned long _highColor, _actColor;
 };
 
 #endif

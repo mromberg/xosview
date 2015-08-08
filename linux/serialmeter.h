@@ -34,7 +34,7 @@ private:
     void getserial( void );
     bool getport(unsigned short int port);
     const char *getTitle(Device dev) const;
-    unsigned short int getPortBase(Device dev) const;
+    unsigned short int getPortBase(const ResDB &rdb, Device dev) const;
 };
 
 #endif
