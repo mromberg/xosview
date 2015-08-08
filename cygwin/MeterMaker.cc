@@ -10,6 +10,7 @@
 #include "cpumeter.h"
 #include "memmeter.h"
 #include "fsmeter.h"
+#include "swapmeter.h"
 #include "example.h"  // The example meter
 
 
@@ -35,6 +36,9 @@ void MeterMaker::makeMeters(void) {
         for (size_t i = 0 ; i < fs.size() ; i++)
             push(new FSMeter(_xos, fs[i]));
     }
+
+    if (_xos->isResourceTrue("swap"))
+        push(new SwapMeter(_xos));
 }
 
 

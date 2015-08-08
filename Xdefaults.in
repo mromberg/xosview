@@ -140,7 +140,7 @@ xosview*swapPriority:       10
 xosview*swapDecay:          False
 xosview*swapGraph:          False
 xosview*swapUsedFormat:	    autoscale
-xosview*swapUsedDecay:      True
+xosview*swapUsedDecay:      False
 
 ! ** Page Meter Resources
 xosview*page:               True
