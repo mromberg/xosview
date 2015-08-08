@@ -14,6 +14,7 @@ include ../Makefile.config
 @AUTODEPRULE_SUBDIR@
 
 OBJS = \
+loadmeter.o \
 cpumeter.o \
 memmeter.o \
 fsmeter.o \

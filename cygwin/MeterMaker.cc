@@ -7,6 +7,7 @@
 
 #include "MeterMaker.h"
 
+#include "loadmeter.h"
 #include "cpumeter.h"
 #include "memmeter.h"
 #include "fsmeter.h"
@@ -26,6 +27,9 @@ void MeterMaker::makeMeters(void) {
     // isResourceTrue.  But example resources are not in Xdefalts
     if (_xos->getResourceOrUseDefault("example", "False") == "True")
         push(new ExampleMeter(_xos));
+
+    if (_xos->isResourceTrue("load"))
+        push(new LoadMeter(_xos));
 
     if (_xos->isResourceTrue("cpu"))
         cpuFactory();
