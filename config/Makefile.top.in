@@ -20,7 +20,6 @@ XFT_OBJS = xftfont.o xftgraphics.o
 
 
 OBJS = \
-llist.o \
 xwin.o \
 x11graphics.o \
 x11font.o \

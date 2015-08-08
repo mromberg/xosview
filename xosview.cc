@@ -95,9 +95,7 @@ void XOSView::loop(void) {
 
 void XOSView::createMeters(void) {
     MeterMaker mm(this);
-    mm.makeMeters(resdb());
-    for (int i = 1 ; i <= mm.n() ; i++)
-        _meters.push_back(mm[i]);
+    _meters = mm.makeMeters(resdb());
 
     if (_meters.size() == 0)
         logProblem << "No meters were enabled." << std::endl;
@@ -444,7 +442,7 @@ std::string XOSView::winname( void ){
         logProblem << "gethostname() failed" << std::endl;
     }
     else {
-        host[99] = '\0';  // POSIX.1-2001 says truncated names not terminated
+        host[99] = '\0';  //POSIX.1-2001 says truncated names not terminated
         hname = std::string(host);
     }
     std::string name = std::string(NAME) + hname;

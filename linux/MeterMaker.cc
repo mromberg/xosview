@@ -28,79 +28,78 @@
 #include <sstream>
 #include <iomanip>
 
-MeterMaker::MeterMaker(XOSView *xos){
-    _xos = xos;
-}
 
-void MeterMaker::makeMeters(const ResDB &rdb){
+std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        push(new ExampleMeter(_xos));
+        _meters.push_back(new ExampleMeter(_xos));
 
     // Standard meters (usually added, but users could turn them off)
     if (rdb.isResourceTrue("load"))
-        push(new LoadMeter(_xos));
+        _meters.push_back(new LoadMeter(_xos));
 
     if (rdb.isResourceTrue("cpu"))
         cpuFactory(rdb);
 
     if (rdb.isResourceTrue("mem"))
-        push(new MemMeter(_xos));
+        _meters.push_back(new MemMeter(_xos));
 
     if (rdb.isResourceTrue("disk"))
-        push(new DiskMeter(_xos,
+        _meters.push_back(new DiskMeter(_xos,
             util::stof(rdb.getResource("diskBandwidth"))));
 
     if (rdb.isResourceTrue("RAID")){
         int RAIDCount = util::stoi(rdb.getResource("RAIDdevicecount"));
         for (int i = 0 ; i < RAIDCount ; i++)
-            push(new RAIDMeter(_xos, i));
+            _meters.push_back(new RAIDMeter(_xos, i));
     }
 
     if (rdb.isResourceTrue("filesys")) {
         std::vector<std::string> fs = FSMeter::mounts(rdb);
         for (size_t i = 0 ; i < fs.size() ; i++)
-            push(new FSMeter(_xos, fs[i]));
+            _meters.push_back(new FSMeter(_xos, fs[i]));
     }
 
     if (rdb.isResourceTrue("swap"))
-        push(new SwapMeter(_xos));
+        _meters.push_back(new SwapMeter(_xos));
 
     if (rdb.isResourceTrue("page"))
-        push(new PageMeter(_xos,
+        _meters.push_back(new PageMeter(_xos,
             util::stof(rdb.getResource("pageBandwidth"))));
 
     if (rdb.isResourceTrue("wlink"))
-        push(new WLinkMeter(_xos));
+        _meters.push_back(new WLinkMeter(_xos));
 
     if (rdb.isResourceTrue("net"))
-        push(new NetMeter(_xos));
+        _meters.push_back(new NetMeter(_xos));
 
     if (rdb.isResourceTrue("NFSDStats"))
-        push(new NFSDStats(_xos));
+        _meters.push_back(new NFSDStats(_xos));
 
     if (rdb.isResourceTrue("NFSStats"))
-        push(new NFSStats(_xos));
+        _meters.push_back(new NFSStats(_xos));
 
     // serial factory checks all resources.
     serialFactory(rdb);
 
     if (rdb.isResourceTrue("irqrate"))
-        push(new IrqRateMeter(_xos));
+        _meters.push_back(new IrqRateMeter(_xos));
 
     if (rdb.isResourceTrue("interrupts"))
         intFactory(rdb);
 
     if (rdb.isResourceTrue("battery"))
-        push(new BtryMeter(_xos));
+        _meters.push_back(new BtryMeter(_xos));
 
     if (rdb.isResourceTrue("tzone"))
         tzoneFactory();
 
     if (rdb.isResourceTrue("lmstemp"))
         lmsTempFactory(rdb);
+
+    return _meters;
 }
 
 void MeterMaker::getRange(const ResDB &rdb, const std::string &resource,
@@ -138,7 +137,7 @@ void MeterMaker::cpuFactory(const ResDB &rdb) {
     logDebug << "start=" << start << ", end=" << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
-        push(new CPUMeter(_xos, i));
+        _meters.push_back(new CPUMeter(_xos, i));
 }
 
 void MeterMaker::serialFactory(const ResDB &rdb) {
@@ -159,7 +158,8 @@ void MeterMaker::serialFactory(const ResDB &rdb) {
         }
 
         if ( ok )
-            push(new SerialMeter(_xos, (SerialMeter::Device)i));
+            _meters.push_back(new SerialMeter(_xos,
+                (SerialMeter::Device)i));
     }
 #endif
 }
@@ -172,7 +172,7 @@ void MeterMaker::intFactory(const ResDB &rdb) {
     logDebug << "int range: " << start << ", " << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
-        push(new IntMeter(_xos, i, cpuCount));
+        _meters.push_back(new IntMeter(_xos, i, cpuCount));
 }
 
 void MeterMaker::lmsTempFactory(const ResDB &rdb) {
@@ -187,7 +187,7 @@ void MeterMaker::lmsTempFactory(const ResDB &rdb) {
         std::ostringstream s2;
         s2 << "lmstempLabel" << i;
         std::string lab = rdb.getResourceOrUseDefault(s2.str(), "TMP");
-        push(new LmsTemp(_xos, res, lab, caption));
+        _meters.push_back(new LmsTemp(_xos, res, lab, caption));
     }
 }
 
@@ -198,5 +198,5 @@ void MeterMaker::tzoneFactory(void) {
         logProblem << "tzone enabled but no thermal zones found.\n";
 
     for (size_t i = 0 ; i < nzones ; i++)
-        push(new TZoneMeter(_xos, i));
+        _meters.push_back(new TZoneMeter(_xos, i));
 }
