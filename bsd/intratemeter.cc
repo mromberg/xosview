@@ -31,26 +31,30 @@ IrqRateMeter::IrqRateMeter( XOSView *parent )
     lastirqs_.resize(irqcount_ + 1, 0);
 }
 
+
 IrqRateMeter::~IrqRateMeter( void ) {
 }
 
-void IrqRateMeter::checkResources( void ) {
-    FieldMeterGraph::checkResources();
-    setfieldcolor( 0, parent_->getResource("irqrateUsedColor") );
-    setfieldcolor( 1, parent_->getResource("irqrateIdleColor") );
-    priority_ = util::stoi( parent_->getResource("irqratePriority") );
-    dodecay_ = parent_->isResourceTrue("irqrateDecay");
-    useGraph_ = parent_->isResourceTrue("irqrateGraph");
-    setUsedFormat( parent_->getResource("irqrateUsedFormat") );
+
+void IrqRateMeter::checkResources(const ResDB &rdb) {
+    FieldMeterGraph::checkResources(rdb);
+    setfieldcolor( 0, rdb.getResource("irqrateUsedColor") );
+    setfieldcolor( 1, rdb.getResource("irqrateIdleColor") );
+    priority_ = util::stoi( rdb.getResource("irqratePriority") );
+    dodecay_ = rdb.isResourceTrue("irqrateDecay");
+    useGraph_ = rdb.isResourceTrue("irqrateGraph");
+    setUsedFormat( rdb.getResource("irqrateUsedFormat") );
     total_ = 2000;
 
     BSDGetIntrStats(lastirqs_.data(), NULL);
 }
 
+
 void IrqRateMeter::checkevent( void ) {
     getinfo();
     drawfields(parent_->g());
 }
+
 
 void IrqRateMeter::getinfo( void ) {
     int delta = 0;

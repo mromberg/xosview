@@ -41,31 +41,35 @@ NetMeter::NetMeter( XOSView *parent, double max )
     }
 }
 
+
 NetMeter::~NetMeter( void ) {
 }
 
-void NetMeter::checkResources( void ) {
 
-    FieldMeterGraph::checkResources();
+void NetMeter::checkResources(const ResDB &rdb) {
 
-    setfieldcolor( 0, parent_->getResource("netInColor") );
-    setfieldcolor( 1, parent_->getResource("netOutColor") );
-    setfieldcolor( 2, parent_->getResource("netBackground") );
-    priority_ = util::stoi( parent_->getResource("netPriority") );
-    dodecay_ = parent_->isResourceTrue("netDecay");
-    useGraph_ = parent_->isResourceTrue("netGraph");
-    setUsedFormat( parent_->getResource("netUsedFormat") );
-    netIface_ = parent_->getResource("netIface");
+    FieldMeterGraph::checkResources(rdb);
+
+    setfieldcolor( 0, rdb.getResource("netInColor") );
+    setfieldcolor( 1, rdb.getResource("netOutColor") );
+    setfieldcolor( 2, rdb.getResource("netBackground") );
+    priority_ = util::stoi( rdb.getResource("netPriority") );
+    dodecay_ = rdb.isResourceTrue("netDecay");
+    useGraph_ = rdb.isResourceTrue("netGraph");
+    setUsedFormat( rdb.getResource("netUsedFormat") );
+    netIface_ = rdb.getResource("netIface");
     if (netIface_[0] == '-') {
         ignored_ = true;
         netIface_.erase(0, netIface_.find_first_not_of("- "));
     }
 }
 
+
 void NetMeter::checkevent( void ) {
     getstats();
     drawfields(parent_->g());
 }
+
 
 void NetMeter::getstats(void) {
     //  Reset total_ to expected maximum.  If it is too low, it

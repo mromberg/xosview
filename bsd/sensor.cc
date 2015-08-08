@@ -49,28 +49,29 @@ BSDSensor::BSDSensor( XOSView *parent, const std::string &name,
 BSDSensor::~BSDSensor( void ) {
 }
 
-void BSDSensor::checkResources( void ) {
-    SensorFieldMeter::checkResources();
 
-    actcolor_  = parent_->g().allocColor( parent_->getResource(
+void BSDSensor::checkResources(const ResDB &rdb) {
+    SensorFieldMeter::checkResources(rdb);
+
+    actcolor_  = parent_->g().allocColor( rdb.getResource(
           "bsdsensorActColor" ) );
-    highcolor_ = parent_->g().allocColor( parent_->getResource(
+    highcolor_ = parent_->g().allocColor( rdb.getResource(
           "bsdsensorHighColor" ) );
-    lowcolor_  = parent_->g().allocColor( parent_->getResource(
+    lowcolor_  = parent_->g().allocColor( rdb.getResource(
           "bsdsensorLowColor" ) );
     setfieldcolor( 0, actcolor_  );
-    setfieldcolor( 1, parent_->getResource( "bsdsensorIdleColor" ) );
+    setfieldcolor( 1, rdb.getResource( "bsdsensorIdleColor" ) );
     setfieldcolor( 2, highcolor_ );
-    priority_ = util::stoi( parent_->getResource( "bsdsensorPriority" ) );
+    priority_ = util::stoi( rdb.getResource( "bsdsensorPriority" ) );
 
-    std::string tmp(parent_->getResourceOrUseDefault(
+    std::string tmp(rdb.getResourceOrUseDefault(
           "bsdsensorHighest", "0" ));
     std::string s("bsdsensorHighest");
     s += util::repr(nbr_);
-    total_ = fabs( util::stof( parent_->getResourceOrUseDefault(s, tmp) ) );
+    total_ = fabs( util::stof( rdb.getResourceOrUseDefault(s, tmp) ) );
     s = "bsdsensorUsedFormat" + util::repr(nbr_);
-    std::string f = parent_->getResourceOrUseDefault(s, "");
-    setUsedFormat( f.size() ? f : parent_->getResource(
+    std::string f = rdb.getResourceOrUseDefault(s, "");
+    setUsedFormat( f.size() ? f : rdb.getResource(
           "bsdsensorUsedFormat" ) );
 
     if (!has_high_)

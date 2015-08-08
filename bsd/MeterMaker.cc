@@ -38,72 +38,77 @@
 MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
 }
 
-void MeterMaker::makeMeters(void) {
+std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
     // Check the kernelName resource
-    XOSView::opt kname(_xos->getOptResource("kernelName"));
+    ResDB::opt kname(rdb.getOptResource("kernelName"));
     if (kname.first)
         SetKernelName(kname.second.c_str());
 
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
-    if (_xos->getResourceOrUseDefault("example", "False") == "True")
-        push(new ExampleMeter(_xos));
+    if (rdb.getResourceOrUseDefault("example", "False") == "True")
+        _meters.push_back(new ExampleMeter(_xos));
 
     // Standard meters (usually added, but users could turn them off)
-    if ( _xos->isResourceTrue("load") )
-        push(new LoadMeter(_xos));
+    if ( rdb.isResourceTrue("load") )
+        _meters.push_back(new LoadMeter(_xos));
 
-    if ( _xos->isResourceTrue("cpu") )
-        cpuFactory();
+    if ( rdb.isResourceTrue("cpu") )
+        cpuFactory(rdb);
 
-    if ( _xos->isResourceTrue("mem") )
-        push(new MemMeter(_xos));
+    if ( rdb.isResourceTrue("mem") )
+        _meters.push_back(new MemMeter(_xos));
 
-    if (_xos->isResourceTrue("filesys")) {
-        std::vector<std::string> fs = FSMeter::mounts(_xos);
+    if (rdb.isResourceTrue("filesys")) {
+        std::vector<std::string> fs = FSMeter::mounts(rdb);
         for (size_t i = 0 ; i < fs.size() ; i++)
-            push(new FSMeter(_xos, fs[i]));
+            _meters.push_back(new FSMeter(_xos, fs[i]));
     }
 
-    if ( _xos->isResourceTrue("swap") )
-        push(new SwapMeter(_xos));
+    if ( rdb.isResourceTrue("swap") )
+        _meters.push_back(new SwapMeter(_xos));
 
-    if ( _xos->isResourceTrue("page") )
-        push(new PageMeter(_xos, util::stof(_xos->getResource("pageBandwidth"))));
+    if ( rdb.isResourceTrue("page") )
+        _meters.push_back(new PageMeter(_xos,
+            util::stof(rdb.getResource("pageBandwidth"))));
 
-    if ( _xos->isResourceTrue("net") )
-        push(new NetMeter(_xos, util::stof(_xos->getResource("netBandwidth"))));
+    if ( rdb.isResourceTrue("net") )
+        _meters.push_back(new NetMeter(_xos,
+            util::stof(rdb.getResource("netBandwidth"))));
 
-    if ( _xos->isResourceTrue("disk") )
-        push(new DiskMeter(_xos, util::stof(_xos->getResource("diskBandwidth"))));
+    if ( rdb.isResourceTrue("disk") )
+        _meters.push_back(new DiskMeter(_xos,
+            util::stof(rdb.getResource("diskBandwidth"))));
 
-    if ( _xos->isResourceTrue("interrupts") )
-        push(new IntMeter(_xos));
+    if ( rdb.isResourceTrue("interrupts") )
+        _meters.push_back(new IntMeter(_xos));
 
-    if ( _xos->isResourceTrue("irqrate") )
-        push(new IrqRateMeter(_xos));
+    if ( rdb.isResourceTrue("irqrate") )
+        _meters.push_back(new IrqRateMeter(_xos));
 
-    if ( _xos->isResourceTrue("battery") && BSDHasBattery() )
-        push(new BtryMeter(_xos));
+    if ( rdb.isResourceTrue("battery") && BSDHasBattery() )
+        _meters.push_back(new BtryMeter(_xos));
 
-    if ( _xos->isResourceTrue("coretemp") )
-        coreTempFactory();
+    if ( rdb.isResourceTrue("coretemp") )
+        coreTempFactory(rdb);
 
-    if ( _xos->isResourceTrue("bsdsensor") )
-        sensorFactory();
+    if ( rdb.isResourceTrue("bsdsensor") )
+        sensorFactory(rdb);
+
+    return _meters;
 }
 
 
-void MeterMaker::cpuFactory(void) {
+void MeterMaker::cpuFactory(const ResDB &rdb) {
     bool single, both, all;
     unsigned int cpuCount = BSDCountCpus();
 
-    single = _xos->getResource("cpuFormat") == "single";
-    both = _xos->getResource("cpuFormat") == "both";
-    all = _xos->getResource("cpuFormat") == "all";
+    single = rdb.getResource("cpuFormat") == "single";
+    both = rdb.getResource("cpuFormat") == "both";
+    all = rdb.getResource("cpuFormat") == "all";
 
-    if (_xos->getResource("cpuFormat") == "auto") {
+    if (rdb.getResource("cpuFormat") == "auto") {
         if (cpuCount == 1 || cpuCount > 4)
             single = true;
         else
@@ -111,31 +116,31 @@ void MeterMaker::cpuFactory(void) {
     }
 
     if (single || both)
-        push(new CPUMeter(_xos, 0));
+        _meters.push_back(new CPUMeter(_xos, 0));
 
     if (all || both) {
         for (unsigned int i = 1; i <= cpuCount; i++)
-            push(new CPUMeter(_xos, i));
+            _meters.push_back(new CPUMeter(_xos, i));
     }
 }
 
 
-void MeterMaker::coreTempFactory(void) {
+void MeterMaker::coreTempFactory(const ResDB &rdb) {
 #if defined(__i386__) || defined(__x86_64__)
     if ( CoreTemp::countCpus() > 0 ) {
         std::string caption("ACT(\260C)/HIGH/");
-        caption += _xos->getResourceOrUseDefault( "coretempHighest", "100" );
-        std::string displayType = _xos->getResourceOrUseDefault(
+        caption += rdb.getResourceOrUseDefault( "coretempHighest", "100" );
+        std::string displayType = rdb.getResourceOrUseDefault(
             "coretempDisplayType", "separate");
         if (displayType == "separate") {
             std::string name("CPU");
             for (uint i = 0; i < CoreTemp::countCpus(); i++)
-                push(new CoreTemp(_xos, name + util::repr(i), caption, i));
+                _meters.push_back(new CoreTemp(_xos, name + util::repr(i), caption, i));
         }
         else if (displayType == "average")
-            push(new CoreTemp(_xos, "CPU", caption, -1));
+            _meters.push_back(new CoreTemp(_xos, "CPU", caption, -1));
         else if (displayType == "maximum")
-            push(new CoreTemp(_xos, "CPU", caption, -2));
+            _meters.push_back(new CoreTemp(_xos, "CPU", caption, -2));
         else {
             logFatal << "Unknown value of coretempDisplayType: "
                      << displayType << std::endl;
@@ -145,24 +150,24 @@ void MeterMaker::coreTempFactory(void) {
 }
 
 
-void MeterMaker::sensorFactory(void) {
+void MeterMaker::sensorFactory(const ResDB &rdb) {
     std::string s, caption, l;
     for (int i = 1 ; ; i++) {
         s = "bsdsensorHighest" + util::repr(i);
-        float highest = util::stof( _xos->getResourceOrUseDefault(s,
+        float highest = util::stof( rdb.getResourceOrUseDefault(s,
             "100") );
         caption = "ACT/HIGH/" + util::repr(highest);
         s = "bsdsensor" + util::repr(i);
-        std::string name = _xos->getResourceOrUseDefault(s, "");
+        std::string name = rdb.getResourceOrUseDefault(s, "");
         if (!name.size())
             break;
         s = "bsdsensorHigh" + util::repr(i);
-        std::string high = _xos->getResourceOrUseDefault(s, "");
+        std::string high = rdb.getResourceOrUseDefault(s, "");
         s = "bsdsensorLow" + util::repr(i);
-        std::string low = _xos->getResourceOrUseDefault(s, "");
+        std::string low = rdb.getResourceOrUseDefault(s, "");
         s = "bsdsensorLabel" + util::repr(i);
         l = "SEN" + util::repr(i);
-        std::string label = _xos->getResourceOrUseDefault(s, l);
-        push(new BSDSensor(_xos, name, high, low, label, caption, i));
+        std::string label = rdb.getResourceOrUseDefault(s, l);
+        _meters.push_back(new BSDSensor(_xos, name, high, low, label, caption, i));
     }
 }

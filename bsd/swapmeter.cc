@@ -23,25 +23,29 @@ SwapMeter::SwapMeter( XOSView *parent )
     BSDSwapInit();
 }
 
+
 SwapMeter::~SwapMeter( void ) {
 }
 
-void SwapMeter::checkResources( void ) {
 
-    FieldMeterGraph::checkResources();
+void SwapMeter::checkResources(const ResDB &rdb) {
 
-    setfieldcolor( 0, parent_->getResource("swapUsedColor") );
-    setfieldcolor( 1, parent_->getResource("swapFreeColor") );
-    priority_ = util::stoi( parent_->getResource("swapPriority") );
-    dodecay_ = parent_->isResourceTrue("swapDecay");
-    useGraph_ = parent_->isResourceTrue("swapGraph");
-    setUsedFormat( parent_->getResource("swapUsedFormat") );
+    FieldMeterGraph::checkResources(rdb);
+
+    setfieldcolor( 0, rdb.getResource("swapUsedColor") );
+    setfieldcolor( 1, rdb.getResource("swapFreeColor") );
+    priority_ = util::stoi( rdb.getResource("swapPriority") );
+    dodecay_ = rdb.isResourceTrue("swapDecay");
+    useGraph_ = rdb.isResourceTrue("swapGraph");
+    setUsedFormat( rdb.getResource("swapUsedFormat") );
 }
+
 
 void SwapMeter::checkevent( void ) {
     getswapinfo();
     drawfields(parent_->g());
 }
+
 
 void SwapMeter::getswapinfo( void ) {
     uint64_t total = 0, used = 0;

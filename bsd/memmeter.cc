@@ -38,26 +38,28 @@ MemMeter::MemMeter( XOSView *parent )
     BSDPageInit();
 }
 
+
 MemMeter::~MemMeter( void ) {
 }
 
-void MemMeter::checkResources( void ) {
 
-    FieldMeterGraph::checkResources();
+void MemMeter::checkResources(const ResDB &rdb) {
 
-    setfieldcolor( 0, parent_->getResource("memActiveColor") );
-    setfieldcolor( 1, parent_->getResource("memInactiveColor") );
-    setfieldcolor( 2, parent_->getResource("memWiredColor") );
+    FieldMeterGraph::checkResources(rdb);
+
+    setfieldcolor( 0, rdb.getResource("memActiveColor") );
+    setfieldcolor( 1, rdb.getResource("memInactiveColor") );
+    setfieldcolor( 2, rdb.getResource("memWiredColor") );
 #if defined(HAVE_UVM)
-    setfieldcolor( 3, parent_->getResource("memFreeColor") );
+    setfieldcolor( 3, rdb.getResource("memFreeColor") );
 #else
-    setfieldcolor( 3, parent_->getResource("memCacheColor") );
-    setfieldcolor( 4, parent_->getResource("memFreeColor") );
+    setfieldcolor( 3, rdb.getResource("memCacheColor") );
+    setfieldcolor( 4, rdb.getResource("memFreeColor") );
 #endif
-    priority_ = util::stoi( parent_->getResource("memPriority") );
-    dodecay_ = parent_->isResourceTrue("memDecay");
-    useGraph_ = parent_->isResourceTrue("memGraph");
-    setUsedFormat( parent_->getResource("memUsedFormat") );
+    priority_ = util::stoi( rdb.getResource("memPriority") );
+    dodecay_ = rdb.isResourceTrue("memDecay");
+    useGraph_ = rdb.isResourceTrue("memGraph");
+    setUsedFormat( rdb.getResource("memUsedFormat") );
 }
 
 

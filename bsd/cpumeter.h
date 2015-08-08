@@ -40,7 +40,7 @@ public:
 
     virtual std::string name( void ) const { return "CPUMeter"; }
     void checkevent( void );
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
 
 protected:
     void getcputime( void );

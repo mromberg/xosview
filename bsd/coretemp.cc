@@ -27,36 +27,38 @@ CoreTemp::CoreTemp( XOSView *parent, const std::string &label,
     setMetric(true);
 }
 
+
 CoreTemp::~CoreTemp( void ) {
 }
 
-void CoreTemp::checkResources( void ) {
-    FieldMeter::checkResources();
 
-    actcolor_  = parent_->g().allocColor( parent_->getResource(
+void CoreTemp::checkResources(const ResDB &rdb) {
+    FieldMeter::checkResources(rdb);
+
+    actcolor_  = parent_->g().allocColor( rdb.getResource(
           "coretempActColor" ) );
-    highcolor_ = parent_->g().allocColor( parent_->getResource(
+    highcolor_ = parent_->g().allocColor( rdb.getResource(
           "coretempHighColor" ) );
     setfieldcolor( 0, actcolor_ );
-    setfieldcolor( 1, parent_->getResource( "coretempIdleColor") );
+    setfieldcolor( 1, rdb.getResource( "coretempIdleColor") );
     setfieldcolor( 2, highcolor_ );
 
-    priority_ = util::stoi( parent_->getResource( "coretempPriority" ) );
-    std::string highest = parent_->getResourceOrUseDefault(
+    priority_ = util::stoi( rdb.getResource( "coretempPriority" ) );
+    std::string highest = rdb.getResourceOrUseDefault(
         "coretempHighest", "100" );
     total_ = util::stoi( highest );
-    std::string high = parent_->getResourceOrUseDefault("coretempHigh", "");
-    setUsedFormat( parent_->getResource( "coretempUsedFormat" ) );
+    std::string high = rdb.getResourceOrUseDefault("coretempHigh", "");
+    setUsedFormat( rdb.getResource( "coretempUsedFormat" ) );
 
     // Get tjMax here and use as total.
     float total = -300.0;
-    float *tjmax = (float *)calloc(cpucount_, sizeof(float));
-    BSDGetCPUTemperature(temps_.data(), tjmax);
+    std::vector<float> tjmax(cpucount_, 0.0);
+    BSDGetCPUTemperature(temps_.data(), tjmax.data());
     for (int i = 0; i < cpucount_; i++) {
         if (tjmax[i] > total)
             total = tjmax[i];
     }
-    free(tjmax);
+
     if (total > 0.0)
         total_ = total;
 

@@ -48,16 +48,19 @@ void IntMeter::checkevent( void ) {
     BitMeter::checkevent();
 }
 
-void IntMeter::checkResources( void ) {
-    BitMeter::checkResources();
-    onColor_  = parent_->g().allocColor( parent_->getResource( "intOnColor" ) );
-    offColor_ = parent_->g().allocColor( parent_->getResource( "intOffColor" ) );
-    priority_ = util::stoi( parent_->getResource( "intPriority" ) );
+
+void IntMeter::checkResources(const ResDB &rdb) {
+    BitMeter::checkResources(rdb);
+    onColor_  = parent_->g().allocColor( rdb.getResource( "intOnColor" ) );
+    offColor_ = parent_->g().allocColor( rdb.getResource( "intOffColor" ) );
+    priority_ = util::stoi( rdb.getResource( "intPriority" ) );
 }
+
 
 void IntMeter::getirqs( void ) {
     BSDGetIntrStats(irqs_.data(), inbrs_.data());
 }
+
 
 void IntMeter::updateirqcount( bool init ) {
     int count = 16;

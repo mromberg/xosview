@@ -31,18 +31,18 @@ CPUMeter::CPUMeter( XOSView *parent, unsigned int nbr )
 CPUMeter::~CPUMeter( void ) {
 }
 
-void CPUMeter::checkResources( void ) {
-    FieldMeterGraph::checkResources();
+void CPUMeter::checkResources(const ResDB &rdb) {
+    FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, parent_->getResource("cpuUserColor") );
-    setfieldcolor( 1, parent_->getResource("cpuNiceColor") );
-    setfieldcolor( 2, parent_->getResource("cpuSystemColor") );
-    setfieldcolor( 3, parent_->getResource("cpuInterruptColor") );
-    setfieldcolor( 4, parent_->getResource("cpuFreeColor") );
-    priority_ = util::stoi( parent_->getResource("cpuPriority") );
-    dodecay_ = parent_->isResourceTrue("cpuDecay");
-    useGraph_ = parent_->isResourceTrue("cpuGraph");
-    setUsedFormat( parent_->getResource("cpuUsedFormat") );
+    setfieldcolor( 0, rdb.getResource("cpuUserColor") );
+    setfieldcolor( 1, rdb.getResource("cpuNiceColor") );
+    setfieldcolor( 2, rdb.getResource("cpuSystemColor") );
+    setfieldcolor( 3, rdb.getResource("cpuInterruptColor") );
+    setfieldcolor( 4, rdb.getResource("cpuFreeColor") );
+    priority_ = util::stoi( rdb.getResource("cpuPriority") );
+    dodecay_ = rdb.isResourceTrue("cpuDecay");
+    useGraph_ = rdb.isResourceTrue("cpuGraph");
+    setUsedFormat( rdb.getResource("cpuUsedFormat") );
 }
 
 void CPUMeter::checkevent( void ) {

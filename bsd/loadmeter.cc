@@ -28,35 +28,37 @@ LoadMeter::LoadMeter( XOSView *parent )
     total_ = -1.0;
 }
 
+
 LoadMeter::~LoadMeter( void ) {
 }
 
-void LoadMeter::checkResources( void ) {
 
-    FieldMeterGraph::checkResources();
+void LoadMeter::checkResources(const ResDB &rdb) {
 
-    procloadcol_ = parent_->g().allocColor( parent_->getResource(
+    FieldMeterGraph::checkResources(rdb);
+
+    procloadcol_ = parent_->g().allocColor( rdb.getResource(
           "loadProcColor") );
-    warnloadcol_ = parent_->g().allocColor( parent_->getResource(
+    warnloadcol_ = parent_->g().allocColor( rdb.getResource(
           "loadWarnColor") );
-    critloadcol_ = parent_->g().allocColor( parent_->getResource(
+    critloadcol_ = parent_->g().allocColor( rdb.getResource(
           "loadCritColor") );
 
     setfieldcolor( 0, procloadcol_ );
-    setfieldcolor( 1, parent_->getResource("loadIdleColor") );
-    priority_ = util::stoi( parent_->getResource("loadPriority") );
-    dodecay_ = parent_->isResourceTrue("loadDecay");
-    useGraph_ = parent_->isResourceTrue("loadGraph");
-    setUsedFormat( parent_->getResource("loadUsedFormat") );
-    do_cpu_speed_ = parent_->isResourceTrue("loadCpuSpeed");
+    setfieldcolor( 1, rdb.getResource("loadIdleColor") );
+    priority_ = util::stoi( rdb.getResource("loadPriority") );
+    dodecay_ = rdb.isResourceTrue("loadDecay");
+    useGraph_ = rdb.isResourceTrue("loadGraph");
+    setUsedFormat( rdb.getResource("loadUsedFormat") );
+    do_cpu_speed_ = rdb.isResourceTrue("loadCpuSpeed");
 
-    std::string warn = parent_->getResource("loadWarnThreshold");
+    std::string warn = rdb.getResource("loadWarnThreshold");
     if (warn == "auto")
         warnThreshold_ = BSDCountCpus();
     else
         warnThreshold_ = util::stoi(warn);
 
-    std::string crit = parent_->getResource("loadCritThreshold");
+    std::string crit = rdb.getResource("loadCritThreshold");
     if (crit == "auto")
         critThreshold_ = warnThreshold_ * 4;
     else
@@ -78,6 +80,7 @@ void LoadMeter::checkResources( void ) {
         dodecay_ = 0;
     }
 }
+
 
 void LoadMeter::checkevent( void ) {
     getloadinfo();

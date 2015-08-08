@@ -21,29 +21,29 @@ BtryMeter::BtryMeter( XOSView *parent )
 BtryMeter::~BtryMeter( void ) {
 }
 
-void BtryMeter::checkResources( void ) {
-    FieldMeter::checkResources();
+void BtryMeter::checkResources(const ResDB &rdb) {
+    FieldMeter::checkResources(rdb);
 
-    leftcolor_ = parent_->g().allocColor( parent_->getResource(
+    leftcolor_ = parent_->g().allocColor( rdb.getResource(
           "batteryLeftColor") );
-    usedcolor_ = parent_->g().allocColor( parent_->getResource(
+    usedcolor_ = parent_->g().allocColor( rdb.getResource(
           "batteryUsedColor") );
-    chargecolor_ = parent_->g().allocColor( parent_->getResource(
+    chargecolor_ = parent_->g().allocColor( rdb.getResource(
           "batteryChargeColor") );
-    fullcolor_ = parent_->g().allocColor( parent_->getResource(
+    fullcolor_ = parent_->g().allocColor( rdb.getResource(
           "batteryFullColor") );
-    lowcolor_ = parent_->g().allocColor( parent_->getResource(
+    lowcolor_ = parent_->g().allocColor( rdb.getResource(
           "batteryLowColor") );
-    critcolor_ = parent_->g().allocColor( parent_->getResource(
+    critcolor_ = parent_->g().allocColor( rdb.getResource(
           "batteryCritColor") );
-    nonecolor_ = parent_->g().allocColor( parent_->getResource(
+    nonecolor_ = parent_->g().allocColor( rdb.getResource(
           "batteryNoneColor") );
 
     setfieldcolor(0, leftcolor_);
     setfieldcolor(1, usedcolor_);
 
-    priority_ = util::stoi( parent_->getResource("batteryPriority") );
-    setUsedFormat( parent_->getResource("batteryUsedFormat") );
+    priority_ = util::stoi( rdb.getResource("batteryPriority") );
+    setUsedFormat( rdb.getResource("batteryUsedFormat") );
 }
 
 void BtryMeter::checkevent( void ) {
