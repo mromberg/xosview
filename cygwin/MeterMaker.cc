@@ -11,6 +11,7 @@
 #include "memmeter.h"
 #include "fsmeter.h"
 #include "swapmeter.h"
+#include "pagemeter.h"
 #include "example.h"  // The example meter
 
 
@@ -39,6 +40,10 @@ void MeterMaker::makeMeters(void) {
 
     if (_xos->isResourceTrue("swap"))
         push(new SwapMeter(_xos));
+
+    if (_xos->isResourceTrue("page"))
+        push(new PageMeter(_xos,
+            util::stof(_xos->getResource("pageBandwidth"))));
 }
 
 

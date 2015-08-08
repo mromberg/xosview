@@ -18,6 +18,7 @@ cpumeter.o \
 memmeter.o \
 fsmeter.o \
 swapmeter.o \
+pagemeter.o \
 MeterMaker.o
 
 CFILES := $(OBJS:.o=.cc)
