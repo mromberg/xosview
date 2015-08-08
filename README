@@ -32,6 +32,8 @@
 
   - OpenBSD
 
+  - cygwin
+
 * To build xosview:
 
     In general, you should be able to build xosview by following these

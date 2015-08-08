@@ -126,8 +126,8 @@ coded regions.  Each region represents a percentage of the resource which is
 being put to a particular use.  Typing a 'q' in the window will terminate
 xosview.
 
-At the moment \fIxosview\fP runs on eight platforms (Linux,
-NetBSD, FreeBSD, OpenBSD, some Solaris systems, IRIX 6.5, HPUX and GNU).
+At the moment \fIxosview\fP runs on nine platforms (Linux,
+NetBSD, FreeBSD, OpenBSD, some Solaris systems, cygwin, IRIX 6.5, HPUX and GNU).
 Not all of the meters described below are supported on all
 platforms.  Some of the meters may appear different depending upon the
 platform \fIxosview\fP is running on.  Note that *BSD is used as
@@ -141,6 +141,8 @@ an abbreviation for all three of the free BSD operating systems
    Linux  : user | nice | system | iowat | irq | softirq |
             stolen | guest | nice guest | idle
    *BSD   : user | nice | system | interrupt | idle
+   CYGWIN : user | nice | system | iowat | irq | softirq |
+            stolen | guest | nice guest | idle
    IRIX   : user | system | interrupt | wait | idle
    HPUX   : user | nice | system | interrupt | idle
 
@@ -149,6 +151,7 @@ an abbreviation for all three of the free BSD operating systems
    NetBSD : active | inactive | wired | free
    FreeBSD: active | inactive | wired | buffer | free
    OpenBSD: active | inactive | wired | free
+   CYGWIN : used | free
    IRIX   : kernel | fs   | user    | free
    HPUX   : text | used   | other   | free
    GNU    : active | inactive | wired | free
@@ -158,6 +161,7 @@ an abbreviation for all three of the free BSD operating systems
 
 \fBDisk Usage (bytes/sec)\fP
    Linux  : in  |  out  | idle
+   CYGWIN : in  |  out  | idle
    *BSD   : transferred | idle
    HPUX   : < Not Supported >
 
@@ -184,6 +188,7 @@ an abbreviation for all three of the free BSD operating systems
     interrupts per second
     Linux  : interrupts | free
     *BSD   : interrupts | free
+    CYGWIN : interrupts | free
     HPUX   : < Not Supported >
 
 \fBSerial Port Status\fP

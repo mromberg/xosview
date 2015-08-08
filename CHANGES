@@ -1,3 +1,7 @@
+Changes since xosview-2.0.0
+
+  - cygwin port
+
 Changes since xosview-1.8.4
 
   - File-system meter displays space used per mount point

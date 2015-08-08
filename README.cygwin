@@ -1,0 +1,31 @@
+
+  Some notes on building/running xosview in a cygwin environment:
+
+  - The configure script seems to get triped up in the shell trap statements
+    when it exits.  Near as I can tell these traps are just dumping stuff
+    into config.log.  Everything else seems to be fine.  It generates working
+    makefiles and other than the (troubling) errors about sed and sort everthing
+    should be fine.
+
+  - I did not remember to jot down the dependencies when I was instaling stuff.
+    Things I can remember that you will need to build xosview include:  g++,
+    make, X11 (the devel package) and optionally the Xft, Xext and Xpm (dev
+    versions).  In addition you will need the autoconf package if you build
+    from git (as opposed to a tarball release where configure is already made)
+
+  - Xosview is of course an X11 application.  So, start the cygwin X server.
+    Then set your display envirnoment variable "export DISPLAY=:0" and run
+    xosview.exe.
+
+  - In theory, an xsoview running on windows *should* be able to display into
+    a remote host running an X server.  But I have not tested this.  And I
+    probably don't have the patience to setup an sshd on windows.  But for those
+    that do, it should work.
+
+  - The cygwin port of xosview is getting pretty much all of it's stats from
+    /proc.  In fact many of the meters are exact (or close to exact) copies
+    of the linux meters.
+
+  - /proc/loadavg always reports 0.  And so does xosview's loadmeter.  Perhaps
+    at some point in the future windows will cough up these numbers.  It so,
+    xosview should start to display them.
