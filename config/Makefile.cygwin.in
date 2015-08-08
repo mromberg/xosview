@@ -16,6 +16,7 @@ include ../Makefile.config
 OBJS = \
 cpumeter.o \
 memmeter.o \
+fsmeter.o \
 MeterMaker.o
 
 CFILES := $(OBJS:.o=.cc)

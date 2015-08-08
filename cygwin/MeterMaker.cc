@@ -9,6 +9,7 @@
 
 #include "cpumeter.h"
 #include "memmeter.h"
+#include "fsmeter.h"
 #include "example.h"  // The example meter
 
 
@@ -28,6 +29,12 @@ void MeterMaker::makeMeters(void) {
 
     if (_xos->isResourceTrue("mem"))
         push(new MemMeter(_xos));
+
+    if (_xos->isResourceTrue("filesys")) {
+        std::vector<std::string> fs = FSMeter::mounts(_xos);
+        for (size_t i = 0 ; i < fs.size() ; i++)
+            push(new FSMeter(_xos, fs[i]));
+    }
 }
 
 
