@@ -27,17 +27,17 @@ PageMeter::PageMeter( XOSView *parent, float max )
 PageMeter::~PageMeter( void ){
 }
 
-void PageMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void PageMeter::checkResources(const ResDB &rdb) {
+    FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, parent_->getResource( "pageInColor" ) );
-    setfieldcolor( 1, parent_->getResource( "pageOutColor" ) );
-    setfieldcolor( 2, parent_->getResource( "pageIdleColor" ) );
-    priority_ = util::stoi (parent_->getResource( "pagePriority" ) );
+    setfieldcolor( 0, rdb.getResource( "pageInColor" ) );
+    setfieldcolor( 1, rdb.getResource( "pageOutColor" ) );
+    setfieldcolor( 2, rdb.getResource( "pageIdleColor" ) );
+    priority_ = util::stoi (rdb.getResource( "pagePriority" ) );
     maxspeed_ *= priority_ / 10.0;
-    dodecay_ = parent_->isResourceTrue( "pageDecay" );
-    useGraph_ = parent_->isResourceTrue( "pageGraph" );
-    setUsedFormat (parent_->getResource("pageUsedFormat"));
+    dodecay_ = rdb.isResourceTrue( "pageDecay" );
+    useGraph_ = rdb.isResourceTrue( "pageGraph" );
+    setUsedFormat (rdb.getResource("pageUsedFormat"));
 }
 
 void PageMeter::checkevent( void ){

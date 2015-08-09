@@ -27,25 +27,25 @@ LoadMeter::LoadMeter( XOSView *parent )
 LoadMeter::~LoadMeter( void ){
 }
 
-void LoadMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void LoadMeter::checkResources(const ResDB &rdb) {
+    FieldMeterGraph::checkResources(rdb);
 
-    procloadcol_ = parent_->g().allocColor(parent_->getResource(
+    procloadcol_ = parent_->g().allocColor(rdb.getResource(
           "loadProcColor" ));
-    warnloadcol_ = parent_->g().allocColor(parent_->getResource(
+    warnloadcol_ = parent_->g().allocColor(rdb.getResource(
           "loadWarnColor" ));
-    critloadcol_ = parent_->g().allocColor(parent_->getResource(
+    critloadcol_ = parent_->g().allocColor(rdb.getResource(
           "loadCritColor" ));
 
     setfieldcolor( 0, procloadcol_ );
-    setfieldcolor( 1, parent_->getResource( "loadIdleColor" ) );
-    priority_ = util::stoi (parent_->getResource( "loadPriority" ) );
-    useGraph_ = parent_->isResourceTrue( "loadGraph" );
-    dodecay_ = parent_->isResourceTrue( "loadDecay" );
-    setUsedFormat (parent_->getResource("loadUsedFormat"));
+    setfieldcolor( 1, rdb.getResource( "loadIdleColor" ) );
+    priority_ = util::stoi (rdb.getResource( "loadPriority" ) );
+    useGraph_ = rdb.isResourceTrue( "loadGraph" );
+    dodecay_ = rdb.isResourceTrue( "loadDecay" );
+    setUsedFormat (rdb.getResource("loadUsedFormat"));
 
-    warnThreshold = util::stoi (parent_->getResource("loadWarnThreshold"));
-    critThreshold = util::stoi (parent_->getResource("loadCritThreshold"));
+    warnThreshold = util::stoi (rdb.getResource("loadWarnThreshold"));
+    critThreshold = util::stoi (rdb.getResource("loadCritThreshold"));
 
 
     if (dodecay_){

@@ -22,9 +22,9 @@ public:
     virtual std::string name( void ) const { return "LoadMeter"; }
     void checkevent( void );
 
-    void checkResources( void );
-protected:
+    void checkResources(const ResDB &rdb);
 
+protected:
     void getloadinfo( void );
     unsigned long procloadcol_, warnloadcol_, critloadcol_;
 private:
