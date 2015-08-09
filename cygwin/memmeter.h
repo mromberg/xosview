@@ -20,10 +20,11 @@ public:
     std::string name( void ) const { return "MemMeter"; }
     void checkevent( void );
 
-    void checkResources( void );
-protected:
+    void checkResources(const ResDB &rdb);
 
+protected:
     void getmeminfo( void );
+
 private:
     class LineInfo {
     public:

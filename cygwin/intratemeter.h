@@ -20,7 +20,7 @@ public:
     virtual std::string name( void ) const { return "IrqRateMeter"; }
     void checkevent( void );
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
 
 private:
     unsigned long long _peak;

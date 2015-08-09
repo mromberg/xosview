@@ -19,11 +19,10 @@ public:
     std::string name( void ) const { return "SwapMeter"; }
     void checkevent( void );
 
-    void checkResources( void );
-protected:
+    void checkResources(const ResDB &rdb);
 
+protected:
     void getswapinfo( void );
-private:
 };
 
 #endif

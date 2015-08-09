@@ -22,15 +22,15 @@ MemMeter::MemMeter( XOSView *parent ) : FieldMeterGraph( parent, 2, "MEM",
 MemMeter::~MemMeter( void ){
 }
 
-void MemMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void MemMeter::checkResources(const ResDB &rdb) {
+    FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, parent_->getResource( "memUsedColor" ) );
-    setfieldcolor( 1, parent_->getResource( "memFreeColor" ) );
-    priority_ = util::stoi (parent_->getResource( "memPriority" ));
-    dodecay_ = parent_->isResourceTrue( "memDecay" );
-    useGraph_ = parent_->isResourceTrue( "memGraph" );
-    setUsedFormat (parent_->getResource("memUsedFormat"));
+    setfieldcolor( 0, rdb.getResource( "memUsedColor" ) );
+    setfieldcolor( 1, rdb.getResource( "memFreeColor" ) );
+    priority_ = util::stoi (rdb.getResource( "memPriority" ));
+    dodecay_ = rdb.isResourceTrue( "memDecay" );
+    useGraph_ = rdb.isResourceTrue( "memGraph" );
+    setUsedFormat (rdb.getResource("memUsedFormat"));
 }
 
 void MemMeter::checkevent( void ){

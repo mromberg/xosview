@@ -34,31 +34,31 @@ LoadMeter::LoadMeter( XOSView *parent )
 LoadMeter::~LoadMeter( void ){
 }
 
-void LoadMeter::checkResources( void ){
-    FieldMeterGraph::checkResources();
+void LoadMeter::checkResources(const ResDB &rdb){
+    FieldMeterGraph::checkResources(rdb);
 
-    _procloadcol = parent_->g().allocColor(parent_->getResource(
+    _procloadcol = parent_->g().allocColor(rdb.getResource(
           "loadProcColor" ));
-    _warnloadcol = parent_->g().allocColor(parent_->getResource(
+    _warnloadcol = parent_->g().allocColor(rdb.getResource(
           "loadWarnColor" ));
-    _critloadcol = parent_->g().allocColor(parent_->getResource(
+    _critloadcol = parent_->g().allocColor(rdb.getResource(
           "loadCritColor" ));
 
     setfieldcolor( 0, _procloadcol );
-    setfieldcolor( 1, parent_->getResource( "loadIdleColor" ) );
-    priority_ = util::stoi (parent_->getResource( "loadPriority" ));
-    useGraph_ = parent_->isResourceTrue( "loadGraph" );
-    dodecay_ = parent_->isResourceTrue( "loadDecay" );
-    setUsedFormat (parent_->getResource("loadUsedFormat"));
+    setfieldcolor( 1, rdb.getResource( "loadIdleColor" ) );
+    priority_ = util::stoi (rdb.getResource( "loadPriority" ));
+    useGraph_ = rdb.isResourceTrue( "loadGraph" );
+    dodecay_ = rdb.isResourceTrue( "loadDecay" );
+    setUsedFormat (rdb.getResource("loadUsedFormat"));
 
-    _warnThreshold = util::stoi (parent_->getResource("loadWarnThreshold"));
-    _critThreshold = util::stoi (parent_->getResource("loadCritThreshold"));
+    _warnThreshold = util::stoi (rdb.getResource("loadWarnThreshold"));
+    _critThreshold = util::stoi (rdb.getResource("loadCritThreshold"));
 
     // The max displayed on the bar will be the crit
     // legend still displays total load.
     total_ = _critThreshold;
 
-    _do_cpu_speed  = parent_->isResourceTrue( "loadCpuSpeed" );
+    _do_cpu_speed  = rdb.isResourceTrue( "loadCpuSpeed" );
 }
 
 void LoadMeter::checkevent( void ){

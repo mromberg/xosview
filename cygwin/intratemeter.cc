@@ -20,19 +20,19 @@ IrqRateMeter::~IrqRateMeter( void ) {
 }
 
 
-void IrqRateMeter::checkResources( void ) {
-    FieldMeterGraph::checkResources();
-    setfieldcolor(0, parent_->g().allocColor(parent_->getResource(
+void IrqRateMeter::checkResources(const ResDB &rdb) {
+    FieldMeterGraph::checkResources(rdb);
+    setfieldcolor(0, parent_->g().allocColor(rdb.getResource(
             "irqrateUsedColor")));
-    setfieldcolor(1, parent_->g().allocColor(parent_->getResource(
+    setfieldcolor(1, parent_->g().allocColor(rdb.getResource(
             "irqrateIdleColor")));
 
-    priority_ = util::stoi(parent_->getResource("irqratePriority"));
-    dodecay_ = parent_->isResourceTrue("irqrateDecay");
-    useGraph_ = parent_->isResourceTrue("irqrateGraph");
-    setUsedFormat(parent_->getResource("irqrateUsedFormat"));
-    decayUsed(parent_->isResourceTrue("irqrateUsedDecay"));
-    _peak = util::stoi(parent_->getResource("irqratePeak"));
+    priority_ = util::stoi(rdb.getResource("irqratePriority"));
+    dodecay_ = rdb.isResourceTrue("irqrateDecay");
+    useGraph_ = rdb.isResourceTrue("irqrateGraph");
+    setUsedFormat(rdb.getResource("irqrateUsedFormat"));
+    decayUsed(rdb.isResourceTrue("irqrateUsedDecay"));
+    _peak = util::stoi(rdb.getResource("irqratePeak"));
     total_ = _peak;
 }
 

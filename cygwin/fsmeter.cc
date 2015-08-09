@@ -26,22 +26,21 @@ FSMeter::~FSMeter(void) {
 }
 
 
-void FSMeter::checkResources( void ) {
+void FSMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
-
-    _bgColor = parent_->g().allocColor(parent_->getResource(
+    _bgColor = parent_->g().allocColor(rdb.getResource(
           "filesysBGColor"));
-    _umountColor = parent_->g().allocColor(parent_->getResource(
+    _umountColor = parent_->g().allocColor(rdb.getResource(
           "filesysNoneColor"));
-    setfieldcolor(0, parent_->getResource("filesysFGColor"));
+    setfieldcolor(0, rdb.getResource("filesysFGColor"));
     setfieldcolor(1, _bgColor);
 
-    priority_ = util::stoi(parent_->getResource("filesysPriority"));
-    dodecay_ = parent_->isResourceTrue("filesysDecay");
-    useGraph_ = parent_->isResourceTrue("filesysGraph");
-    setUsedFormat(parent_->getResource("filesysUsedFormat"));
+    priority_ = util::stoi(rdb.getResource("filesysPriority"));
+    dodecay_ = rdb.isResourceTrue("filesysDecay");
+    useGraph_ = rdb.isResourceTrue("filesysGraph");
+    setUsedFormat(rdb.getResource("filesysUsedFormat"));
 }
 
 
@@ -84,8 +83,8 @@ void FSMeter::setBGColor(unsigned long c) {
     }
 }
 
-std::vector<std::string> FSMeter::mounts(XOSView *xosv) {
-    std::string mounts = xosv->getResource("filesysMounts");
+std::vector<std::string> FSMeter::mounts(const ResDB &rdb) {
+    std::string mounts = rdb.getResource("filesysMounts");
 
     logDebug << "MOUNTS: " << mounts << std::endl;
 

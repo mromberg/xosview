@@ -17,7 +17,8 @@ public:
     std::string name( void ) const { return "PageMeter"; }
     void checkevent( void );
 
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
+
 protected:
     float pageinfo_[2][2];
     int pageindex_;

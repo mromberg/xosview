@@ -17,7 +17,7 @@ public:
     std::string name(void) const { return "CPUMeter"; }
     void checkevent(void);
 
-    void checkResources(void);
+    void checkResources(const ResDB &rdb);
 
     static size_t countCPUs(void);
     static std::string cpuStr(size_t num);
