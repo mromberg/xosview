@@ -23,18 +23,18 @@ DiskMeter::~DiskMeter( void ) {
 }
 
 
-void DiskMeter::checkResources( void ) {
+void DiskMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, parent_->getResource("diskReadColor") );
-    setfieldcolor( 1, parent_->getResource("diskWriteColor") );
-    setfieldcolor( 2, parent_->getResource("diskIdleColor") );
-    priority_ = util::stoi( parent_->getResource("diskPriority") );
-    dodecay_ = parent_->isResourceTrue("diskDecay");
-    useGraph_ = parent_->isResourceTrue("diskGraph");
-    setUsedFormat( parent_->getResource("diskUsedFormat") );
-    decayUsed(parent_->isResourceTrue("diskUsedDecay"));
+    setfieldcolor( 0, rdb.getResource("diskReadColor") );
+    setfieldcolor( 1, rdb.getResource("diskWriteColor") );
+    setfieldcolor( 2, rdb.getResource("diskIdleColor") );
+    priority_ = util::stoi( rdb.getResource("diskPriority") );
+    dodecay_ = rdb.isResourceTrue("diskDecay");
+    useGraph_ = rdb.isResourceTrue("diskGraph");
+    setUsedFormat( rdb.getResource("diskUsedFormat") );
+    decayUsed(rdb.isResourceTrue("diskUsedDecay"));
 }
 
 

@@ -26,19 +26,19 @@ CPUMeter::CPUMeter(XOSView *parent, kstat_ctl_t *kc, int cpuid)
 CPUMeter::~CPUMeter(void){
 }
 
-void CPUMeter::checkResources(void) {
+void CPUMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor(0, parent_->getResource("cpuUserColor"));
-    setfieldcolor(1, parent_->getResource("cpuSystemColor"));
-    setfieldcolor(2, parent_->getResource("cpuInterruptColor"));
-    setfieldcolor(3, parent_->getResource("cpuFreeColor"));
-    priority_ = util::stoi(parent_->getResource("cpuPriority"));
-    dodecay_ = parent_->isResourceTrue("cpuDecay");
-    useGraph_ = parent_->isResourceTrue("cpuGraph");
-    setUsedFormat(parent_->getResource("cpuUsedFormat"));
-    decayUsed(parent_->isResourceTrue("cpuUsedDecay"));
+    setfieldcolor(0, rdb.getResource("cpuUserColor"));
+    setfieldcolor(1, rdb.getResource("cpuSystemColor"));
+    setfieldcolor(2, rdb.getResource("cpuInterruptColor"));
+    setfieldcolor(3, rdb.getResource("cpuFreeColor"));
+    priority_ = util::stoi(rdb.getResource("cpuPriority"));
+    dodecay_ = rdb.isResourceTrue("cpuDecay");
+    useGraph_ = rdb.isResourceTrue("cpuGraph");
+    setUsedFormat(rdb.getResource("cpuUsedFormat"));
+    decayUsed(rdb.isResourceTrue("cpuUsedDecay"));
 }
 
 

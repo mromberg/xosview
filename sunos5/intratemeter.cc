@@ -24,16 +24,16 @@ IrqRateMeter::~IrqRateMeter(void) {
 }
 
 
-void IrqRateMeter::checkResources(void) {
+void IrqRateMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
-    setfieldcolor(0, parent_->getResource("irqrateUsedColor"));
-    setfieldcolor(1, parent_->getResource("irqrateIdleColor"));
-    priority_ = util::stoi(parent_->getResource("irqratePriority"));
-    dodecay_ = parent_->isResourceTrue("irqrateDecay");
-    useGraph_ = parent_->isResourceTrue("irqrateGraph");
-    setUsedFormat(parent_->getResource("irqrateUsedFormat"));
-    decayUsed(parent_->isResourceTrue("irqrateUsedDecay"));
+    FieldMeterGraph::checkResources(rdb);
+    setfieldcolor(0, rdb.getResource("irqrateUsedColor"));
+    setfieldcolor(1, rdb.getResource("irqrateIdleColor"));
+    priority_ = util::stoi(rdb.getResource("irqratePriority"));
+    dodecay_ = rdb.isResourceTrue("irqrateDecay");
+    useGraph_ = rdb.isResourceTrue("irqrateGraph");
+    setUsedFormat(rdb.getResource("irqrateUsedFormat"));
+    decayUsed(rdb.isResourceTrue("irqrateUsedDecay"));
     total_ = 2000;
 }
 

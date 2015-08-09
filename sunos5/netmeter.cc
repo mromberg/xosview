@@ -36,19 +36,19 @@ NetMeter::~NetMeter( void ){
 }
 
 
-void NetMeter::checkResources( void ) {
+void NetMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, parent_->getResource("netInColor") );
-    setfieldcolor( 1, parent_->getResource("netOutColor") );
-    setfieldcolor( 2, parent_->getResource("netBackground") );
-    priority_ = util::stoi( parent_->getResource("netPriority") );
-    dodecay_ = parent_->isResourceTrue("netDecay");
-    useGraph_ = parent_->isResourceTrue("netGraph");
-    setUsedFormat( parent_->getResource("netUsedFormat") );
-    decayUsed(parent_->isResourceTrue("netUsedDecay"));
-    _netIface = parent_->getResource("netIface");
+    setfieldcolor( 0, rdb.getResource("netInColor") );
+    setfieldcolor( 1, rdb.getResource("netOutColor") );
+    setfieldcolor( 2, rdb.getResource("netBackground") );
+    priority_ = util::stoi( rdb.getResource("netPriority") );
+    dodecay_ = rdb.isResourceTrue("netDecay");
+    useGraph_ = rdb.isResourceTrue("netGraph");
+    setUsedFormat( rdb.getResource("netUsedFormat") );
+    decayUsed(rdb.isResourceTrue("netUsedDecay"));
+    _netIface = rdb.getResource("netIface");
     if (_netIface[0] == '-') {
         _ignored = true;
         _netIface.erase(0, _netIface.find_first_not_of("- "));

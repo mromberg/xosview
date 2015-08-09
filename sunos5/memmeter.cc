@@ -29,18 +29,18 @@ MemMeter::MemMeter(XOSView *parent, kstat_ctl_t *_kc)
 }
 
 
-void MemMeter::checkResources(void) {
+void MemMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor(0, parent_->getResource("memKernelColor"));
-    setfieldcolor(1, parent_->getResource("memCacheColor"));
-    setfieldcolor(2, parent_->getResource("memUsedColor"));
-    setfieldcolor(3, parent_->getResource("memFreeColor"));
-    priority_ = util::stoi(parent_->getResource("memPriority"));
-    dodecay_ = parent_->isResourceTrue("memDecay");
-    useGraph_ = parent_->isResourceTrue("memGraph");
-    setUsedFormat(parent_->getResource("memUsedFormat"));
+    setfieldcolor(0, rdb.getResource("memKernelColor"));
+    setfieldcolor(1, rdb.getResource("memCacheColor"));
+    setfieldcolor(2, rdb.getResource("memUsedColor"));
+    setfieldcolor(3, rdb.getResource("memFreeColor"));
+    priority_ = util::stoi(rdb.getResource("memPriority"));
+    dodecay_ = rdb.isResourceTrue("memDecay");
+    useGraph_ = rdb.isResourceTrue("memGraph");
+    setUsedFormat(rdb.getResource("memUsedFormat"));
 }
 
 

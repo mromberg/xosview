@@ -22,7 +22,7 @@ public:
 
     virtual std::string name( void ) const { return "NetMeter"; }
     void checkevent( void );
-    void checkResources( void );
+    void checkResources(const ResDB &rdb);
 
 protected:
     void getnetstats( void );

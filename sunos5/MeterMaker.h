@@ -8,7 +8,8 @@
 #ifndef METERMAKER_H
 #define METERMAKER_H
 
-#include "pllist.h"
+#include "rdb.h"
+
 
 
 class Meter;
@@ -20,16 +21,17 @@ typedef struct kstat_ctl kstat_ctl_t;
 
 
 
-class MeterMaker : public PLList<Meter *> {
+class MeterMaker {
 public:
     MeterMaker(XOSView *xos);
 
-    void makeMeters(void);
+    std::vector<Meter *> makeMeters(const ResDB &rdb);
 
 private:
     XOSView *_xos;
+    std::vector<Meter *> _meters;
 
-    void cpuFactory(kstat_ctl_t *kc);
+    void cpuFactory(const ResDB &rdb, kstat_ctl_t *kc);
 };
 
 

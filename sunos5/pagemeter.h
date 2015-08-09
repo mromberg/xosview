@@ -20,7 +20,7 @@ public:
 
     virtual std::string name(void) const { return "PageMeter"; }
     void checkevent(void);
-    void checkResources(void);
+    void checkResources(const ResDB &rdb);
 
 protected:
     std::vector<std::vector<float> > pageinfo_;

@@ -18,7 +18,7 @@ public:
 
     virtual std::string name(void) const { return "MemMeter"; }
     void checkevent( void );
-    void checkResources(void);
+    void checkResources(const ResDB &rdb);
 
 protected:
     void getmeminfo( void );

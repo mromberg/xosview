@@ -27,62 +27,65 @@ MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
 }
 
 
-void MeterMaker::makeMeters(void) {
+std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
     kstat_ctl_t *kc = kstat_open();
     if (kc == NULL)
-        return;
+        logFatal << "kstat_open() failed." << std::endl;
+
 
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
-    if (_xos->getResourceOrUseDefault("example", "False") == "True")
-        push(new ExampleMeter(_xos));
+    if (rdb.getResourceOrUseDefault("example", "False") == "True")
+        _meters.push_back(new ExampleMeter(_xos));
 
     // Standard meters (usually added, but users could turn them off)
-    if (_xos->isResourceTrue("load"))
-        push(new LoadMeter(_xos, kc));
+    if (rdb.isResourceTrue("load"))
+        _meters.push_back(new LoadMeter(_xos, kc));
 
-    if (_xos->isResourceTrue("cpu"))
-        cpuFactory(kc);
+    if (rdb.isResourceTrue("cpu"))
+        cpuFactory(rdb, kc);
 
-    if (_xos->isResourceTrue("mem"))
-        push(new MemMeter(_xos, kc));
+    if (rdb.isResourceTrue("mem"))
+        _meters.push_back(new MemMeter(_xos, kc));
 
-    if (_xos->isResourceTrue("disk"))
-        push(new DiskMeter(_xos, kc, util::stof(_xos->getResource(
+    if (rdb.isResourceTrue("disk"))
+        _meters.push_back(new DiskMeter(_xos, kc, util::stof(rdb.getResource(
                   "diskBandwidth"))));
 
-    if (_xos->isResourceTrue("filesys")) {
-        std::vector<std::string> fs = FSMeter::mounts(_xos);
+    if (rdb.isResourceTrue("filesys")) {
+        std::vector<std::string> fs = FSMeter::mounts(rdb);
         for (size_t i = 0 ; i < fs.size() ; i++)
-            push(new FSMeter(_xos, fs[i]));
+            _meters.push_back(new FSMeter(_xos, fs[i]));
     }
 
-    if (_xos->isResourceTrue("swap"))
-        push(new SwapMeter(_xos));
+    if (rdb.isResourceTrue("swap"))
+        _meters.push_back(new SwapMeter(_xos));
 
-    if (_xos->isResourceTrue("page"))
-        push(new PageMeter(_xos, kc, util::stof(_xos->getResource(
+    if (rdb.isResourceTrue("page"))
+        _meters.push_back(new PageMeter(_xos, kc, util::stof(rdb.getResource(
                   "pageBandwidth"))));
 
-    if (_xos->isResourceTrue("net"))
-        push(new NetMeter(_xos, kc, util::stof(_xos->getResource(
+    if (rdb.isResourceTrue("net"))
+        _meters.push_back(new NetMeter(_xos, kc, util::stof(rdb.getResource(
                   "netBandwidth"))));
 
-    if (_xos->isResourceTrue("irqrate"))
-        push(new IrqRateMeter(_xos, kc));
+    if (rdb.isResourceTrue("irqrate"))
+        _meters.push_back(new IrqRateMeter(_xos, kc));
+
+    return _meters;
 }
 
 
-void MeterMaker::cpuFactory(kstat_ctl_t *kc) {
+void MeterMaker::cpuFactory(const ResDB &rdb, kstat_ctl_t *kc) {
     bool single, both, all;
     int cpuCount = sysconf(_SC_NPROCESSORS_ONLN);
 
-    single = _xos->getResource("cpuFormat") == "single";
-    both = _xos->getResource("cpuFormat") == "both";
-    all = _xos->getResource("cpuFormat") == "all";
+    single = rdb.getResource("cpuFormat") == "single";
+    both = rdb.getResource("cpuFormat") == "both";
+    all = rdb.getResource("cpuFormat") == "all";
 
-    if (_xos->getResource("cpuFormat") == "auto") {
+    if (rdb.getResource("cpuFormat") == "auto") {
         if (cpuCount == 1 || cpuCount > 4)
             single = true;
         else
@@ -90,11 +93,12 @@ void MeterMaker::cpuFactory(kstat_ctl_t *kc) {
     }
 
     if (single || both)
-        push(new CPUMeter(_xos, kc, -1));
+        _meters.push_back(new CPUMeter(_xos, kc, -1));
 
     if (all || both) {
         KStatList *cpulist = KStatList::getList(kc, KStatList::CPU_STAT);
         for (unsigned int i = 0; i < cpulist->count(); i++)
-            push(new CPUMeter(_xos, kc, (*cpulist)[i]->ks_instance));
+            _meters.push_back(new CPUMeter(_xos, kc,
+                (*cpulist)[i]->ks_instance));
     }
 }

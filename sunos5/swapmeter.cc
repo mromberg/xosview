@@ -23,17 +23,17 @@ SwapMeter::~SwapMeter(void) {
 }
 
 
-void SwapMeter::checkResources(void) {
+void SwapMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor(0, parent_->getResource("swapUsedColor"));
-    setfieldcolor(1, parent_->getResource("swapFreeColor"));
-    priority_ = util::stoi(parent_->getResource("swapPriority"));
-    dodecay_ = parent_->isResourceTrue("swapDecay");
-    useGraph_ = parent_->isResourceTrue("swapGraph");
-    setUsedFormat(parent_->getResource("swapUsedFormat"));
-    decayUsed(parent_->isResourceTrue("swapUsedDecay"));
+    setfieldcolor(0, rdb.getResource("swapUsedColor"));
+    setfieldcolor(1, rdb.getResource("swapFreeColor"));
+    priority_ = util::stoi(rdb.getResource("swapPriority"));
+    dodecay_ = rdb.isResourceTrue("swapDecay");
+    useGraph_ = rdb.isResourceTrue("swapGraph");
+    setUsedFormat(rdb.getResource("swapUsedFormat"));
+    decayUsed(rdb.isResourceTrue("swapUsedDecay"));
 }
 
 

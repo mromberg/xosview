@@ -43,32 +43,32 @@ LoadMeter::~LoadMeter(void) {
 }
 
 
-void LoadMeter::checkResources(void) {
+void LoadMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources();
+    FieldMeterGraph::checkResources(rdb);
 
-    warnloadcol = parent_->g().allocColor(parent_->getResource(
+    warnloadcol = parent_->g().allocColor(rdb.getResource(
           "loadWarnColor"));
-    procloadcol = parent_->g().allocColor(parent_->getResource(
+    procloadcol = parent_->g().allocColor(rdb.getResource(
           "loadProcColor"));
-    critloadcol = parent_->g().allocColor(parent_->getResource(
+    critloadcol = parent_->g().allocColor(rdb.getResource(
           "loadCritColor"));
 
     setfieldcolor(0, procloadcol);
-    setfieldcolor(1, parent_->getResource("loadIdleColor"));
-    priority_ = util::stoi (parent_->getResource("loadPriority"));
-    dodecay_ = parent_->isResourceTrue("loadDecay");
-    useGraph_ = parent_->isResourceTrue("loadGraph");
-    setUsedFormat(parent_->getResource("loadUsedFormat"));
-    do_cpu_speed = parent_->isResourceTrue("loadCpuSpeed");
+    setfieldcolor(1, rdb.getResource("loadIdleColor"));
+    priority_ = util::stoi (rdb.getResource("loadPriority"));
+    dodecay_ = rdb.isResourceTrue("loadDecay");
+    useGraph_ = rdb.isResourceTrue("loadGraph");
+    setUsedFormat(rdb.getResource("loadUsedFormat"));
+    do_cpu_speed = rdb.isResourceTrue("loadCpuSpeed");
 
-    std::string warn = parent_->getResource("loadWarnThreshold");
+    std::string warn = rdb.getResource("loadWarnThreshold");
     if (warn == "auto")
         warnThreshold = sysconf(_SC_NPROCESSORS_ONLN);
     else
         warnThreshold = util::stoi(warn);
 
-    std::string crit = parent_->getResource("loadCritThreshold");
+    std::string crit = rdb.getResource("loadCritThreshold");
     if (crit == "auto")
         critThreshold = warnThreshold * 4;
     else
