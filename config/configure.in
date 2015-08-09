@@ -146,16 +146,6 @@ case $host_os in
         XO_CONCAT(DOC_FILES,$DOC_FILES,README.bsd)
         XO_BSD_CONFIG
         ;;
-    hpux*)
-	host_dir=hpux
-        host_os=hpux
-        ;;
-    irix6.5*)
-        XO_CONCAT(DOC_FILES,$DOC_FILES,README.irix)
-        XO_CONCAT(LIBS,$LIBS,[-lrpcsvc])
-	host_dir=irix65
-	host_os=irix65
-        ;;
     solaris2*)
         AC_CHECK_HEADER(kstat.h,
             AC_CHECK_LIB(kstat, kstat_open,
@@ -175,8 +165,19 @@ case $host_os in
         XO_CONCAT(DOC_FILES,$DOC_FILES,README.cygwin)
         host_dir=cygwin
         ;;
+    hpux*|irix6.5*)
+        AC_MSG_WARN([*************************************************])
+        AC_MSG_WARN([* xosview has not been recently ported to $host_os])
+        AC_MSG_WARN([* sources for old ports are in attic (but need work).])
+        AC_MSG_WARN([*************************************************])
+        AC_MSG_WARN([configuring as default platform...])
+        host_dir=default
+        host_os=default
+        ;;
     *)
-        AC_MSG_WARN([xosview has not been ported to $host_os])
+        AC_MSG_WARN([*************************************************])
+        AC_MSG_WARN([* xosview has not been ported to $host_os])
+        AC_MSG_WARN([*************************************************])
         AC_MSG_WARN([configuring as default platform...])
         host_dir=default
         host_os=default
