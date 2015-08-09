@@ -8,17 +8,18 @@
 #ifndef METERMAKER_H
 #define METERMAKER_H
 
-#include "pllist.h"
+#include "rdb.h"
 
+#include <vector>
 
 class Meter;
 class XOSView;
 
-class MeterMaker : public PLList<Meter *> {
+class MeterMaker {
 public:
     MeterMaker(XOSView *xos);
 
-    void makeMeters(void);
+    std::vector<Meter *> makeMeters(const ResDB &rdb);
 
 private:
     XOSView *_xos;
