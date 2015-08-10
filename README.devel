@@ -147,5 +147,20 @@ done I've provided one in the source as example.h.  It has notes
 about how a new meter should be added to xosview.
 
 
+PORTING XOSVIEW
 
+  - The default platform
+    * build and test the example meter
+
+  - make a new platform sub dir
+
+  - edit config/configure.in to set host_dir
+
+  - Add default MeterMaker to new platform
+
+  - Rerun autogen.sh
+
+  - recompile
+
+  - Add real meters.
   

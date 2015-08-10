@@ -165,6 +165,10 @@ case $host_os in
         XO_CONCAT(DOC_FILES,$DOC_FILES,README.cygwin)
         host_dir=cygwin
         ;;
+    minix)
+        XO_CONCAT(DOC_FILES,$DOC_FILES,README.minix)
+        host_dir=minix
+        ;;
     hpux*|irix6.5*)
         AC_MSG_WARN([*************************************************])
         AC_MSG_WARN([* xosview has not been recently ported to $host_os])
