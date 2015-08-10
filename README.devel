@@ -28,6 +28,13 @@
   config/Makefile.linux.in you would need to re-run configure.  This is
   also not done by the normal make targets
 
+  Note that you can run config.status instead of configure to update any files
+  that are generated from a .in file.  So, for example say you have already run
+  configure (which creates config.status).  If yout edit config/Makefile.top.in
+  you can update $TOP/Makefile by simply running config.status (avoiding running
+  the config tests again).   This process could be automated.  But things
+  are complicated enough and .in files are not edited very often.
+
 * TURNING ON DEBUGGING
 
   The configure script has a few options that are of interest to

@@ -12,3 +12,6 @@ void getmem(uint32_t *total, uint32_t *free, uint32_t *cached)
 
 
   * minix does not swap to disk at all
+
+  * minix does not have job control
+  
