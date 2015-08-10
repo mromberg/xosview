@@ -1,0 +1,10 @@
+/proc/meminfo
+Utility routines for Minix tests.
+void getmem(uint32_t *total, uint32_t *free, uint32_t *cached)
+193 {
+194         uint32_t pagesize, largest;
+195         FILE *f = fopen("/proc/meminfo", "r");
+196         if(!f) return;
+197         if(fscanf(f, "%u %u %u %u %u", &pagesize, total, free,
+198                 &largest, cached) != 5) {
+199                 fprintf(stderr, "fscanf of meminfo failed\n");
