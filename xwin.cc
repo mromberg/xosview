@@ -56,7 +56,8 @@ void XWin::openDisplay( void ){
     const char *dname = display_name_ == "" ? NULL : display_name_.c_str();
     if ((display_ = XOpenDisplay(dname)) == NULL) {
         logFatal << "Can't open display named "
-                 << "'" << dname << "'" << std::endl;
+                 << "'" << (dname == NULL ? (void *)NULL : dname) << "'"
+                 << std::endl;
     }
 }
 
