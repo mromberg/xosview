@@ -8,3 +8,7 @@ void getmem(uint32_t *total, uint32_t *free, uint32_t *cached)
 197         if(fscanf(f, "%u %u %u %u %u", &pagesize, total, free,
 198                 &largest, cached) != 5) {
 199                 fprintf(stderr, "fscanf of meminfo failed\n");
+
+
+
+  * minix does not swap to disk at all
