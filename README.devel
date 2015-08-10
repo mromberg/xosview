@@ -158,6 +158,8 @@ PORTING XOSVIEW
 
   - Add default MeterMaker to new platform
 
+  - Copy config/Makefile.default.in
+
   - Rerun autogen.sh
 
   - recompile

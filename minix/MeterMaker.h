@@ -23,6 +23,7 @@ public:
 
 private:
     XOSView *_xos;
+    std::vector<Meter *> _meters;
 };
 
 
