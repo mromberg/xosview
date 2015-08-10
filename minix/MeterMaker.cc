@@ -8,6 +8,7 @@
 #include "MeterMaker.h"
 
 #include "loadmeter.h"
+#include "memmeter.h"
 #include "fsmeter.h"
 #include "example.h"  // The example meter
 
@@ -25,6 +26,9 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
     if (rdb.isResourceTrue("load"))
         _meters.push_back(new LoadMeter(_xos));
+
+    if (rdb.isResourceTrue("mem"))
+        _meters.push_back(new MemMeter(_xos));
 
     if (rdb.isResourceTrue("filesys")) {
         std::vector<std::string> fs = FSMeter::mounts(rdb);

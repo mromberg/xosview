@@ -15,6 +15,7 @@ include ../Makefile.config
 
 OBJS = \
 loadmeter.o \
+memmeter.o \
 fsmeter.o \
 MeterMaker.o
 
