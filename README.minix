@@ -1,17 +1,35 @@
-/proc/meminfo
-Utility routines for Minix tests.
-void getmem(uint32_t *total, uint32_t *free, uint32_t *cached)
-193 {
-194         uint32_t pagesize, largest;
-195         FILE *f = fopen("/proc/meminfo", "r");
-196         if(!f) return;
-197         if(fscanf(f, "%u %u %u %u %u", &pagesize, total, free,
-198                 &largest, cached) != 5) {
-199                 fprintf(stderr, "fscanf of meminfo failed\n");
 
+  * I had to build xosview with a dev snapshot of minix 3.3.
+    The stable 3.3 did not include X11.  The dev snapshot was
+    stable enough to build and run (displayled remotely) xosview.
 
+  * minix does not keep cycle counts on a per cpu basis.  These
+    counts are only tracked per process.  So, things like xosview
+    and top have to take a snapshot of the entire process table
+    (by reading all of /proc) and then calculating the number of cycles
+    read between some time interval.  This is not a terribly efficient
+    operation.
 
-  * minix does not swap to disk at all
+    xosview using the default cpuPriority of 2 runs the whole system at
+    around 10-12% cpu just in an idle state.  You may want to increase the
+    value of xosview*cpuPriority to a larger value (4 to 8) which will
+    reduce the update frequency of the cpumeter (it won't looks as snappy)
+    and bring down the idle load on the system.
 
-  * minix does not have job control
+  * I was not brave enough to try building a smp kernel.  So, only
+    one cpu meter in xosview (for now).
+
+  * cpuWaitColor is being used for the kernel field in the cpu meter.
+    memInactiveColor is being used for the contiguous free field in
+    the memory meter.  The whole xosview color thing is on the list
+    for a revamp.
+
+  * minix does not swap to disk at all.  So, no swap/page meters
+
+  * I could not discover how to gather disk or network stats.
+    Still looking... (pointers/tips accepted!).
+
+  * minix does not have job control (not related to xosview
+    but an interesting fact that is not obvious).  This is why
+    bash complains about 'no job control in this shell'.
   

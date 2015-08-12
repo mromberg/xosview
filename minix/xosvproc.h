@@ -27,7 +27,7 @@ struct XOSVProc {
     // ALL -------------
     int psiVers;              // PSINFO_VERSION,  /* information version */
     char ptype;               // type,            /* process type */
-    int pend;                 // (int)proc[i].p_endpoint,/* process endpoint */
+    int pend;  //pid (I think) // (int)proc[i].p_endpoint,/* process endpoint */
     std::string name;         // name,     /* process name */
     char state;               // state,   /* process state letter */
     int blockedon; // (int)P_BLOCKEDON(&proc[i]),/* endpt blocked on, or NONE */

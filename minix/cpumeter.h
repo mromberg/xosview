@@ -9,6 +9,8 @@
 
 #include "fieldmetergraph.h"
 
+#include <map>
+
 
 class CPUMeter : public FieldMeterGraph {
 public:
@@ -25,9 +27,9 @@ public:
 
 private:
     unsigned int _cpu;
-    std::vector<uint64_t> _lastTicks;
+    std::map<pid_t, uint64_t> _ptable;
 
-    std::vector<uint64_t> getTicks(void) const;
+    std::vector<uint64_t> getTicks(void);
 };
 
 
