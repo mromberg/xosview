@@ -16,7 +16,7 @@ static const char * const MEMFILENAME = "/proc/meminfo";
 
 
 MemMeter::MemMeter( XOSView *parent ) : FieldMeterGraph( parent, 4, "MEM",
-  "USED/CONTIG/CACHE/FREE" ){
+  "USED/CACHE/CFREE/FREE" ){
 }
 
 
@@ -28,8 +28,8 @@ void MemMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
     setfieldcolor( 0, rdb.getResource( "memUsedColor" ) );
-    setfieldcolor( 1, rdb.getResource( "memOtherColor" ) );
-    setfieldcolor( 2, rdb.getResource( "memCacheColor" ) );
+    setfieldcolor( 1, rdb.getResource( "memCacheColor" ) );
+    setfieldcolor( 2, rdb.getResource( "memInactiveColor" ) );
     setfieldcolor( 3, rdb.getResource( "memFreeColor" ) );
 
     priority_ = util::stoi (rdb.getResource( "memPriority" ));
@@ -46,9 +46,9 @@ void MemMeter::checkevent( void ){
     logDebug << std::setprecision(1) << std::fixed
              << "t " << total_ * TOMEG << " "
              << "used "    << fields_[0] * TOMEG << " "
-             << "contig "  << fields_[1] * TOMEG << " "
-             << "cache "   << fields_[2] * TOMEG << " "
-             << "free "    << fields_[4] * TOMEG
+             << "cache "   << fields_[1] * TOMEG << " "
+             << "contig "  << fields_[2] * TOMEG << " "
+             << "free "    << fields_[3] * TOMEG
              << std::endl;
 
     drawfields(parent_->g());
@@ -75,15 +75,14 @@ void MemMeter::getmeminfo( void ){
              << "cache: " << cached << std::endl;
 
     total_ = (float)total * (float)psize;
-    fields_[1] = (float)largest * (float)psize;
-    fields_[2] = (float)cached * (float)psize;
-    fields_[3] = (float)free * (float)psize;
+    fields_[1] = (float)cached * (float)psize;
+    fields_[2] = (float)largest * (float)psize;
+    fields_[3] = (float)(free - largest) * (float)psize;
     // The used is whatever is left.  Assuming the largest is part
     // of this count.  So, subtract the largest from used
-    fields_[0] = total_ - (fields_[2] + fields_[3]);
-    fields_[0] -= fields_[1];
+    fields_[0] = total_ - (fields_[1] + fields_[2] + fields_[3]);
     fields_[0] = fields_[0] >= 0 ? fields_[0] : 0;
 
     if (total_)
-        FieldMeterDecay::setUsed(total_ - fields_[3], total_);
+        FieldMeterDecay::setUsed(fields_[0], total_);
 }

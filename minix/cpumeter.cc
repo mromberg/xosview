@@ -78,8 +78,9 @@ std::vector<uint64_t> CPUMeter::getTicks(void) const {
 
     for (size_t i = 0 ; i < procs.size() ; i++) {
         // FIXME: check about just using cycles
-        uint64_t uticks = procs[i].cycles + procs[i].kipc_cycles
-            + procs[i].kcall_cycles;
+//        uint64_t uticks = procs[i].cycles + procs[i].kipc_cycles
+//            + procs[i].kcall_cycles;
+        uint64_t uticks = procs[i].cycles;
         rval[5] += uticks;
 
         if (procs[i].pid == IDLE)
