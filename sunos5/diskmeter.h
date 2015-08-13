@@ -22,14 +22,13 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getdiskinfo( void );
-
 private:
     uint64_t _read_prev, _write_prev;
     float _maxspeed;
     kstat_ctl_t *_kc;
     KStatList *_disks;
+
+    void getdiskinfo( void );
 };
 
 

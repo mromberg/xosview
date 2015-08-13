@@ -23,17 +23,19 @@ CPUMeter::CPUMeter(XOSView *parent, kstat_ctl_t *kc, int cpuid)
                 _ksp = (*_cpustats)[i];
 }
 
+
 CPUMeter::~CPUMeter(void){
 }
+
 
 void CPUMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor(0, rdb.getResource("cpuUserColor"));
-    setfieldcolor(1, rdb.getResource("cpuSystemColor"));
-    setfieldcolor(2, rdb.getResource("cpuInterruptColor"));
-    setfieldcolor(3, rdb.getResource("cpuFreeColor"));
+    setfieldcolor(0, rdb.getColor("cpuUserColor"));
+    setfieldcolor(1, rdb.getColor("cpuSystemColor"));
+    setfieldcolor(2, rdb.getColor("cpuInterruptColor"));
+    setfieldcolor(3, rdb.getColor("cpuFreeColor"));
     priority_ = util::stoi(rdb.getResource("cpuPriority"));
     dodecay_ = rdb.isResourceTrue("cpuDecay");
     useGraph_ = rdb.isResourceTrue("cpuGraph");

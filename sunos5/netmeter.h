@@ -11,7 +11,6 @@
 #include "fieldmetergraph.h"
 #include "kstats.h"
 
-#include <net/if.h>
 
 
 
@@ -24,9 +23,6 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getnetstats( void );
-
 private:
     float _maxpackets;
     uint64_t _lastBytesIn, _lastBytesOut;
@@ -34,8 +30,9 @@ private:
     KStatList *_nets;
     std::string _netIface;
     bool _ignored;
-    struct lifreq _lfr;
     int _socket;
+
+    void getnetstats( void );
 };
 
 

@@ -27,8 +27,8 @@ void SwapMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor(0, rdb.getResource("swapUsedColor"));
-    setfieldcolor(1, rdb.getResource("swapFreeColor"));
+    setfieldcolor(0, rdb.getColor("swapUsedColor"));
+    setfieldcolor(1, rdb.getColor("swapFreeColor"));
     priority_ = util::stoi(rdb.getResource("swapPriority"));
     dodecay_ = rdb.isResourceTrue("swapDecay");
     useGraph_ = rdb.isResourceTrue("swapGraph");

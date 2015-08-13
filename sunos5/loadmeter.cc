@@ -10,11 +10,14 @@
 
 
 #ifdef HAVE_GETLOADAVG
+
 #include <sys/loadavg.h>
 #else
+
 #ifndef FSCALE
 #define FSCALE (1<<8)
 #endif
+
 #endif
 
 
@@ -47,16 +50,13 @@ void LoadMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    warnloadcol = parent_->g().allocColor(rdb.getResource(
-          "loadWarnColor"));
-    procloadcol = parent_->g().allocColor(rdb.getResource(
-          "loadProcColor"));
-    critloadcol = parent_->g().allocColor(rdb.getResource(
-          "loadCritColor"));
+    warnloadcol = rdb.getColor("loadWarnColor");
+    procloadcol = rdb.getColor("loadProcColor");
+    critloadcol = rdb.getColor("loadCritColor");
 
     setfieldcolor(0, procloadcol);
-    setfieldcolor(1, rdb.getResource("loadIdleColor"));
-    priority_ = util::stoi (rdb.getResource("loadPriority"));
+    setfieldcolor(1, rdb.getColor("loadIdleColor"));
+    priority_ = util::stoi(rdb.getResource("loadPriority"));
     dodecay_ = rdb.isResourceTrue("loadDecay");
     useGraph_ = rdb.isResourceTrue("loadGraph");
     setUsedFormat(rdb.getResource("loadUsedFormat"));

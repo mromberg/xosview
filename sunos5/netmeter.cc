@@ -13,7 +13,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/sockio.h>
-
+#include <net/if.h>
 
 
 
@@ -40,9 +40,9 @@ void NetMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource("netInColor") );
-    setfieldcolor( 1, rdb.getResource("netOutColor") );
-    setfieldcolor( 2, rdb.getResource("netBackground") );
+    setfieldcolor( 0, rdb.getColor("netInColor") );
+    setfieldcolor( 1, rdb.getColor("netOutColor") );
+    setfieldcolor( 2, rdb.getColor("netBackground") );
     priority_ = util::stoi( rdb.getResource("netPriority") );
     dodecay_ = rdb.isResourceTrue("netDecay");
     useGraph_ = rdb.isResourceTrue("netGraph");
@@ -66,6 +66,7 @@ void NetMeter::getnetstats( void ){
     uint64_t nowBytesIn = 0, nowBytesOut = 0;
     kstat_named_t *k;
     kstat_t *ksp;
+    struct lifreq lfr;
     total_ = _maxpackets;
     _nets->update(_kc);
 
@@ -91,12 +92,12 @@ void NetMeter::getnetstats( void ){
                       const_cast<char *>("ipackets"))) == NULL )
                     continue;
                 // for packet counter, mtu is needed
-                strncpy(_lfr.lifr_name, ksp->ks_name,
-                  sizeof(_lfr.lifr_name));
-                if ( ioctl(_socket, SIOCGLIFMTU, (caddr_t)&_lfr) < 0 )
+                strncpy(lfr.lifr_name, ksp->ks_name,
+                  sizeof(lfr.lifr_name));
+                if ( ioctl(_socket, SIOCGLIFMTU, (caddr_t)&lfr) < 0 )
                     continue;
                 // not exactly, but must do
-                nowBytesIn += kstat_to_ui64(k) * _lfr.lifr_mtu;
+                nowBytesIn += kstat_to_ui64(k) * lfr.lifr_mtu;
 
                 logDebug << kstat_to_ui64(k) << " packets received\n";
             }
@@ -119,10 +120,10 @@ void NetMeter::getnetstats( void ){
                 if ( (k = (kstat_named_t *)kstat_data_lookup(ksp,
                       const_cast<char *>("opackets"))) == NULL )
                     continue;
-                strncpy(_lfr.lifr_name, ksp->ks_name, sizeof(_lfr.lifr_name));
-                if ( ioctl(_socket, SIOCGLIFMTU, (caddr_t)&_lfr) < 0 )
+                strncpy(lfr.lifr_name, ksp->ks_name, sizeof(lfr.lifr_name));
+                if ( ioctl(_socket, SIOCGLIFMTU, (caddr_t)&lfr) < 0 )
                     continue;
-                nowBytesOut += kstat_to_ui64(k) * _lfr.lifr_mtu;
+                nowBytesOut += kstat_to_ui64(k) * lfr.lifr_mtu;
 
                 logDebug << kstat_to_ui64(k) << " packets sent\n";
             }

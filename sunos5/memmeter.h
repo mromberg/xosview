@@ -20,13 +20,12 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getmeminfo( void );
-
 private:
     int pageSize;
     kstat_ctl_t *kc;
     kstat_t *ksp_sp, *ksp_zfs;
+
+    void getmeminfo( void );
 };
 
 

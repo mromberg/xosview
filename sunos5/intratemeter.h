@@ -25,13 +25,12 @@ public:
     void checkevent(void);
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getinfo(void);
-
 private:
     uint64_t _lastirqcount;
     kstat_ctl_t *_kc;
     KStatList *_cpus;
+
+    void getinfo(void);
 };
 
 

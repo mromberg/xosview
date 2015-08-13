@@ -10,6 +10,7 @@
 #include <sys/sysinfo.h>
 
 
+
 PageMeter::PageMeter(XOSView *parent, kstat_ctl_t *_kc, float max)
     : FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE"),
       pageinfo_(2, std::vector<float>(2, 0.0)),
@@ -28,9 +29,9 @@ void PageMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor(0, rdb.getResource("pageInColor"));
-    setfieldcolor(1, rdb.getResource("pageOutColor"));
-    setfieldcolor(2, rdb.getResource("pageIdleColor"));
+    setfieldcolor(0, rdb.getColor("pageInColor"));
+    setfieldcolor(1, rdb.getColor("pageOutColor"));
+    setfieldcolor(2, rdb.getColor("pageIdleColor"));
     priority_ = util::stoi(rdb.getResource("pagePriority"));
     maxspeed_ *= priority_ / 10.0;
     dodecay_ = rdb.isResourceTrue("pageDecay");

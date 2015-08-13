@@ -21,10 +21,6 @@ public:
     void checkevent(void);
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getloadinfo(void);
-    void getspeedinfo(void);
-
 private:
     unsigned long procloadcol, warnloadcol, critloadcol;
     unsigned int warnThreshold, critThreshold;
@@ -34,6 +30,10 @@ private:
     KStatList *cpulist;
     kstat_ctl_t *kc;
     kstat_t *ksp;
+
+    void getloadinfo(void);
+    void getspeedinfo(void);
 };
+
 
 #endif

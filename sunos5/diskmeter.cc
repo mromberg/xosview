@@ -27,9 +27,9 @@ void DiskMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource("diskReadColor") );
-    setfieldcolor( 1, rdb.getResource("diskWriteColor") );
-    setfieldcolor( 2, rdb.getResource("diskIdleColor") );
+    setfieldcolor( 0, rdb.getColor("diskReadColor") );
+    setfieldcolor( 1, rdb.getColor("diskWriteColor") );
+    setfieldcolor( 2, rdb.getColor("diskIdleColor") );
     priority_ = util::stoi( rdb.getResource("diskPriority") );
     dodecay_ = rdb.isResourceTrue("diskDecay");
     useGraph_ = rdb.isResourceTrue("diskGraph");

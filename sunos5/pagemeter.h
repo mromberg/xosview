@@ -22,16 +22,14 @@ public:
     void checkevent(void);
     void checkResources(const ResDB &rdb);
 
-protected:
+private:
     std::vector<std::vector<float> > pageinfo_;
     int pageindex_;
     float maxspeed_;
-
-    void getpageinfo(void);
-
-private:
     KStatList *cpustats;
     kstat_ctl_t *kc;
+
+    void getpageinfo(void);
 };
 
 

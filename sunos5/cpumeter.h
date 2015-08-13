@@ -23,17 +23,15 @@ public:
     void checkResources(const ResDB &rdb);
     static const char *cpuStr(int num);
 
-protected:
+private:
     std::vector<std::vector<float> > cputime_;
     int cpuindex_;
-
-    void getcputime(void);
-
-private:
     KStatList *_cpustats;
     bool _aggregate;
     kstat_ctl_t *_kc;
     kstat_t *_ksp;
+
+    void getcputime(void);
 };
 
 

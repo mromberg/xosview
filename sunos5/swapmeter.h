@@ -22,11 +22,10 @@ public:
     void checkevent(void);
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getswapinfo(void);
-
 private:
     size_t pagesize;
+
+    void getswapinfo(void);
 };
 
 
