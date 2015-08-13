@@ -87,9 +87,9 @@ void LoadMeter::checkevent( void ) {
         cur_cpu_speed_ = BSDGetCPUSpeed();
 
         if (old_cpu_speed_ != cur_cpu_speed_) {
-            char l[25];
-            snprintf(l, 25, "PROCS/MIN %d MHz", cur_cpu_speed_);
-            legend(l);
+            std::string lgnd("PROCS/MIN ");
+            lgnd += util::repr(cur_cpu_speed_) + " MHz";
+            legend(lgnd);
             drawLegend(parent_->g());
         }
     }

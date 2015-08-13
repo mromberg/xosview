@@ -1,9 +1,10 @@
-#ifndef __kernel_h__
-#define __kernel_h__
+#ifndef XOSVKERNEL_H
+#define XOSVKERNEL_H
 
 //
 //  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002, 2015 by Brian Grayson (bgrayson@netbsd.org)
+//  Copyright (c) 1995, 1996, 1997-2002, 2015
+//  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -21,7 +22,7 @@ void
 BSDInit();
 
 void
-SetKernelName(const char* kernelName);
+SetKernelName(const std::string &kernelName);
 
 int
 BSDGetCPUSpeed();
@@ -74,7 +75,7 @@ BSDGetCPUTemperature(float *temps, float *tjmax);
 #endif
 
 void
-BSDGetSensor(const char *name, const char *valname, float *value,
+BSDGetSensor(const std::string &name, const char *valname, float *value,
   std::string &unit);
 
 bool

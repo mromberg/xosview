@@ -1,6 +1,7 @@
 //
 //  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002, 2015 by Brian Grayson (bgrayson@netbsd.org)
+//  Copyright (c) 1995, 1996, 1997-2002, 2015
+//  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -16,10 +17,9 @@
 //    authors for a copy.
 //
 
+#include "log.h"
 #include "kernel.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <kvm.h>
@@ -217,11 +217,12 @@ BSDInit() {
 }
 
 void
-SetKernelName(const char* kernelName) {
-	if (strlen(kernelName) >= _POSIX2_LINE_MAX)
-		errx(EX_OSFILE, "Kernel file name of '%s' is too long.", kernelName);
+SetKernelName(const std::string &kernelName) {
+    if (kernelName.size() >= _POSIX2_LINE_MAX)
+        logFatal << "Kernel file name of '"
+                 << kernelName << "' is too long." << std::endl;
 
-	strncpy(kernelFileName, kernelName, _POSIX2_LINE_MAX);
+    kernelName.copy(kernelFileName, _POSIX2_LINE_MAX);
 }
 
 void
@@ -271,12 +272,12 @@ BSDGetCPUSpeed() {
 	int cpu_speed = 0;
 
 #if defined(XOSVIEW_FREEBSD)
-	char name[25];
+        std::string name;
 	int speed = 0, cpus = BSDCountCpus(), avail_cpus = 0;
 	size = sizeof(speed);
 	for (int i = 0; i < cpus; i++) {
-		snprintf(name, 25, "dev.cpu.%d.freq", i);
-		if ( sysctlbyname(name, &speed, &size, NULL, 0) == 0 ) {
+                name = "dev.cpu." + util::repr(i) + ".freq";
+		if ( sysctlbyname(name.c_str(), &speed, &size, NULL, 0) == 0 ) {
 			// count only cpus with individual freq available
 			cpu_speed += speed;
 			avail_cpus++;
@@ -1289,11 +1290,11 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 	// Intel Core 2 and AMD K8+ processors.
 	// Values are in degrees Celsius (FreeBSD < 7.2) or in
 	// 10*degrees Kelvin (FreeBSD >= 7.3).
-	char name[25];
+        std::string name;
 	int cpus = BSDCountCpus();
 	for (int i = 0; i < cpus; i++) {
-		snprintf(name, 25, "dev.cpu.%d.temperature", i);
-		if ( sysctlbyname(name, &val, &size, NULL, 0) == 0) {
+                name = "dev.cpu." + util::repr(i) + ".temperature";
+		if ( sysctlbyname(name.c_str(), &val, &size, NULL, 0) == 0) {
 			nbr++;
 			if (temps)
 #if __FreeBSD_version >= 702106
@@ -1306,8 +1307,8 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 			warn("sysctl %s failed", name);
 
 		if (tjmax) {
-			snprintf(name, 25, "dev.cpu.%d.coretemp.tjmax", i);
-			if ( sysctlbyname(name, &val, &size, NULL, 0) == 0 )
+                        name = "dev.cpu." + util::repr(i) + ".coretemp.tjmax";
+			if ( sysctlbyname(name.c_str(), &val, &size, NULL, 0) == 0 )
 #if __FreeBSD_version >= 702106
 				tjmax[i] = ((float)val - 2732.0) / 10.0;
 #else
@@ -1324,9 +1325,9 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 #endif
 
 void
-BSDGetSensor(const char *name, const char *valname, float *value,
+BSDGetSensor(const std::string &name, const char *valname, float *value,
   std::string &unit) {
-	if (!name || !valname || !value)
+  if (!name.size() || !valname || !value)
 		errx(EX_SOFTWARE, "NULL pointer passed to BSDGetSensor().");
 #if defined(XOSVIEW_NETBSD)
 	/* Adapted from envstat. */
@@ -1351,9 +1352,9 @@ BSDGetSensor(const char *name, const char *valname, float *value,
 		warn("No sensors found");
 		return;
 	}
-	pobj = prop_dictionary_get(pdict, name);
+	pobj = prop_dictionary_get(pdict, name.c_str());
 	if (prop_object_type(pobj) != PROP_TYPE_ARRAY)
-		err(EX_USAGE, "Device %s does not exist", name);
+            err(EX_USAGE, "Device %s does not exist", name.c_str());
 
 	if ( !(piter = prop_array_iterator((prop_array_t)pobj)) )
 		err(EX_OSERR, "Could not get sensor iterator");
@@ -1409,7 +1410,7 @@ BSDGetSensor(const char *name, const char *valname, float *value,
 	prop_object_release(pdict);
 #else  /* XOSVIEW_NETBSD */
 	size_t size;
-	char dummy[50];
+        std::string dummy;
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 	// FreeBSD has no sensor framework, but ACPI thermal zones might work.
 	// They are readable through sysctl (also works in Dragonfly).
@@ -1417,8 +1418,8 @@ BSDGetSensor(const char *name, const char *valname, float *value,
 	if ( strncmp(name, "tz", 2) == 0 ) {
 		int val = 0;
 		size = sizeof(val);
-		snprintf(dummy, 50, "hw.acpi.thermal.%s.%s", name, valname);
-		if ( sysctlbyname(dummy, &val, &size, NULL, 0) < 0 )
+                dummy = "hw.acpi.thermal." + name + "." + valname;
+		if ( sysctlbyname(dummy.c_str(), &val, &size, NULL, 0) < 0 )
 			err(EX_OSERR, "sysctl %s failed", dummy);
 		*value = ((float)val - 2732.0) / 10.0;
 		if (unit.size())
@@ -1707,10 +1708,10 @@ BSDGetBatteryInfo(int *remaining, unsigned int *state) {
 	prop_object_release(pdict);
 #else // XOSVIEW_OPENBSD
 	float total_capacity = 0, total_charge = 0, total_low = 0, total_crit = 0;
-	char battery[16];
+        std::string battery;
 	while (batteries < 1024) {
 		float val = -1.0;
-		snprintf(battery, 15, "acpibat%d", batteries);
+                battery = "acpibat" + util::repr(batteries);
                 std::string emptyStr;
 		BSDGetSensor(battery, "amphour0", &val, emptyStr); // full capacity
 		if (val < 0) // no more batteries
