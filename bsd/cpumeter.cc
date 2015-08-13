@@ -15,12 +15,28 @@
 
 #include "cpumeter.h"
 #include "kernel.h"
+#include "defines.h"
+
+// for CPUSTATES
+#if defined(XOSVIEW_NETBSD)
+#include <sys/sched.h>
+#elif defined(XOSVIEW_OPENBSD)
+#if defined(HAVE_SYS_DKSTAT_H)
+#include <sys/dkstat.h>
+#elif defined(HAVE_SYS_SCHED_H)
+#include <sys/sched.h>
+#endif
+#else
+#include <sys/resource.h>
+#endif
+
 
 
 
 CPUMeter::CPUMeter( XOSView *parent, unsigned int nbr )
     : FieldMeterGraph( parent, 5, "CPU", "USR/NICE/SYS/INT/FREE" ),
-      cputime_(2, std::vector<uint64_t>(CPUSTATES, 0)), cpuindex_(0), nbr_(nbr) {
+      cputime_(2, std::vector<uint64_t>(CPUSTATES, 0)),
+      cpuindex_(0), nbr_(nbr) {
 
     BSDCPUInit();
 
@@ -31,24 +47,27 @@ CPUMeter::CPUMeter( XOSView *parent, unsigned int nbr )
 CPUMeter::~CPUMeter( void ) {
 }
 
+
 void CPUMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource("cpuUserColor") );
-    setfieldcolor( 1, rdb.getResource("cpuNiceColor") );
-    setfieldcolor( 2, rdb.getResource("cpuSystemColor") );
-    setfieldcolor( 3, rdb.getResource("cpuInterruptColor") );
-    setfieldcolor( 4, rdb.getResource("cpuFreeColor") );
+    setfieldcolor( 0, rdb.getColor("cpuUserColor") );
+    setfieldcolor( 1, rdb.getColor("cpuNiceColor") );
+    setfieldcolor( 2, rdb.getColor("cpuSystemColor") );
+    setfieldcolor( 3, rdb.getColor("cpuInterruptColor") );
+    setfieldcolor( 4, rdb.getColor("cpuFreeColor") );
     priority_ = util::stoi( rdb.getResource("cpuPriority") );
     dodecay_ = rdb.isResourceTrue("cpuDecay");
     useGraph_ = rdb.isResourceTrue("cpuGraph");
     setUsedFormat( rdb.getResource("cpuUsedFormat") );
 }
 
+
 void CPUMeter::checkevent( void ) {
     getcputime();
     drawfields(parent_->g());
 }
+
 
 void CPUMeter::getcputime( void ) {
     uint64_t tempCPU[CPUSTATES];

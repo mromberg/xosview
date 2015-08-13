@@ -16,7 +16,6 @@
 
 #include "fieldmetergraph.h"
 
-#include "defines.h"
 
 
 class DiskMeter : public FieldMeterGraph {
@@ -28,14 +27,14 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getstats( void );
-
 private:
 #ifndef HAVE_DEVSTAT
     uint64_t prevreads_, prevwrites_;
 #endif
     double maxBandwidth_;
+
+    void getstats( void );
 };
+
 
 #endif

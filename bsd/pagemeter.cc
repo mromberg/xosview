@@ -37,9 +37,9 @@ void PageMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource("pageInColor") );
-    setfieldcolor( 1, rdb.getResource("pageOutColor") );
-    setfieldcolor( 2, rdb.getResource("pageIdleColor") );
+    setfieldcolor( 0, rdb.getColor("pageInColor") );
+    setfieldcolor( 1, rdb.getColor("pageOutColor") );
+    setfieldcolor( 2, rdb.getColor("pageIdleColor") );
     priority_ = util::stoi( rdb.getResource("pagePriority") );
     dodecay_ = rdb.isResourceTrue("pageDecay");
     useGraph_ = rdb.isResourceTrue("pageGraph");

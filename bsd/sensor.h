@@ -14,7 +14,6 @@
 #include "sensorfieldmeter.h"
 
 
-#define NAMESIZE 32
 
 
 class BSDSensor : public SensorFieldMeter {
@@ -29,12 +28,11 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getsensor( void );
-
 private:
     std::string name_, val_, highname_, lowname_, highval_, lowval_;
     int nbr_;
+
+    void getsensor( void );
 };
 
 

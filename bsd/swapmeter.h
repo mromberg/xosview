@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1995, 1996, 1997-2002, 2015 by Brian Grayson (bgrayson@netbsd.org)
+//  Copyright (c) 1995, 1996, 1997-2002, 2015
+//  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -16,6 +17,7 @@
 #include "fieldmetergraph.h"
 
 
+
 class SwapMeter : public FieldMeterGraph {
 public:
     SwapMeter( XOSView *parent );
@@ -25,8 +27,9 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
+private:
     void getswapinfo( void );
 };
+
 
 #endif

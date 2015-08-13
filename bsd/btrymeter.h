@@ -13,6 +13,7 @@
 #include "fieldmeter.h"
 
 
+
 class BtryMeter : public FieldMeter {
 public:
     BtryMeter( XOSView *parent );
@@ -22,13 +23,13 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getstats( void );
-
 private:
     unsigned long leftcolor_, usedcolor_, chargecolor_, fullcolor_,
         lowcolor_, critcolor_, nonecolor_;
     unsigned int  old_state_;
+
+    void getstats( void );
 };
+
 
 #endif

@@ -15,6 +15,7 @@
 #include <cmath>
 
 
+
 BSDSensor::BSDSensor( XOSView *parent, const std::string &name,
   const std::string &high,
   const std::string &low, const std::string &label,
@@ -53,14 +54,12 @@ BSDSensor::~BSDSensor( void ) {
 void BSDSensor::checkResources(const ResDB &rdb) {
     SensorFieldMeter::checkResources(rdb);
 
-    actcolor_  = parent_->g().allocColor( rdb.getResource(
-          "bsdsensorActColor" ) );
-    highcolor_ = parent_->g().allocColor( rdb.getResource(
-          "bsdsensorHighColor" ) );
-    lowcolor_  = parent_->g().allocColor( rdb.getResource(
-          "bsdsensorLowColor" ) );
+    actcolor_  = rdb.getColor("bsdsensorActColor");
+    highcolor_ = rdb.getColor("bsdsensorHighColor");
+    lowcolor_  = rdb.getColor("bsdsensorLowColor");
+
     setfieldcolor( 0, actcolor_  );
-    setfieldcolor( 1, rdb.getResource( "bsdsensorIdleColor" ) );
+    setfieldcolor( 1, rdb.getColor( "bsdsensorIdleColor" ) );
     setfieldcolor( 2, highcolor_ );
     priority_ = util::stoi( rdb.getResource( "bsdsensorPriority" ) );
 
@@ -85,10 +84,12 @@ void BSDSensor::checkResources(const ResDB &rdb) {
     updateLegend();
 }
 
+
 void BSDSensor::checkevent( void ) {
     getsensor();
     drawfields(parent_->g());
 }
+
 
 void BSDSensor::getsensor( void ) {
     float value, high = high_, low = low_;

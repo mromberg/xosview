@@ -37,15 +37,12 @@ void LoadMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    procloadcol_ = parent_->g().allocColor( rdb.getResource(
-          "loadProcColor") );
-    warnloadcol_ = parent_->g().allocColor( rdb.getResource(
-          "loadWarnColor") );
-    critloadcol_ = parent_->g().allocColor( rdb.getResource(
-          "loadCritColor") );
+    procloadcol_ = rdb.getColor("loadProcColor");
+    warnloadcol_ = rdb.getColor("loadWarnColor");
+    critloadcol_ = rdb.getColor("loadCritColor");
 
     setfieldcolor( 0, procloadcol_ );
-    setfieldcolor( 1, rdb.getResource("loadIdleColor") );
+    setfieldcolor( 1, rdb.getColor( "loadIdleColor") );
     priority_ = util::stoi( rdb.getResource("loadPriority") );
     dodecay_ = rdb.isResourceTrue("loadDecay");
     useGraph_ = rdb.isResourceTrue("loadGraph");

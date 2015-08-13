@@ -23,6 +23,7 @@ class Meter;
 class XOSView;
 
 
+
 class MeterMaker {
 public:
     MeterMaker(XOSView *xos);
@@ -36,5 +37,6 @@ private:
     void coreTempFactory(const ResDB &rdb);
     void sensorFactory(const ResDB &rdb);
 };
+
 
 #endif

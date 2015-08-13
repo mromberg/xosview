@@ -17,20 +17,7 @@
 #define CPUMETER_H
 
 #include "fieldmetergraph.h"
-#include "defines.h"
 
-// for CPUSTATES
-#if defined(XOSVIEW_NETBSD)
-#include <sys/sched.h>
-#elif defined(XOSVIEW_OPENBSD)
-#if defined(HAVE_SYS_DKSTAT_H)
-#include <sys/dkstat.h>
-#elif defined(HAVE_SYS_SCHED_H)
-#include <sys/sched.h>
-#endif
-#else
-#include <sys/resource.h>
-#endif
 
 
 class CPUMeter : public FieldMeterGraph {
@@ -46,9 +33,9 @@ protected:
     void getcputime( void );
 
 private:
-    //uint64_t cputime_[2][CPUSTATES];
     std::vector<std::vector<uint64_t> > cputime_;
     unsigned int cpuindex_, nbr_;
 };
+
 
 #endif

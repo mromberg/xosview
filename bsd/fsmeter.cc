@@ -10,7 +10,6 @@
 
 #include <cerrno>
 
-
 #include <sys/types.h>
 #include <sys/statvfs.h>
 
@@ -41,11 +40,10 @@ void FSMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    _bgColor = parent_->g().allocColor(rdb.getResource(
-          "filesysBGColor"));
-    _umountColor = parent_->g().allocColor(rdb.getResource(
-          "filesysNoneColor"));
-    setfieldcolor(0, rdb.getResource("filesysFGColor"));
+    _bgColor = rdb.getColor("filesysBGColor");
+    _umountColor = rdb.getColor("filesysNoneColor");
+
+    setfieldcolor(0, rdb.getColor("filesysFGColor"));
     setfieldcolor(1, _bgColor);
 
     priority_ = util::stoi(rdb.getResource("filesysPriority"));

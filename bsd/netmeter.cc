@@ -15,7 +15,8 @@
 
 #include "netmeter.h"
 #include "kernel.h"
-#include <stdlib.h>
+
+
 
 
 NetMeter::NetMeter( XOSView *parent, double max )
@@ -50,9 +51,9 @@ void NetMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource("netInColor") );
-    setfieldcolor( 1, rdb.getResource("netOutColor") );
-    setfieldcolor( 2, rdb.getResource("netBackground") );
+    setfieldcolor( 0, rdb.getColor("netInColor") );
+    setfieldcolor( 1, rdb.getColor("netOutColor") );
+    setfieldcolor( 2, rdb.getColor("netBackground") );
     priority_ = util::stoi( rdb.getResource("netPriority") );
     dodecay_ = rdb.isResourceTrue("netDecay");
     useGraph_ = rdb.isResourceTrue("netGraph");
