@@ -43,7 +43,8 @@ int
 BSDNetInit();
 
 void
-BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes, const char *netIface, bool ignored);
+BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
+  const std::string &netIface, bool ignored);
 
 int
 BSDSwapInit();

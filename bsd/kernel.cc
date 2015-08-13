@@ -252,8 +252,9 @@ OpenKDIfNeeded() {
 	//  Look at all of the returned symbols, and check for bad lookups.
 	//  (This may be unnecessary, but better to check than not to...  )
 	struct nlist *nlp = nlst;
+        std::string sDUMMY_SYM(DUMMY_SYM);
 	while (nlp && nlp->n_name) {
-		if ( strncmp(nlp->n_name, DUMMY_SYM, strlen(DUMMY_SYM))) {
+            if (std::string(nlp->n_name, 0, sDUMMY_SYM.size()) != sDUMMY_SYM) {
 			if ( nlp->n_type == 0 || nlp->n_value == 0 )
 #if defined(XOSVIEW_FREEBSD) && defined(__alpha__)
 				/* XXX: this should be properly fixed. */
@@ -481,8 +482,9 @@ BSDNetInit() {
 }
 
 void
-BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes, const char *netIface, bool ignored) {
-	char ifname[IFNAMSIZ];
+BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
+  const std::string &netIface, bool ignored) {
+        std::string ifname;
 	*inbytes = 0;
 	*outbytes = 0;
 #if defined(XOSVIEW_OPENBSD)
@@ -508,7 +510,7 @@ BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes, const char *netIface, bool
 		sdl = (struct sockaddr_dl *)(ifm + 1);
 		if (sdl->sdl_family != AF_LINK)
 			continue;
-		if ( strncmp(netIface, "False", 5) != 0 ) {
+                if (netIface != "False") {
 			memcpy(ifname, sdl->sdl_data, (sdl->sdl_nlen >= IFNAMSIZ ? IFNAMSIZ - 1 : sdl->sdl_nlen));
 			if ( (!ignored && strncmp(sdl->sdl_data, netIface, sdl->sdl_nlen) != 0) ||
 				 ( ignored && strncmp(sdl->sdl_data, netIface, sdl->sdl_nlen) == 0) )
@@ -535,7 +537,7 @@ BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes, const char *netIface, bool
 		bool skipif = false;
 		//  Now, dereference the pointer to get the ifnet struct.
 		safe_kvm_read((unsigned long)ifnetp, &ifnet, sizeof(ifnet));
-		strlcpy(ifname, ifnet.if_xname, sizeof(ifname));
+                ifname = std::string(ifnet.if_xname, 0, sizeof(ifname));
 #if defined(XOSVIEW_NETBSD)
 		ifnetp = TAILQ_NEXT(&ifnet, if_list);
 #else
@@ -543,9 +545,9 @@ BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes, const char *netIface, bool
 #endif
 		if (!(ifnet.if_flags & IFF_UP))
 			continue;
-		if ( strncmp(netIface, "False", 5) != 0 ) {
-			if ( (!ignored && strncmp(ifname, netIface, 256) != 0) ||
-			     ( ignored && strncmp(ifname, netIface, 256) == 0) )
+                if (netIface != "False") {
+                        if ( (!ignored && netIface != ifname) ||
+                          ( ignored && netIface == ifname) )
 				skipif = true;
 		}
 		if (!skipif) {
