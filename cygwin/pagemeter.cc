@@ -11,14 +11,11 @@
 #include <fstream>
 
 
-PageMeter::PageMeter( XOSView *parent, float max ) : FieldMeterGraph( parent,
-  3, "PAGE", "IN/OUT/IDLE" ), _vmstat(false), _statFileName("/proc/stat"){
-    for ( int i = 0 ; i < 2 ; i++ )
-        for ( int j = 0 ; j < 2 ; j++ )
-            pageinfo_[j][i] = 0;
-
-    maxspeed_ = max;
-    pageindex_ = 0;
+PageMeter::PageMeter( XOSView *parent, float max )
+    : FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE" ),
+      pageinfo_(2, std::vector<float>(2, 0.0)),
+      pageindex_(0), maxspeed_(max), _vmstat(false),
+      _statFileName("/proc/stat") {
 
     if (util::fs::isfile("/proc/vmstat")) {
         _vmstat = true;
@@ -26,15 +23,17 @@ PageMeter::PageMeter( XOSView *parent, float max ) : FieldMeterGraph( parent,
     }
 }
 
+
 PageMeter::~PageMeter( void ){
 }
+
 
 void PageMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource( "pageInColor" ) );
-    setfieldcolor( 1, rdb.getResource( "pageOutColor" ) );
-    setfieldcolor( 2, rdb.getResource( "pageIdleColor" ) );
+    setfieldcolor( 0, rdb.getColor( "pageInColor" ) );
+    setfieldcolor( 1, rdb.getColor( "pageOutColor" ) );
+    setfieldcolor( 2, rdb.getColor( "pageIdleColor" ) );
     priority_ = util::stoi (rdb.getResource( "pagePriority" ));
     maxspeed_ *= priority_ / 10.0;
     dodecay_ = rdb.isResourceTrue( "pageDecay" );
@@ -43,6 +42,7 @@ void PageMeter::checkResources(const ResDB &rdb){
     decayUsed(rdb.isResourceTrue("pageUsedDecay"));
 }
 
+
 void PageMeter::checkevent( void ){
     if (_vmstat)
         getvmpageinfo();
@@ -50,6 +50,7 @@ void PageMeter::checkevent( void ){
         getpageinfo();
     drawfields(parent_->g());
 }
+
 
 void PageMeter::updateinfo(void) {
     int oldindex = (pageindex_+1)%2;
@@ -72,10 +73,11 @@ void PageMeter::updateinfo(void) {
     pageindex_ = (pageindex_ + 1) % 2;
 }
 
+
 void PageMeter::getvmpageinfo(void) {
     total_ = 0;
     std::string buf;
-    std::ifstream stats(_statFileName);
+    std::ifstream stats(_statFileName.c_str());
     if (!stats) {
         logFatal << "Cannot open file : " << _statFileName << std::endl;
     }
@@ -92,10 +94,11 @@ void PageMeter::getvmpageinfo(void) {
     updateinfo();
 }
 
+
 void PageMeter::getpageinfo( void ){
     total_ = 0;
     std::string buf;
-    std::ifstream stats(_statFileName);
+    std::ifstream stats(_statFileName.c_str());
 
     if ( !stats ){
         logFatal << "Cannot open file : " << _statFileName << std::endl;

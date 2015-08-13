@@ -7,8 +7,8 @@
 //  Most of this code was written by Werner Fink <werner@suse.de>
 //  Only small changes were made on my part (M.R.)
 //
-#ifndef _LOADMETER_H_
-#define _LOADMETER_H_
+#ifndef LOADMETER_H
+#define LOADMETER_H
 
 
 #include "fieldmetergraph.h"
@@ -24,10 +24,6 @@ public:
 
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getloadinfo( void );
-    void getspeedinfo( void );
-
 private:
     unsigned long _procloadcol, _warnloadcol, _critloadcol;
 
@@ -36,6 +32,10 @@ private:
     AlarmState _alarmstate, _lastalarmstate;
     size_t _old_cpu_speed, _cur_cpu_speed;
     bool _do_cpu_speed;
+
+    void getloadinfo( void );
+    void getspeedinfo( void );
 };
+
 
 #endif

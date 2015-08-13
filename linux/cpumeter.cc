@@ -43,9 +43,9 @@ static const char * const STATFILENAME = "/proc/stat";
 
 CPUMeter::CPUMeter(XOSView *parent, unsigned int cpu)
     : FieldMeterGraph( parent, 10, util::toupper(CPUMeter::cpuStr(cpu)),
-      "USR/NI/SYS/IO/I/SI/ST/GST/NGST/IDL"), _cpu(cpu) {
-    _oldStats.resize(numfields());
-    _lineNum = findLine();
+      "USR/NI/SYS/IO/I/SI/ST/GST/NGST/IDL"),
+      _cpu(cpu), _oldStats(numfields(), 0), _lineNum(findLine()) {
+
     getStats(_oldStats);
 }
 

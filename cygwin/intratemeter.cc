@@ -9,12 +9,13 @@
 #include <fstream>
 #include <limits>
 
-static const char *STATFNAME = "/proc/stat";
+static const char * const STATFNAME = "/proc/stat";
 
 IrqRateMeter::IrqRateMeter( XOSView *parent )
     : FieldMeterGraph( parent, 2, "IRQR", "IRQs per sec/IDLE", 1, 1, 0 ),
       _peak(100), _last(getIntCount()), _timer(true) {
 }
+
 
 IrqRateMeter::~IrqRateMeter( void ) {
 }
@@ -22,10 +23,8 @@ IrqRateMeter::~IrqRateMeter( void ) {
 
 void IrqRateMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
-    setfieldcolor(0, parent_->g().allocColor(rdb.getResource(
-            "irqrateUsedColor")));
-    setfieldcolor(1, parent_->g().allocColor(rdb.getResource(
-            "irqrateIdleColor")));
+    setfieldcolor(0, rdb.getColor("irqrateUsedColor"));
+    setfieldcolor(1, rdb.getColor("irqrateIdleColor"));
 
     priority_ = util::stoi(rdb.getResource("irqratePriority"));
     dodecay_ = rdb.isResourceTrue("irqrateDecay");

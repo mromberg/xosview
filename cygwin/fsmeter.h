@@ -10,6 +10,7 @@
 
 #include "fieldmetergraph.h"
 
+
 class FSMeter : public FieldMeterGraph {
 public:
     FSMeter(XOSView *parent, const std::string &path);

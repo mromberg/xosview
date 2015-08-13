@@ -59,7 +59,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
 void MeterMaker::cpuFactory(const ResDB &rdb) {
     size_t start = 0, end = 0;
-    getRange(rdb, "cpuFormat", CPUMeter::countCPUs(), start, end);
+    getRange(rdb.getResource("cpuFormat"), CPUMeter::countCPUs(), start, end);
 
     logDebug << "start=" << start << ", end=" << end << std::endl;
 
@@ -68,15 +68,13 @@ void MeterMaker::cpuFactory(const ResDB &rdb) {
 }
 
 
-void MeterMaker::getRange(const ResDB &rdb, const std::string &resource,
+void MeterMaker::getRange(const std::string &format,
   size_t cpuCount, size_t &start, size_t &end) const {
 
     // check the *Format resource if multi-procesor system
     start = end = 0;
 
     if (cpuCount > 1) {
-        std::string format(rdb.getResource(resource));
-        logDebug << resource << ": " << format << std::endl;
         if (format == "single") // single meter for all cpus
             end = 0;
         else if (format == "all"){ // seperate but no cumulative
@@ -88,7 +86,7 @@ void MeterMaker::getRange(const ResDB &rdb, const std::string &resource,
         else if (format == "auto") // if(cpuCount==1) single else both
             end = cpuCount;
         else {
-            logProblem << "Unknown " << resource << ": " << format << ".  "
+            logProblem << "Unknown format: " << format << ".  "
                        << "Using auto" << std::endl;
             end = cpuCount;
         }

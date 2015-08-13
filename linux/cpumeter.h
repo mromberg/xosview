@@ -25,9 +25,9 @@ public:
     static std::string cpuStr(size_t num);
 
 private:
-    size_t _lineNum;
-    std::vector<unsigned long long> _oldStats;
     unsigned int _cpu;
+    std::vector<unsigned long long> _oldStats;
+    size_t _lineNum;
 
     void getcputime(void);
     size_t findLine(void);

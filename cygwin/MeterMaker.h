@@ -14,6 +14,7 @@
 class Meter;
 class XOSView;
 
+
 class MeterMaker {
 public:
     MeterMaker(XOSView *xos);
@@ -25,8 +26,8 @@ private:
     std::vector<Meter *> _meters;
 
     void cpuFactory(const ResDB &rdb);
-    void getRange(const ResDB &rdb, const std::string &resource,
-      size_t cpuCount, size_t &start, size_t &end) const;
+    void getRange(const std::string &fname, size_t cpuCount,
+      size_t &start, size_t &end) const;
 };
 
 

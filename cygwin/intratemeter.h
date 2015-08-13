@@ -30,4 +30,5 @@ private:
     unsigned long long getIntCount(void) const;
 };
 
+
 #endif

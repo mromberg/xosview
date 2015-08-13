@@ -9,7 +9,6 @@
 //
 
 #include "loadmeter.h"
-#include "xosview.h"
 
 #include <fstream>
 #include <sstream>
@@ -17,8 +16,8 @@
 #include <iomanip>
 
 
-static const char LOADFILENAME[] = "/proc/loadavg";
-static const char SPEEDFILENAME[] = "/proc/cpuinfo";
+static const char * const LOADFILENAME = "/proc/loadavg";
+static const char * const SPEEDFILENAME = "/proc/cpuinfo";
 
 
 LoadMeter::LoadMeter( XOSView *parent )
@@ -31,21 +30,20 @@ LoadMeter::LoadMeter( XOSView *parent )
     total_ = 2.0;
 }
 
+
 LoadMeter::~LoadMeter( void ){
 }
+
 
 void LoadMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    _procloadcol = parent_->g().allocColor(rdb.getResource(
-          "loadProcColor" ));
-    _warnloadcol = parent_->g().allocColor(rdb.getResource(
-          "loadWarnColor" ));
-    _critloadcol = parent_->g().allocColor(rdb.getResource(
-          "loadCritColor" ));
+    _procloadcol = rdb.getColor("loadProcColor" );
+    _warnloadcol = rdb.getColor("loadWarnColor" );
+    _critloadcol = rdb.getColor("loadCritColor" );
 
     setfieldcolor( 0, _procloadcol );
-    setfieldcolor( 1, rdb.getResource( "loadIdleColor" ) );
+    setfieldcolor( 1, rdb.getColor( "loadIdleColor" ) );
     priority_ = util::stoi (rdb.getResource( "loadPriority" ));
     useGraph_ = rdb.isResourceTrue( "loadGraph" );
     dodecay_ = rdb.isResourceTrue( "loadDecay" );
@@ -60,6 +58,7 @@ void LoadMeter::checkResources(const ResDB &rdb){
 
     _do_cpu_speed  = rdb.isResourceTrue( "loadCpuSpeed" );
 }
+
 
 void LoadMeter::checkevent( void ){
     getloadinfo();
