@@ -12,8 +12,10 @@
 #include <limits>
 
 
-static const char INTFILE[] = "/proc/interrupts";
+static const char * const INTFILE = "/proc/interrupts";
 std::map<size_t,unsigned int> IntMeter::_irqmap; // linenum -> irq
+
+
 
 IntMeter::IntMeter( XOSView *parent, unsigned int cpu, unsigned int cpuTot)
     : BitMeter( parent, "INT", "", 1, 0, 0 ), _cpu(cpu), _cpuTot(cpuTot) {
@@ -31,8 +33,10 @@ IntMeter::IntMeter( XOSView *parent, unsigned int cpu, unsigned int cpuTot)
     logDebug << "_last: " << _last << std::endl;
 }
 
+
 IntMeter::~IntMeter( void ){
 }
+
 
 void IntMeter::checkevent( void ){
     std::vector<unsigned long long> newc = readCounts();
@@ -44,12 +48,14 @@ void IntMeter::checkevent( void ){
     BitMeter::checkevent();
 }
 
-void IntMeter::checkResources(const ResDB &rdb){
+
+void IntMeter::checkResources(const ResDB &rdb) {
     BitMeter::checkResources(rdb);
-    onColor_  = parent_->g().allocColor( rdb.getResource( "intOnColor" ) );
-    offColor_ = parent_->g().allocColor(rdb.getResource( "intOffColor"));
+    onColor_  = rdb.getColor("intOnColor");
+    offColor_ = rdb.getColor("intOffColor");
     priority_ = util::stoi(rdb.getResource("intPriority"));
 }
+
 
 unsigned int IntMeter::irqcount( void ){
     // find and return the highest NUMBERED irq
@@ -75,6 +81,7 @@ unsigned int IntMeter::irqcount( void ){
 
     return std::max(rval, 0);
 }
+
 
 int IntMeter::loadIRQMap(void) {
     int rval = -1;
@@ -102,7 +109,8 @@ int IntMeter::loadIRQMap(void) {
 
             if ((rowLabel.size() == 0)
               || (rowLabel[rowLabel.size()-1] != ':')) {
-                logProblem << "unexpected row label: " << rowLabel << std::endl;
+                logProblem << "unexpected row label: " << rowLabel
+                           << std::endl;
             }
             else {
                 int inum = 0;
@@ -127,6 +135,7 @@ int IntMeter::loadIRQMap(void) {
     return rval;
 }
 
+
 void IntMeter::initUI(void) {
     // parent handles the bit display
     setNumBits(_maxIRQ + 1);
@@ -145,6 +154,7 @@ void IntMeter::initUI(void) {
     }
     title(os.str());
 }
+
 
 std::vector<unsigned long long> IntMeter::readCounts(void) const {
 
@@ -175,6 +185,7 @@ std::vector<unsigned long long> IntMeter::readCounts(void) const {
 
     return rval;
 }
+
 
 unsigned long long IntMeter::parseLine(const std::string &line) const {
     unsigned long long rval = 0;

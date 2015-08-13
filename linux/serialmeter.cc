@@ -4,46 +4,44 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
-
-//
+//-----------------------------------------------------------------------
 //  In order to use this new serial meter, xosview needs to be suid root.
+//-----------------------------------------------------------------------
 //
 #include "serialmeter.h"
-#include "xosview.h"
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <errno.h>
-#include <stdlib.h>
+
 #include <sstream>
 #include <iomanip>
 
-// This should go away after types.h gets fixed in the kernel.
-#ifdef __alpha__
-typedef unsigned char u8;
-typedef signed short s16;
-typedef unsigned short u16;
-typedef signed int s32;
-typedef unsigned int u32;
-typedef signed long long s64;
-typedef unsigned long long u64;
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+
+
+// hack for not having linux/serial_reg.h, (Debian bug #427599)
+#ifndef UART_LSR
+#define UART_LSR        5
+#endif
+#ifndef UART_MSR
+#define UART_MSR        6
 #endif
 
-#include <unistd.h>
-#if defined(GNULIBC) || defined(__GLIBC__)
-#if !defined(__hppa__) && !defined(__mips__) && !defined(__sparc__)
+
+#ifdef HAVE_SYS_IO_H
 #include <sys/io.h>
 #endif
-#if !defined(__alpha__) && !defined(__sparc__) && !defined(__powerpc__) && !defined(__ia64__) && !defined(__hppa__) && !defined(__arm__) && !defined(__mips__)
+
+#ifdef HAVE_SYS_PERM_H
 #include <sys/perm.h>
-#define HAVE_IOPERM
 #endif
-#else
-#if !defined(__alpha__) && !defined(__sparc__) && !defined(__powerpc__) && !defined(__ia64__)
+
+#ifdef HAVE_ASM_IO_H
 #include <asm/io.h>
 #endif
-#endif
+
 #include <linux/serial.h>
+
+
 
 SerialMeter::SerialMeter( XOSView *parent, Device device )
     : BitMeter( parent, getTitle(device), "LSR bits(0-7), MSR bits(0-7)", 16){
@@ -51,21 +49,22 @@ SerialMeter::SerialMeter( XOSView *parent, Device device )
     _port = 0;
 }
 
+
 SerialMeter::~SerialMeter( void ){
 }
+
 
 void SerialMeter::checkevent( void ){
     getserial();
     BitMeter::checkevent();
 }
 
+
 void SerialMeter::checkResources(const ResDB &rdb){
     BitMeter::checkResources(rdb);
-    onColor_  = parent_->g().allocColor( rdb.getResource(
-          "serialOnColor" ) );
-    offColor_ = parent_->g().allocColor( rdb.getResource(
-          "serialOffColor" ) );
-    priority_ = util::stoi (rdb.getResource( "serialPriority" ));
+    onColor_ = rdb.getColor("serialOnColor");
+    offColor_ = rdb.getColor("serialOffColor");
+    priority_ = util::stoi(rdb.getResource( "serialPriority"));
 
     _port = getPortBase(rdb, _device);
     if (!getport(_port + UART_LSR) || !getport(_port + UART_MSR)){
@@ -75,6 +74,7 @@ void SerialMeter::checkResources(const ResDB &rdb){
     }
 }
 
+
 bool SerialMeter::getport(unsigned short int port){
 #ifdef HAVE_IOPERM
     return ioperm(port, 1, 1) != -1;
@@ -82,6 +82,7 @@ bool SerialMeter::getport(unsigned short int port){
     return -1 != -1;
 #endif
 }
+
 
 void SerialMeter::getserial( void ){
 #ifdef HAVE_IOPERM
@@ -94,12 +95,14 @@ void SerialMeter::getserial( void ){
 #endif
 }
 
-const char *SerialMeter::getTitle(Device dev) const {
+
+std::string SerialMeter::getTitle(Device dev) const {
     static const char *names[] = { "ttyS0", "ttyS1", "ttyS2", "ttyS3",
                                    "ttyS4", "ttyS5", "ttyS6", "ttyS7",
                                    "ttyS8", "ttyS9" };
     return names[dev];
 }
+
 
 std::string SerialMeter::getResourceName(Device dev){
     static const char *names[] = { "serial0", "serial1",
@@ -110,6 +113,7 @@ std::string SerialMeter::getResourceName(Device dev){
 
     return names[dev];
 }
+
 
 unsigned short int SerialMeter::getPortBase(const ResDB &rdb,
   Device dev) const {

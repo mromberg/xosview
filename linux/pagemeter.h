@@ -20,17 +20,17 @@ public:
 
     void checkResources(const ResDB &rdb);
 
-protected:
-    float pageinfo_[2][2];
+private:
+    std::vector<std::vector<float> > pageinfo_;
     int pageindex_;
     float maxspeed_;
     bool _vmstat;
-    const char *_statFileName;
+    std::string _statFileName;
 
     void getpageinfo( void );
     void getvmpageinfo( void );
     void updateinfo(void);
-private:
 };
+
 
 #endif

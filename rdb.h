@@ -14,9 +14,14 @@
 #include <utility>
 #include <iostream>
 
+class X11Graphics;
+
 
 class ResDB {
 public:
+    ResDB(void) : _g(0) {}
+    virtual ~ResDB(void) {}
+
     virtual std::string className(void) const = 0;
     virtual std::string instanceName(void) const = 0;
 
@@ -32,6 +37,15 @@ public:
     virtual bool isResourceTrue(const std::string &name) const;
 
     virtual std::ostream &dump(std::ostream &os) const = 0;
+
+    unsigned long getColor(const std::string &name) const;
+    unsigned long getColor(const std::string &name,
+      const std::string &deflt) const;
+
+    void setGraphics(X11Graphics *g) { _g = g; }
+
+private:
+    X11Graphics *_g;
 };
 
 

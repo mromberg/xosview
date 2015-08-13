@@ -14,7 +14,7 @@
 #include <limits>
 
 
-static const char *NETFILENAME = "/proc/net/dev";
+static const char * const NETFILENAME = "/proc/net/dev";
 
 
 NetMeter::NetMeter( XOSView *parent)
@@ -24,22 +24,25 @@ NetMeter::NetMeter( XOSView *parent)
     _timer.start();
 }
 
+
 NetMeter::~NetMeter( void ){
 }
+
 
 void NetMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
     _maxBandwidth = util::stof(rdb.getResource( "netBandwidth" ));
-    setfieldcolor( 0, rdb.getResource( "netInColor" ) );
-    setfieldcolor( 1, rdb.getResource( "netOutColor" ) );
-    setfieldcolor( 2, rdb.getResource( "netBackground" ) );
+    setfieldcolor( 0, rdb.getColor( "netInColor" ) );
+    setfieldcolor( 1, rdb.getColor( "netOutColor" ) );
+    setfieldcolor( 2, rdb.getColor( "netBackground" ) );
     priority_ = util::stoi (rdb.getResource( "netPriority" ));
     useGraph_ = rdb.isResourceTrue( "netGraph" );
     dodecay_ = rdb.isResourceTrue( "netDecay" );
     setUsedFormat (rdb.getResource("netUsedFormat"));
     decayUsed(rdb.isResourceTrue("netUsedDecay"));
 }
+
 
 void NetMeter::checkevent(void) {
     netpair nstats(getStats());
@@ -50,8 +53,10 @@ void NetMeter::checkevent(void) {
     unsigned long long in = nstats.first - _last.first;
     unsigned long long out = nstats.second - _last.second;
 
-    //logDebug << "IN : " << nstats.first << " : " << _last.first << std::endl;
-    //logDebug << "OUT: " << nstats.second << " : " << _last.second << std::endl;
+    //logDebug << "IN : " << nstats.first << " : " << _last.first
+    //         << std::endl;
+    //logDebug << "OUT: " << nstats.second << " : " << _last.second
+    //         << std::endl;
 
     _last = nstats;
 

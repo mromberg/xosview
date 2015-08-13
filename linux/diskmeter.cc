@@ -5,18 +5,12 @@
 //  This file may be distributed under terms of the GPL
 //
 
-
 #include "diskmeter.h"
-#include "xosview.h"
 #include "fsutil.h"
 
 #include <fstream>
 #include <limits>
 
-
-
-
-static const size_t MAX_PROCSTAT_LENGTH = 2048;
 
 
 DiskMeter::DiskMeter( XOSView *parent, float max )
@@ -55,9 +49,9 @@ DiskMeter::~DiskMeter( void ){
 void DiskMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource("diskReadColor") );
-    setfieldcolor( 1, rdb.getResource("diskWriteColor") );
-    setfieldcolor( 2, rdb.getResource("diskIdleColor") );
+    setfieldcolor( 0, rdb.getColor("diskReadColor") );
+    setfieldcolor( 1, rdb.getColor("diskWriteColor") );
+    setfieldcolor( 2, rdb.getColor("diskIdleColor") );
     priority_ = util::stoi (rdb.getResource( "diskPriority" ));
     dodecay_ = rdb.isResourceTrue("diskDecay" );
     useGraph_ = rdb.isResourceTrue( "diskGraph" );
@@ -173,7 +167,7 @@ void DiskMeter::getdiskinfo( void ) {
     // Find the line with 'page'
     stats >> buf;
     while (buf.substr(0, 8) != "disk_io:") {
-        stats.ignore(MAX_PROCSTAT_LENGTH, '\n');
+        stats.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         stats >> buf;
         if (stats.eof())
             break;
@@ -204,9 +198,12 @@ void DiskMeter::getdiskinfo( void ) {
     updateinfo(one, two, 1);
 }
 
+
 // sysfs version - works with long-long !!
 // (no dependency on sector-size here )
-void DiskMeter::update_info(unsigned long long rsum, unsigned long long wsum) {
+void DiskMeter::update_info(unsigned long long rsum,
+  unsigned long long wsum) {
+
     float itim = IntervalTimeInMicrosecs();
 
     // avoid strange values at first call

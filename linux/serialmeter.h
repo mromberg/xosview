@@ -7,11 +7,9 @@
 #ifndef SERIALMETER_H
 #define SERIALMETER_H
 
-// hack for not having linux/serial_reg.h, (Debian bug #427599)
-#define UART_LSR        5
-#define UART_MSR        6
-
 #include "bitmeter.h"
+
+
 
 class SerialMeter : public BitMeter {
 public:
@@ -33,8 +31,9 @@ private:
 
     void getserial( void );
     bool getport(unsigned short int port);
-    const char *getTitle(Device dev) const;
+    std::string getTitle(Device dev) const;
     unsigned short int getPortBase(const ResDB &rdb, Device dev) const;
 };
+
 
 #endif

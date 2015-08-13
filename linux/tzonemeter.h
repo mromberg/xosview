@@ -3,10 +3,6 @@
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 
-//-------------------------------------------------------
-// BASIC Data Meter Template.  See example.h for comments
-//-------------------------------------------------------
-
 #ifndef TZONEMETER_H
 #define TZONEMETER_H
 
@@ -33,5 +29,6 @@ private:
     unsigned long _critColor;
     std::string _tempFName;
 };
+
 
 #endif

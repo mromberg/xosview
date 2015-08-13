@@ -10,6 +10,8 @@
 
 #include "fieldmetergraph.h"
 
+
+
 class DiskMeter : public FieldMeterGraph {
 public:
     DiskMeter( XOSView *parent, float max );
@@ -19,7 +21,17 @@ public:
     void checkevent( void );
 
     void checkResources(const ResDB &rdb);
-protected:
+
+private:
+    // sysfs:
+    unsigned long long sysfs_read_prev_;
+    unsigned long long sysfs_write_prev_;
+    bool _sysfs;
+    unsigned long int read_prev_;
+    unsigned long int write_prev_;
+    float maxspeed_;
+    bool _vmstat;
+    const char *_statFileName;
 
     // sysfs:
     void update_info(unsigned long long rsum, unsigned long long wsum);
@@ -29,18 +41,7 @@ protected:
     void getvmdiskinfo( void );
     void updateinfo(unsigned long one, unsigned long two,
       int fudgeFactor);
-private:
-
-    // sysfs:
-    unsigned long long sysfs_read_prev_;
-    unsigned long long sysfs_write_prev_;
-    bool _sysfs;
-
-    unsigned long int read_prev_;
-    unsigned long int write_prev_;
-    float maxspeed_;
-    bool _vmstat;
-    const char *_statFileName;
 };
+
 
 #endif

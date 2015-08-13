@@ -18,9 +18,9 @@
 #include <fstream>
 
 
+static const char * const PROC_SENSORS_24 = "/proc/sys/dev/sensors";
+static const char * const PROC_SENSORS_26 = "/sys/class/hwmon";
 
-static const char PROC_SENSORS_24[] = "/proc/sys/dev/sensors";
-static const char PROC_SENSORS_26[] = "/sys/class/hwmon";
 
 LmsTemp::LmsTemp( XOSView *parent, const std::string &filename,
   const std::string &label, const std::string &caption)
@@ -42,12 +42,16 @@ LmsTemp::LmsTemp( XOSView *parent, const std::string &filename,
         _highest = 100;
 }
 
+
 LmsTemp::~LmsTemp( void ){
 }
 
-/* this part is adapted from ProcMeter3.2 */
+
 int  LmsTemp::checksensors(int isproc, const std::string &dir,
   const std::string &filename) {
+
+    /* this part is adapted from ProcMeter3.2 */
+
     bool found = false;
 
     if (!util::fs::isdir(dir))
@@ -94,21 +98,21 @@ int  LmsTemp::checksensors(int isproc, const std::string &dir,
     return found;
 }
 
+
 void LmsTemp::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
 
-    _highColor = parent_->g().allocColor(rdb.getResource(
-          "lmstempHighColor"));
-    _actColor = parent_->g().allocColor(rdb.getResource(
-          "lmstempActColor"));
+    _highColor = rdb.getColor("lmstempHighColor");
+    _actColor = rdb.getColor("lmstempActColor");
 
     setfieldcolor( 0, _actColor );
-    setfieldcolor( 1, rdb.getResource( "lmstempIdleColor") );
+    setfieldcolor( 1, rdb.getColor( "lmstempIdleColor") );
     setfieldcolor( 2, _highColor );
 
     priority_ = util::stoi (rdb.getResource( "lmstempPriority" ));
     setUsedFormat(rdb.getResource( "lmstempUsedFormat" ) );
 }
+
 
 void LmsTemp::checkevent( void ){
     getlmstemp();

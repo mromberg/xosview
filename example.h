@@ -122,7 +122,7 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
     // just an example since we are not saving it
     // to show the use of the graphics object
     // from here.  Eventually this object will be passed in
-    unsigned long color = parent_->g().allocColor("blue");
+    unsigned long color = rdb.getColor("exampleColor", "blue");
     setfieldcolor(1, color);
 }
 

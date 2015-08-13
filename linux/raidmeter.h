@@ -10,7 +10,7 @@
 
 #include "bitfieldmeter.h"
 
-#define MAX_MD 8
+
 
 class RAIDMeter : public BitFieldMeter {
 public:
@@ -23,26 +23,23 @@ public:
 
     static int countRAIDs( void );
 
-protected:
-
+private:
     int _raiddev;
-    static int mdnum;
+    int mdnum;
 
-    std::string state,
-        type,
-        working_map,
-        resync_state;
+    std::string state;
+    std::string type;
+    std::string working_map;
+    std::string resync_state;
     int  disknum;
-
     unsigned long doneColor_, todoColor_, completeColor_;
 
     int find1(const std::string &key, const std::string &findwhat, int num1);
     int find2(const std::string &key, const std::string &findwhat, int num1,
       int num2);
-
     int raidparse(const std::string &cp);
-
     void getRAIDstate( void );
 };
+
 
 #endif

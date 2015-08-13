@@ -23,9 +23,6 @@ public:
 
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getmeminfo( void );
-
 private:
     class LineInfo {
     public:
@@ -49,10 +46,12 @@ private:
     std::vector<LineInfo> _MIlineInfos;
     std::vector<LineInfo> _MSlineInfos;
 
+    void getmeminfo( void );
     void initLineInfo(void);
     std::vector<LineInfo> findLines(const std::vector<LineInfo> &tmplate,
       const std::string &fname);
     void getmemstat(const std::string &fname, std::vector<LineInfo> &infos);
 };
+
 
 #endif

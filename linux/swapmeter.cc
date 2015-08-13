@@ -5,11 +5,12 @@
 //  This file may be distributed under terms of the GPL
 //
 
-
 #include "swapmeter.h"
 #include "xosview.h"
+
 #include <fstream>
 #include <sstream>
+
 #include <stdlib.h>
 
 #ifdef USESYSCALLS
@@ -22,27 +23,30 @@
 #endif
 
 
-static const char MEMFILENAME[] = "/proc/meminfo";
+static const char * const MEMFILENAME = "/proc/meminfo";
 
 
 SwapMeter::SwapMeter( XOSView *parent )
 : FieldMeterGraph( parent, 2, "SWAP", "USED/FREE" ){
 }
 
+
 SwapMeter::~SwapMeter( void ){
 }
+
 
 void SwapMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource( "swapUsedColor" ) );
-    setfieldcolor( 1, rdb.getResource( "swapFreeColor" ) );
+    setfieldcolor( 0, rdb.getColor( "swapUsedColor" ) );
+    setfieldcolor( 1, rdb.getColor( "swapFreeColor" ) );
     priority_ = util::stoi (rdb.getResource( "swapPriority" ));
     dodecay_ = rdb.isResourceTrue( "swapDecay" );
     useGraph_ = rdb.isResourceTrue( "swapGraph" );
     setUsedFormat (rdb.getResource("swapUsedFormat"));
     decayUsed(rdb.isResourceTrue("swapUsedDecay"));
 }
+
 
 void SwapMeter::checkevent( void ){
     getswapinfo();

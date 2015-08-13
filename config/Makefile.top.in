@@ -25,6 +25,7 @@ x11graphics.o \
 x11font.o \
 x11pixmap.o \
 Xrm.o \
+rdb.o \
 defaultstring.o \
 meter.o \
 fieldmeter.o \

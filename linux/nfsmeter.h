@@ -14,10 +14,10 @@ class NFSMeter : public FieldMeterGraph {
 public:
     NFSMeter(
         XOSView *parent,
-        const char *name,
+        const std::string &name,
         int   nfields,
-        const char *files,
-        const char *statfile);
+        const std::string &files,
+        const std::string &statfile);
     ~NFSMeter( void );
 
     std::string name( void ) const { return _statname; }
@@ -27,12 +27,13 @@ public:
     double usecs(void) { return _timer.report_usecs(); };
 
 protected:
-    const char *_statname;
-    const char *_statfile;
+    std::string _statname;
+    std::string _statfile;
 
 private:
     Timer _timer;
 };
+
 
 class NFSStats : public NFSMeter {
 public:
@@ -46,6 +47,7 @@ public:
 private:
     unsigned long _lastcalls, _lastretrns, _lastauthrefresh;
 };
+
 
 class NFSDStats : public NFSMeter {
 public:
@@ -62,5 +64,6 @@ protected:
 private:
     unsigned long _lastTcp, _lastUdp, _lastNetCnt, _lastBad;
 };
+
 
 #endif

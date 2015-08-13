@@ -7,21 +7,29 @@
 //
 
 #include "raidmeter.h"
-#include "xosview.h"
+
 #include <fstream>
-#include <sstream>
-#include <stdlib.h>
+
+
+static const char * const RAIDFILE = "/proc/mdstat";
 
 
 RAIDMeter::RAIDMeter( XOSView *parent, int raiddev)
-    : BitFieldMeter( parent, 1, 2, "RAID") {
-    _raiddev = raiddev;
+    : BitFieldMeter( parent, 1, 2, "RAID"),
+      _raiddev(raiddev),
+      mdnum(0),
+      state(),
+      type(),
+      working_map(),
+      resync_state(),
+      disknum(0),
+      doneColor_(0), todoColor_(0), completeColor_(0) {
+
     getRAIDstate();
     if(disknum<1)
         disableMeter();
-    std::ostringstream os;
-    os << "MD" << raiddev << std::ends;
-    legend(os.str().c_str());
+
+    legend("MD" + util::repr(raiddev));
     if(disknum>=1){
         setfieldlegend("Done/ToDo");
         setNumBits(disknum);
@@ -29,8 +37,10 @@ RAIDMeter::RAIDMeter( XOSView *parent, int raiddev)
     total_ = 100.0;
 }
 
+
 RAIDMeter::~RAIDMeter( void ){
 }
+
 
 void RAIDMeter::checkevent( void ){
 
@@ -52,26 +62,23 @@ void RAIDMeter::checkevent( void ){
     BitFieldMeter::checkevent();
 }
 
+
 void RAIDMeter::checkResources(const ResDB &rdb){
     BitFieldMeter::checkResources(rdb);
-    onColor_ = parent_->g().allocColor(rdb.getResource(
-          "RAIDdiskOnlineColor"));
-    offColor_ = parent_->g().allocColor(
-        rdb.getResource("RAIDdiskFailureColor"));
-    doneColor_ = parent_->g().allocColor(
-        rdb.getResource("RAIDresyncdoneColor"));
-    todoColor_ = parent_->g().allocColor(
-        rdb.getResource("RAIDresynctodoColor"));
-    completeColor_= parent_->g().allocColor(
-        rdb.getResource("RAIDresynccompleteColor"));
-    priority_  = util::stoi(rdb.getResource("RAIDPriority"));
+
+    onColor_ = rdb.getColor("RAIDdiskOnlineColor");
+    offColor_ = rdb.getColor("RAIDdiskFailureColor");
+    doneColor_ = rdb.getColor("RAIDresyncdoneColor");
+    todoColor_ = rdb.getColor("RAIDresynctodoColor");
+    completeColor_= rdb.getColor("RAIDresynccompleteColor");
+    priority_ = util::stoi(rdb.getResource("RAIDPriority"));
     setfieldcolor( 0, doneColor_ );
     setfieldcolor( 1, todoColor_ );
     setUsedFormat(rdb.getResource( "RAIDUsedFormat" ) );
 }
 
-// parser for /proc/mdstat
 
+// parser for /proc/mdstat
 int RAIDMeter::find1(const std::string &key, const std::string &findwhat,
   int num1){
     std::string buf;
@@ -80,6 +87,7 @@ int RAIDMeter::find1(const std::string &key, const std::string &findwhat,
 
     return os.str() == key;
 }
+
 
 int RAIDMeter::find2(const std::string &key, const std::string &findwhat,
   int num1, int num2){
@@ -90,7 +98,6 @@ int RAIDMeter::find2(const std::string &key, const std::string &findwhat,
     return os.str() == key;
 }
 
-static const char *RAIDFILE    = "/proc/mdstat";
 
 int RAIDMeter::raidparse(const std::string &cp){
     std::vector<std::string> tokens = util::split(cp, " \n");
@@ -124,6 +131,7 @@ int RAIDMeter::raidparse(const std::string &cp){
     }
     return 0;
 }
+
 
 void RAIDMeter::getRAIDstate( void ){
     std::ifstream raidfile( RAIDFILE );

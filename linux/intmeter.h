@@ -12,6 +12,8 @@
 #include <vector>
 #include <map>
 
+
+
 class IntMeter : public BitMeter {
 public:
     // cpu=0 (cummulate meter), cpu=1 (irqs for cpu0), cpu=2 (irqs for cpu1)
@@ -40,5 +42,6 @@ private:
     int loadIRQMap(void);
     void initUI(void);
 };
+
 
 #endif

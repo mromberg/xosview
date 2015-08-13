@@ -37,4 +37,5 @@ private:
     unsigned long _highColor, _actColor;
 };
 
+
 #endif

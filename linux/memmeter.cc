@@ -6,35 +6,41 @@
 //
 
 #include "memmeter.h"
-#include "xosview.h"
+
 #include <fstream>
 #include <sstream>
-#include <stdlib.h>
 #include <iomanip>
 
-static const char MEMFILENAME[] = "/proc/meminfo";
+
+static const char * const MEMFILENAME = "/proc/meminfo";
+
+
 
 MemMeter::MemMeter( XOSView *parent ) : FieldMeterGraph( parent, 5, "MEM",
   "USED/BUFF/CACHE/SCACHE/FREE" ){
     initLineInfo();
 }
 
+
 MemMeter::~MemMeter( void ){
 }
+
 
 void MemMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource( "memUsedColor" ) );
-    setfieldcolor( 1, rdb.getResource( "memBufferColor" ) );
-    setfieldcolor( 2, rdb.getResource( "memCacheColor" ) );
-    setfieldcolor( 3, rdb.getResource( "memSwapCacheColor") );
-    setfieldcolor( 4, rdb.getResource( "memFreeColor" ) );
+    setfieldcolor( 0, rdb.getColor( "memUsedColor" ) );
+    setfieldcolor( 1, rdb.getColor( "memBufferColor" ) );
+    setfieldcolor( 2, rdb.getColor( "memCacheColor" ) );
+    setfieldcolor( 3, rdb.getColor( "memSwapCacheColor") );
+    setfieldcolor( 4, rdb.getColor( "memFreeColor" ) );
+
     priority_ = util::stoi (rdb.getResource( "memPriority" ));
     dodecay_ = rdb.isResourceTrue( "memDecay" );
     useGraph_ = rdb.isResourceTrue( "memGraph" );
     setUsedFormat (rdb.getResource("memUsedFormat"));
 }
+
 
 void MemMeter::checkevent( void ){
     getmeminfo();
@@ -63,6 +69,7 @@ void MemMeter::getmeminfo( void ){
     if (total_)
         FieldMeterDecay::setUsed (total_ - fields_[3] - fields_[4], total_);
 }
+
 
 std::vector<MemMeter::LineInfo> MemMeter::findLines(
     const std::vector<LineInfo> &tmplate, const std::string &fname){
@@ -94,6 +101,7 @@ std::vector<MemMeter::LineInfo> MemMeter::findLines(
     return rval;
 }
 
+
 void MemMeter::initLineInfo(void){
     std::vector<LineInfo> infos;
     infos.push_back(LineInfo("MemTotal", &total_));
@@ -104,6 +112,7 @@ void MemMeter::initLineInfo(void){
 
     _MIlineInfos = findLines(infos, MEMFILENAME);
 }
+
 
 void MemMeter::getmemstat(const std::string &fname,
   std::vector<LineInfo> &infos){

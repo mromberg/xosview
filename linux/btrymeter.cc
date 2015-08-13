@@ -55,18 +55,12 @@ BtryMeter::StatType BtryMeter::statType(void) {
 void BtryMeter::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
 
-    _critColor = parent_->g().allocColor(rdb.getResource(
-          "batteryCritColor"));
-    _lowColor = parent_->g().allocColor(rdb.getResource(
-          "batteryLowColor"));
-    _leftColor = parent_->g().allocColor(rdb.getResource(
-          "batteryLeftColor"));
-    _chargeColor = parent_->g().allocColor(rdb.getResource(
-          "batteryChargeColor"));
-    _fullColor = parent_->g().allocColor(rdb.getResource(
-          "batteryFullColor"));
-    _noneColor = parent_->g().allocColor(rdb.getResource(
-          "batteryNoneColor"));
+    _critColor = rdb.getColor("batteryCritColor");
+    _lowColor = rdb.getColor("batteryLowColor");
+    _leftColor = rdb.getColor("batteryLeftColor");
+    _chargeColor = rdb.getColor("batteryChargeColor");
+    _fullColor = rdb.getColor("batteryFullColor");
+    _noneColor = rdb.getColor("batteryNoneColor");
 
     setfieldcolor( 0, _leftColor);
     setfieldcolor( 1, rdb.getResource( "batteryUsedColor" ) );
@@ -251,17 +245,20 @@ float BtryMeter::getHoursLeft(const std::string &batDir,
     return 0.0;
 }
 
+
 std::string BtryMeter::timeStr(float &hours) const {
     float intHours = 0;
     float fracHours = modff(hours, &intHours);
 
     std::ostringstream mins;
-    mins << std::setfill('0') << std::setw(2) << (unsigned int)(fracHours * 60);
+    mins << std::setfill('0') << std::setw(2)
+         << (unsigned int)(fracHours * 60);
 
     std::string rval = util::repr(intHours) + ":" + mins.str();
 
     return rval;
 }
+
 
 std::string BtryMeter::getBatDir(void) const {
 

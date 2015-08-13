@@ -55,6 +55,7 @@ void XOSView::run(int argc, char **argv) {
     createMeters();        // add in the meters
     figureSize();          // calculate size using number of meters
     createWindow();        // Graphics should now be up (so can alloc colors)
+    resdb().setGraphics(&g());  // So, ResDB can allocate colors
     resize();              // initialize size values
     title(winname());      // Now that the window exists set the title
     iconname(winname());   // and the icon name

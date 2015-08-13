@@ -1,4 +1,7 @@
 AC_DEFUN(AC_XOSV_LINUX, [
+# headers and funcs used by linux/serialmeter.cc
+AC_CHECK_HEADERS([sys/io.h sys/perm.h asm/io.h])
+AC_CHECK_FUNCS([ioperm])
 dnl
 dnl Add a switch to add -DUSESYSCALLS for linux.
 dnl

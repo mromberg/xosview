@@ -6,7 +6,8 @@
 #ifndef WLINKMETER_H
 #define WLINKMETER_H
 
-#include "fieldmetergraph.h"  // our parent drawing class
+#include "fieldmetergraph.h"
+
 
 class WLinkMeter : public FieldMeterGraph {
 public:

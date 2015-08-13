@@ -7,7 +7,10 @@
 #include <fstream>
 #include <limits>
 
+
 static const char * const WIRELESSFNAME = "/proc/net/wireless";
+
+
 
 WLinkMeter::WLinkMeter(XOSView *parent)
     : FieldMeterGraph(parent, 2, "WLNK", "LINK/70", true, true, true),
@@ -17,21 +20,20 @@ WLinkMeter::WLinkMeter(XOSView *parent)
     total_ = 70.0;
 }
 
+
 WLinkMeter::~WLinkMeter(void) {
 }
+
 
 void WLinkMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    _goodColor = parent_->g().allocColor(rdb.getResource(
-          "wlinkGoodColor"));
-    _poorColor = parent_->g().allocColor(rdb.getResource(
-          "wlinkPoorColor"));
-    _poorValue = util::stoi(rdb.getResource(
-          "wlinkPoorValue"));
+    _goodColor = rdb.getColor("wlinkGoodColor");
+    _poorColor = rdb.getColor("wlinkPoorColor");
+    _poorValue = util::stoi(rdb.getResource("wlinkPoorValue"));
     setfieldcolor(0, _goodColor);
-    setfieldcolor(1, rdb.getResource("wlinkBackground"));
+    setfieldcolor(1, rdb.getColor("wlinkBackground"));
 
     priority_ = util::stoi(rdb.getResource("wlinkPriority"));
     dodecay_ = rdb.isResourceTrue("wlinkDecay");
@@ -39,6 +41,7 @@ void WLinkMeter::checkResources(const ResDB &rdb) {
     setUsedFormat(rdb.getResource("wlinkUsedFormat"));
     decayUsed(rdb.isResourceTrue("wlinkUsedDecay"));
 }
+
 
 void WLinkMeter::checkevent( void ) {
 
@@ -63,6 +66,7 @@ void WLinkMeter::checkevent( void ) {
     setUsed(link, total_);
     drawfields(parent_->g());
 }
+
 
 int WLinkMeter::getLink(void) const {
     std::ifstream ifs(WIRELESSFNAME);

@@ -32,8 +32,8 @@ private:
     void intFactory(const ResDB &rdb);
     void tzoneFactory(void);
     void lmsTempFactory(const ResDB &rdb);
-    void getRange(const ResDB &rdb, const std::string &resource,
-      size_t cpuCount, size_t &start, size_t &end) const;
+    void getRange(const std::string &format, size_t cpuCount,
+      size_t &start, size_t &end) const;
 };
 
 

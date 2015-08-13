@@ -10,11 +10,14 @@
 
 
 #include "nfsmeter.h"
-#include "xosview.h"
+
+#include <fstream>
+#include <cerrno>
+#include <iostream>
+#include <iomanip>
+#include <algorithm>
 
 #include <unistd.h>
-#include <fstream>
-#include <stdlib.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #if defined(GNULIBC) || defined(__GLIBC__)
@@ -23,26 +26,22 @@
 #include <linux/if.h>
 #endif
 #include <netinet/in.h>
-#include <errno.h>
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
 
 
-static const char *NFSSVCSTAT = "/proc/net/rpc/nfsd";
-static const char * NFSCLTSTAT = "/proc/net/rpc/nfs";
+static const char * const NFSSVCSTAT = "/proc/net/rpc/nfsd";
+static const char * const NFSCLTSTAT = "/proc/net/rpc/nfs";
 
 
-NFSMeter::NFSMeter(XOSView *parent, const char *name, int nfields,
-  const char *fields, const char *statfile) : FieldMeterGraph( parent,
-  nfields, name, fields ){
-
-    _statfile = statfile;
-    _statname = name;
+NFSMeter::NFSMeter(XOSView *parent, const std::string &name, int nfields,
+  const std::string &fields, const std::string &statfile)
+    : FieldMeterGraph( parent, nfields, name, fields ),
+      _statname(name), _statfile(statfile) {
 }
+
 
 NFSMeter::~NFSMeter( void ){
 }
+
 
 void NFSMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
@@ -53,16 +52,18 @@ NFSDStats::NFSDStats(XOSView *parent)
     starttimer();
 }
 
+
 NFSDStats::~NFSDStats( void ) {
 }
+
 
 void NFSDStats::checkResources(const ResDB &rdb){
     NFSMeter::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource( "NFSDStatBadCallsColor" ) );
-    setfieldcolor( 1, rdb.getResource( "NFSDStatUDPColor" ) );
-    setfieldcolor( 2, rdb.getResource( "NFSDStatTCPColor" ) );
-    setfieldcolor( 3, rdb.getResource( "NFSDStatIdleColor" ) );
+    setfieldcolor( 0, rdb.getColor( "NFSDStatBadCallsColor" ) );
+    setfieldcolor( 1, rdb.getColor( "NFSDStatUDPColor" ) );
+    setfieldcolor( 2, rdb.getColor( "NFSDStatTCPColor" ) );
+    setfieldcolor( 3, rdb.getColor( "NFSDStatIdleColor" ) );
 
     useGraph_ = rdb.isResourceTrue( "NFSDStatGraph" );
     dodecay_ = rdb.isResourceTrue( "NFSDStatDecay" );
@@ -74,13 +75,14 @@ void NFSDStats::checkResources(const ResDB &rdb){
     //setUsedFormat ("percent");
 }
 
+
 void NFSDStats::checkevent(void) {
     std::string buf, name;
     unsigned long netcnt, netudpcnt, nettcpcnt, nettcpconn;
     unsigned long calls, badcalls;
     int found;
 
-    std::ifstream ifs(_statfile);
+    std::ifstream ifs(_statfile.c_str());
 
     if (!ifs) {
         return;
@@ -140,21 +142,24 @@ void NFSDStats::checkevent(void) {
     _lastBad = badcalls;
 }
 
+
 NFSStats::NFSStats(XOSView *parent)
     : NFSMeter(parent, "NFS", 4, "RETRY/AUTH/CALL/IDLE", NFSCLTSTAT ){
     starttimer();
 }
 
+
 NFSStats::~NFSStats( void ) {
 }
+
 
 void NFSStats::checkResources(const ResDB &rdb){
     NFSMeter::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource( "NFSStatReTransColor" ) );
-    setfieldcolor( 1, rdb.getResource( "NFSStatAuthRefrshColor" ) );
-    setfieldcolor( 2, rdb.getResource( "NFSStatCallsColor" ) );
-    setfieldcolor( 3, rdb.getResource( "NFSStatIdleColor" ) );
+    setfieldcolor( 0, rdb.getColor( "NFSStatReTransColor" ) );
+    setfieldcolor( 1, rdb.getColor( "NFSStatAuthRefrshColor" ) );
+    setfieldcolor( 2, rdb.getColor( "NFSStatCallsColor" ) );
+    setfieldcolor( 3, rdb.getColor( "NFSStatIdleColor" ) );
 
     useGraph_ = rdb.isResourceTrue( "NFSStatGraph" );
     dodecay_ = rdb.isResourceTrue( "NFSStatDecay" );
@@ -163,11 +168,12 @@ void NFSStats::checkResources(const ResDB &rdb){
     //setUsedFormat ("percent");
 }
 
+
 void NFSStats::checkevent(void) {
     std::string buf, name;
     unsigned long calls, retrns, authrefresh, maxpackets_;
 
-    std::ifstream ifs(_statfile);
+    std::ifstream ifs(_statfile.c_str());
 
     if (!ifs) {
         return;

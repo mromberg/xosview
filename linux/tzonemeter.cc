@@ -19,22 +19,23 @@ TZoneMeter::TZoneMeter(XOSView *parent, size_t zoneNum)
         + "/" + "temp";
 }
 
+
 TZoneMeter::~TZoneMeter(void) {
 }
+
 
 void TZoneMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
     // change "tzone" to real meter name
-    _normColor = parent_->g().allocColor(rdb.getResource(
-          "tzoneForeGround"));
-    _hotColor = parent_->g().allocColor(rdb.getResource(
-          "tzoneHotColor"));
-    _critColor = parent_->g().allocColor(rdb.getResource(
-          "tzoneCritColor"));
+    _normColor = rdb.getColor("tzoneForeGround");
+    _hotColor = rdb.getColor("tzoneHotColor");
+    _critColor = rdb.getColor("tzoneCritColor");
+
     setfieldcolor(0, _normColor);
     setfieldcolor(1, rdb.getResource("tzoneBackground"));
+
     _peak = util::stof(rdb.getResource("tzonePeak"));
     _hotTrip = util::stof(rdb.getResource("tzoneHotTrip"));
     _critTrip = util::stof(rdb.getResource("tzoneCritTrip"));
@@ -44,6 +45,7 @@ void TZoneMeter::checkResources(const ResDB &rdb) {
     setUsedFormat(rdb.getResource("tzoneUsedFormat"));
     decayUsed(rdb.isResourceTrue("tzoneUsedDecay"));
 }
+
 
 void TZoneMeter::checkevent( void ) {
 

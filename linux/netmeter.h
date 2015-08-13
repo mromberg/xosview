@@ -10,7 +10,9 @@
 #include "fieldmetergraph.h"
 #include "timer.h"
 
+
 class Host;
+
 
 class NetMeter : public FieldMeterGraph {
 public:
@@ -35,5 +37,6 @@ private:
 
     netpair getStats(void);
 };
+
 
 #endif
