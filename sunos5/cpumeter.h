@@ -21,7 +21,7 @@ public:
     virtual std::string name(void) const { return "CPUMeter"; }
     void checkevent(void);
     void checkResources(const ResDB &rdb);
-    static const char *cpuStr(int num);
+    static std::string cpuStr(int num);
 
 private:
     std::vector<std::vector<float> > cputime_;

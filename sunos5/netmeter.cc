@@ -10,6 +10,7 @@
 
 #include <iostream>
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/sockio.h>
@@ -92,7 +93,7 @@ void NetMeter::getnetstats( void ){
                       const_cast<char *>("ipackets"))) == NULL )
                     continue;
                 // for packet counter, mtu is needed
-                strncpy(lfr.lifr_name, ksp->ks_name,
+                std::string(ksp->ks_name).copy(lfr.lifr_name,
                   sizeof(lfr.lifr_name));
                 if ( ioctl(_socket, SIOCGLIFMTU, (caddr_t)&lfr) < 0 )
                     continue;
@@ -120,7 +121,8 @@ void NetMeter::getnetstats( void ){
                 if ( (k = (kstat_named_t *)kstat_data_lookup(ksp,
                       const_cast<char *>("opackets"))) == NULL )
                     continue;
-                strncpy(lfr.lifr_name, ksp->ks_name, sizeof(lfr.lifr_name));
+                std::string(ksp->ks_name).copy(lfr.lifr_name,
+                  sizeof(lfr.lifr_name));
                 if ( ioctl(_socket, SIOCGLIFMTU, (caddr_t)&lfr) < 0 )
                     continue;
                 nowBytesOut += kstat_to_ui64(k) * lfr.lifr_mtu;

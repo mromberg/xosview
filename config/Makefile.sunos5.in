@@ -10,7 +10,7 @@ include ../Makefile.config
 CXXFLAGS += -I$(TOP)
 
 OBJS = \
-MeterMaker.o \
+kstats.o \
 loadmeter.o \
 cpumeter.o \
 memmeter.o \
@@ -19,7 +19,8 @@ netmeter.o \
 diskmeter.o \
 intratemeter.o \
 fsmeter.o \
-swapmeter.o
+swapmeter.o \
+MeterMaker.o
 
 
 CFILES := $(OBJS:.o=.cc)

@@ -89,10 +89,9 @@ void CPUMeter::getcputime(void) {
 }
 
 
-const char *CPUMeter::cpuStr(int num) {
-    static char buffer[8] = "CPU";
-    if (num >= 0)
-        snprintf(buffer + 3, 4, "%d", num);
-    buffer[7] = '\0';
-    return buffer;
+std::string CPUMeter::cpuStr(int num) {
+    if (num < 0)
+        return "CPU";
+
+    return std::string("CPU" + util::repr(num));
 }

@@ -8,6 +8,7 @@
 #include "memmeter.h"
 #include "kstats.h"
 
+#include <unistd.h>
 
 
 

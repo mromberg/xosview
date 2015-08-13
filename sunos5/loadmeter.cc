@@ -7,7 +7,7 @@
 
 #include "loadmeter.h"
 
-
+#include <unistd.h>
 
 #ifdef HAVE_GETLOADAVG
 
@@ -100,9 +100,7 @@ void LoadMeter::checkevent(void) {
         getspeedinfo();
         if (old_cpu_speed != cur_cpu_speed) {
             // update the legend:
-            char l[32];
-            snprintf(l, 32, "PROCS/MIN %d MHz", cur_cpu_speed);
-            legend(l);
+            legend("PROCS/MIN " + util::repr(cur_cpu_speed) + " MHz");
             drawLegend(parent_->g());
         }
     }

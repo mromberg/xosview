@@ -21,6 +21,9 @@
 
 #include "kstats.h"
 
+#include <unistd.h>
+
+
 
 
 MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
