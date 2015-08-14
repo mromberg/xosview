@@ -1370,10 +1370,10 @@ BSDGetSensor(const std::string &name, const std::string &valname, float *value,
 		     strncmp(type, "Battery", 3) == 0   ||
 		     strncmp(type, "Drive", 3) == 0 )
 			continue;  // these are string values
-		if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, valname)) )
+		if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, valname.c_str())) )
 			val = prop_number_integer_value((prop_number_t)pobj1);
 		else
-			err(EX_USAGE, "Value %s does not exist", valname);
+                    logFatal << "Value " << valname << " does not exist\n";
 		if ( strncmp(type, "Temperature", 4) == 0 ) {
 			*value = (val / 1000000.0) - 273.15;  // temperatures are in microkelvins
                         unit = "\260C";
