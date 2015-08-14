@@ -18,6 +18,7 @@
 //
 
 #include "log.h"
+#include "strutil.h"
 #include "kernel.h"
 
 #include <unistd.h>
@@ -1306,7 +1307,7 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 #endif
 		}
 		else
-			warn("sysctl %s failed", name);
+                    logProblem << "sysctl " << name << " failed" << std::endl;
 
 		if (tjmax) {
                         name = "dev.cpu." + util::repr(i) + ".coretemp.tjmax";
@@ -1317,7 +1318,7 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 				tjmax[i] = (float)val;
 #endif
 			else
-				warn("sysctl %s failed", name);
+                            logProblem << "sysctl " << name << " failed\n";
 		}
 	}
 #endif
@@ -1417,12 +1418,12 @@ BSDGetSensor(const std::string &name, const char *valname, float *value,
 	// FreeBSD has no sensor framework, but ACPI thermal zones might work.
 	// They are readable through sysctl (also works in Dragonfly).
 	// Values are in 10 * degrees Kelvin.
-	if ( strncmp(name, "tz", 2) == 0 ) {
+	if ( name == "tz" ) {
 		int val = 0;
 		size = sizeof(val);
                 dummy = "hw.acpi.thermal." + name + "." + valname;
 		if ( sysctlbyname(dummy.c_str(), &val, &size, NULL, 0) < 0 )
-			err(EX_OSERR, "sysctl %s failed", dummy);
+                    logFatal << "sysctl " << dummy << " failed" << std::endl;
 		*value = ((float)val - 2732.0) / 10.0;
 		if (unit.size())
                         unit = "\260C";
