@@ -76,7 +76,7 @@ BSDGetCPUTemperature(float *temps, float *tjmax);
 #endif
 
 void
-BSDGetSensor(const std::string &name, const char *valname, float *value,
+BSDGetSensor(const std::string &name, const std::string &valname, float *value,
   std::string &unit);
 
 bool

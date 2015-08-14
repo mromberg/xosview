@@ -512,9 +512,9 @@ BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
 		if (sdl->sdl_family != AF_LINK)
 			continue;
                 if (netIface != "False") {
-			memcpy(ifname, sdl->sdl_data, (sdl->sdl_nlen >= IFNAMSIZ ? IFNAMSIZ - 1 : sdl->sdl_nlen));
-			if ( (!ignored && strncmp(sdl->sdl_data, netIface, sdl->sdl_nlen) != 0) ||
-				 ( ignored && strncmp(sdl->sdl_data, netIface, sdl->sdl_nlen) == 0) )
+                        ifname = std::string(sdl->sdl_data, 0, sdl->sdl_nlen);
+                        if ( (!ignored && ifname != netIface) ||
+                          ( ignored && ifname == netIface) )
 				skipif = true;
 		}
 		if (!skipif) {
@@ -1328,9 +1328,9 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 #endif
 
 void
-BSDGetSensor(const std::string &name, const char *valname, float *value,
+BSDGetSensor(const std::string &name, const std::string &valname, float *value,
   std::string &unit) {
-  if (!name.size() || !valname || !value)
+  if (!name.size() || !valname.size() || !value)
 		errx(EX_SOFTWARE, "NULL pointer passed to BSDGetSensor().");
 #if defined(XOSVIEW_NETBSD)
 	/* Adapted from envstat. */
@@ -1456,10 +1456,11 @@ BSDGetSensor(const std::string &name, const char *valname, float *value,
 			continue;  // sensor name does not match
 
 		for (int t = 0; t < SENSOR_MAX_TYPES; t++) {
-			if ( strncmp(sensor_type_s[t], valname, strlen(sensor_type_s[t])) )
+                std::string stype_s(sensor_type_s[t]);
+                if (stype_s != valname.substr(0, stype_s.size()))
 				continue;  // wrong type
 			mib_sen[3] = t;
-			sscanf(valname, "%[^0-9]%d", dummy, &index);
+                        index = util::stoi(valname.substr(valname.find_first_of("0123456789")));
 			if (index < sd.maxnumt[t]) {
 				mib_sen[4] = index;
 				size = sizeof(s);
