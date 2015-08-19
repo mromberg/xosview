@@ -942,17 +942,20 @@ BSDNumInts() {
 		return 0;
 	}
 
-	intrnames = intrs = (char *)malloc(inamlen);
-	if (!intrs)
-		err(EX_OSERR, "BSDNumInts(): malloc failed");
-	safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value, intrs, inamlen);
+        std::vector<char> intrs(inamlen);
+	safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value,
+          intrs.data(), intrs.size());
 	nintr /= sizeof(long);
+        char *intrnames = intrs.data();
 	for (uint i = 0; i < nintr; i++) {
-		if ( intrnames[0] && sscanf(intrnames, "irq%d", &nbr) == 1 && nbr > count )
-			count = nbr;
-		intrnames += strlen(intrnames) + 1;
+            if (intrnames) {
+                std::istringstream is(intrnames);
+                is >> util::sink("irq") >> nbr;
+                if (is && nbr > count)
+                    count = nbr;
+                intrnames += is.str().size() + 1;
+            }
 	}
-	free(intrs);
 #elif defined(XOSVIEW_NETBSD)
 	struct evcntlist events;
 	struct evcnt evcnt, *evptr;
@@ -1460,7 +1463,8 @@ BSDGetSensor(const std::string &name, const std::string &valname, float *value,
                 if (stype_s != valname.substr(0, stype_s.size()))
 				continue;  // wrong type
 			mib_sen[3] = t;
-                        index = util::stoi(valname.substr(valname.find_first_of("0123456789")));
+                        std::istringstream is(valname);
+                        is >> util::sink("*[!0-9]", true) >> index;
 			if (index < sd.maxnumt[t]) {
 				mib_sen[4] = index;
 				size = sizeof(s);
