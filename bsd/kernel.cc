@@ -1189,8 +1189,8 @@ BSDCountCpus(void) {
 unsigned int
 BSDGetCPUTemperature(float *temps, float *tjmax) {
 	unsigned int nbr = 0;
-#ifdef XOSVIEW_OPENBSD
-        (void)tjmax; // openbsd does not use.  Avoid the warning
+#if defined(XOSVIEW_OPENBSD) || defined(XOSVIEW_DFBSD)
+        (void)tjmax; // Avoid the warning
 #endif
 #if defined(XOSVIEW_NETBSD)
 	// All kinds of sensors are read with libprop. We have to go through them

@@ -142,7 +142,7 @@ case $host_os in
 	host_dir=linux
         host_os=linux
         ;;
-    netbsd*|freebsd*|openbsd*|bsdi*)
+    netbsd*|freebsd*|openbsd*|bsdi*|dragonfly*)
         XO_CONCAT(DOC_FILES,$DOC_FILES,README.bsd)
         XO_BSD_CONFIG
         ;;

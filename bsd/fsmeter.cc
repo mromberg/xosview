@@ -15,7 +15,7 @@
 
 #if defined(XOSVIEW_NETBSD)
 static const int XOS_NO_WAIT = ST_NOWAIT;
-#elif defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
+#else
 #include <sys/param.h>
 #include <sys/ucred.h>
 #include <sys/mount.h>
@@ -119,7 +119,7 @@ std::vector<std::string> FSMeter::getAuto(void) {
 
 #if defined(XOSVIEW_NETBSD)
     struct statvfs *mntbufp;
-#elif defined (XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
+#else
     struct statfs *mntbufp;
 #endif
 
@@ -147,7 +147,7 @@ bool FSMeter::isMount(const std::string &path) {
 
 #if defined(XOSVIEW_NETBSD)
     struct statvfs *mntbufp;
-#elif defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
+#else
     struct statfs *mntbufp;
 #endif
 
