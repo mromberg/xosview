@@ -928,7 +928,6 @@ BSDNumInts() {
 	int count = 0, nbr = 0;
 #if defined(XOSVIEW_FREEBSD)
 	size_t inamlen, nintr;
-	char *intrnames, *intrs;
 
 # if __FreeBSD_version >= 900040
 	safe_kvm_read(nlst[EINTRCNT_SYM_INDEX].n_value, &nintr, sizeof(nintr));
@@ -942,18 +941,18 @@ BSDNumInts() {
 		return 0;
 	}
 
-        std::vector<char> intrs(inamlen);
+        std::vector<char> intrvec(inamlen);
 	safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value,
-          intrs.data(), intrs.size());
+          intrvec.data(), intrvec.size());
 	nintr /= sizeof(long);
-        char *intrnames = intrs.data();
+        char *iname = intrvec.data();
 	for (uint i = 0; i < nintr; i++) {
-            if (intrnames) {
-                std::istringstream is(intrnames);
+            if (iname) {
+                std::istringstream is(iname);
                 is >> util::sink("irq") >> nbr;
                 if (is && nbr > count)
                     count = nbr;
-                intrnames += is.str().size() + 1;
+                iname += is.str().size() + 1;
             }
 	}
 #elif defined(XOSVIEW_NETBSD)
