@@ -958,22 +958,24 @@ BSDNumInts() {
 #elif defined(XOSVIEW_NETBSD)
 	struct evcntlist events;
 	struct evcnt evcnt, *evptr;
-	char dummy[30];
-	char *name;
+        std::string dummy;
+	//char *name;
 
-	safe_kvm_read(nlst[ALLEVENTS_SYM_INDEX].n_value, &events, sizeof(events));
+	safe_kvm_read(nlst[ALLEVENTS_SYM_INDEX].n_value, &events,
+          sizeof(events));
 	evptr = TAILQ_FIRST(&events);
 	while (evptr) {
-		safe_kvm_read((unsigned long)evptr, &evcnt, sizeof(evcnt));
-		if (evcnt.ev_type == EVCNT_TYPE_INTR) {
-			if ( !(name = (char *)malloc(evcnt.ev_namelen + 1)) )
-				err(EX_OSERR, "BSDNumInts(): malloc failed");
-			safe_kvm_read((unsigned long)evcnt.ev_name, name, evcnt.ev_namelen + 1);
-			if ( sscanf(name, "%s%d", dummy, &nbr) == 2 && nbr > count )
-				count = nbr;
-			free(name);
-		}
-		evptr = TAILQ_NEXT(&evcnt, ev_list);
+            safe_kvm_read((unsigned long)evptr, &evcnt, sizeof(evcnt));
+            if (evcnt.ev_type == EVCNT_TYPE_INTR) {
+                std::vector<char> name(evcnt.ev_namelen + 1);
+                safe_kvm_read((unsigned long)evcnt.ev_name,
+                  name.data(), name.size());
+                std::istringstream is(name.data());
+                is >> dummy >> nbr;
+                if ( is && nbr > count )
+                    count = nbr;
+            }
+            evptr = TAILQ_NEXT(&evcnt, ev_list);
 	}
 #elif defined(XOSVIEW_OPENBSD)
 	int nintr = 0;
