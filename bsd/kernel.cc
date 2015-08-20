@@ -503,7 +503,6 @@ void BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
     *outbytes = 0;
 #if defined(XOSVIEW_OPENBSD)
     size_t size;
-    char *buf, *next;
     struct if_msghdr *ifm;
     struct if_data ifd;
     struct sockaddr_dl *sdl;
@@ -511,13 +510,14 @@ void BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
     if ( sysctl(mib_ifl, 6, NULL, &size, NULL, 0) < 0 )
         logFatal << "BSDGetNetInOut(): sysctl 1 failed" << std::endl;
 
-    if ( (buf = (char *)malloc(size)) == NULL)
-        logFatal << "BSDGetNetInOut(): malloc failed" << std::endl;
+    std::vector<char> bufv(size);
+    bufv.data();
 
-    if ( sysctl(mib_ifl, 6, buf, &size, NULL, 0) < 0 )
+    if ( sysctl(mib_ifl, 6, bufv.data(), &size, NULL, 0) < 0 )
         logFatal << "BSDGetNetInOut(): sysctl 2 failed" << std::endl;
 
-    for (next = buf; next < buf + size; next += ifm->ifm_msglen) {
+    for (char *next = bufv.data(); next < bufv.data() + size;
+         next += ifm->ifm_msglen) {
         bool skipif = false;
         ifm = (struct if_msghdr *)next;
         if (ifm->ifm_type != RTM_IFINFO || (ifm->ifm_addrs & RTAX_IFP) == 0)
@@ -537,7 +537,6 @@ void BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
             *outbytes += ifd.ifi_obytes;
         }
     }
-    free(buf);
 #else  /* XOSVIEW_OPENBSD */
     struct ifnet *ifnetp;
     struct ifnet ifnet;
@@ -599,17 +598,15 @@ void BSDGetSwapInfo(uint64_t *total, uint64_t *used) {
 #if defined(HAVE_SWAPCTL)
     //  This code is based on a patch sent in by Scott Stevens
     //  (s.k.stevens@ic.ac.uk, at the time).
-    struct swapent *sep, *swapiter;
-    int bsize, rnswap, nswap = swapctl(SWAP_NSWAP, 0, 0);
+    int rnswap, nswap = swapctl(SWAP_NSWAP, 0, 0);
     *total = *used = 0;
 
     if (nswap < 1)  // no swap devices on
         return;
 
-    if ((sep = (struct swapent *)malloc(nswap* sizeof(struct swapent))) == NULL)
-        logFatal << "BSDGetSwapInfo(): malloc failed" << std::endl;
+    std::vector<struct swapent> sep(nswap);
 
-    rnswap = swapctl(SWAP_STATS, (void *)sep, nswap);
+    rnswap = swapctl(SWAP_STATS, (void *)sep.data(), nswap);
     if (rnswap < 0)
         logFatal << "BSDGetSwapInfo(): getting SWAP_STATS failed" << std::endl;
     if (nswap != rnswap)
@@ -617,13 +614,12 @@ void BSDGetSwapInfo(uint64_t *total, uint64_t *used) {
                    << "(nswap=" << nswap << " versus "
                    << "rnswap=" << rnswap << std::endl;
 
-    swapiter = sep;
-    bsize = 512; // block size is that of underlying device, *usually* 512 bytes
-    for ( ; rnswap-- > 0; swapiter++) {
-        *total += (uint64_t)swapiter->se_nblks * bsize;
-        *used += (uint64_t)swapiter->se_inuse * bsize;
+    // block size is that of underlying device, *usually* 512 bytes
+    const int bsize = 512;
+    for (size_t i = 0 ; i < (size_t)rnswap ; i++) {
+        *total += (uint64_t)sep[i].se_nblks * bsize;
+        *used += (uint64_t)sep[i].se_inuse * bsize;
     }
-    free(sep);
 #else
     struct kvm_swap kswap;
     OpenKDIfNeeded();
