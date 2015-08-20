@@ -1226,8 +1226,9 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 		if (prop_object_type(parray) != PROP_TYPE_ARRAY)
 			continue;
 		name = prop_dictionary_keysym_cstring_nocopy((prop_dictionary_keysym_t)pobj);
-		if ( strncmp(name, "coretemp", 8) && strncmp(name, "amdtemp", 7) )
-			continue;
+                if (std::string(name, 0, 8) != "coretemp"
+                  && std::string(name, 0, 7) != "amdtemp")
+                    continue;
 		if ( !(piter2 = prop_array_iterator(parray)) )
 			err(EX_OSERR, "Could not get sensor iterator");
 
@@ -1271,8 +1272,8 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 				continue;  // no sensor with this mib
 			err(EX_OSERR, "sysctl hw.sensors.%d failed", dev);
 		}
-		if ( strncmp(sd.xname, "cpu", 3) )
-			continue;  // not CPU sensor
+                if (std::string(sd.xname, 0, 3) != "cpu")
+                    continue;  // not CPU sensor
                 std::istringstream is(sd.xname);
                 is >> util::sink("*[!0-9]", true) >> cpu;
 
@@ -1367,46 +1368,46 @@ BSDGetSensor(const std::string &name, const std::string &valname, float *value,
 		if ( !(pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "type")) )
 			continue;
 		strlcpy(type, prop_string_cstring_nocopy((prop_string_t)pobj1), 20);
-		if ( strncmp(type, "Indicator", 3) == 0 ||
-		     strncmp(type, "Battery", 3) == 0   ||
-		     strncmp(type, "Drive", 3) == 0 )
-			continue;  // these are string values
+                if ( std::string(type) == "Indicator" ||
+                     std::string(type) == "Battery" ||
+                     std::string(type) == "Drive" )
+                    continue;  // these are string values
 		if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, valname.c_str())) )
 			val = prop_number_integer_value((prop_number_t)pobj1);
 		else
                     logFatal << "Value " << valname << " does not exist\n";
-		if ( strncmp(type, "Temperature", 4) == 0 ) {
-			*value = (val / 1000000.0) - 273.15;  // temperatures are in microkelvins
+                if ( std::string(type) == "Temperature" ) {
+                    *value = (val / 1000000.0) - 273.15;  // temperatures are in microkelvins
                         unit = "\260C";
 		}
-		else if ( strncmp(type, "Fan", 3) == 0 ) {
+                else if ( std::string(type) == "Fan") {
 			*value = (float)val;                  // plain integer value
                         unit = "RPM";
 		}
-		else if ( strncmp(type, "Integer", 3) == 0 )
+                else if ( std::string(type) == "Integer" )
 			*value = (float)val;                  // plain integer value
-		else if ( strncmp(type, "Voltage", 4) == 0 ) {
+                else if ( std::string(type) == "Voltage" ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "V";
 		}
-		else if ( strncmp(type, "Ampere hour", 7) == 0 ) {
+                else if ( std::string(type) == "Ampere hour" ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "Ah";
 		}
-		else if ( strncmp(type, "Ampere", 7) == 0 ) {
+                else if ( std::string(type) == "Ampere" ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "A";
 		}
-		else if ( strncmp(type, "Watt hour", 5) == 0 ) {
-			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
+                else if ( std::string(type) == "Watt hour" ) {
+                    *value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "Wh";
 		}
-		else if ( strncmp(type, "Watts", 5) == 0 ) {
+                else if ( std::string(type) == "Watts" ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "W";
 		}
-		else if ( strncmp(type, "Ohms", 4) == 0 ) {
-			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
+                else if ( std::string(type) == "Ohms" ) {
+                    *value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "Ohm";
 		}
 	}
@@ -1657,8 +1658,8 @@ BSDGetBatteryInfo(int *remaining, unsigned int *state) {
 	while ( (pobj = prop_object_iterator_next(piter)) ) {
 		int present = 0, capacity = 0, charge = 0, low = 0, crit = 0;
 		name = prop_dictionary_keysym_cstring_nocopy((prop_dictionary_keysym_t)pobj);
-		if ( strncmp(name, "acpibat", 7) )
-			continue;
+                if ( std::string(name, 0, 7) != "acpibat" )
+                    continue;
 		parray = (prop_array_t)prop_dictionary_get_keysym(pdict, (prop_dictionary_keysym_t)pobj);
 		if ( prop_object_type(parray) != PROP_TYPE_ARRAY )
 			continue;
@@ -1674,15 +1675,15 @@ BSDGetBatteryInfo(int *remaining, unsigned int *state) {
 			if ( !(pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "description")) )
 				continue;
 			name = prop_string_cstring_nocopy((prop_string_t)pobj1);
-			if ( strncmp(name, "present", 7) == 0 ) { // is battery present
+                        if ( std::string(name, 0, 7) == "present" ) { // is battery present
 				if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "cur-value")) )
 					present = prop_number_integer_value((prop_number_t)pobj1);
 			}
-			else if ( strncmp(name, "design cap", 10) == 0 ) { // get full capacity
+                        else if ( std::string(name, 0, 10) == "design cap" ) { // get full capacity
 				if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "cur-value")) )
 					capacity = prop_number_integer_value((prop_number_t)pobj1);
 			}
-			else if ( strncmp(name, "charge", 7) == 0 ) { // get present charge, low and critical levels
+                        else if ( std::string(name, 0, 7) == "charge" ) { // get present charge, low and critical levels
 				if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "cur-value")) )
 					charge = prop_number_integer_value((prop_number_t)pobj1);
 				if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "warning-capacity")) )
@@ -1690,12 +1691,12 @@ BSDGetBatteryInfo(int *remaining, unsigned int *state) {
 				if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "critical-capacity")) )
 					crit = prop_number_integer_value((prop_number_t)pobj1);
 			}
-			else if ( strncmp(name, "charging", 8) == 0 ) { // charging or not?
+                        else if ( std::string(name, 0, 8) == "charging" ) { // charging or not?
 				if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "cur-value")) )
 					if ( prop_number_integer_value((prop_number_t)pobj1) )
 						*state |= XOSVIEW_BATT_CHARGING;
 			}
-			else if ( strncmp(name, "discharge rate", 14) == 0 ) { // discharging or not?
+                        else if (std::string(name, 0, 14) == "discharge rate") { // discharging or not?
 				if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "cur-value")) )
 					if ( prop_number_integer_value((prop_number_t)pobj1) )
 						*state |= XOSVIEW_BATT_DISCHARGING;
