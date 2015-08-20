@@ -112,64 +112,63 @@ static int mib_uvm[2] = { CTL_VM, VM_UVMEXP };
 kvm_t* kd = NULL;
 
 //  This struct has the list of all the symbols we want from the kernel.
-static struct nlist nlst[] =
-{
+static struct nlist nlst[] = {
 // We put a dummy symbol for a don't care, and ignore warnings about
 // this later on.  This keeps the indices within the nlist constant.
 #define DUMMY_SYM "dummy_sym"
 
 #if defined(XOSVIEW_FREEBSD)
-{ "_cnt" },
+    { "_cnt" },
 #define VMMETER_SYM_INDEX    0
 #else
-{ DUMMY_SYM },
+    { DUMMY_SYM },
 #define DUMMY_0
 #endif
 #if !defined(XOSVIEW_OPENBSD)
-{ "_ifnet" },
+    { "_ifnet" },
 #define IFNET_SYM_INDEX      1
 #else
-{ DUMMY_SYM },
+    { DUMMY_SYM },
 #define DUMMY_1
 #endif
 
 #if defined(XOSVIEW_OPENBSD)
-{ "_disklist" },
+    { "_disklist" },
 #define DISKLIST_SYM_INDEX   2
 #else
-{ DUMMY_SYM },
+    { DUMMY_SYM },
 #define DUMMY_2
 #endif
 #if defined(XOSVIEW_NETBSD)
-{ "_allevents" },
+    { "_allevents" },
 #define ALLEVENTS_SYM_INDEX  3
-{ "_bufmem" },
+    { "_bufmem" },
 #define BUFMEM_SYM_INDEX     4
 #else
-{ DUMMY_SYM },
+    { DUMMY_SYM },
 #define DUMMY_3
-{ DUMMY_SYM },
+    { DUMMY_SYM },
 #define DUMMY_4
 #endif
 #if defined(XOSVIEW_FREEBSD)
-{ "_intrnames" },
+    { "_intrnames" },
 #define INTRNAMES_SYM_INDEX  5
 # if __FreeBSD_version >= 900040
-{ "_sintrnames" },
+    { "_sintrnames" },
 # else
-{ "_eintrnames" },
+    { "_eintrnames" },
 # endif
 #define EINTRNAMES_SYM_INDEX 6
-{ "_intrcnt" },
+    { "_intrcnt" },
 #define INTRCNT_SYM_INDEX    7
 # if __FreeBSD_version >= 900040
-{ "_sintrcnt" },
+    { "_sintrcnt" },
 # else
-{ "_eintrcnt" },
+    { "_eintrcnt" },
 # endif
 #define EINTRCNT_SYM_INDEX   8
 #endif
-{ NULL }
+    { NULL }
 };
 
 static char kernelFileName[_POSIX2_LINE_MAX];
@@ -180,44 +179,57 @@ static char kernelFileName[_POSIX2_LINE_MAX];
 //  it uses kd as the implicit kernel-file to read.  Saves typing.
 //  Since this is C++, it's an inline function rather than a macro.
 
-static inline void
-safe_kvm_read(unsigned long kernel_addr, void* user_addr, size_t nbytes) {
-	/*  Check for obvious bad symbols (i.e., from /netbsd when we
-	 *  booted off of /netbsd.old), such as symbols that reference
-	 *  0x00000000 (or anywhere in the first 256 bytes of memory).  */
-	int retval = 0;
-	if ( (kernel_addr & 0xffffff00) == 0 )
-		errx(EX_SOFTWARE, "safe_kvm_read() was attempted on EA %#lx.", kernel_addr);
-	if ( (retval = kvm_read(kd, kernel_addr, user_addr, nbytes)) == -1 )
-		err(EX_SOFTWARE, "kvm_read() of kernel address %#lx", kernel_addr);
-	if (retval != (int)nbytes)
-		warn("safe_kvm_read(%#lx) returned %d bytes, not %d", kernel_addr, retval, (int)nbytes);
+static inline void safe_kvm_read(unsigned long kernel_addr, void* user_addr,
+  size_t nbytes) {
+
+    /*  Check for obvious bad symbols (i.e., from /netbsd when we
+     *  booted off of /netbsd.old), such as symbols that reference
+     *  0x00000000 (or anywhere in the first 256 bytes of memory).  */
+    int retval = 0;
+
+    if ( (kernel_addr & 0xffffff00) == 0 )
+        logFatal << "safe_kvm_read() was attempted on EA "
+                 << std::hex << std::showbase << kernel_addr << std::endl;
+
+    if ( (retval = kvm_read(kd, kernel_addr, user_addr, nbytes)) == -1 )
+        logFatal << "kvm_read() of kernel address "
+                 << std::hex << std::showbase << kernel_addr << std::endl;
+
+    logAssert(retval == (int)nbytes) << "safe_kvm_read("
+                                     << std::hex << std::showbase
+                                     << kernel_addr << ") "
+                                     << "returned " << std::dec
+                                     << retval << " bytes, "
+                                     << "not " << (int)nbytes << std::endl;
 }
+
 
 //  This version uses the symbol offset in the nlst variable, to make it
 //  a little more convenient.  BCG
-static inline void
-safe_kvm_read_symbol(int nlstOffset, void* user_addr, size_t nbytes) {
-	safe_kvm_read(nlst[nlstOffset].n_value, user_addr, nbytes);
+static inline void safe_kvm_read_symbol(int nlstOffset, void* user_addr,
+  size_t nbytes) {
+
+    safe_kvm_read(nlst[nlstOffset].n_value, user_addr, nbytes);
 }
 
-int
-ValidSymbol(int index) {
-	return ( (nlst[index].n_value & 0xffffff00) != 0 );
+
+int ValidSymbol(int index) {
+    return ( (nlst[index].n_value & 0xffffff00) != 0 );
 }
 
-int
-SymbolValue(int index) {
-	return nlst[index].n_value;
+
+int SymbolValue(int index) {
+    return nlst[index].n_value;
 }
 
-void
-BSDInit() {
-	kernelFileName[0] = '\0';
+
+void BSDInit() {
+    kernelFileName[0] = '\0';
 }
 
-void
-SetKernelName(const std::string &kernelName) {
+
+void SetKernelName(const std::string &kernelName) {
+
     if (kernelName.size() >= _POSIX2_LINE_MAX)
         logFatal << "Kernel file name of '"
                  << kernelName << "' is too long." << std::endl;
@@ -225,397 +237,407 @@ SetKernelName(const std::string &kernelName) {
     kernelName.copy(kernelFileName, _POSIX2_LINE_MAX);
 }
 
-void
-OpenKDIfNeeded() {
-	char errstring[_POSIX2_LINE_MAX];
 
-	if (kd)
-		return; //  kd is non-NULL, so it has been initialized.  BCG
+void OpenKDIfNeeded() {
 
-	/*  Open it read-only, for a little added safety.  */
-	/*  If the first character of kernelFileName is not '\0', then use
-	 *  that kernel file.  Otherwise, use the default kernel, by
-	 *  specifying NULL.  */
-	if ((kd = kvm_openfiles((kernelFileName[0] ? kernelFileName : NULL),
-		                    NULL, NULL, O_RDONLY, errstring)) == NULL)
-		err(EX_OSFILE, "OpenKDIfNeeded(): %s", errstring);
+    char errstring[_POSIX2_LINE_MAX];
 
-	// Parenthetical note:  FreeBSD kvm_openfiles() uses getbootfile() to get
-	// the correct kernel file if the 1st arg is NULL.  As far as I can see,
-	// one should always use NULL in FreeBSD, but I suppose control is never a
-	// bad thing... (pavel 21-Jan-1998)
+    if (kd)
+        return; //  kd is non-NULL, so it has been initialized.  BCG
 
-	/*  Now grab the symbol offsets for the symbols that we want.  */
-	if (kvm_nlist(kd, nlst) < 0)
-		err(EX_OSERR, "Could not get kvm symbols");
+    /*  Open it read-only, for a little added safety.  */
+    /*  If the first character of kernelFileName is not '\0', then use
+     *  that kernel file.  Otherwise, use the default kernel, by
+     *  specifying NULL.
+     */
+    if ((kd = kvm_openfiles((kernelFileName[0] ? kernelFileName : NULL),
+          NULL, NULL, O_RDONLY, errstring)) == NULL)
+        logFatal << "OpenKDIfNeeded(): " << errstring << std::endl;
 
-	//  Look at all of the returned symbols, and check for bad lookups.
-	//  (This may be unnecessary, but better to check than not to...  )
-	struct nlist *nlp = nlst;
-        std::string sDUMMY_SYM(DUMMY_SYM);
-	while (nlp && nlp->n_name) {
-            if (std::string(nlp->n_name, 0, sDUMMY_SYM.size()) != sDUMMY_SYM) {
-			if ( nlp->n_type == 0 || nlp->n_value == 0 )
+    // Parenthetical note:  FreeBSD kvm_openfiles() uses getbootfile() to get
+    // the correct kernel file if the 1st arg is NULL.  As far as I can see,
+    // one should always use NULL in FreeBSD, but I suppose control is never a
+    // bad thing... (pavel 21-Jan-1998)
+
+    /*  Now grab the symbol offsets for the symbols that we want.  */
+    if (kvm_nlist(kd, nlst) < 0)
+        err(EX_OSERR, "Could not get kvm symbols");
+
+    //  Look at all of the returned symbols, and check for bad lookups.
+    //  (This may be unnecessary, but better to check than not to...  )
+    struct nlist *nlp = nlst;
+    std::string sDUMMY_SYM(DUMMY_SYM);
+    while (nlp && nlp->n_name) {
+        if (std::string(nlp->n_name, 0, sDUMMY_SYM.size()) != sDUMMY_SYM) {
+            if ( nlp->n_type == 0 || nlp->n_value == 0 )
 #if defined(XOSVIEW_FREEBSD) && defined(__alpha__)
-				/* XXX: this should be properly fixed. */
-				;
+                /* XXX: this should be properly fixed. */
+                ;
 #else
-				warnx("kvm_nlist() lookup failed for symbol '%s'.", nlp->n_name);
+            logProblem << "kvm_nlist() lookup failed for symbol '"
+                       << nlp->n_name << "'" << std::endl;
 #endif
-		}
-		nlp++;
-	}
+        }
+        nlp++;
+    }
 }
 
-int
-BSDGetCPUSpeed() {
-	size_t size;
-	int cpu_speed = 0;
+
+int BSDGetCPUSpeed() {
+    size_t size;
+    int cpu_speed = 0;
 
 #if defined(XOSVIEW_FREEBSD)
-        std::string name;
-	int speed = 0, cpus = BSDCountCpus(), avail_cpus = 0;
-	size = sizeof(speed);
-	for (int i = 0; i < cpus; i++) {
-                name = "dev.cpu." + util::repr(i) + ".freq";
-		if ( sysctlbyname(name.c_str(), &speed, &size, NULL, 0) == 0 ) {
-			// count only cpus with individual freq available
-			cpu_speed += speed;
-			avail_cpus++;
-		}
-	}
-	if (avail_cpus > 1)
-		cpu_speed /= avail_cpus;
+    std::string name;
+    int speed = 0, cpus = BSDCountCpus(), avail_cpus = 0;
+    size = sizeof(speed);
+    for (int i = 0; i < cpus; i++) {
+        name = "dev.cpu." + util::repr(i) + ".freq";
+        if ( sysctlbyname(name.c_str(), &speed, &size, NULL, 0) == 0 ) {
+            // count only cpus with individual freq available
+            cpu_speed += speed;
+            avail_cpus++;
+        }
+    }
+    if (avail_cpus > 1)
+        cpu_speed /= avail_cpus;
 #elif defined(XOSVIEW_OPENBSD)
-	size = sizeof(cpu_speed);
-	if ( sysctl(mib_spd, 2, &cpu_speed, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "syscl hw.cpuspeed failed");
+    size = sizeof(cpu_speed);
+    if ( sysctl(mib_spd, 2, &cpu_speed, &size, NULL, 0) < 0 )
+        logFatal << "syscl hw.cpuspeed failed" << std::endl;
 #else  /* XOSVIEW_NETBSD || XOSVIEW_DFBSD */
-	uint64_t speed = 0;
-	size = sizeof(speed);
+    uint64_t speed = 0;
+    size = sizeof(speed);
 #if defined(XOSVIEW_NETBSD)
-	if ( sysctlbyname("machdep.tsc_freq", &speed, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "sysctl machdep.tsc_freq failed");
+    if ( sysctlbyname("machdep.tsc_freq", &speed, &size, NULL, 0) < 0 )
+        logFatal << "sysctl machdep.tsc_freq failed" << std::endl;
 #else  /* XOSVIEW_DFBSD */
-	if ( sysctlbyname("hw.tsc_frequency", &speed, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "sysctl hw.tsc_frequency failed");
+    if ( sysctlbyname("hw.tsc_frequency", &speed, &size, NULL, 0) < 0 )
+        logFatal << "sysctl hw.tsc_frequency failed" << std::endl;
 #endif
-	cpu_speed = speed / 1000000;
+    cpu_speed = speed / 1000000;
 #endif
-	return cpu_speed;
+    return cpu_speed;
 }
 
 
 // --------------------  PageMeter & MemMeter functions  -----------------------
-void
-BSDPageInit() {
-	OpenKDIfNeeded();
+void BSDPageInit() {
+    OpenKDIfNeeded();
 }
+
 
 /* meminfo[5]  = { active, inactive, wired, cached, free } */
 /* pageinfo[2] = { pages_in, pages_out }                   */
-void
-BSDGetPageStats(uint64_t *meminfo, uint64_t *pageinfo) {
+void BSDGetPageStats(uint64_t *meminfo, uint64_t *pageinfo) {
 #if defined(HAVE_UVM)
 #ifdef VM_UVMEXP2
-	struct uvmexp_sysctl uvm;
+    struct uvmexp_sysctl uvm;
 #else
-	struct uvmexp uvm;
+    struct uvmexp uvm;
 #endif
-	size_t size = sizeof(uvm);
-	if ( sysctl(mib_uvm, 2, &uvm, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "sysctl vm.uvmexp failed");
+    size_t size = sizeof(uvm);
+    if ( sysctl(mib_uvm, 2, &uvm, &size, NULL, 0) < 0 )
+        logFatal << "sysctl vm.uvmexp failed" << std::endl;
 
-	if (meminfo) {
-		// UVM excludes kernel memory -> assume it is active mem
-		meminfo[0] = (uint64_t)(uvm.npages - uvm.inactive - uvm.wired - uvm.free) * uvm.pagesize;
-		meminfo[1] = (uint64_t)uvm.inactive * uvm.pagesize;
-		meminfo[2] = (uint64_t)uvm.wired * uvm.pagesize;
+    if (meminfo) {
+        // UVM excludes kernel memory -> assume it is active mem
+        meminfo[0] = (uint64_t)(uvm.npages - uvm.inactive - uvm.wired
+          - uvm.free) * uvm.pagesize;
+        meminfo[1] = (uint64_t)uvm.inactive * uvm.pagesize;
+        meminfo[2] = (uint64_t)uvm.wired * uvm.pagesize;
 
-		// cache is already included in active and inactive memory and
-		// there's no way to know how much is in which -> disable cache
-		meminfo[3] = 0;
-		meminfo[4] = (uint64_t)uvm.free * uvm.pagesize;
-	}
-	if (pageinfo) {
-		pageinfo[0] = (uint64_t)uvm.pgswapin;
-		pageinfo[1] = (uint64_t)uvm.pgswapout;
-	}
+        // cache is already included in active and inactive memory and
+        // there's no way to know how much is in which -> disable cache
+        meminfo[3] = 0;
+        meminfo[4] = (uint64_t)uvm.free * uvm.pagesize;
+    }
+    if (pageinfo) {
+        pageinfo[0] = (uint64_t)uvm.pgswapin;
+        pageinfo[1] = (uint64_t)uvm.pgswapout;
+    }
 #else  /* HAVE_UVM */
-	struct vmmeter vm;
+    struct vmmeter vm;
 #if defined(XOSVIEW_FREEBSD)
-	safe_kvm_read_symbol(VMMETER_SYM_INDEX, &vm, sizeof(vm));
+    safe_kvm_read_symbol(VMMETER_SYM_INDEX, &vm, sizeof(vm));
 #else  /* XOSVIEW_DFBSD */
-	struct vmstats vms;
-	size_t size = sizeof(vms);
-	if ( sysctlbyname("vm.vmstats", &vms, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "sysctl vm.vmstats failed");
-	size = sizeof(vm);
-	if ( sysctlbyname("vm.vmmeter", &vm, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "sysctl vm.vmmeter failed");
+    struct vmstats vms;
+    size_t size = sizeof(vms);
+    if ( sysctlbyname("vm.vmstats", &vms, &size, NULL, 0) < 0 )
+        logFatal << "sysctl vm.vmstats failed" << std::endl;
+    size = sizeof(vm);
+    if ( sysctlbyname("vm.vmmeter", &vm, &size, NULL, 0) < 0 )
+        logFatal << "sysctl vm.vmmeter failed" << std::endl;
 #endif
-	if (meminfo) {
+    if (meminfo) {
 #if defined(XOSVIEW_FREEBSD)
-		meminfo[0] = (uint64_t)vm.v_active_count * vm.v_page_size;
-		meminfo[1] = (uint64_t)vm.v_inactive_count * vm.v_page_size;
-		meminfo[2] = (uint64_t)vm.v_wire_count * vm.v_page_size;
-		meminfo[3] = (uint64_t)vm.v_cache_count * vm.v_page_size;
-		meminfo[4] = (uint64_t)vm.v_free_count * vm.v_page_size;
+        meminfo[0] = (uint64_t)vm.v_active_count * vm.v_page_size;
+        meminfo[1] = (uint64_t)vm.v_inactive_count * vm.v_page_size;
+        meminfo[2] = (uint64_t)vm.v_wire_count * vm.v_page_size;
+        meminfo[3] = (uint64_t)vm.v_cache_count * vm.v_page_size;
+        meminfo[4] = (uint64_t)vm.v_free_count * vm.v_page_size;
 #else  /* XOSVIEW_DFBSD */
-		meminfo[0] = (uint64_t)vms.v_active_count * vms.v_page_size;
-		meminfo[1] = (uint64_t)vms.v_inactive_count * vms.v_page_size;
-		meminfo[2] = (uint64_t)vms.v_wire_count * vms.v_page_size;
-		meminfo[3] = (uint64_t)vms.v_cache_count * vms.v_page_size;
-		meminfo[4] = (uint64_t)vms.v_free_count * vms.v_page_size;
+        meminfo[0] = (uint64_t)vms.v_active_count * vms.v_page_size;
+        meminfo[1] = (uint64_t)vms.v_inactive_count * vms.v_page_size;
+        meminfo[2] = (uint64_t)vms.v_wire_count * vms.v_page_size;
+        meminfo[3] = (uint64_t)vms.v_cache_count * vms.v_page_size;
+        meminfo[4] = (uint64_t)vms.v_free_count * vms.v_page_size;
 #endif
-	}
-	if (pageinfo) {
-		pageinfo[0] = (uint64_t)vm.v_vnodepgsin + (uint64_t)vm.v_swappgsin;
-		pageinfo[1] = (uint64_t)vm.v_vnodepgsout + (uint64_t)vm.v_swappgsout;
-	}
+    }
+    if (pageinfo) {
+        pageinfo[0] = (uint64_t)vm.v_vnodepgsin + (uint64_t)vm.v_swappgsin;
+        pageinfo[1] = (uint64_t)vm.v_vnodepgsout + (uint64_t)vm.v_swappgsout;
+    }
 #endif
 }
 
 
 // ------------------------  CPUMeter functions  -------------------------------
 
-void
-BSDCPUInit() {
-	OpenKDIfNeeded();
+void BSDCPUInit() {
+    OpenKDIfNeeded();
 #if defined(XOSVIEW_FREEBSD)
-	size_t size = sizeof(maxcpus);
-	if ( sysctlbyname("kern.smp.maxcpus", &maxcpus, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "sysctl kern.smp.maxcpus failed");
+    size_t size = sizeof(maxcpus);
+    if ( sysctlbyname("kern.smp.maxcpus", &maxcpus, &size, NULL, 0) < 0 )
+        logFatal << "sysctl kern.smp.maxcpus failed" << std::endl;
 #elif defined(XOSVIEW_DFBSD)
-	if ( kinfo_get_cpus(&maxcpus) )
-		err(EX_OSERR, "kinfo_get_cpus() failed");
+    if ( kinfo_get_cpus(&maxcpus) )
+        logFatal << "kinfo_get_cpus() failed" << std::endl;
 #endif
 }
 
-void
-BSDGetCPUTimes(uint64_t *timeArray, unsigned int cpu) {
-	// timeArray is CPUSTATES long.
-	// cpu is the number of CPU to return, starting from 1. If cpu == 0,
-	// return aggregate times for all CPUs.
-	// All BSDs have separate calls for aggregate and separate times. Only
-	// OpenBSD returns one CPU per call, others return all at once.
-	if (!timeArray)
-		err(EX_SOFTWARE, "BSDGetCPUTimes(): passed pointer was null.");
-	size_t size;
+
+void BSDGetCPUTimes(uint64_t *timeArray, unsigned int cpu) {
+    // timeArray is CPUSTATES long.
+    // cpu is the number of CPU to return, starting from 1. If cpu == 0,
+    // return aggregate times for all CPUs.
+    // All BSDs have separate calls for aggregate and separate times. Only
+    // OpenBSD returns one CPU per call, others return all at once.
+    if (!timeArray)
+        logFatal << "BSDGetCPUTimes(): passed pointer was null." << std::endl;
+
+    size_t size;
 #if defined(XOSVIEW_DFBSD)
-	size = sizeof(struct kinfo_cputime);
-	struct kinfo_cputime *times = (struct kinfo_cputime *)calloc(maxcpus + 1, size);
+    size = sizeof(struct kinfo_cputime);
+    struct kinfo_cputime *times = (struct kinfo_cputime *)calloc(
+        maxcpus + 1, size);
 #elif defined(XOSVIEW_NETBSD)
-	size = CPUSTATES * sizeof(uint64_t);
-	uint64_t *times = (uint64_t*)calloc(BSDCountCpus() + 1, size);
+    size = CPUSTATES * sizeof(uint64_t);
+    uint64_t *times = (uint64_t*)calloc(BSDCountCpus() + 1, size);
 #elif defined(XOSVIEW_FREEBSD)
-	size = CPUSTATES * sizeof(long);
-	long *times = (long*)calloc(maxcpus + 1, size);
+    size = CPUSTATES * sizeof(long);
+    long *times = (long*)calloc(maxcpus + 1, size);
 #else // XOSVIEW_OPENBSD
-	uint64_t *times = (uint64_t*)calloc(CPUSTATES, sizeof(uint64_t));
+    uint64_t *times = (uint64_t*)calloc(CPUSTATES, sizeof(uint64_t));
 #endif
-	// this array will have aggregate values at 0, then each CPU (except on
-	// OpenBSD), so that cpu can be used as index
-	if (!times)
-		err(EX_OSERR, "BSDGetCPUTimes(): malloc failed");
+    // this array will have aggregate values at 0, then each CPU (except on
+    // OpenBSD), so that cpu can be used as index
+    if (!times)
+        logFatal << "BSDGetCPUTimes(): malloc failed" << std::endl;
 
 #if defined(XOSVIEW_DFBSD)
-	if (cpu == 0) {
-		if (kinfo_get_sched_cputime(times))
-			err(EX_OSERR, "kinfo_get_sched_cputime() failed");
-	}
-	else {
-		size = maxcpus * sizeof(times[0]);
-		if ( sysctlbyname("kern.cputime", times + 1, &size, NULL, 0) < 0 )
-			err(EX_OSERR, "sysctl kern.cputime failed");
-	}
-	timeArray[0] = times[cpu].cp_user;
-	timeArray[1] = times[cpu].cp_nice;
-	timeArray[2] = times[cpu].cp_sys;
-	timeArray[3] = times[cpu].cp_intr;
-	timeArray[4] = times[cpu].cp_idle;
+    if (cpu == 0) {
+        if (kinfo_get_sched_cputime(times))
+            logFatal << "kinfo_get_sched_cputime() failed" << std::endl;
+    }
+    else {
+        size = maxcpus * sizeof(times[0]);
+        if ( sysctlbyname("kern.cputime", times + 1, &size, NULL, 0) < 0 )
+            logFatal << "sysctl kern.cputime failed" << std::endl;
+    }
+    timeArray[0] = times[cpu].cp_user;
+    timeArray[1] = times[cpu].cp_nice;
+    timeArray[2] = times[cpu].cp_sys;
+    timeArray[3] = times[cpu].cp_intr;
+    timeArray[4] = times[cpu].cp_idle;
 #else  // !XOSVIEW_DFBSD
-	size = CPUSTATES * sizeof(times[0]);
-	if (cpu == 0) {  // aggregate times
+    size = CPUSTATES * sizeof(times[0]);
+    if (cpu == 0) {  // aggregate times
 #if defined(XOSVIEW_FREEBSD)
-		if ( sysctlbyname("kern.cp_time", times, &size, NULL, 0) < 0 )
+        if ( sysctlbyname("kern.cp_time", times, &size, NULL, 0) < 0 )
 #else  // XOSVIEW_NETBSD || XOSVIEW_OPENBSD
-		if ( sysctl(mib_cpt, 2, times, &size, NULL, 0) < 0 )
+            if ( sysctl(mib_cpt, 2, times, &size, NULL, 0) < 0 )
 #endif
-			err(EX_OSERR, "sysctl kern.cp_time failed");
-	}
-	else {  // separate times
+                logFatal << "sysctl kern.cp_time failed" << std::endl;
+    }
+    else {  // separate times
 #if defined(XOSVIEW_FREEBSD)
-		size *= maxcpus;
-		if ( sysctlbyname("kern.cp_times", times + CPUSTATES, &size, NULL, 0) < 0 )
-			err(EX_OSERR, "sysctl kern.cp_times failed");
+        size *= maxcpus;
+
+        if ( sysctlbyname("kern.cp_times", times + CPUSTATES, &size,
+            NULL, 0) < 0 )
+            logFatal << "sysctl kern.cp_times failed" << std::endl;
+
 #elif defined(XOSVIEW_NETBSD)
-		size *= BSDCountCpus();
-		if ( sysctl(mib_cpt, 2, times + CPUSTATES, &size, NULL, 0) < 0 )
-			err(EX_OSERR, "sysctl kern.cp_time failed");
+        size *= BSDCountCpus();
+        if ( sysctl(mib_cpt, 2, times + CPUSTATES, &size, NULL, 0) < 0 )
+            logFatal << "sysctl kern.cp_time failed" << std::endl;
 #else  // XOSVIEW_OPENBSD
-		mib_cpt2[2] = cpu - 1;
-		if ( sysctl(mib_cpt2, 3, times, &size, NULL, 0) < 0 )
-			err(EX_OSERR, "sysctl kern.cp_time2 failed");
+        mib_cpt2[2] = cpu - 1;
+        if ( sysctl(mib_cpt2, 3, times, &size, NULL, 0) < 0 )
+            logFatal << "sysctl kern.cp_time2 failed" << std::endl;
 #endif
-	}
-	for (int i = 0; i < CPUSTATES; i++)
+    }
+    for (int i = 0; i < CPUSTATES; i++)
 #if defined(XOSVIEW_OPENBSD) // aggregates are long, singles uint64_t
-		timeArray[i] = ( cpu ? times[i] : ((long*)(times))[i] );
+        timeArray[i] = ( cpu ? times[i] : ((long*)(times))[i] );
 #else  // XOSVIEW_FREEBSD || XOSVIEW_NETBSD
-		timeArray[i] = times[cpu * CPUSTATES + i];
+    timeArray[i] = times[cpu * CPUSTATES + i];
 #endif
 #endif
-	free(times);
+    free(times);
 }
 
 
 // ------------------------  NetMeter functions  -------------------------------
-int
-BSDNetInit() {
-	OpenKDIfNeeded();
+int BSDNetInit() {
+    OpenKDIfNeeded();
 #if defined(XOSVIEW_NETBSD)
-	return ValidSymbol(IFNET_SYM_INDEX);
+    return ValidSymbol(IFNET_SYM_INDEX);
 #else
-	return 1;
+    return 1;
 #endif
 }
 
-void
-BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
+
+void BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
   const std::string &netIface, bool ignored) {
-        std::string ifname;
-	*inbytes = 0;
-	*outbytes = 0;
+
+    std::string ifname;
+    *inbytes = 0;
+    *outbytes = 0;
 #if defined(XOSVIEW_OPENBSD)
-	size_t size;
-	char *buf, *next;
-	struct if_msghdr *ifm;
-	struct if_data ifd;
-	struct sockaddr_dl *sdl;
+    size_t size;
+    char *buf, *next;
+    struct if_msghdr *ifm;
+    struct if_data ifd;
+    struct sockaddr_dl *sdl;
 
-	if ( sysctl(mib_ifl, 6, NULL, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "BSDGetNetInOut(): sysctl 1 failed");
-	if ( (buf = (char *)malloc(size)) == NULL)
-		err(EX_OSERR, "BSDGetNetInOut(): malloc failed");
-	if ( sysctl(mib_ifl, 6, buf, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "BSDGetNetInOut(): sysctl 2 failed");
+    if ( sysctl(mib_ifl, 6, NULL, &size, NULL, 0) < 0 )
+        logFatal << "BSDGetNetInOut(): sysctl 1 failed" << std::endl;
 
-	for (next = buf; next < buf + size; next += ifm->ifm_msglen) {
-		bool skipif = false;
-		ifm = (struct if_msghdr *)next;
-		if (ifm->ifm_type != RTM_IFINFO || (ifm->ifm_addrs & RTAX_IFP) == 0)
-			continue;
-		ifd = ifm->ifm_data;
-		sdl = (struct sockaddr_dl *)(ifm + 1);
-		if (sdl->sdl_family != AF_LINK)
-			continue;
-                if (netIface != "False") {
-                        ifname = std::string(sdl->sdl_data, 0, sdl->sdl_nlen);
-                        if ( (!ignored && ifname != netIface) ||
-                          ( ignored && ifname == netIface) )
-				skipif = true;
-		}
-		if (!skipif) {
-			*inbytes += ifd.ifi_ibytes;
-			*outbytes += ifd.ifi_obytes;
-		}
-	}
-	free(buf);
+    if ( (buf = (char *)malloc(size)) == NULL)
+        logFatal << "BSDGetNetInOut(): malloc failed" << std::endl;
+
+    if ( sysctl(mib_ifl, 6, buf, &size, NULL, 0) < 0 )
+        logFatal << "BSDGetNetInOut(): sysctl 2 failed" << std::endl;
+
+    for (next = buf; next < buf + size; next += ifm->ifm_msglen) {
+        bool skipif = false;
+        ifm = (struct if_msghdr *)next;
+        if (ifm->ifm_type != RTM_IFINFO || (ifm->ifm_addrs & RTAX_IFP) == 0)
+            continue;
+        ifd = ifm->ifm_data;
+        sdl = (struct sockaddr_dl *)(ifm + 1);
+        if (sdl->sdl_family != AF_LINK)
+            continue;
+        if (netIface != "False") {
+            ifname = std::string(sdl->sdl_data, 0, sdl->sdl_nlen);
+            if ( (!ignored && ifname != netIface) ||
+              ( ignored && ifname == netIface) )
+                skipif = true;
+        }
+        if (!skipif) {
+            *inbytes += ifd.ifi_ibytes;
+            *outbytes += ifd.ifi_obytes;
+        }
+    }
+    free(buf);
 #else  /* XOSVIEW_OPENBSD */
-	struct ifnet *ifnetp;
-	struct ifnet ifnet;
+    struct ifnet *ifnetp;
+    struct ifnet ifnet;
 #if defined (XOSVIEW_NETBSD)
-	struct ifnet_head ifnethd;
+    struct ifnet_head ifnethd;
 #else
-	struct ifnethead ifnethd;
+    struct ifnethead ifnethd;
 #endif
-	safe_kvm_read(nlst[IFNET_SYM_INDEX].n_value, &ifnethd, sizeof(ifnethd));
-	ifnetp = TAILQ_FIRST(&ifnethd);
+    safe_kvm_read(nlst[IFNET_SYM_INDEX].n_value, &ifnethd, sizeof(ifnethd));
+    ifnetp = TAILQ_FIRST(&ifnethd);
 
-	while (ifnetp) {
-		bool skipif = false;
-		//  Now, dereference the pointer to get the ifnet struct.
-		safe_kvm_read((unsigned long)ifnetp, &ifnet, sizeof(ifnet));
-                ifname = std::string(ifnet.if_xname, 0, sizeof(ifname));
+    while (ifnetp) {
+        bool skipif = false;
+        //  Now, dereference the pointer to get the ifnet struct.
+        safe_kvm_read((unsigned long)ifnetp, &ifnet, sizeof(ifnet));
+        ifname = std::string(ifnet.if_xname, 0, sizeof(ifname));
 #if defined(XOSVIEW_NETBSD)
-		ifnetp = TAILQ_NEXT(&ifnet, if_list);
+        ifnetp = TAILQ_NEXT(&ifnet, if_list);
 #else
-		ifnetp = TAILQ_NEXT(&ifnet, if_link);
+        ifnetp = TAILQ_NEXT(&ifnet, if_link);
 #endif
-		if (!(ifnet.if_flags & IFF_UP))
-			continue;
-                if (netIface != "False") {
-                        if ( (!ignored && netIface != ifname) ||
-                          ( ignored && netIface == ifname) )
-				skipif = true;
-		}
-		if (!skipif) {
+        if (!(ifnet.if_flags & IFF_UP))
+            continue;
+        if (netIface != "False") {
+            if ( (!ignored && netIface != ifname) ||
+              ( ignored && netIface == ifname) )
+                skipif = true;
+        }
+        if (!skipif) {
 #if defined(XOSVIEW_DFBSD) && __DragonFly_version > 300304
-			struct ifdata_pcpu *ifdatap = ifnet.if_data_pcpu;
-			struct ifdata_pcpu ifdata;
-			int ncpus = BSDCountCpus();
-			for (int cpu = 0; cpu < ncpus; cpu++) {
-				safe_kvm_read((unsigned long)ifdatap + cpu * sizeof(ifdata),
-				              &ifdata, sizeof(ifdata));
-				*inbytes  += ifdata.ifd_ibytes;
-				*outbytes += ifdata.ifd_obytes;
-			}
+            struct ifdata_pcpu *ifdatap = ifnet.if_data_pcpu;
+            struct ifdata_pcpu ifdata;
+            int ncpus = BSDCountCpus();
+            for (int cpu = 0; cpu < ncpus; cpu++) {
+                safe_kvm_read((unsigned long)ifdatap + cpu * sizeof(ifdata),
+                  &ifdata, sizeof(ifdata));
+                *inbytes  += ifdata.ifd_ibytes;
+                *outbytes += ifdata.ifd_obytes;
+            }
 #else
-			*inbytes  += ifnet.if_ibytes;
-			*outbytes += ifnet.if_obytes;
+            *inbytes  += ifnet.if_ibytes;
+            *outbytes += ifnet.if_obytes;
 #endif
-		}
-	}
+        }
+    }
 #endif  /* XOSVIEW_OPENBSD */
 }
 
 
 //  ---------------------- Swap Meter stuff  -----------------------------------
 
-int
-BSDSwapInit() {
-	OpenKDIfNeeded();
-	return 1;
+int BSDSwapInit() {
+    OpenKDIfNeeded();
+    return 1;
 }
 
-void
-BSDGetSwapInfo(uint64_t *total, uint64_t *used) {
+
+void BSDGetSwapInfo(uint64_t *total, uint64_t *used) {
 #if defined(HAVE_SWAPCTL)
-	//  This code is based on a patch sent in by Scott Stevens
-	//  (s.k.stevens@ic.ac.uk, at the time).
-	struct swapent *sep, *swapiter;
-	int bsize, rnswap, nswap = swapctl(SWAP_NSWAP, 0, 0);
-	*total = *used = 0;
+    //  This code is based on a patch sent in by Scott Stevens
+    //  (s.k.stevens@ic.ac.uk, at the time).
+    struct swapent *sep, *swapiter;
+    int bsize, rnswap, nswap = swapctl(SWAP_NSWAP, 0, 0);
+    *total = *used = 0;
 
-	if (nswap < 1)  // no swap devices on
-		return;
+    if (nswap < 1)  // no swap devices on
+        return;
 
-	if ( (sep = (struct swapent *)malloc(nswap* sizeof(struct swapent))) == NULL )
-		err(EX_OSERR, "BSDGetSwapInfo(): malloc failed");
-	rnswap = swapctl(SWAP_STATS, (void *)sep, nswap);
-	if (rnswap < 0)
-		err(EX_OSERR, "BSDGetSwapInfo(): getting SWAP_STATS failed");
-	if (nswap != rnswap)
-		warnx("SWAP_STATS gave different value than SWAP_NSWAP "
-		      "(nswap=%d versus rnswap=%d).", nswap, rnswap);
+    if ((sep = (struct swapent *)malloc(nswap* sizeof(struct swapent))) == NULL)
+        logFatal << "BSDGetSwapInfo(): malloc failed" << std::endl;
 
-	swapiter = sep;
-	bsize = 512;  // block size is that of underlying device, *usually* 512 bytes
-	for ( ; rnswap-- > 0; swapiter++) {
-		*total += (uint64_t)swapiter->se_nblks * bsize;
-		*used += (uint64_t)swapiter->se_inuse * bsize;
-	}
-	free(sep);
+    rnswap = swapctl(SWAP_STATS, (void *)sep, nswap);
+    if (rnswap < 0)
+        logFatal << "BSDGetSwapInfo(): getting SWAP_STATS failed" << std::endl;
+    if (nswap != rnswap)
+        logProblem << "SWAP_STATS gave different value than SWAP_NSWAP "
+                   << "(nswap=" << nswap << " versus "
+                   << "rnswap=" << rnswap << std::endl;
+
+    swapiter = sep;
+    bsize = 512; // block size is that of underlying device, *usually* 512 bytes
+    for ( ; rnswap-- > 0; swapiter++) {
+        *total += (uint64_t)swapiter->se_nblks * bsize;
+        *used += (uint64_t)swapiter->se_inuse * bsize;
+    }
+    free(sep);
 #else
-	struct kvm_swap kswap;
-	OpenKDIfNeeded();
-	int pgsize = getpagesize();
-	if ( kvm_getswapinfo(kd, &kswap, 1, 0) )
-		err(EX_OSERR, "BSDGetSwapInfo(): kvm_getswapinfo failed");
+    struct kvm_swap kswap;
+    OpenKDIfNeeded();
+    int pgsize = getpagesize();
+    if ( kvm_getswapinfo(kd, &kswap, 1, 0) )
+        logFatal << "BSDGetSwapInfo(): kvm_getswapinfo failed" << std::endl;
 
-	*total = (uint64_t)kswap.ksw_total * pgsize;
-	*used = (uint64_t)kswap.ksw_used * pgsize;
+    *total = (uint64_t)kswap.ksw_total * pgsize;
+    *used = (uint64_t)kswap.ksw_used * pgsize;
 #endif
 }
 
@@ -639,535 +661,546 @@ int num_devices;
 struct device_selection *dev_select;
 int nodisk = 0;
 
-void
-DevStat_Init(void) {
-	/*
-	 * Make sure that the userland devstat version matches the kernel
-	 * devstat version.
-	 */
+
+void DevStat_Init(void) {
+    /*
+     * Make sure that the userland devstat version matches the kernel
+     * devstat version.
+     */
 #if defined(XOSVIEW_FREEBSD)
-	if (devstat_checkversion(NULL) < 0) {
+    if (devstat_checkversion(NULL) < 0) {
 #else
-	if (checkversion() < 0) {
+    if (checkversion() < 0) {
 #endif
-		nodisk++;
-		warn("%s\n", devstat_errbuf);
-		return;
-	}
+        nodisk++;
+        warn("%s\n", devstat_errbuf);
+        return;
+    }
 
-	/* find out how many devices we have */
+    /* find out how many devices we have */
 #if defined(XOSVIEW_FREEBSD)
-	if ( (num_devices = devstat_getnumdevs(NULL)) < 0 ) {
+    if ( (num_devices = devstat_getnumdevs(NULL)) < 0 ) {
 #else
-	if ( (num_devices = getnumdevs()) < 0 ) {
+    if ( (num_devices = getnumdevs()) < 0 ) {
 #endif
-		nodisk++;
-		warn("%s\n", devstat_errbuf);
-		return;
-	}
+        nodisk++;
+        logProblem << devstat_errbuf << std::endl;
+        return;
+    }
 
-	cur.dinfo = (struct devinfo *)calloc(1, sizeof(struct devinfo));
-	last.dinfo = (struct devinfo *)calloc(1, sizeof(struct devinfo));
+    cur.dinfo = (struct devinfo *)calloc(1, sizeof(struct devinfo));
+    last.dinfo = (struct devinfo *)calloc(1, sizeof(struct devinfo));
 
-	/*
-	 * Grab all the devices.  We don't look to see if the list has
-	 * changed here, since it almost certainly has.  We only look for
-	 * errors.
-	 */
+    /*
+     * Grab all the devices.  We don't look to see if the list has
+     * changed here, since it almost certainly has.  We only look for
+     * errors.
+     */
 #if defined(XOSVIEW_FREEBSD)
-	if (devstat_getdevs(NULL, &cur) == -1) {
+    if (devstat_getdevs(NULL, &cur) == -1) {
 #else
-	if (getdevs(&cur) == -1) {
+    if (getdevs(&cur) == -1) {
 #endif
-		nodisk++;
-		warn("%s\n", devstat_errbuf);
-		return;
-	}
+        nodisk++;
+        logProblem << devstat_errbuf << std::endl;
+        return;
+    }
 
-	num_devices = cur.dinfo->numdevs;
-	generation = cur.dinfo->generation;
-	dev_select = NULL;
+    num_devices = cur.dinfo->numdevs;
+    generation = cur.dinfo->generation;
+    dev_select = NULL;
 
-	/* only interested in disks */
-	matches = NULL;
-	char da[3] = "da";
+    /* only interested in disks */
+    matches = NULL;
+    char da[3] = "da";
 #if defined(XOSVIEW_FREEBSD)
-	if (devstat_buildmatch(da, &matches, &num_matches) != 0) {
+    if (devstat_buildmatch(da, &matches, &num_matches) != 0) {
 #else
-	if (buildmatch(da, &matches, &num_matches) != 0) {
+    if (buildmatch(da, &matches, &num_matches) != 0) {
 #endif
-		nodisk++;
-		warn("%s\n", devstat_errbuf);
-		return;
-	}
+        nodisk++;
+        logProblem << devstat_errbuf;
+        return;
+    }
 
-	if (num_matches == 0)
-		select_mode = DS_SELECT_ADD;
-	else
-		select_mode = DS_SELECT_ONLY;
+    if (num_matches == 0)
+        select_mode = DS_SELECT_ADD;
+    else
+        select_mode = DS_SELECT_ONLY;
 
-	/*
-	 * At this point, selectdevs will almost surely indicate that the
-	 * device list has changed, so we don't look for return values of 0
-	 * or 1.  If we get back -1, though, there is an error.
-	 */
+    /*
+     * At this point, selectdevs will almost surely indicate that the
+     * device list has changed, so we don't look for return values of 0
+     * or 1.  If we get back -1, though, there is an error.
+     */
 #if defined(XOSVIEW_FREEBSD)
-	if (devstat_selectdevs(&dev_select, &num_selected,
+    if (devstat_selectdevs(&dev_select, &num_selected,
 #else
-	if (selectdevs(&dev_select, &num_selected,
+    if (selectdevs(&dev_select, &num_selected,
 #endif
-	               &num_selections, &select_generation,
-	               generation, cur.dinfo->devices, num_devices,
-	               matches, num_matches, NULL, 0, select_mode, 10, 0) == -1) {
-		nodisk++;
-		warn("%s\n", devstat_errbuf);
-	}
+        &num_selections, &select_generation,
+        generation, cur.dinfo->devices, num_devices,
+        matches, num_matches, NULL, 0, select_mode, 10, 0) == -1) {
+        nodisk++;
+        logProblem << devstat_errbuf << std::endl;
+    }
 }
 
-uint64_t
-DevStat_Get(uint64_t *read_bytes, uint64_t *write_bytes) {
-	register int dn;
-	long double busy_seconds;
-	uint64_t reads, writes, total_bytes = 0;
-	struct devinfo *tmp_dinfo;
 
-	if (nodisk > 0)
-		/* Diskless system or some error happened. */
-		return 0;
+uint64_t DevStat_Get(uint64_t *read_bytes, uint64_t *write_bytes) {
+    register int dn;
+    long double busy_seconds;
+    uint64_t reads, writes, total_bytes = 0;
+    struct devinfo *tmp_dinfo;
 
-	/*
-	 * Here what we want to do is refresh our device stats.
-	 * getdevs() returns 1 when the device list has changed.
-	 * If the device list has changed, we want to go through
-	 * the selection process again, in case a device that we
-	 * were previously displaying has gone away.
-	 */
+    if (nodisk > 0)
+        /* Diskless system or some error happened. */
+        return 0;
+
+    /*
+     * Here what we want to do is refresh our device stats.
+     * getdevs() returns 1 when the device list has changed.
+     * If the device list has changed, we want to go through
+     * the selection process again, in case a device that we
+     * were previously displaying has gone away.
+     */
 #if defined(XOSVIEW_FREEBSD)
-	switch (devstat_getdevs(NULL, &cur)) {
+    switch (devstat_getdevs(NULL, &cur)) {
 #else
-	switch (getdevs(&cur)) {
+    switch (getdevs(&cur)) {
 #endif
-	case -1:
-		return (0);
-	case 1:
-		int retval;
-		num_devices = cur.dinfo->numdevs;
-		generation = cur.dinfo->generation;
+    case -1:
+        return (0);
+    case 1:
+        int retval;
+        num_devices = cur.dinfo->numdevs;
+        generation = cur.dinfo->generation;
 #if defined(XOSVIEW_FREEBSD)
-		retval = devstat_selectdevs(&dev_select, &num_selected,
+        retval = devstat_selectdevs(&dev_select, &num_selected,
 #else
-		retval = selectdevs(&dev_select, &num_selected,
+        retval = selectdevs(&dev_select, &num_selected,
 #endif
-		                    &num_selections, &select_generation,
-		                    generation, cur.dinfo->devices,
-		                    num_devices, matches, num_matches,
-		                    NULL, 0, select_mode, 10, 0);
-		switch(retval) {
-		case -1:
-			return (0);
-		case 1:
-			break;
-		default:
-			break;
-		break;
-		}
-	default:
-		break;
-	}
+          &num_selections, &select_generation,
+          generation, cur.dinfo->devices,
+          num_devices, matches, num_matches,
+          NULL, 0, select_mode, 10, 0);
+        switch(retval) {
+        case -1:
+            return (0);
+        case 1:
+            break;
+        default:
+            break;
+        };
+    default:
+        break;
+    };
 
-	/*
-	 * Calculate elapsed time up front, since it's the same for all
-	 * devices.
-	 */
+    /*
+     * Calculate elapsed time up front, since it's the same for all
+     * devices.
+     */
 #if defined(XOSVIEW_FREEBSD)
-	busy_seconds = cur.snap_time - last.snap_time;
+    busy_seconds = cur.snap_time - last.snap_time;
 #else
-	busy_seconds = compute_etime(cur.busy_time, last.busy_time);
+    busy_seconds = compute_etime(cur.busy_time, last.busy_time);
 #endif
-	/* this is the first time thru so just copy cur to last */
-	if (last.dinfo->numdevs == 0) {
-		tmp_dinfo = last.dinfo;
-		last.dinfo = cur.dinfo;
-		cur.dinfo = tmp_dinfo;
+    /* this is the first time thru so just copy cur to last */
+    if (last.dinfo->numdevs == 0) {
+        tmp_dinfo = last.dinfo;
+        last.dinfo = cur.dinfo;
+        cur.dinfo = tmp_dinfo;
 #if defined(XOSVIEW_FREEBSD)
-		last.snap_time = cur.snap_time;
+        last.snap_time = cur.snap_time;
 #else
-		last.busy_time = cur.busy_time;
+        last.busy_time = cur.busy_time;
 #endif
-		return (0);
-	}
+        return (0);
+    }
 
-	for (dn = 0; dn < num_devices; dn++) {
-		int di;
-		if ( (dev_select[dn].selected == 0) || (dev_select[dn].selected > 10) )
-			continue;
+    for (dn = 0; dn < num_devices; dn++) {
+        int di;
+        if ( (dev_select[dn].selected == 0) || (dev_select[dn].selected > 10) )
+            continue;
 
-		di = dev_select[dn].position;
+        di = dev_select[dn].position;
 #if defined(XOSVIEW_FREEBSD)
-		if (devstat_compute_statistics(&cur.dinfo->devices[di],
-		                               &last.dinfo->devices[di], busy_seconds,
-		                               DSM_TOTAL_BYTES_READ, &reads,
-		                               DSM_TOTAL_BYTES_WRITE, &writes,
-		                               DSM_NONE) != 0) {
+        if (devstat_compute_statistics(&cur.dinfo->devices[di],
+            &last.dinfo->devices[di], busy_seconds,
+            DSM_TOTAL_BYTES_READ, &reads,
+            DSM_TOTAL_BYTES_WRITE, &writes,
+            DSM_NONE) != 0) {
 #else
-		if (compute_stats_read(&cur.dinfo->devices[di],
-		                       &last.dinfo->devices[di], busy_seconds,
-		                       &reads, NULL,
-		                       NULL, NULL, NULL, NULL, NULL, NULL) != 0) {
-			warn("%s\n", devstat_errbuf);
-			break;
-		}
-		if (compute_stats_write(&cur.dinfo->devices[di],
-		                        &last.dinfo->devices[di], busy_seconds,
-		                        &writes, NULL,
-		                        NULL, NULL, NULL, NULL, NULL, NULL) != 0) {
+        if (compute_stats_read(&cur.dinfo->devices[di],
+            &last.dinfo->devices[di], busy_seconds,
+            &reads, NULL,
+            NULL, NULL, NULL, NULL, NULL, NULL) != 0) {
+            logProblem << devstat_errbuf << std::endl;
+            break;
+        }
+        if (compute_stats_write(&cur.dinfo->devices[di],
+            &last.dinfo->devices[di], busy_seconds,
+            &writes, NULL,
+            NULL, NULL, NULL, NULL, NULL, NULL) != 0) {
 #endif
-			warn("%s\n", devstat_errbuf);
-			break;
-		}
-		*read_bytes += reads;
-		*write_bytes += writes;
-		total_bytes += reads + writes;
-	}
+            logProblem << devstat_errbuf << std::endl;
+            break;
+        }
+        *read_bytes += reads;
+        *write_bytes += writes;
+        total_bytes += reads + writes;
+    }
 
-	tmp_dinfo = last.dinfo;
-	last.dinfo = cur.dinfo;
-	cur.dinfo = tmp_dinfo;
+    tmp_dinfo = last.dinfo;
+    last.dinfo = cur.dinfo;
+    cur.dinfo = tmp_dinfo;
 #if defined(XOSVIEW_FREEBSD)
-	last.snap_time = cur.snap_time;
+    last.snap_time = cur.snap_time;
 #else
-	last.busy_time = cur.busy_time;
+    last.busy_time = cur.busy_time;
 #endif
 
-	return total_bytes;
+    return total_bytes;
 }
 #endif
 
-int
-BSDDiskInit() {
-	OpenKDIfNeeded();
+
+int BSDDiskInit() {
+    OpenKDIfNeeded();
 #if defined(HAVE_DEVSTAT)
-	DevStat_Init();
+    DevStat_Init();
 #endif
-	return 1;
+    return 1;
 }
 
-uint64_t
-BSDGetDiskXFerBytes(uint64_t *read_bytes, uint64_t *write_bytes) {
+
+uint64_t BSDGetDiskXFerBytes(uint64_t *read_bytes, uint64_t *write_bytes) {
 #if defined(HAVE_DEVSTAT)
-	return DevStat_Get(read_bytes, write_bytes);
+    return DevStat_Get(read_bytes, write_bytes);
 #else
-	*read_bytes = *write_bytes = 0;
+    *read_bytes = *write_bytes = 0;
 # if defined(XOSVIEW_NETBSD)
-	size_t size;
-	// Do a sysctl with a NULL data pointer to get the size that would
-	// have been returned, and use that to figure out # drives.
-	if ( sysctl(mib_dsk, 3, NULL, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "BSDGetDiskXFerBytes(): sysctl hw.iostats #1 failed");
-	unsigned int ndrives = size / mib_dsk[2];
-	struct io_sysctl drive_stats[ndrives];
+    size_t size;
+    // Do a sysctl with a NULL data pointer to get the size that would
+    // have been returned, and use that to figure out # drives.
+    if ( sysctl(mib_dsk, 3, NULL, &size, NULL, 0) < 0 )
+        logFatal << "BSDGetDiskXFerBytes(): sysctl hw.iostats #1 failed\n";
 
-	// Get the stats.
-	if ( sysctl(mib_dsk, 3, drive_stats, &size, NULL, 0) < 0 )
-		err(EX_OSERR, "BSDGetDiskXFerBytes(): sysctl hw.iostats #2 failed");
+    unsigned int ndrives = size / mib_dsk[2];
+    struct io_sysctl drive_stats[ndrives];
 
-	// Now accumulate the total.
-	for (uint i = 0; i < ndrives; i++) {
-		*read_bytes += drive_stats[i].rbytes;
-		*write_bytes += drive_stats[i].wbytes;
-	}
+    // Get the stats.
+    if ( sysctl(mib_dsk, 3, drive_stats, &size, NULL, 0) < 0 )
+        logFatal << "BSDGetDiskXFerBytes(): sysctl hw.iostats #2 failed\n";
+
+    // Now accumulate the total.
+    for (uint i = 0; i < ndrives; i++) {
+        *read_bytes += drive_stats[i].rbytes;
+        *write_bytes += drive_stats[i].wbytes;
+    }
 # else  /* XOSVIEW_OPENBSD */
-  /*  This function is a little tricky -- we have to iterate over a
-   *  list in kernel land.  To make things simpler, data structures
-   *  and pointers for objects in kernel-land have kvm tacked on front
-   *  of their names.  Thus, kvmdiskptr points to a disk struct in
-   *  kernel memory.  kvmcurrdisk is a copy of the kernel's struct,
-   *  and it has pointers in it to other structs, so it also is
-   *  prefixed with kvm.  */
-	struct disklist_head kvmdisklist;
-	struct disk *kvmdiskptr;
-	struct disk kvmcurrdisk;
-	safe_kvm_read_symbol(DISKLIST_SYM_INDEX, &kvmdisklist, sizeof(kvmdisklist));
-	kvmdiskptr = TAILQ_FIRST(&kvmdisklist);
-	while (kvmdiskptr != NULL) {
-		safe_kvm_read((unsigned long)kvmdiskptr, &kvmcurrdisk, sizeof(kvmcurrdisk));
-		*read_bytes += kvmcurrdisk.dk_rbytes;
-		*write_bytes += kvmcurrdisk.dk_wbytes;
-		kvmdiskptr = TAILQ_NEXT(&kvmcurrdisk, dk_link);
-	}
+    /*  This function is a little tricky -- we have to iterate over a
+     *  list in kernel land.  To make things simpler, data structures
+     *  and pointers for objects in kernel-land have kvm tacked on front
+     *  of their names.  Thus, kvmdiskptr points to a disk struct in
+     *  kernel memory.  kvmcurrdisk is a copy of the kernel's struct,
+     *  and it has pointers in it to other structs, so it also is
+     *  prefixed with kvm.
+     */
+    struct disklist_head kvmdisklist;
+    struct disk *kvmdiskptr;
+    struct disk kvmcurrdisk;
+    safe_kvm_read_symbol(DISKLIST_SYM_INDEX, &kvmdisklist, sizeof(kvmdisklist));
+    kvmdiskptr = TAILQ_FIRST(&kvmdisklist);
+    while (kvmdiskptr != NULL) {
+        safe_kvm_read((unsigned long)kvmdiskptr, &kvmcurrdisk,
+          sizeof(kvmcurrdisk));
+        *read_bytes += kvmcurrdisk.dk_rbytes;
+        *write_bytes += kvmcurrdisk.dk_wbytes;
+        kvmdiskptr = TAILQ_NEXT(&kvmcurrdisk, dk_link);
+    }
 # endif
 #endif
-	return (*read_bytes + *write_bytes);
+    return (*read_bytes + *write_bytes);
 }
 
 
 //  ---------------------- Interrupt Meter stuff  ------------------------------
 
-int
-BSDIntrInit() {
-	OpenKDIfNeeded();
-	// Make sure the intr counter array is nonzero in size.
+int BSDIntrInit() {
+    OpenKDIfNeeded();
+    // Make sure the intr counter array is nonzero in size.
 #if defined(XOSVIEW_FREEBSD)
 # if __FreeBSD_version >= 900040
-	size_t nintr;
-	safe_kvm_read(nlst[EINTRCNT_SYM_INDEX].n_value, &nintr, sizeof(nintr));
-	return ValidSymbol(INTRCNT_SYM_INDEX) && ValidSymbol(EINTRCNT_SYM_INDEX) && (nintr > 0);
+    size_t nintr;
+    safe_kvm_read(nlst[EINTRCNT_SYM_INDEX].n_value, &nintr, sizeof(nintr));
+    return ValidSymbol(INTRCNT_SYM_INDEX)
+        && ValidSymbol(EINTRCNT_SYM_INDEX) && (nintr > 0);
 # else
-	return ValidSymbol(INTRCNT_SYM_INDEX) && ValidSymbol(EINTRCNT_SYM_INDEX) && ((SymbolValue(EINTRCNT_SYM_INDEX) - SymbolValue(INTRCNT_SYM_INDEX)) > 0);
+    return ValidSymbol(INTRCNT_SYM_INDEX)
+        && ValidSymbol(EINTRCNT_SYM_INDEX)
+        && ((SymbolValue(EINTRCNT_SYM_INDEX)
+            - SymbolValue(INTRCNT_SYM_INDEX)) > 0);
 # endif
 #elif defined(XOSVIEW_NETBSD)
-	return ValidSymbol(ALLEVENTS_SYM_INDEX);
+    return ValidSymbol(ALLEVENTS_SYM_INDEX);
 #endif
-	return 1;
+    return 1;
 }
 
-int
-BSDNumInts() {
-	/* This code is stolen from vmstat. */
-	int count = 0, nbr = 0;
+
+int BSDNumInts() {
+    /* This code is stolen from vmstat. */
+    int count = 0, nbr = 0;
 #if defined(XOSVIEW_FREEBSD)
-	size_t inamlen, nintr;
+    size_t inamlen, nintr;
 
 # if __FreeBSD_version >= 900040
-	safe_kvm_read(nlst[EINTRCNT_SYM_INDEX].n_value, &nintr, sizeof(nintr));
-	safe_kvm_read(nlst[EINTRNAMES_SYM_INDEX].n_value, &inamlen, sizeof(inamlen));
+    safe_kvm_read(nlst[EINTRCNT_SYM_INDEX].n_value, &nintr, sizeof(nintr));
+    safe_kvm_read(nlst[EINTRNAMES_SYM_INDEX].n_value, &inamlen,
+      sizeof(inamlen));
 # else
-	nintr = nlst[EINTRCNT_SYM_INDEX].n_value - nlst[INTRCNT_SYM_INDEX].n_value;
-	inamlen = nlst[EINTRNAMES_SYM_INDEX].n_value - nlst[INTRNAMES_SYM_INDEX].n_value;
+    nintr = nlst[EINTRCNT_SYM_INDEX].n_value - nlst[INTRCNT_SYM_INDEX].n_value;
+    inamlen = nlst[EINTRNAMES_SYM_INDEX].n_value
+        - nlst[INTRNAMES_SYM_INDEX].n_value;
 #  endif
-	if (nintr == 0 || inamlen == 0) {
-		warnx("Could not get interrupt numbers.");
-		return 0;
-	}
+    if (nintr == 0 || inamlen == 0) {
+        logProblem << "Could not get interrupt numbers." << std::endl;
+        return 0;
+    }
 
-        std::vector<char> intrvec(inamlen);
-	safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value,
-          intrvec.data(), intrvec.size());
-	nintr /= sizeof(long);
-        char *iname = intrvec.data();
-	for (uint i = 0; i < nintr; i++) {
-            if (iname) {
-                std::istringstream is(iname);
-                is >> util::sink("irq") >> nbr;
-                if (is && nbr > count)
-                    count = nbr;
-                iname += is.str().size() + 1;
-            }
-	}
-#elif defined(XOSVIEW_NETBSD)
-	struct evcntlist events;
-	struct evcnt evcnt, *evptr;
-        std::string dummy;
-	//char *name;
-
-	safe_kvm_read(nlst[ALLEVENTS_SYM_INDEX].n_value, &events,
-          sizeof(events));
-	evptr = TAILQ_FIRST(&events);
-	while (evptr) {
-            safe_kvm_read((unsigned long)evptr, &evcnt, sizeof(evcnt));
-            if (evcnt.ev_type == EVCNT_TYPE_INTR) {
-                std::vector<char> name(evcnt.ev_namelen + 1);
-                safe_kvm_read((unsigned long)evcnt.ev_name,
-                  name.data(), name.size());
-                std::istringstream is(name.data());
-                is >> dummy >> nbr;
-                if ( is && nbr > count )
-                    count = nbr;
-            }
-            evptr = TAILQ_NEXT(&evcnt, ev_list);
-	}
-#elif defined(XOSVIEW_OPENBSD)
-	int nintr = 0;
-	int mib_int[4] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
-	size_t size = sizeof(nintr);
-	if ( sysctl(mib_int, 3, &nintr, &size, NULL, 0) < 0 ) {
-		warn("Could not get interrupt count");
-		return 0;
-	}
-	for (int i = 0; i < nintr; i++) {
-		mib_int[2] = KERN_INTRCNT_VECTOR;
-		mib_int[3] = i;
-		size = sizeof(nbr);
-		if ( sysctl(mib_int, 4, &nbr, &size, NULL, 0) < 0 )
-			warn("Could not get name of interrupt %d", i);
-		else
-			if ( nbr > count )
-				count = nbr;
-	}
-#else  // XOSVIEW_DFBSD
-	int nintr = 0;
-	size_t inamlen;
-
-	if ( sysctlbyname("hw.intrnames", NULL, &inamlen, NULL, 0) != 0 ) {
-            warn("sysctl hw.intrnames failed");
-            return 0;
-	}
-
-        std::vector<char> inamev(inamlen);
-	if ( sysctlbyname("hw.intrnames", inamev.data(), &inamlen,
-            NULL, 0) < 0 ) {
-            logProblem << "sysctl hw.intrnames failed" << std::endl;
-            return 0;
-	}
-	for (size_t i = 0; i < inamev.size(); i++) {
-            if (inamev[i] == '\0')  // count end-of-strings
-                nintr++;
-	}
-        char *intrname = inamev.data();
-	for (int i = 0; i < nintr; i++) {
-            std::istringstream is(intrname);
+    std::vector<char> intrvec(inamlen);
+    safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value,
+      intrvec.data(), intrvec.size());
+    nintr /= sizeof(long);
+    char *iname = intrvec.data();
+    for (uint i = 0; i < nintr; i++) {
+        if (iname) {
+            std::istringstream is(iname);
             is >> util::sink("irq") >> nbr;
-            if (is.fail()) {
-                if ( ++nbr > count )  // unused ints are named irqn where
-                    count = nbr;      // 0<=n<=255, used ones have device name
-            }
-            intrname += is.str().size() + 1;
-	}
+            if (is && nbr > count)
+                count = nbr;
+            iname += is.str().size() + 1;
+        }
+    }
+#elif defined(XOSVIEW_NETBSD)
+    struct evcntlist events;
+    struct evcnt evcnt, *evptr;
+    std::string dummy;
+    //char *name;
+
+    safe_kvm_read(nlst[ALLEVENTS_SYM_INDEX].n_value, &events,
+      sizeof(events));
+    evptr = TAILQ_FIRST(&events);
+    while (evptr) {
+        safe_kvm_read((unsigned long)evptr, &evcnt, sizeof(evcnt));
+        if (evcnt.ev_type == EVCNT_TYPE_INTR) {
+            std::vector<char> name(evcnt.ev_namelen + 1);
+            safe_kvm_read((unsigned long)evcnt.ev_name,
+              name.data(), name.size());
+            std::istringstream is(name.data());
+            is >> dummy >> nbr;
+            if ( is && nbr > count )
+                count = nbr;
+        }
+        evptr = TAILQ_NEXT(&evcnt, ev_list);
+    }
+#elif defined(XOSVIEW_OPENBSD)
+    int nintr = 0;
+    int mib_int[4] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
+    size_t size = sizeof(nintr);
+    if ( sysctl(mib_int, 3, &nintr, &size, NULL, 0) < 0 ) {
+        logProblem << "Could not get interrupt count" << std::endl;
+        return 0;
+    }
+    for (int i = 0; i < nintr; i++) {
+        mib_int[2] = KERN_INTRCNT_VECTOR;
+        mib_int[3] = i;
+        size = sizeof(nbr);
+        if ( sysctl(mib_int, 4, &nbr, &size, NULL, 0) < 0 )
+            logProblem << "Could not get name of interrupt " << i << std::endl;
+        else
+            if ( nbr > count )
+                count = nbr;
+    }
+#else  // XOSVIEW_DFBSD
+    int nintr = 0;
+    size_t inamlen;
+
+    if ( sysctlbyname("hw.intrnames", NULL, &inamlen, NULL, 0) != 0 ) {
+        logProblem << "sysctl hw.intrnames failed" << std::endl;
+        return 0;
+    }
+
+    std::vector<char> inamev(inamlen);
+    if ( sysctlbyname("hw.intrnames", inamev.data(), &inamlen,
+        NULL, 0) < 0 ) {
+        logProblem << "sysctl hw.intrnames failed" << std::endl;
+        return 0;
+    }
+    for (size_t i = 0; i < inamev.size(); i++) {
+        if (inamev[i] == '\0')  // count end-of-strings
+            nintr++;
+    }
+    char *intrname = inamev.data();
+    for (int i = 0; i < nintr; i++) {
+        std::istringstream is(intrname);
+        is >> util::sink("irq") >> nbr;
+        if (is.fail()) {
+            if ( ++nbr > count )  // unused ints are named irqn where
+                count = nbr;      // 0<=n<=255, used ones have device name
+        }
+        intrname += is.str().size() + 1;
+    }
 #endif
-	return count;  // this is the highest numbered interrupt
+    return count;  // this is the highest numbered interrupt
 }
 
-void
-BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
-	/* This code is stolen from vmstat */
-	int nbr = 0;
+
+void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
+    /* This code is stolen from vmstat */
+    int nbr = 0;
 #if defined(XOSVIEW_FREEBSD)
-	unsigned long *kvm_intrcnt, *intrcnt;
-	char *kvm_intrnames, *intrnames;
-	size_t inamlen, nintr;
+    unsigned long *kvm_intrcnt, *intrcnt;
+    char *kvm_intrnames, *intrnames;
+    size_t inamlen, nintr;
 
 # if __FreeBSD_version >= 900040
-	safe_kvm_read(nlst[EINTRCNT_SYM_INDEX].n_value, &nintr, sizeof(nintr));
-	safe_kvm_read(nlst[EINTRNAMES_SYM_INDEX].n_value, &inamlen, sizeof(inamlen));
+    safe_kvm_read(nlst[EINTRCNT_SYM_INDEX].n_value, &nintr, sizeof(nintr));
+    safe_kvm_read(nlst[EINTRNAMES_SYM_INDEX].n_value,
+      &inamlen, sizeof(inamlen));
 # else
-	nintr = nlst[EINTRCNT_SYM_INDEX].n_value - nlst[INTRCNT_SYM_INDEX].n_value;
-	inamlen = nlst[EINTRNAMES_SYM_INDEX].n_value - nlst[INTRNAMES_SYM_INDEX].n_value;
+    nintr = nlst[EINTRCNT_SYM_INDEX].n_value - nlst[INTRCNT_SYM_INDEX].n_value;
+    inamlen = nlst[EINTRNAMES_SYM_INDEX].n_value
+        - nlst[INTRNAMES_SYM_INDEX].n_value;
 # endif
-	if (nintr == 0 || inamlen == 0) {
-            logProblem << "Could not get interrupt numbers." << std::endl;
-            return;
-	}
-	if ( ((kvm_intrcnt = (unsigned long *)malloc(nintr)) == NULL) ||
-	     ((kvm_intrnames = (char *)malloc(inamlen)) == NULL) )
-		err(EX_OSERR, "BSDGetIntrStats(): malloc failed");
+    if (nintr == 0 || inamlen == 0) {
+        logProblem << "Could not get interrupt numbers." << std::endl;
+        return;
+    }
+    if ( ((kvm_intrcnt = (unsigned long *)malloc(nintr)) == NULL) ||
+      ((kvm_intrnames = (char *)malloc(inamlen)) == NULL) )
+        logFatal << "BSDGetIntrStats(): malloc failed" << std::endl;
 
-	// keep track of the mem we're given:
-	intrcnt = kvm_intrcnt;
-	intrnames = kvm_intrnames;
+    // keep track of the mem we're given:
+    intrcnt = kvm_intrcnt;
+    intrnames = kvm_intrnames;
 
-	safe_kvm_read(nlst[INTRCNT_SYM_INDEX].n_value, kvm_intrcnt, nintr);
-	safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value, kvm_intrnames, inamlen);
+    safe_kvm_read(nlst[INTRCNT_SYM_INDEX].n_value, kvm_intrcnt, nintr);
+    safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value, kvm_intrnames, inamlen);
 
-	nintr /= sizeof(long);
-	/* kvm_intrname has the ASCII names of the IRQs, every null-terminated
-	 * string corresponds to a value in the kvm_intrcnt array
-	 * e.g. irq1: atkbd0   */
-	for (uint i = 0; i < nintr; i++) {
-            /* Figure out which irq we have here */
-            std::istringstream is(kvm_intrnames);
-            is >> util::sink("irq") >> nbr;
-            if (is) {
-                intrCount[nbr] = *kvm_intrcnt;
-                if (intrNbrs)
-                    intrNbrs[nbr] = 1;
-            }
-            kvm_intrcnt++;
-            kvm_intrnames += is.str().size() + 1;
-	}
-	free(intrcnt);
-	free(intrnames);
+    nintr /= sizeof(long);
+    /* kvm_intrname has the ASCII names of the IRQs, every null-terminated
+     * string corresponds to a value in the kvm_intrcnt array
+     * e.g. irq1: atkbd0
+     */
+    for (uint i = 0; i < nintr; i++) {
+        /* Figure out which irq we have here */
+        std::istringstream is(kvm_intrnames);
+        is >> util::sink("irq") >> nbr;
+        if (is) {
+            intrCount[nbr] = *kvm_intrcnt;
+            if (intrNbrs)
+                intrNbrs[nbr] = 1;
+        }
+        kvm_intrcnt++;
+        kvm_intrnames += is.str().size() + 1;
+    }
+    free(intrcnt);
+    free(intrnames);
 #elif defined(XOSVIEW_NETBSD)
-	struct evcntlist events;
-	struct evcnt evcnt, *evptr;
-	char *name;
+    struct evcntlist events;
+    struct evcnt evcnt, *evptr;
+    char *name;
 
-	safe_kvm_read(nlst[ALLEVENTS_SYM_INDEX].n_value, &events, sizeof(events));
-	evptr = TAILQ_FIRST(&events);
-	while (evptr) {
-		safe_kvm_read((unsigned long)evptr, &evcnt, sizeof(evcnt));
-		if (evcnt.ev_type == EVCNT_TYPE_INTR) {
-			if ( !(name = (char *)malloc(evcnt.ev_namelen + 1)) )
-				err(EX_OSERR, "BSDGetIntrStats(): malloc failed");
-			safe_kvm_read((unsigned long)evcnt.ev_name, name, evcnt.ev_namelen + 1);
-                        std::string dummy;
-                        std::istringstream is(name);
-                        is >> dummy >> nbr;
-                        if (is) {
-                            intrCount[nbr] = evcnt.ev_count;
-                            if (intrNbrs)
-                                intrNbrs[nbr] = 1;
-			}
-			free(name);
-		}
-		evptr = TAILQ_NEXT(&evcnt, ev_list);
-	}
-#elif defined(XOSVIEW_OPENBSD)
-	int nintr = 0;
-	uint64_t count = 0;
-	size_t size = sizeof(nintr);
-	int mib_int[4] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
-	if ( sysctl(mib_int, 3, &nintr, &size, NULL, 0) < 0 ) {
-		warn("Could not get interrupt count");
-		return;
-	}
-	for (int i = 0; i < nintr; i++) {
-		mib_int[2] = KERN_INTRCNT_VECTOR;
-		mib_int[3] = i;
-		size = sizeof(nbr);
-		if ( sysctl(mib_int, 4, &nbr, &size, NULL, 0) < 0 )
-			continue;  // not active
-		mib_int[2] = KERN_INTRCNT_CNT;
-		size = sizeof(count);
-		if ( sysctl(mib_int, 4, &count, &size, NULL, 0) < 0 ) {
-			warn("sysctl kern.intrcnt.cnt.%d failed", i);
-			count = 0;
-		}
-		intrCount[nbr] += count;  // += because ints can share number
-		if (intrNbrs)
-			intrNbrs[nbr] = 1;
-	}
-#else  // XOSVIEW_DFBSD
-	int nintr = 0;
-	size_t inamlen;
-	char *intrs;
-
-	if ( sysctlbyname("hw.intrnames", NULL, &inamlen, NULL, 0) != 0 ) {
-            logProblem << "sysctl hw.intrnames failed" << std::endl;
-            return;
-	}
-
-        std::vector<char> inamev(inamlen);
-	if ( sysctlbyname("hw.intrnames", inamev.data(), &inamlen,
-            NULL, 0) < 0 ) {
-            logProblem << "sysctl hw.intrnames failed" << std::endl;
-            return;
-	}
-	for (size_t i = 0; i < inamev.size(); i++) {
-            if (inamev[i] == '\0')  // count end-of-strings
-                nintr++;
-	}
-
-        std::vector<char *> inames(nintr, (char *)0);
-        intrs = inamev.data();
-	for (int i = 0; i < nintr; i++) {
-            inames[i] = intrs;
-            intrs += std::string(intrs).size() + 1;
-	}
-        std::vector<unsigned long> intrcnt(nintr, 0);
-	inamlen = nintr * sizeof(long);
-	if ( sysctlbyname("hw.intrcnt", intrcnt.data(), &inamlen, NULL, 0) < 0 )
-            logFatal << "sysctl hw.intrcnt failed" << std::endl;
-
-	for (int i = 0; i < nintr; i++) {
-            std::istringstream is(inames[i]);
-            is >> util::sink("irq") >> nbr;
-            if (!is) {
-                nbr++;
-                intrCount[nbr] += intrcnt[i];
+    safe_kvm_read(nlst[ALLEVENTS_SYM_INDEX].n_value, &events, sizeof(events));
+    evptr = TAILQ_FIRST(&events);
+    while (evptr) {
+        safe_kvm_read((unsigned long)evptr, &evcnt, sizeof(evcnt));
+        if (evcnt.ev_type == EVCNT_TYPE_INTR) {
+            if ( !(name = (char *)malloc(evcnt.ev_namelen + 1)) )
+                logFatal << "BSDGetIntrStats(): malloc failed" << std::endl;
+            safe_kvm_read((unsigned long)evcnt.ev_name, name,
+              evcnt.ev_namelen + 1);
+            std::string dummy;
+            std::istringstream is(name);
+            is >> dummy >> nbr;
+            if (is) {
+                intrCount[nbr] = evcnt.ev_count;
                 if (intrNbrs)
                     intrNbrs[nbr] = 1;
             }
-	}
+            free(name);
+        }
+        evptr = TAILQ_NEXT(&evcnt, ev_list);
+    }
+#elif defined(XOSVIEW_OPENBSD)
+    int nintr = 0;
+    uint64_t count = 0;
+    size_t size = sizeof(nintr);
+    int mib_int[4] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
+    if ( sysctl(mib_int, 3, &nintr, &size, NULL, 0) < 0 ) {
+        logProblem << "Could not get interrupt count" << std::endl;
+        return;
+    }
+    for (int i = 0; i < nintr; i++) {
+        mib_int[2] = KERN_INTRCNT_VECTOR;
+        mib_int[3] = i;
+        size = sizeof(nbr);
+        if ( sysctl(mib_int, 4, &nbr, &size, NULL, 0) < 0 )
+            continue;  // not active
+        mib_int[2] = KERN_INTRCNT_CNT;
+        size = sizeof(count);
+        if ( sysctl(mib_int, 4, &count, &size, NULL, 0) < 0 ) {
+            logProblem << "sysctl kern.intrcnt.cnt." << i << " failed\n";
+            count = 0;
+        }
+        intrCount[nbr] += count;  // += because ints can share number
+        if (intrNbrs)
+            intrNbrs[nbr] = 1;
+    }
+#else  // XOSVIEW_DFBSD
+    int nintr = 0;
+    size_t inamlen;
+    char *intrs;
+
+    if ( sysctlbyname("hw.intrnames", NULL, &inamlen, NULL, 0) != 0 ) {
+        logProblem << "sysctl hw.intrnames failed" << std::endl;
+        return;
+    }
+
+    std::vector<char> inamev(inamlen);
+    if ( sysctlbyname("hw.intrnames", inamev.data(), &inamlen,
+        NULL, 0) < 0 ) {
+        logProblem << "sysctl hw.intrnames failed" << std::endl;
+        return;
+    }
+    for (size_t i = 0; i < inamev.size(); i++) {
+        if (inamev[i] == '\0')  // count end-of-strings
+            nintr++;
+    }
+
+    std::vector<char *> inames(nintr, (char *)0);
+    intrs = inamev.data();
+    for (int i = 0; i < nintr; i++) {
+        inames[i] = intrs;
+        intrs += std::string(intrs).size() + 1;
+    }
+    std::vector<unsigned long> intrcnt(nintr, 0);
+    inamlen = nintr * sizeof(long);
+    if ( sysctlbyname("hw.intrcnt", intrcnt.data(), &inamlen, NULL, 0) < 0 )
+        logFatal << "sysctl hw.intrcnt failed" << std::endl;
+
+    for (int i = 0; i < nintr; i++) {
+        std::istringstream is(inames[i]);
+        is >> util::sink("irq") >> nbr;
+        if (!is) {
+            nbr++;
+            intrCount[nbr] += intrcnt[i];
+            if (intrNbrs)
+                intrNbrs[nbr] = 1;
+        }
+    }
 #endif
 }
 

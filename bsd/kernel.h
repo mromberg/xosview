@@ -18,72 +18,51 @@
 #include "defines.h"
 #include <string>
 
-void
-BSDInit();
+void BSDInit();
 
-void
-SetKernelName(const std::string &kernelName);
+void SetKernelName(const std::string &kernelName);
 
-int
-BSDGetCPUSpeed();
+int BSDGetCPUSpeed();
 
-void
-BSDPageInit();
+void BSDPageInit();
 
-void
-BSDGetPageStats(uint64_t *meminfo, uint64_t *pageinfo);
+void BSDGetPageStats(uint64_t *meminfo, uint64_t *pageinfo);
 
-void
-BSDCPUInit();
+void BSDCPUInit();
 
-void
-BSDGetCPUTimes(uint64_t *timesArray, unsigned int cpu = 0);
+void BSDGetCPUTimes(uint64_t *timesArray, unsigned int cpu = 0);
 
-int
-BSDNetInit();
+int BSDNetInit();
 
-void
-BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
+void BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
   const std::string &netIface, bool ignored);
 
-int
-BSDSwapInit();
+int BSDSwapInit();
 
-void
-BSDGetSwapInfo(uint64_t *total, uint64_t *free);
+void BSDGetSwapInfo(uint64_t *total, uint64_t *free);
 
-int
-BSDDiskInit();
+int BSDDiskInit();
 
-uint64_t
-BSDGetDiskXFerBytes(uint64_t *read_bytes, uint64_t *write_bytes);
+uint64_t BSDGetDiskXFerBytes(uint64_t *read_bytes, uint64_t *write_bytes);
 
-int
-BSDIntrInit();
+int BSDIntrInit();
 
-int
-BSDNumInts();
+int BSDNumInts();
 
-void
-BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs);
+void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs);
 
-int
-BSDCountCpus(void);
+int BSDCountCpus(void);
 
 #if defined(__i386__) || defined(__x86_64)
-unsigned int
-BSDGetCPUTemperature(float *temps, float *tjmax);
+unsigned int BSDGetCPUTemperature(float *temps, float *tjmax);
 #endif
 
-void
-BSDGetSensor(const std::string &name, const std::string &valname, float *value,
-  std::string &unit);
+void BSDGetSensor(const std::string &name, const std::string &valname,
+  float *value, std::string &unit);
 
-bool
-BSDHasBattery();
+bool BSDHasBattery();
 
-void
-BSDGetBatteryInfo(int *remaining, unsigned int *state);
+void BSDGetBatteryInfo(int *remaining, unsigned int *state);
 
 
 #endif
