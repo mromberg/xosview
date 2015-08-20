@@ -26,7 +26,6 @@
 #include <kvm.h>
 #include <nlist.h>
 #include <limits.h>
-#include <string.h>
 #include <err.h>
 #include <errno.h>
 #include <sysexits.h>
@@ -1339,7 +1338,6 @@ BSDGetSensor(const std::string &name, const std::string &valname, float *value,
 	// All kinds of sensors are read with libprop. Specific device and value
 	// can be asked for. Values are transformed to suitable units.
 	int fd, val = 0;
-	char type[20];
 	prop_dictionary_t pdict;
 	prop_object_t pobj, pobj1;
 	prop_object_iterator_t piter;
@@ -1367,46 +1365,48 @@ BSDGetSensor(const std::string &name, const std::string &valname, float *value,
 	while ( (pobj = prop_object_iterator_next(piter)) ) {
 		if ( !(pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "type")) )
 			continue;
-		strlcpy(type, prop_string_cstring_nocopy((prop_string_t)pobj1), 20);
-                if ( std::string(type) == "Indicator" ||
-                     std::string(type) == "Battery" ||
-                     std::string(type) == "Drive" )
+
+                std::string ptype(prop_string_cstring_nocopy(
+                      (prop_string_t)pobj1));
+
+                if ( ptype == "Indicator" || ptype == "Battery"
+                  || ptype == "Drive" )
                     continue;  // these are string values
 		if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, valname.c_str())) )
 			val = prop_number_integer_value((prop_number_t)pobj1);
 		else
                     logFatal << "Value " << valname << " does not exist\n";
-                if ( std::string(type) == "Temperature" ) {
+                if ( ptype == "Temperature" ) {
                     *value = (val / 1000000.0) - 273.15;  // temperatures are in microkelvins
                         unit = "\260C";
 		}
-                else if ( std::string(type) == "Fan") {
+                else if ( ptype == "Fan") {
 			*value = (float)val;                  // plain integer value
                         unit = "RPM";
 		}
-                else if ( std::string(type) == "Integer" )
+                else if ( ptype == "Integer" )
 			*value = (float)val;                  // plain integer value
-                else if ( std::string(type) == "Voltage" ) {
+                else if ( ptype == "Voltage" ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "V";
 		}
-                else if ( std::string(type) == "Ampere hour" ) {
+                else if ( ptype == "Ampere hour" ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "Ah";
 		}
-                else if ( std::string(type) == "Ampere" ) {
+                else if ( ptype == "Ampere" ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "A";
 		}
-                else if ( std::string(type) == "Watt hour" ) {
+                else if ( ptype == "Watt hour" ) {
                     *value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "Wh";
 		}
-                else if ( std::string(type) == "Watts" ) {
+                else if ( ptype == "Watts" ) {
 			*value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "W";
 		}
-                else if ( std::string(type) == "Ohms" ) {
+                else if ( ptype == "Ohms" ) {
                     *value = (float)val / 1000000.0;      // electrical units are in micro{V,A,W,Ohm}
                         unit = "Ohm";
 		}
