@@ -1080,7 +1080,6 @@ BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
 #elif defined(XOSVIEW_NETBSD)
 	struct evcntlist events;
 	struct evcnt evcnt, *evptr;
-	char dummy[30];
 	char *name;
 
 	safe_kvm_read(nlst[ALLEVENTS_SYM_INDEX].n_value, &events, sizeof(events));
@@ -1091,10 +1090,13 @@ BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
 			if ( !(name = (char *)malloc(evcnt.ev_namelen + 1)) )
 				err(EX_OSERR, "BSDGetIntrStats(): malloc failed");
 			safe_kvm_read((unsigned long)evcnt.ev_name, name, evcnt.ev_namelen + 1);
-			if ( sscanf(name, "%s%d", dummy, &nbr) == 2 ) {
-				intrCount[nbr] = evcnt.ev_count;
-				if (intrNbrs)
-					intrNbrs[nbr] = 1;
+                        std::string dummy;
+                        std::istringstream is(name);
+                        is >> dummy >> nbr;
+                        if (is) {
+                            intrCount[nbr] = evcnt.ev_count;
+                            if (intrNbrs)
+                                intrNbrs[nbr] = 1;
 			}
 			free(name);
 		}
@@ -1198,7 +1200,6 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 	// Values are in microdegrees Kelvin.
 	int fd;
 	const char *name = NULL;
-	char dummy[20];
 	prop_dictionary_t pdict;
 	prop_object_t pobj, pobj1, pobj2;
 	prop_object_iterator_t piter, piter2;
@@ -1231,7 +1232,8 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 			err(EX_OSERR, "Could not get sensor iterator");
 
 		int i = 0;
-		sscanf(name, "%[^0-9]%d", dummy, &i);
+                std::istringstream is(name);
+                is >> util::sink("*[!0-9]", true) >> i;
 		while ( (pobj = prop_object_iterator_next(piter2)) ) {
 			if ( !(pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "type")) )
 				continue;
