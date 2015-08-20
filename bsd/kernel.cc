@@ -1045,8 +1045,8 @@ BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
 	inamlen = nlst[EINTRNAMES_SYM_INDEX].n_value - nlst[INTRNAMES_SYM_INDEX].n_value;
 # endif
 	if (nintr == 0 || inamlen == 0) {
-		warnx("Could not get interrupt numbers.");
-		return;
+            logProblem << "Could not get interrupt numbers." << std::endl;
+            return;
 	}
 	if ( ((kvm_intrcnt = (unsigned long *)malloc(nintr)) == NULL) ||
 	     ((kvm_intrnames = (char *)malloc(inamlen)) == NULL) )
@@ -1064,14 +1064,16 @@ BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
 	 * string corresponds to a value in the kvm_intrcnt array
 	 * e.g. irq1: atkbd0   */
 	for (uint i = 0; i < nintr; i++) {
-		/* Figure out which irq we have here */
-		if ( kvm_intrnames[0] && sscanf(kvm_intrnames, "irq%d", &nbr) == 1 ) {
-			intrCount[nbr] = *kvm_intrcnt;
-			if (intrNbrs)
-				intrNbrs[nbr] = 1;
-		}
-		kvm_intrcnt++;
-		kvm_intrnames += strlen(kvm_intrnames) + 1;
+            /* Figure out which irq we have here */
+            std::istringstream is(kvm_intrnames);
+            is >> util::sink("irq") >> nbr;
+            if (is) {
+                intrCount[nbr] = *kvm_intrcnt;
+                if (intrNbrs)
+                    intrNbrs[nbr] = 1;
+            }
+            kvm_intrcnt++;
+            kvm_intrnames += is.str().size() + 1;
 	}
 	free(intrcnt);
 	free(intrnames);
