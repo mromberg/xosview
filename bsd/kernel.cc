@@ -1070,7 +1070,7 @@ void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
     }
 
     std::vector<unsigned long> kvm_intrcnt(nintr / sizeof(unsigned long));
-    std::vector<char> kvm_intrnames(inamelen);
+    std::vector<char> kvm_intrnames(inamlen);
 
     safe_kvm_read(nlst[INTRCNT_SYM_INDEX].n_value, kvm_intrcnt.data(), nintr);
     safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value, kvm_intrnames.data(),
