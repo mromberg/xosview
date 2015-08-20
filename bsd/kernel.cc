@@ -476,9 +476,9 @@ void BSDGetCPUTimes(uint64_t *timeArray, unsigned int cpu) {
     }
     for (int i = 0; i < CPUSTATES; i++)
 #if defined(XOSVIEW_OPENBSD) // aggregates are long, singles uint64_t
-        timeArray[i] = ( cpu ? times[i] : ((long*)(times))[i] );
+        timeArray[i] = ( cpu ? times[i] : ((long*)(times.data()))[i] );
 #else  // XOSVIEW_FREEBSD || XOSVIEW_NETBSD
-    timeArray[i] = times[cpu * CPUSTATES + i];
+        timeArray[i] = times[cpu * CPUSTATES + i];
 #endif
 #endif
 }
