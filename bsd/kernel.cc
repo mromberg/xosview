@@ -1053,8 +1053,6 @@ void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
     /* This code is stolen from vmstat */
     int nbr = 0;
 #if defined(XOSVIEW_FREEBSD)
-    unsigned long *kvm_intrcnt, *intrcnt;
-    char *kvm_intrnames, *intrnames;
     size_t inamlen, nintr;
 
 # if __FreeBSD_version >= 900040
@@ -1070,51 +1068,45 @@ void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
         logProblem << "Could not get interrupt numbers." << std::endl;
         return;
     }
-    if ((kvm_intrcnt = (unsigned long *)malloc(nintr)) == NULL)
-        logFatal << "BSDGetIntrStats(): malloc failed" << std::endl;
-    if ((kvm_intrnames = (char *)malloc(inamlen)) == NULL)
-        logFatal << "BSDGetIntrStats(): malloc failed" << std::endl;
 
-    // keep track of the mem we're given:
-    intrcnt = kvm_intrcnt;
-    intrnames = kvm_intrnames;
+    std::vector<unsigned long> kvm_intrcnt(nintr / sizeof(unsigned long));
+    std::vector<char> kvm_intrnames(inamelen);
 
-    safe_kvm_read(nlst[INTRCNT_SYM_INDEX].n_value, kvm_intrcnt, nintr);
-    safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value, kvm_intrnames, inamlen);
+    safe_kvm_read(nlst[INTRCNT_SYM_INDEX].n_value, kvm_intrcnt.data(), nintr);
+    safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value, kvm_intrnames.data(),
+      kvm_intrnames.size());
 
     nintr /= sizeof(long);
     /* kvm_intrname has the ASCII names of the IRQs, every null-terminated
      * string corresponds to a value in the kvm_intrcnt array
      * e.g. irq1: atkbd0
      */
+    char *intrnames = kvm_intrnames.data();
     for (uint i = 0; i < nintr; i++) {
         /* Figure out which irq we have here */
-        std::istringstream is(kvm_intrnames);
+        std::istringstream is(intrnames);
         is >> util::sink("irq") >> nbr;
         if (is) {
-            intrCount[nbr] = *kvm_intrcnt;
+            intrCount[nbr] = kvm_intrcnt[i];
             if (intrNbrs)
                 intrNbrs[nbr] = 1;
         }
-        kvm_intrcnt++;
-        kvm_intrnames += is.str().size() + 1;
+        intrnames += is.str().size() + 1;
     }
-    free(intrcnt);
-    free(intrnames);
 #elif defined(XOSVIEW_NETBSD)
     struct evcntlist events;
     struct evcnt evcnt, *evptr;
-    char *name;
 
     safe_kvm_read(nlst[ALLEVENTS_SYM_INDEX].n_value, &events, sizeof(events));
     evptr = TAILQ_FIRST(&events);
     while (evptr) {
         safe_kvm_read((unsigned long)evptr, &evcnt, sizeof(evcnt));
         if (evcnt.ev_type == EVCNT_TYPE_INTR) {
-            if ( !(name = (char *)malloc(evcnt.ev_namelen + 1)) )
-                logFatal << "BSDGetIntrStats(): malloc failed" << std::endl;
-            safe_kvm_read((unsigned long)evcnt.ev_name, name,
-              evcnt.ev_namelen + 1);
+            std::vector<char> namev(evcnt.ev_namelen + 1);
+            safe_kvm_read((unsigned long)evcnt.ev_name, namev.data(),
+              namev.size());
+            std::string name(namev.begin(), namev.end());
+
             std::string dummy;
             std::istringstream is(name);
             is >> dummy >> nbr;
@@ -1123,7 +1115,6 @@ void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
                 if (intrNbrs)
                     intrNbrs[nbr] = 1;
             }
-            free(name);
         }
         evptr = TAILQ_NEXT(&evcnt, ev_list);
     }
