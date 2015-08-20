@@ -1126,51 +1126,45 @@ BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
 #else  // XOSVIEW_DFBSD
 	int nintr = 0;
 	size_t inamlen;
-	unsigned long *intrcnt;
-	char *dummy, *intrs, **intrnames;
+	char *intrs;
 
 	if ( sysctlbyname("hw.intrnames", NULL, &inamlen, NULL, 0) != 0 ) {
-		warn("sysctl hw.intrnames failed");
-		return;
+            logProblem << "sysctl hw.intrnames failed" << std::endl;
+            return;
 	}
 
-	dummy = intrs = (char *)malloc(inamlen);
-	if (!intrs)
-		err(EX_OSERR, "BSDGetIntrStats(): malloc failed");
-	if ( sysctlbyname("hw.intrnames", intrs, &inamlen, NULL, 0) < 0 ) {
-		warn("sysctl hw.intrnames failed");
-		free(intrs);
-		return;
+        std::vector<char> inamev(inamlen);
+	if ( sysctlbyname("hw.intrnames", inamev.data(), &inamlen,
+            NULL, 0) < 0 ) {
+            logProblem << "sysctl hw.intrnames failed" << std::endl;
+            return;
 	}
-	for (uint i = 0; i < inamlen; i++) {
-		if (intrs[i] == '\0')  // count end-of-strings
-			nintr++;
+	for (size_t i = 0; i < inamev.size(); i++) {
+            if (inamev[i] == '\0')  // count end-of-strings
+                nintr++;
 	}
-	if ( !(intrnames = (char **)malloc(nintr * sizeof(char *))) )
-		err(EX_OSERR, "BSDGetIntrStats(): malloc failed");
 
+        std::vector<char *> inames(nintr, (char *)0);
+        intrs = inamev.data();
 	for (int i = 0; i < nintr; i++) {
-		intrnames[i] = intrs;
-		intrs += strlen(intrs) + 1;
+            inames[i] = intrs;
+            intrs += std::string(intrs).size() + 1;
 	}
-	if ( !(intrcnt = (unsigned long *)calloc(nintr, sizeof(long))) )
-		err(EX_OSERR, "BSDGetIntrStats(): malloc failed");
-
+        std::vector<unsigned long> intrcnt(nintr, 0);
 	inamlen = nintr * sizeof(long);
-	if ( sysctlbyname("hw.intrcnt", intrcnt, &inamlen, NULL, 0) < 0 )
-		err(EX_OSERR, "sysctl hw.intrcnt failed");
+	if ( sysctlbyname("hw.intrcnt", intrcnt.data(), &inamlen, NULL, 0) < 0 )
+            logFatal << "sysctl hw.intrcnt failed" << std::endl;
 
 	for (int i = 0; i < nintr; i++) {
-		if ( sscanf(intrnames[i], "irq%d", &nbr) == 0 ) {
-			nbr++;
-			intrCount[nbr] += intrcnt[i];
-			if (intrNbrs)
-				intrNbrs[nbr] = 1;
-		}
+            std::istringstream is(inames[i]);
+            is >> util::sink("irq") >> nbr;
+            if (!is) {
+                nbr++;
+                intrCount[nbr] += intrcnt[i];
+                if (intrNbrs)
+                    intrNbrs[nbr] = 1;
+            }
 	}
-	free(dummy);
-	free(intrnames);
-	free(intrcnt);
 #endif
 }
 
