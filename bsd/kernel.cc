@@ -1256,7 +1256,6 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 	struct sensordev sd;
 	struct sensor s;
 	int cpu = 0;
-	char dummy[10];
 
 	for (int dev = 0; dev < 1024; dev++) {  // go through all sensor devices
 		mib_sen[2] = dev;
@@ -1270,7 +1269,8 @@ BSDGetCPUTemperature(float *temps, float *tjmax) {
 		}
 		if ( strncmp(sd.xname, "cpu", 3) )
 			continue;  // not CPU sensor
-		sscanf(sd.xname, "%[^0-9]%d", dummy, &cpu);
+                std::istringstream is(sd.xname);
+                is >> util::sink("*[!0-9]", true) >> cpu;
 
 		mib_sen[3] = SENSOR_TEMP;  // for each device, get temperature sensors
 		for (int i = 0; i < sd.maxnumt[SENSOR_TEMP]; i++) {
