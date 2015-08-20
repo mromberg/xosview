@@ -450,7 +450,7 @@ void BSDGetCPUTimes(uint64_t *timeArray, unsigned int cpu) {
     size = CPUSTATES * sizeof(times[0]);
     if (cpu == 0) {  // aggregate times
 #if defined(XOSVIEW_FREEBSD)
-        if ( sysctlbyname("kern.cp_time", times, &size, NULL, 0) < 0 )
+        if ( sysctlbyname("kern.cp_time", times.data(), &size, NULL, 0) < 0 )
 #else  // XOSVIEW_NETBSD || XOSVIEW_OPENBSD
         if ( sysctl(mib_cpt, 2, times.data(), &size, NULL, 0) < 0 )
 #endif
