@@ -1077,8 +1077,9 @@ void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
         logProblem << "Could not get interrupt numbers." << std::endl;
         return;
     }
-    if ( ((kvm_intrcnt = (unsigned long *)malloc(nintr)) == NULL) ||
-      ((kvm_intrnames = (char *)malloc(inamlen)) == NULL) )
+    if ((kvm_intrcnt = (unsigned long *)malloc(nintr)) == NULL)
+        logFatal << "BSDGetIntrStats(): malloc failed" << std::endl;
+    if ((kvm_intrnames = (char *)malloc(inamlen)) == NULL)
         logFatal << "BSDGetIntrStats(): malloc failed" << std::endl;
 
     // keep track of the mem we're given:
