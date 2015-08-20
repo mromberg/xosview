@@ -1016,8 +1016,9 @@ int BSDNumInts() {
         mib_int[2] = KERN_INTRCNT_VECTOR;
         mib_int[3] = i;
         size = sizeof(nbr);
-        if ( sysctl(mib_int, 4, &nbr, &size, NULL, 0) < 0 )
+        if ( sysctl(mib_int, 4, &nbr, &size, NULL, 0) < 0 ) {
             logProblem << "Could not get name of interrupt " << i << std::endl;
+        }
         else
             if ( nbr > count )
                 count = nbr;
