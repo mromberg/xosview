@@ -672,7 +672,7 @@ void DevStat_Init(void) {
     if (checkversion() < 0) {
 #endif
         nodisk++;
-        warn("%s\n", devstat_errbuf);
+        logProblem << devstat_errbuf << std::endl;
         return;
     }
 
@@ -1491,7 +1491,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
                 break;  // no more devices
             if (errno == ENXIO)
                 continue;  // no device with this mib
-            err(EX_OSERR, "sysctl hw.sensors.%d failed", dev);
+            logFatal << "sysctl hw.sensors." << dev << " failed" << std::endl;
         }
         std::string sname(name);
         if (std::string(sd.xname).substr(0, sname.size()) == name)
@@ -1847,7 +1847,7 @@ void BSDGetBatteryInfo(int *remaining, unsigned int *state) {
     union acpi_battery_ioctl_arg battio;
     battio.unit = ACPI_BATTERY_ALL_UNITS;
     if ( ioctl(fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1 )
-        err(EX_IOERR, "failed to get ACPI battery info");
+        logFatal << "failed to get ACPI battery info" << std::endl;
     if ( close(fd) == -1 )
         logFatal << "Could not close " << ACPIDEV << std::endl;
     *remaining = battio.battinfo.cap;
