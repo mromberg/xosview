@@ -418,7 +418,7 @@ void BSDGetCPUTimes(uint64_t *timeArray, unsigned int cpu) {
     size_t size;
 #if defined(XOSVIEW_DFBSD)
     size = sizeof(struct kinfo_cputime);
-    std::vector<struct kinfo_cputime> times(maxcpus + 1, struct kinfo_cputime());
+    std::vector<struct kinfo_cputime> times(maxcpus + 1, kinfo_cputime());
 #elif defined(XOSVIEW_NETBSD)
     size = CPUSTATES * sizeof(uint64_t);
     std::vector<uint64_t> times((BSDCountCpus() + 1) * CPUSTATES, 0);
