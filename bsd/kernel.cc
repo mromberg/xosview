@@ -998,33 +998,32 @@ BSDNumInts() {
 #else  // XOSVIEW_DFBSD
 	int nintr = 0;
 	size_t inamlen;
-	char *intrnames, *intrs;
 
 	if ( sysctlbyname("hw.intrnames", NULL, &inamlen, NULL, 0) != 0 ) {
-		warn("sysctl hw.intrnames failed");
-		return 0;
+            warn("sysctl hw.intrnames failed");
+            return 0;
 	}
-	intrnames = intrs = (char *)malloc(inamlen);
-	if (!intrs)
-		err(EX_OSERR, "BSDNumInts(): malloc failed");
 
-	if ( sysctlbyname("hw.intrnames", intrs, &inamlen, NULL, 0) < 0 ) {
-		warn("sysctl hw.intrnames failed");
-		free(intrs);
-		return 0;
+        std::vector<char> inamev(inamlen);
+	if ( sysctlbyname("hw.intrnames", inamev.data(), &inamlen,
+            NULL, 0) < 0 ) {
+            logProblem << "sysctl hw.intrnames failed" << std::endl;
+            return 0;
 	}
-	for (uint i = 0; i < inamlen; i++) {
-		if (intrs[i] == '\0')  // count end-of-strings
-			nintr++;
+	for (size_t i = 0; i < inamev.size(); i++) {
+            if (inamev[i] == '\0')  // count end-of-strings
+                nintr++;
 	}
+        char *intrname = inamev.data();
 	for (int i = 0; i < nintr; i++) {
-		if ( sscanf(intrnames, "irq%d", &nbr) == 0 ) {
-			if ( ++nbr > count )  // unused ints are named irqn where
-				count = nbr;      // 0<=n<=255, used ones have device name
-		}
-		intrnames += strlen(intrnames) + 1;
+            std::istringstream is(intrname);
+            is >> util::sink("irq") >> nbr;
+            if (is.fail()) {
+                if ( ++nbr > count )  // unused ints are named irqn where
+                    count = nbr;      // 0<=n<=255, used ones have device name
+            }
+            intrname += is.str().size() + 1;
 	}
-	free(intrs);
 #endif
 	return count;  // this is the highest numbered interrupt
 }
