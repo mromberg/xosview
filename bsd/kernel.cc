@@ -593,12 +593,12 @@ int BSDSwapInit() {
 }
 
 
-void BSDGetSwapInfo(uint64_t *total, uint64_t *used) {
+void BSDGetSwapInfo(uint64_t &total, uint64_t &used) {
 #if defined(HAVE_SWAPCTL)
     //  This code is based on a patch sent in by Scott Stevens
     //  (s.k.stevens@ic.ac.uk, at the time).
     int rnswap, nswap = swapctl(SWAP_NSWAP, 0, 0);
-    *total = *used = 0;
+    total = used = 0;
 
     if (nswap < 1)  // no swap devices on
         return;
@@ -616,8 +616,8 @@ void BSDGetSwapInfo(uint64_t *total, uint64_t *used) {
     // block size is that of underlying device, *usually* 512 bytes
     const int bsize = 512;
     for (size_t i = 0 ; i < (size_t)rnswap ; i++) {
-        *total += (uint64_t)sep[i].se_nblks * bsize;
-        *used += (uint64_t)sep[i].se_inuse * bsize;
+        total += (uint64_t)sep[i].se_nblks * bsize;
+        used += (uint64_t)sep[i].se_inuse * bsize;
     }
 #else
     struct kvm_swap kswap;
@@ -626,8 +626,8 @@ void BSDGetSwapInfo(uint64_t *total, uint64_t *used) {
     if ( kvm_getswapinfo(kd, &kswap, 1, 0) )
         logFatal << "BSDGetSwapInfo(): kvm_getswapinfo failed" << std::endl;
 
-    *total = (uint64_t)kswap.ksw_total * pgsize;
-    *used = (uint64_t)kswap.ksw_used * pgsize;
+    total = (uint64_t)kswap.ksw_total * pgsize;
+    used = (uint64_t)kswap.ksw_used * pgsize;
 #endif
 }
 
