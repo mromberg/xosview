@@ -80,7 +80,7 @@ void BSDSensor::checkResources(const ResDB &rdb) {
 
     // Get the unit.
     float dummy;
-    BSDGetSensor(name_.c_str(), val_.c_str(), &dummy, unit_);
+    BSDGetSensor(name_, val_, dummy, unit_);
     updateLegend();
 }
 
@@ -94,11 +94,11 @@ void BSDSensor::checkevent( void ) {
 void BSDSensor::getsensor( void ) {
     float value, high = high_, low = low_;
     std::string emptyStr;
-    BSDGetSensor(name_.c_str(), val_.c_str(), &value, emptyStr);
+    BSDGetSensor(name_, val_, value, emptyStr);
     if ( highname_.size() )
-        BSDGetSensor(highname_.c_str(), highval_.c_str(), &high, emptyStr);
+        BSDGetSensor(highname_, highval_, high, emptyStr);
     if ( lowname_.size() )
-        BSDGetSensor(lowname_.c_str(), lowval_.c_str(), &low, emptyStr);
+        BSDGetSensor(lowname_, lowval_, low, emptyStr);
 
     fields_[0] = value;
     checkFields(low, high);

@@ -69,7 +69,7 @@ unsigned int BSDGetCPUTemperature(float *temps, float *tjmax);
 #endif
 
 void BSDGetSensor(const std::string &name, const std::string &valname,
-  float *value, std::string &unit);
+  float &value, std::string &unit);
 
 bool BSDHasBattery();
 

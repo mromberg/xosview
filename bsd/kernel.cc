@@ -1352,7 +1352,7 @@ unsigned int BSDGetCPUTemperature(float *temps, float *tjmax) {
 
 
 void BSDGetSensor(const std::string &name, const std::string &valname,
-  float *value, std::string &unit) {
+  float &value, std::string &unit) {
 
     logAssert(name.size() && valname.size()
       && value) << "'NULL' pointer passed to BSDGetSensor()." << std::endl;
@@ -1450,7 +1450,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
         dummy = "hw.acpi.thermal." + name + "." + valname;
         if ( sysctlbyname(dummy.c_str(), &val, &size, NULL, 0) < 0 )
             logFatal << "sysctl " << dummy << " failed" << std::endl;
-        *value = ((float)val - 2732.0) / 10.0;
+        value = ((float)val - 2732.0) / 10.0;
         if (unit.size())
             unit = "\260C";
         return;
@@ -1503,74 +1503,74 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
                     continue;
                 switch (t) {
                 case SENSOR_TEMP:
-                    *value = (float)(s.value - 273150000) / 1000000.0;
+                    value = (float)(s.value - 273150000) / 1000000.0;
                     unit = "\260C";
                     break;
                 case SENSOR_FANRPM:
-                    *value = (float)s.value;
+                    value = (float)s.value;
                     unit = "RPM";
                     break;
                 case SENSOR_VOLTS_DC:
                 case SENSOR_VOLTS_AC:
-                    *value = (float)s.value / 1000000.0;
+                    value = (float)s.value / 1000000.0;
                     unit = "V";
                     break;
                 case SENSOR_OHMS:
-                    *value = (float)s.value;
+                    value = (float)s.value;
                     unit = "Ohm";
                     break;
                 case SENSOR_WATTS:
-                    *value = (float)s.value / 1000000.0;
+                    value = (float)s.value / 1000000.0;
                     unit = "W";
                     break;
                 case SENSOR_AMPS:
-                    *value = (float)s.value / 1000000.0;
+                    value = (float)s.value / 1000000.0;
                     unit = "A";
                     break;
                 case SENSOR_WATTHOUR:
-                    *value = (float)s.value / 1000000.0;
+                    value = (float)s.value / 1000000.0;
                     unit = "Wh";
                     break;
                 case SENSOR_AMPHOUR:
-                    *value = (float)s.value / 1000000.0;
+                    value = (float)s.value / 1000000.0;
                     unit = "Ah";
                     break;
                 case SENSOR_PERCENT:
-                    *value = (float)s.value / 1000.0;
+                    value = (float)s.value / 1000.0;
                     unit = "%";
                     break;
                 case SENSOR_LUX:
-                    *value = (float)s.value / 1000000.0;
+                    value = (float)s.value / 1000000.0;
                     unit = "lx";
                     break;
                 case SENSOR_TIMEDELTA:
-                    *value = (float)s.value / 1000000000.0;
+                    value = (float)s.value / 1000000000.0;
                     unit = "s";
                     break;
 #if defined(XOSVIEW_OPENBSD)
                 case SENSOR_HUMIDITY:
-                    *value = (float)s.value / 1000.0;
+                    value = (float)s.value / 1000.0;
                     unit = "%";
                     break;
                 case SENSOR_FREQ:
-                    *value = (float)s.value / 1000000.0;
+                    value = (float)s.value / 1000000.0;
                     unit = "Hz";
                     break;
                 case SENSOR_ANGLE:
-                    *value = (float)s.value / 1000000.0;
+                    value = (float)s.value / 1000000.0;
                     unit = "\260";
                     break;
 #if OpenBSD > 201211
                 case SENSOR_DISTANCE:
-                    *value = (float)s.value / 1000000.0;
+                    value = (float)s.value / 1000000.0;
                     unit = "m";
                     break;
                 case SENSOR_PRESSURE:
-                    *value = (float)s.value / 1000.0;
+                    value = (float)s.value / 1000.0;
                     unit = "Pa";
                     break;
                 case SENSOR_ACCEL:
-                    *value = (float)s.value / 1000000.0;
+                    value = (float)s.value / 1000000.0;
                     unit = "m\\/s\262"; // m/s²
                     break;
 #endif
@@ -1579,7 +1579,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
                 case SENSOR_INTEGER:
                 case SENSOR_DRIVE:
                 default:
-                    *value = (float)s.value;
+                    value = (float)s.value;
                     break;
                 }
             }
