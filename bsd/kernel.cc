@@ -338,22 +338,22 @@ void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
     if ( sysctl(mib_uvm, 2, &uvm, &size, NULL, 0) < 0 )
         logFatal << "sysctl vm.uvmexp failed" << std::endl;
 
-    if (meminfo) {
-        // UVM excludes kernel memory -> assume it is active mem
-        meminfo[0] = (uint64_t)(uvm.npages - uvm.inactive - uvm.wired
-          - uvm.free) * uvm.pagesize;
-        meminfo[1] = (uint64_t)uvm.inactive * uvm.pagesize;
-        meminfo[2] = (uint64_t)uvm.wired * uvm.pagesize;
+    meminfo.resize(5);
+    // UVM excludes kernel memory -> assume it is active mem
+    meminfo[0] = (uint64_t)(uvm.npages - uvm.inactive - uvm.wired
+      - uvm.free) * uvm.pagesize;
+    meminfo[1] = (uint64_t)uvm.inactive * uvm.pagesize;
+    meminfo[2] = (uint64_t)uvm.wired * uvm.pagesize;
 
-        // cache is already included in active and inactive memory and
-        // there's no way to know how much is in which -> disable cache
-        meminfo[3] = 0;
-        meminfo[4] = (uint64_t)uvm.free * uvm.pagesize;
-    }
-    if (pageinfo) {
-        pageinfo[0] = (uint64_t)uvm.pgswapin;
-        pageinfo[1] = (uint64_t)uvm.pgswapout;
-    }
+    // cache is already included in active and inactive memory and
+    // there's no way to know how much is in which -> disable cache
+    meminfo[3] = 0;
+    meminfo[4] = (uint64_t)uvm.free * uvm.pagesize;
+
+    pageinfo.resize(2);
+    pageinfo[0] = (uint64_t)uvm.pgswapin;
+    pageinfo[1] = (uint64_t)uvm.pgswapout;
+
 #else  /* HAVE_UVM */
     struct vmmeter vm;
 #if defined(XOSVIEW_FREEBSD)
@@ -1401,37 +1401,37 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
         else
             logFatal << "Value " << valname << " does not exist\n";
         if ( ptype == "Temperature" ) {
-            *value = (val / 1000000.0) - 273.15;  // temps are in microkelvins
+            value = (val / 1000000.0) - 273.15;  // temps are in microkelvins
             unit = "\260C";
         }
         else if ( ptype == "Fan") {
-            *value = (float)val;                  // plain integer value
+            value = (float)val;                  // plain integer value
             unit = "RPM";
         }
         else if ( ptype == "Integer" )
-            *value = (float)val;                  // plain integer value
+            value = (float)val;                  // plain integer value
         else if ( ptype == "Voltage" ) {
-            *value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
+            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
             unit = "V";
         }
         else if ( ptype == "Ampere hour" ) {
-            *value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
+            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
             unit = "Ah";
         }
         else if ( ptype == "Ampere" ) {
-            *value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
+            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
             unit = "A";
         }
         else if ( ptype == "Watt hour" ) {
-            *value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
+            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
             unit = "Wh";
         }
         else if ( ptype == "Watts" ) {
-            *value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
+            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
             unit = "W";
         }
         else if ( ptype == "Ohms" ) {
-            *value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
+            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
             unit = "Ohm";
         }
     }
@@ -1733,14 +1733,14 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
                 if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
                       "cur-value")) )
                     if ( prop_number_integer_value((prop_number_t)pobj1) )
-                        *state |= XOSVIEW_BATT_CHARGING;
+                        state |= XOSVIEW_BATT_CHARGING;
             }
             else if (std::string(name, 0, 14) == "discharge rate") {
                 // discharging or not?
                 if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
                       "cur-value")) )
                     if ( prop_number_integer_value((prop_number_t)pobj1) )
-                        *state |= XOSVIEW_BATT_DISCHARGING;
+                        state |= XOSVIEW_BATT_DISCHARGING;
             }
         }
         if (present) {
@@ -1785,18 +1785,18 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
     }
 #endif
     if (batteries == 0) { // all batteries are off
-        *state = XOSVIEW_BATT_NONE;
-        *remaining = 0;
+        state = XOSVIEW_BATT_NONE;
+        remaining = 0;
         return;
     }
-    *remaining = 100 * total_charge / total_capacity;
-    if ( !(*state & XOSVIEW_BATT_CHARGING) &&
-      !(*state & XOSVIEW_BATT_DISCHARGING) )
-        *state |= XOSVIEW_BATT_FULL;  // full when not charging nor discharging
+    remaining = 100 * total_charge / total_capacity;
+    if ( !(state & XOSVIEW_BATT_CHARGING) &&
+      !(state & XOSVIEW_BATT_DISCHARGING) )
+        state |= XOSVIEW_BATT_FULL;  // full when not charging nor discharging
     if (total_capacity < total_low)
-        *state |= XOSVIEW_BATT_LOW;
+        state |= XOSVIEW_BATT_LOW;
     if (total_capacity < total_crit)
-        *state |= XOSVIEW_BATT_CRITICAL;
+        state |= XOSVIEW_BATT_CRITICAL;
 #else // XOSVIEW_FREEBSD || XOSVIEW_DFBSD
     /* Adapted from acpiconf and apm. */
     int fd;
