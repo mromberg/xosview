@@ -21,6 +21,7 @@
 #include "strutil.h"
 #include "kernel.h"
 
+#include <sys/param.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <kvm.h>
@@ -236,7 +237,6 @@ void SetKernelName(const std::string &kernelName) {
 
 
 void OpenKDIfNeeded() {
-
     char errstring[_POSIX2_LINE_MAX];
 
     if (kd)
@@ -265,6 +265,7 @@ void OpenKDIfNeeded() {
     struct nlist *nlp = nlst;
     std::string sDUMMY_SYM(DUMMY_SYM);
     while (nlp && nlp->n_name) {
+        std::cerr << "nlp->n_name: " << nlp->n_name << std::endl;
         if (std::string(nlp->n_name, 0, sDUMMY_SYM.size()) != sDUMMY_SYM) {
             if ( nlp->n_type == 0 || nlp->n_value == 0 )
 #if defined(XOSVIEW_FREEBSD) && defined(__alpha__)
