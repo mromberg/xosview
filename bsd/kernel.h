@@ -15,7 +15,6 @@
 //    authors for a copy.
 //
 
-//#include "defines.h"
 #include <string>
 
 void BSDInit();
