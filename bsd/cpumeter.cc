@@ -15,7 +15,6 @@
 
 #include "cpumeter.h"
 #include "kernel.h"
-#include "defines.h"
 
 // for CPUSTATES
 #if defined(XOSVIEW_NETBSD)

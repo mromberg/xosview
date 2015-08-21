@@ -18,7 +18,6 @@
 //
 
 #include "memmeter.h"
-#include "defines.h"
 #include "kernel.h"
 
 

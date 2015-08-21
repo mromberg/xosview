@@ -12,7 +12,6 @@
 //
 
 #include "MeterMaker.h"
-#include "defines.h"
 #include "kernel.h"
 
 #include "loadmeter.h"

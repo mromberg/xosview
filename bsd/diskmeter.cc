@@ -12,7 +12,6 @@
 //
 
 #include "diskmeter.h"
-#include "defines.h"
 #include "kernel.h"
 
 
