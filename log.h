@@ -72,8 +72,8 @@
 //  Each line is of the form "+|-  fspec".  The - lines suppress
 // logging of files that match the fspec and lines that start with + turn
 // logging back on.  The fspec is either a direct file name match or a
-// glob match (if fglob is found on the system).  All lines are processed
-// and each line overrides the preceeding ones.
+// glob match.  All lines are processed and each line overrides the
+// preceeding ones.
 //
 //  For example this spec file disables all logDebugs except for those
 // with "meter" in their name except for the netmeter:

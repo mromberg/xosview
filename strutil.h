@@ -104,6 +104,11 @@ inline Glob::MatchResult glob(const std::string &pattern,
 }
 
 
+inline bool fnmatch(const std::string &pattern, const std::string &str) {
+    return glob(pattern, str) == Glob::MATCH;
+}
+
+
 class sink {
 public:
     sink(const std::string &pattern="", bool greedy=false);

@@ -97,14 +97,6 @@ AC_PROG_INSTALL
 #------------------------------------------------
 XO_MIN_CXX_CHECK
 
-#------------------------------------------------
-# fnmatch is only used in supressing logDebug
-# and there is a workaround if it is not there.
-# Not sure how common this function is.
-#------------------------------------------------
-AC_CHECK_HEADERS([fnmatch.h])
-AC_CHECK_FUNCS([fnmatch])
-
 #  Check for usleep().  Currently, only HP-UX doesn't have it.
 AC_CHECK_FUNCS(usleep)
 
