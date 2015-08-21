@@ -6,12 +6,6 @@
 #include <sys/param.h>
 
 
-/* UVM appeared on NetBSD 1.4 and OpenBSD 2.9. */
-#if ( defined(__NetBSD__) && __NetBSD_Version__ >= 104000000 ) || \
-    ( defined(__OpenBSD__) && OpenBSD >= 200105 )
-#define HAVE_UVM 1
-#endif
-
 /* swapctl appeared on NetBSD 1.3. and OpenBSD 2.6 */
 #if ( defined(__NetBSD__) && __NetBSD_Version__ >= 103000000 ) || \
     ( defined(__OpenBSD__) && OpenBSD >= 199912 )

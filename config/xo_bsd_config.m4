@@ -9,6 +9,9 @@ AC_CHECK_LIB(kvm, kvm_open,
    [AC_DEFINE(HAVE_KVM,[1],[Have libkvm])
    XO_CONCAT(LIBS,$LIBS,[-lkvm])])
 
+AC_CHECK_HEADER(uvm/uvm_extern.h,[
+    AC_DEFINE(HAVE_UVM,[1],[Have UVM headers])])
+
 AC_CHECK_HEADER(prop/proplib.h)
 AC_CHECK_LIB(prop, prop_object_release,
    [AC_DEFINE(HAVE_PROP,[1],[Have libprop])
