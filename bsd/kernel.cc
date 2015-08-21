@@ -494,12 +494,12 @@ int BSDNetInit() {
 }
 
 
-void BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
+void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
   const std::string &netIface, bool ignored) {
 
     std::string ifname;
-    *inbytes = 0;
-    *outbytes = 0;
+    inbytes = 0;
+    outbytes = 0;
 #if defined(XOSVIEW_OPENBSD)
     size_t size;
     struct if_msghdr *ifm;
@@ -572,12 +572,12 @@ void BSDGetNetInOut(uint64_t *inbytes, uint64_t *outbytes,
             for (int cpu = 0; cpu < ncpus; cpu++) {
                 safe_kvm_read((unsigned long)ifdatap + cpu * sizeof(ifdata),
                   &ifdata, sizeof(ifdata));
-                *inbytes  += ifdata.ifd_ibytes;
-                *outbytes += ifdata.ifd_obytes;
+                inbytes  += ifdata.ifd_ibytes;
+                outbytes += ifdata.ifd_obytes;
             }
 #else
-            *inbytes  += ifnet.if_ibytes;
-            *outbytes += ifnet.if_obytes;
+            inbytes  += ifnet.if_ibytes;
+            outbytes += ifnet.if_obytes;
 #endif
         }
     }

@@ -36,8 +36,9 @@ NetMeter::NetMeter( XOSView *parent, double max )
         lastBytesIn_ = lastBytesOut_ = 0;
         netIface_ = "False";
         ignored_ = false;
-        BSDGetNetInOut(&lastBytesIn_, &lastBytesOut_, netIface_.c_str(),
+        BSDGetNetInOut(lastBytesIn_, lastBytesOut_, netIface_.c_str(),
           ignored_);
+
         IntervalTimerStart();
     }
 }
@@ -80,7 +81,7 @@ void NetMeter::getstats(void) {
     uint64_t nowBytesIn, nowBytesOut;
 
     IntervalTimerStop();
-    BSDGetNetInOut(&nowBytesIn, &nowBytesOut, netIface_.c_str(), ignored_);
+    BSDGetNetInOut(nowBytesIn, nowBytesOut, netIface_.c_str(), ignored_);
     double t = (1.0) / IntervalTimeInSecs();
     IntervalTimerStart();
 
