@@ -533,8 +533,8 @@ void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
                 skipif = true;
         }
         if (!skipif) {
-            *inbytes += ifd.ifi_ibytes;
-            *outbytes += ifd.ifi_obytes;
+            inbytes += ifd.ifi_ibytes;
+            outbytes += ifd.ifi_obytes;
         }
     }
 #else  /* XOSVIEW_OPENBSD */
@@ -1572,7 +1572,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
                     break;
                 case SENSOR_ACCEL:
                     value = (float)s.value / 1000000.0;
-                    unit = "m\\/s\262"; // m/s¬≤
+                    unit = "m\\/s\262"; // m/sÅ¬Å≤
                     break;
 #endif
 #endif
@@ -1616,7 +1616,7 @@ bool BSDHasBattery() {
     // check if we can get full capacity of the 1st battery
     float val = -1.0;
     std::string emptyStr;
-    BSDGetSensor("acpibat0", "amphour0", &val, emptyStr);
+    BSDGetSensor("acpibat0", "amphour0", val, emptyStr);
     if (val < 0)
         return false;
     return true;
@@ -1762,26 +1762,26 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
         float val = -1.0;
         battery = "acpibat" + util::repr(batteries);
         std::string emptyStr;
-        BSDGetSensor(battery, "amphour0", &val, emptyStr); // full capacity
+        BSDGetSensor(battery, "amphour0", val, emptyStr); // full capacity
         if (val < 0) // no more batteries
             break;
         batteries++;
         total_capacity += val;
         emptyStr = "";
-        BSDGetSensor(battery, "amphour1", &val, emptyStr); // warning capacity
+        BSDGetSensor(battery, "amphour1", val, emptyStr); // warning capacity
         total_low += val;
         emptyStr = "";
-        BSDGetSensor(battery, "amphour2", &val, emptyStr); // low capacity
+        BSDGetSensor(battery, "amphour2", val, emptyStr); // low capacity
         total_crit += val;
         emptyStr = "";
-        BSDGetSensor(battery, "amphour3", &val, emptyStr); // remaining
+        BSDGetSensor(battery, "amphour3", val, emptyStr); // remaining
         total_charge += val;
         emptyStr = "";
-        BSDGetSensor(battery, "raw0", &val, emptyStr); // state
+        BSDGetSensor(battery, "raw0", val, emptyStr); // state
         if ((int)val == 1)
-            *state |= XOSVIEW_BATT_DISCHARGING;
+            state |= XOSVIEW_BATT_DISCHARGING;
         else if ((int)val == 2)
-            *state |= XOSVIEW_BATT_CHARGING;
+            state |= XOSVIEW_BATT_CHARGING;
         // there's also 0 state for idle/full
     }
 #endif
