@@ -9,21 +9,25 @@ AC_CHECK_LIB(kvm, kvm_open,
    [AC_DEFINE(HAVE_KVM,[1],[Have libkvm])
    XO_CONCAT(LIBS,$LIBS,[-lkvm])])
 
-AC_CHECK_HEADER(uvm/uvm_extern.h,[
+AC_CHECK_HEADER(uvm/uvm_extern.h,[dnl
     AC_DEFINE(HAVE_UVM,[1],[Have UVM headers])])
 
-AC_CHECK_HEADER(prop/proplib.h)
-AC_CHECK_LIB(prop, prop_object_release,
-   [AC_DEFINE(HAVE_PROP,[1],[Have libprop])
-    XO_CONCAT(LIBS,$LIBS,[-lprop])])
+AC_CHECK_HEADER(sys/swap.h,[dnl
+    AC_CHECK_FUNC(swapctl,[dnl
+        AC_DEFINE(HAVE_SWAPCTL,[1],[Have swapctl])])])
+
+AC_CHECK_HEADER(prop/proplib.h,[dnl
+    AC_CHECK_LIB(prop, prop_object_release,[dnl
+        AC_DEFINE(HAVE_PROP,[1],[Have libprop])
+        XO_CONCAT(LIBS,$LIBS,[-lprop])])])
 
 AC_CHECK_LIB(devstat, main,[dnl
-             AC_DEFINE(HAVE_DEVSTAT,[1],[Have libdevstat])
-             XO_CONCAT([LIBS],$LIBS,[-ldevstat])])
+    AC_DEFINE(HAVE_DEVSTAT,[1],[Have libdevstat])
+    XO_CONCAT([LIBS],$LIBS,[-ldevstat])])
 
 AC_CHECK_LIB(kinfo, kinfo_get_cpus,[dnl
-             AC_DEFINE(HAVE_KINFO,[1],[Have libkinfo])
-             XO_CONCAT([LIBS],$LIBS,[-lkinfo])])
+    AC_DEFINE(HAVE_KINFO,[1],[Have libkinfo])
+    XO_CONCAT([LIBS],$LIBS,[-lkinfo])])
 
 ])
 
