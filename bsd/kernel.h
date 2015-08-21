@@ -15,7 +15,7 @@
 //    authors for a copy.
 //
 
-#include "defines.h"
+//#include "defines.h"
 #include <string>
 
 void BSDInit();
@@ -61,6 +61,15 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
   float *value, std::string &unit);
 
 bool BSDHasBattery();
+
+enum BatteryState {
+    XOSVIEW_BATT_NONE =        0,
+    XOSVIEW_BATT_CHARGING =    1,
+    XOSVIEW_BATT_DISCHARGING = 2,
+    XOSVIEW_BATT_FULL =        4,
+    XOSVIEW_BATT_LOW =         8,
+    XOSVIEW_BATT_CRITICAL =   16
+};
 
 void BSDGetBatteryInfo(int *remaining, unsigned int *state);
 
