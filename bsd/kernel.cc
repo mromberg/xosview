@@ -40,8 +40,8 @@
 #endif
 
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
-static const char ACPIDEV[] = "/dev/acpi";
-static const char APMDEV[] = "/dev/apm";
+static const char * const ACPIDEV = "/dev/acpi";
+static const char * const APMDEV = "/dev/apm";
 static int maxcpus = 1;
 #include <net/if_var.h>
 #include <sys/ioctl.h>
