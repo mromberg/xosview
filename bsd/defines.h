@@ -6,12 +6,6 @@
 #include <sys/param.h>
 
 
-/* kvm_getswapinfo appeared on FreeBSD 4.0 */
-#if ( defined(__FreeBSD__) && __FreeBSD_version >= 400000 ) || \
-      defined(__DragonFly__)
-#define USE_KVM_GETSWAPINFO 1
-#endif
-
 /* Helper defines for battery meter. */
 #define XOSVIEW_BATT_NONE         0
 #define XOSVIEW_BATT_CHARGING     1
