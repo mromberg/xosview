@@ -41,7 +41,7 @@ inline void BSDGetPageStats(std::vector<uint64_t> &pageinfo) {
 
 void BSDCPUInit();
 
-void BSDGetCPUTimes(uint64_t *timesArray, unsigned int cpu = 0);
+void BSDGetCPUTimes(std::vector<uint64_t> &timesArray, unsigned int cpu = 0);
 
 int BSDNetInit();
 

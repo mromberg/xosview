@@ -69,7 +69,7 @@ void CPUMeter::checkevent( void ) {
 
 
 void CPUMeter::getcputime( void ) {
-    uint64_t tempCPU[CPUSTATES];
+    std::vector<uint64_t> tempCPU;
     total_ = 0;
 
     BSDGetCPUTimes(tempCPU, nbr_);

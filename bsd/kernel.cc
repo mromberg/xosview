@@ -405,16 +405,14 @@ void BSDCPUInit() {
 }
 
 
-void BSDGetCPUTimes(uint64_t *timeArray, unsigned int cpu) {
+void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
     // timeArray is CPUSTATES long.
     // cpu is the number of CPU to return, starting from 1. If cpu == 0,
     // return aggregate times for all CPUs.
     // All BSDs have separate calls for aggregate and separate times. Only
     // OpenBSD returns one CPU per call, others return all at once.
-    if (!timeArray)
-        logFatal << "BSDGetCPUTimes(): passed pointer was null." << std::endl;
-
     size_t size;
+
 #if defined(XOSVIEW_DFBSD)
     size = sizeof(struct kinfo_cputime);
     std::vector<struct kinfo_cputime> times(maxcpus + 1, kinfo_cputime());
@@ -440,6 +438,7 @@ void BSDGetCPUTimes(uint64_t *timeArray, unsigned int cpu) {
         if ( sysctlbyname("kern.cputime", &times[1], &size, NULL, 0) < 0 )
             logFatal << "sysctl kern.cputime failed" << std::endl;
     }
+    timeArray.resize(5);
     timeArray[0] = times[cpu].cp_user;
     timeArray[1] = times[cpu].cp_nice;
     timeArray[2] = times[cpu].cp_sys;
@@ -473,6 +472,7 @@ void BSDGetCPUTimes(uint64_t *timeArray, unsigned int cpu) {
             logFatal << "sysctl kern.cp_time2 failed" << std::endl;
 #endif
     }
+    timeArray.resize(CPUSTATES);
     for (int i = 0; i < CPUSTATES; i++)
 #if defined(XOSVIEW_OPENBSD) // aggregates are long, singles uint64_t
         timeArray[i] = ( cpu ? times[i] : ((long*)(times.data()))[i] );
