@@ -54,7 +54,7 @@ void BSDGetSwapInfo(uint64_t &total, uint64_t &free);
 
 int BSDDiskInit();
 
-uint64_t BSDGetDiskXFerBytes(uint64_t *read_bytes, uint64_t *write_bytes);
+uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes);
 
 int BSDIntrInit();
 

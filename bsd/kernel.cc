@@ -737,7 +737,7 @@ void DevStat_Init(void) {
 }
 
 
-uint64_t DevStat_Get(uint64_t *read_bytes, uint64_t *write_bytes) {
+uint64_t DevStat_Get(uint64_t &read_bytes, uint64_t &write_bytes) {
     register int dn;
     long double busy_seconds;
     uint64_t reads, writes, total_bytes = 0;
@@ -836,8 +836,8 @@ uint64_t DevStat_Get(uint64_t *read_bytes, uint64_t *write_bytes) {
             logProblem << devstat_errbuf << std::endl;
             break;
         }
-        *read_bytes += reads;
-        *write_bytes += writes;
+        read_bytes += reads;
+        write_bytes += writes;
         total_bytes += reads + writes;
     }
 
@@ -864,11 +864,11 @@ int BSDDiskInit() {
 }
 
 
-uint64_t BSDGetDiskXFerBytes(uint64_t *read_bytes, uint64_t *write_bytes) {
+uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes) {
 #if defined(HAVE_DEVSTAT)
     return DevStat_Get(read_bytes, write_bytes);
 #else
-    *read_bytes = *write_bytes = 0;
+    read_bytes = write_bytes = 0;
 # if defined(XOSVIEW_NETBSD)
     size_t size;
     // Do a sysctl with a NULL data pointer to get the size that would
@@ -885,8 +885,8 @@ uint64_t BSDGetDiskXFerBytes(uint64_t *read_bytes, uint64_t *write_bytes) {
 
     // Now accumulate the total.
     for (uint i = 0; i < ndrives; i++) {
-        *read_bytes += drive_stats[i].rbytes;
-        *write_bytes += drive_stats[i].wbytes;
+        read_bytes += drive_stats[i].rbytes;
+        write_bytes += drive_stats[i].wbytes;
     }
 # else  /* XOSVIEW_OPENBSD */
     /*  This function is a little tricky -- we have to iterate over a
@@ -905,13 +905,13 @@ uint64_t BSDGetDiskXFerBytes(uint64_t *read_bytes, uint64_t *write_bytes) {
     while (kvmdiskptr != NULL) {
         safe_kvm_read((unsigned long)kvmdiskptr, &kvmcurrdisk,
           sizeof(kvmcurrdisk));
-        *read_bytes += kvmcurrdisk.dk_rbytes;
-        *write_bytes += kvmcurrdisk.dk_wbytes;
+        read_bytes += kvmcurrdisk.dk_rbytes;
+        write_bytes += kvmcurrdisk.dk_wbytes;
         kvmdiskptr = TAILQ_NEXT(&kvmcurrdisk, dk_link);
     }
 # endif
 #endif
-    return (*read_bytes + *write_bytes);
+    return (read_bytes + write_bytes);
 }
 
 

@@ -73,7 +73,7 @@ void DiskMeter::getstats( void ) {
 	total_ = maxBandwidth_;
 
 	IntervalTimerStop();
-	BSDGetDiskXFerBytes(&reads, &writes);
+	BSDGetDiskXFerBytes(reads, writes);
 
 	/*  Adjust this to bytes/second.  */
 #if defined(HAVE_DEVSTAT)
