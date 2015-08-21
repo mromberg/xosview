@@ -6,13 +6,6 @@
 #include <sys/param.h>
 
 
-#if !( defined(XOSVIEW_FREEBSD) || \
-       defined(XOSVIEW_NETBSD)  || \
-       defined(XOSVIEW_OPENBSD) || \
-       defined(XOSVIEW_DFBSD) )
-#error "Unsupported BSD variant."
-#endif
-
 /* UVM appeared on NetBSD 1.4 and OpenBSD 2.9. */
 #if ( defined(__NetBSD__) && __NetBSD_Version__ >= 104000000 ) || \
     ( defined(__OpenBSD__) && OpenBSD >= 200105 )
@@ -25,11 +18,6 @@
 #define HAVE_SWAPCTL 1
 #endif
 
-/* devstat appeared on FreeBSD 3.0. */
-#if ( defined(__FreeBSD__) && __FreeBSD_version >= 300005 ) || \
-      defined(__DragonFly__)
-#define HAVE_DEVSTAT 1
-#endif
 
 /* kvm_getswapinfo appeared on FreeBSD 4.0 */
 #if ( defined(__FreeBSD__) && __FreeBSD_version >= 400000 ) || \
