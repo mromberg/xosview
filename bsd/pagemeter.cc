@@ -25,7 +25,7 @@ PageMeter::PageMeter( XOSView *parent, double total )
 
     total_ = total;
     BSDPageInit();
-    BSDGetPageStats(NULL, previnfo_.data());
+    BSDGetPageStats(previnfo_);
 }
 
 
@@ -54,8 +54,8 @@ void PageMeter::checkevent( void ) {
 
 
 void PageMeter::getpageinfo( void ) {
-    uint64_t info[2];
-    BSDGetPageStats(NULL, info);
+    std::vector<uint64_t> info;
+    BSDGetPageStats(info);
 
     fields_[0] = info[0] - previnfo_[0];
     fields_[1] = info[1] - previnfo_[1];

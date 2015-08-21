@@ -71,7 +71,7 @@ void MemMeter::checkevent( void ) {
 
 
 void MemMeter::getmeminfo( void ) {
-    BSDGetPageStats(meminfo_.data(), NULL);
+    BSDGetMemStats(meminfo_);
     fields_[0] = (double)meminfo_[0];
     fields_[1] = (double)meminfo_[1];
     fields_[2] = (double)meminfo_[2];

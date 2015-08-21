@@ -16,6 +16,7 @@
 //
 
 #include <string>
+#include <vector>
 
 void BSDInit();
 
@@ -25,7 +26,18 @@ int BSDGetCPUSpeed();
 
 void BSDPageInit();
 
-void BSDGetPageStats(uint64_t *meminfo, uint64_t *pageinfo);
+void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
+  std::vector<uint64_t> &pageinfo);
+
+inline void BSDGetMemStats(std::vector<uint64_t> &meminfo) {
+    std::vector<uint64_t> pinfo;
+    BSDGetMemPageStats(meminfo, pinfo);
+}
+
+inline void BSDGetPageStats(std::vector<uint64_t> &pageinfo) {
+    std::vector<uint64_t> minfo;
+    BSDGetMemPageStats(minfo, pageinfo);
+}
 
 void BSDCPUInit();
 

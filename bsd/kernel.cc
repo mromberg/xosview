@@ -326,7 +326,8 @@ void BSDPageInit() {
 
 /* meminfo[5]  = { active, inactive, wired, cached, free } */
 /* pageinfo[2] = { pages_in, pages_out }                   */
-void BSDGetPageStats(uint64_t *meminfo, uint64_t *pageinfo) {
+void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
+  std::vector<uint64_t> &pageinfo) {
 #if defined(HAVE_UVM)
 #ifdef VM_UVMEXP2
     struct uvmexp_sysctl uvm;
@@ -366,25 +367,25 @@ void BSDGetPageStats(uint64_t *meminfo, uint64_t *pageinfo) {
     if ( sysctlbyname("vm.vmmeter", &vm, &size, NULL, 0) < 0 )
         logFatal << "sysctl vm.vmmeter failed" << std::endl;
 #endif
-    if (meminfo) {
+
+    meminfo.resize(5);
 #if defined(XOSVIEW_FREEBSD)
-        meminfo[0] = (uint64_t)vm.v_active_count * vm.v_page_size;
-        meminfo[1] = (uint64_t)vm.v_inactive_count * vm.v_page_size;
-        meminfo[2] = (uint64_t)vm.v_wire_count * vm.v_page_size;
-        meminfo[3] = (uint64_t)vm.v_cache_count * vm.v_page_size;
-        meminfo[4] = (uint64_t)vm.v_free_count * vm.v_page_size;
+    meminfo[0] = (uint64_t)vm.v_active_count * vm.v_page_size;
+    meminfo[1] = (uint64_t)vm.v_inactive_count * vm.v_page_size;
+    meminfo[2] = (uint64_t)vm.v_wire_count * vm.v_page_size;
+    meminfo[3] = (uint64_t)vm.v_cache_count * vm.v_page_size;
+    meminfo[4] = (uint64_t)vm.v_free_count * vm.v_page_size;
 #else  /* XOSVIEW_DFBSD */
-        meminfo[0] = (uint64_t)vms.v_active_count * vms.v_page_size;
-        meminfo[1] = (uint64_t)vms.v_inactive_count * vms.v_page_size;
-        meminfo[2] = (uint64_t)vms.v_wire_count * vms.v_page_size;
-        meminfo[3] = (uint64_t)vms.v_cache_count * vms.v_page_size;
-        meminfo[4] = (uint64_t)vms.v_free_count * vms.v_page_size;
+    meminfo[0] = (uint64_t)vms.v_active_count * vms.v_page_size;
+    meminfo[1] = (uint64_t)vms.v_inactive_count * vms.v_page_size;
+    meminfo[2] = (uint64_t)vms.v_wire_count * vms.v_page_size;
+    meminfo[3] = (uint64_t)vms.v_cache_count * vms.v_page_size;
+    meminfo[4] = (uint64_t)vms.v_free_count * vms.v_page_size;
 #endif
-    }
-    if (pageinfo) {
-        pageinfo[0] = (uint64_t)vm.v_vnodepgsin + (uint64_t)vm.v_swappgsin;
-        pageinfo[1] = (uint64_t)vm.v_vnodepgsout + (uint64_t)vm.v_swappgsout;
-    }
+
+    pageinfo.resize(2);
+    pageinfo[0] = (uint64_t)vm.v_vnodepgsin + (uint64_t)vm.v_swappgsin;
+    pageinfo[1] = (uint64_t)vm.v_vnodepgsout + (uint64_t)vm.v_swappgsout;
 #endif
 }
 
