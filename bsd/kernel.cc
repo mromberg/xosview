@@ -87,8 +87,6 @@ static int mib_sen[5] = { CTL_HW, HW_SENSORS };
 #endif
 
 #if defined(HAVE_UVM)
-#include <string.h>
-#include <sys/malloc.h>
 #include <sys/device.h>
 #include <uvm/uvm_extern.h>
 #ifdef VM_UVMEXP2
