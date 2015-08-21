@@ -1646,8 +1646,8 @@ bool BSDHasBattery() {
 }
 
 
-void BSDGetBatteryInfo(int *remaining, unsigned int *state) {
-    *state = XOSVIEW_BATT_NONE;
+void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
+    state = XOSVIEW_BATT_NONE;
 #if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_OPENBSD)
     int batteries = 0;
 #if defined(XOSVIEW_NETBSD)
@@ -1812,19 +1812,19 @@ void BSDGetBatteryInfo(int *remaining, unsigned int *state) {
         if ( close(fd) == -1 )
             logFatal << "Could not close " << APMDEV << std::endl;
         if (aip.ai_batt_life <= 100)
-            *remaining = aip.ai_batt_life; // only 0-100 are valid values
+            remaining = aip.ai_batt_life; // only 0-100 are valid values
         else
-            *remaining = 0;
+            remaining = 0;
         if (aip.ai_batt_stat == 0)
-            *state |= XOSVIEW_BATT_FULL;
+            state |= XOSVIEW_BATT_FULL;
         else if (aip.ai_batt_stat == 1)
-            *state |= XOSVIEW_BATT_LOW;
+            state |= XOSVIEW_BATT_LOW;
         else if (aip.ai_batt_stat == 2)
-            *state |= XOSVIEW_BATT_CRITICAL;
+            state |= XOSVIEW_BATT_CRITICAL;
         else if (aip.ai_batt_stat == 3)
-            *state |= XOSVIEW_BATT_CHARGING;
+            state |= XOSVIEW_BATT_CHARGING;
         else
-            *state = XOSVIEW_BATT_NONE;
+            state = XOSVIEW_BATT_NONE;
         return;
     }
     // ACPI
@@ -1834,16 +1834,16 @@ void BSDGetBatteryInfo(int *remaining, unsigned int *state) {
         logFatal << "failed to get ACPI battery info" << std::endl;
     if ( close(fd) == -1 )
         logFatal << "Could not close " << ACPIDEV << std::endl;
-    *remaining = battio.battinfo.cap;
+    remaining = battio.battinfo.cap;
     if (battio.battinfo.state != ACPI_BATT_STAT_NOT_PRESENT) {
         if (battio.battinfo.state == 0)
-            *state |= XOSVIEW_BATT_FULL;
+            state |= XOSVIEW_BATT_FULL;
         if (battio.battinfo.state & ACPI_BATT_STAT_CRITICAL)
-            *state |= XOSVIEW_BATT_CRITICAL;
+            state |= XOSVIEW_BATT_CRITICAL;
         if (battio.battinfo.state & ACPI_BATT_STAT_DISCHARG)
-            *state |= XOSVIEW_BATT_DISCHARGING;
+            state |= XOSVIEW_BATT_DISCHARGING;
         if (battio.battinfo.state & ACPI_BATT_STAT_CHARGING)
-            *state |= XOSVIEW_BATT_CHARGING;
+            state |= XOSVIEW_BATT_CHARGING;
     }
 #endif
 }

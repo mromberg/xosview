@@ -52,7 +52,7 @@ void BtryMeter::getstats( void ) {
     int remaining;
     unsigned int state;
 
-    BSDGetBatteryInfo(&remaining, &state);
+    BSDGetBatteryInfo(remaining, state);
 
     if (state != old_state_) {
         if (state == XOSVIEW_BATT_NONE) { // no battery present

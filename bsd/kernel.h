@@ -74,15 +74,15 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
 bool BSDHasBattery();
 
 enum BatteryState {
-    XOSVIEW_BATT_NONE =        0,
-    XOSVIEW_BATT_CHARGING =    1,
-    XOSVIEW_BATT_DISCHARGING = 2,
-    XOSVIEW_BATT_FULL =        4,
-    XOSVIEW_BATT_LOW =         8,
-    XOSVIEW_BATT_CRITICAL =   16
+    XOSVIEW_BATT_NONE        = 0,
+    XOSVIEW_BATT_CHARGING    = (1u << 0),
+    XOSVIEW_BATT_DISCHARGING = (1u << 1),
+    XOSVIEW_BATT_FULL        = (1u << 2),
+    XOSVIEW_BATT_LOW         = (1u << 3),
+    XOSVIEW_BATT_CRITICAL    = (1u << 4)
 };
 
-void BSDGetBatteryInfo(int *remaining, unsigned int *state);
+void BSDGetBatteryInfo(int &remaining, unsigned int &state);
 
 
 #endif
