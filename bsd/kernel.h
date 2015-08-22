@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+
 void BSDInit();
 
 void SetKernelName(const std::string &kernelName);
@@ -71,7 +72,18 @@ inline void BSDGetIntrCount(std::vector<uint64_t> &intrCount) {
 int BSDCountCpus(void);
 
 #if defined(__i386__) || defined(__x86_64)
-unsigned int BSDGetCPUTemperature(float *temps, float *tjmax);
+unsigned int BSDGetCPUTemperature(std::vector<float> &temps,
+  std::vector<float> &tjmax);
+
+inline unsigned int BSDGetCPUTemperature(std::vector<float> &temps) {
+    std::vector<float> notUsed;
+    return BSDGetCPUTemperature(temps, notUsed);
+}
+
+inline unsigned int BSDGetCPUTemperature(void) {
+    std::vector<float> notUsed1, notUsed2;
+    return BSDGetCPUTemperature(notUsed1, notUsed2);
+}
 #endif
 
 void BSDGetSensor(const std::string &name, const std::string &valname,

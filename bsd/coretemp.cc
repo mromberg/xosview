@@ -52,7 +52,7 @@ void CoreTemp::checkResources(const ResDB &rdb) {
     // Get tjMax here and use as total.
     float total = -300.0;
     std::vector<float> tjmax(cpucount_, 0.0);
-    BSDGetCPUTemperature(temps_.data(), tjmax.data());
+    BSDGetCPUTemperature(temps_, tjmax);
     for (int i = 0; i < cpucount_; i++) {
         if (tjmax[i] > total)
             total = tjmax[i];
@@ -76,7 +76,7 @@ void CoreTemp::checkResources(const ResDB &rdb) {
 
 
 unsigned int CoreTemp::countCpus( void ) {
-    return BSDGetCPUTemperature(NULL, NULL);
+    return BSDGetCPUTemperature();
 }
 
 
@@ -87,7 +87,7 @@ void CoreTemp::checkevent( void ) {
 
 
 void CoreTemp::getcoretemp( void ) {
-    BSDGetCPUTemperature(temps_.data(), NULL);
+    BSDGetCPUTemperature(temps_);
 
     fields_[0] = 0.0;
     if ( cpu_ >= 0 && cpu_ < cpucount_ ) {  // one core

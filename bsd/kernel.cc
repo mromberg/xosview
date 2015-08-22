@@ -1203,7 +1203,10 @@ int BSDCountCpus(void) {
 
 
 #if defined(__i386__) || defined(__x86_64__)
-unsigned int BSDGetCPUTemperature(float *temps, float *tjmax) {
+static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,
+  std::map<int, float> &tjmax) {
+    temps.clear();
+    tjmax.clear();
     unsigned int nbr = 0;
 #if defined(XOSVIEW_OPENBSD) || defined(XOSVIEW_DFBSD)
     (void)tjmax; // Avoid the warning
@@ -1307,8 +1310,7 @@ unsigned int BSDGetCPUTemperature(float *temps, float *tjmax) {
                 continue;  // no sensor on this core?
             if (s.flags & SENSOR_FINVALID)
                 continue;
-            if (temps)
-                temps[cpu] = (float)(s.value - 273150000) / 1000000.0;
+            temps[cpu] = (float)(s.value - 273150000) / 1000000.0;
             nbr++;
         }
     }
@@ -1349,6 +1351,39 @@ unsigned int BSDGetCPUTemperature(float *temps, float *tjmax) {
 #endif
     return nbr;
 }
+
+
+unsigned int BSDGetCPUTemperature(std::vector<float> &temps,
+  std::vector<float> &tjmax) {
+    std::map<int, float> tempM;
+    std::map<int, float> tjmxM;
+    unsigned int count = BSDGetCPUTemperatureMap(tempM, tjmxM);
+    if (tempM.size() != count || tjmxM.size() != count)
+        logFatal << "Internal core temp logic failure." << std::endl;
+
+    temps.resize(count);
+    tjmax.resize(count);
+
+    // The std::map version that gets the data reads the cpu number
+    // from a string.  The assumption is that this cpu number will
+    // somehow be in the range [0-count].  We will populate the
+    // vectors here and check this.  If it is not the case then
+    // the train stops here.
+    for (std::map<int,float>::iterator it=tempM.begin(); it!=tempM.end(); ++it)
+        if (it->first >= 0 && it->first < (int)temps.size())
+            temps[it->first] = it->second;
+        else
+            logFatal << "Internal core temp logic failure." << std::endl;
+
+    for (std::map<int,float>::iterator it=tjmxM.begin(); it!=tjmxM.end(); ++it)
+        if (it->first >= 0 && it->first < (int)temps.size())
+            tjmax[it->first] = it->second;
+        else
+            logFatal << "Internal core temp logic failure." << std::endl;
+
+    return count;
+}
+
 #endif
 
 
