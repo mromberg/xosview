@@ -1261,13 +1261,12 @@ static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,
                 continue;
             if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
                   "cur-value")) ) {
-                if (temps)
-                    temps[i] = (prop_number_integer_value(
-                          (prop_number_t)pobj1) / 1000000.0) - 273.15;
+                temps[i] = (prop_number_integer_value((prop_number_t)pobj1)
+                  / 1000000.0) - 273.15;
                 nbr++;
             }
             if ( (pobj2 = prop_dictionary_get((prop_dictionary_t)pobj,
-                  "critical-max")) && tjmax )
+                  "critical-max")))
                 tjmax[i] = (prop_number_integer_value(
                       (prop_number_t)pobj2) / 1000000.0) - 273.15;
         }
