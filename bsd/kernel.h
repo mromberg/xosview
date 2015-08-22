@@ -60,7 +60,13 @@ int BSDIntrInit();
 
 int BSDNumInts();
 
-void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs);
+void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
+  std::vector<unsigned int> &intrNbrs);
+
+inline void BSDGetIntrCount(std::vector<uint64_t> &intrCount) {
+    std::vector<unsigned int> notUsed;
+    BSDGetIntrStats(intrCount, notUsed);
+}
 
 int BSDCountCpus(void);
 

@@ -44,7 +44,7 @@ void IrqRateMeter::checkResources(const ResDB &rdb) {
     setUsedFormat( rdb.getResource("irqrateUsedFormat") );
     total_ = 2000;
 
-    BSDGetIntrStats(lastirqs_.data(), NULL);
+    BSDGetIntrCount(lastirqs_);
 }
 
 
@@ -58,7 +58,7 @@ void IrqRateMeter::getinfo( void ) {
     int delta = 0;
 
     IntervalTimerStop();
-    BSDGetIntrStats(irqs_.data(), NULL);
+    BSDGetIntrCount(irqs_);
 
     for (uint i = 0; i <= irqcount_; i++) {
         delta += irqs_[i] - lastirqs_[i];

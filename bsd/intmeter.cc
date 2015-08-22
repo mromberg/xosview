@@ -61,7 +61,7 @@ void IntMeter::checkResources(const ResDB &rdb) {
 
 
 void IntMeter::getirqs( void ) {
-    BSDGetIntrStats(irqs_.data(), inbrs_.data());
+    BSDGetIntrStats(irqs_, inbrs_);
 }
 
 

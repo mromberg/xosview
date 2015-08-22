@@ -1048,7 +1048,12 @@ int BSDNumInts() {
 }
 
 
-void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
+void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
+  std::vector<unsigned int> &intrNbrs) {
+    size_t intVectorLen = BSDNumInts() + 1;
+    intrCount.resize(intVectorLen);
+    intrNbrs.resize(intVectorLen);
+
     /* This code is stolen from vmstat */
     int nbr = 0;
 #if defined(XOSVIEW_FREEBSD)
@@ -1087,8 +1092,7 @@ void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
         is >> util::sink("irq") >> nbr;
         if (is) {
             intrCount[nbr] = kvm_intrcnt[i];
-            if (intrNbrs)
-                intrNbrs[nbr] = 1;
+            intrNbrs[nbr] = 1;
         }
         intrnames += is.str().size() + 1;
     }
@@ -1111,8 +1115,7 @@ void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
             is >> dummy >> nbr;
             if (is) {
                 intrCount[nbr] = evcnt.ev_count;
-                if (intrNbrs)
-                    intrNbrs[nbr] = 1;
+                intrNbrs[nbr] = 1;
             }
         }
         evptr = TAILQ_NEXT(&evcnt, ev_list);
@@ -1139,8 +1142,7 @@ void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
             count = 0;
         }
         intrCount[nbr] += count;  // += because ints can share number
-        if (intrNbrs)
-            intrNbrs[nbr] = 1;
+        intrNbrs[nbr] = 1;
     }
 #else  // XOSVIEW_DFBSD
     int nintr = 0;
@@ -1180,8 +1182,7 @@ void BSDGetIntrStats(uint64_t *intrCount, unsigned int *intrNbrs) {
         if (!is) {
             nbr++;
             intrCount[nbr] += intrcnt[i];
-            if (intrNbrs)
-                intrNbrs[nbr] = 1;
+            intrNbrs[nbr] = 1;
         }
     }
 #endif
