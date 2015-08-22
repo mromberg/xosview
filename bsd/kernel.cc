@@ -1325,27 +1325,24 @@ static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,
         name = "dev.cpu." + util::repr(i) + ".temperature";
         if ( sysctlbyname(name.c_str(), &val, &size, NULL, 0) == 0) {
             nbr++;
-            if (temps)
 #if __FreeBSD_version >= 702106
-                temps[i] = ((float)val - 2732.0) / 10.0;
+            temps[i] = ((float)val - 2732.0) / 10.0;
 #else
-                temps[i] = (float)val;
+            temps[i] = (float)val;
 #endif
         }
         else
             logProblem << "sysctl " << name << " failed" << std::endl;
 
-        if (tjmax) {
-            name = "dev.cpu." + util::repr(i) + ".coretemp.tjmax";
-            if ( sysctlbyname(name.c_str(), &val, &size, NULL, 0) == 0 )
+        name = "dev.cpu." + util::repr(i) + ".coretemp.tjmax";
+        if ( sysctlbyname(name.c_str(), &val, &size, NULL, 0) == 0 )
 #if __FreeBSD_version >= 702106
-                tjmax[i] = ((float)val - 2732.0) / 10.0;
+            tjmax[i] = ((float)val - 2732.0) / 10.0;
 #else
             tjmax[i] = (float)val;
 #endif
-            else
-                logProblem << "sysctl " << name << " failed\n";
-        }
+        else
+            logProblem << "sysctl " << name << " failed\n";
     }
 #endif
 #endif
