@@ -24,15 +24,18 @@ IntMeter::IntMeter( XOSView *parent, const char *, const char *, int dolegends,
     updateirqcount(true);
 }
 
+
 IntMeter::~IntMeter( void ) {
 }
+
 
 void IntMeter::checkevent( void ) {
     getirqs();
 
     for (uint i = 0 ; i <= irqcount_ ; i++) {
         if (inbrs_[i] != 0) {
-            if (realintnum_.find(i) == realintnum_.end()) {   // new interrupt number
+            // new interrupt number
+            if (realintnum_.find(i) == realintnum_.end()) {
                 updateirqcount();
                 return;
             }
@@ -51,14 +54,14 @@ void IntMeter::checkevent( void ) {
 
 void IntMeter::checkResources(const ResDB &rdb) {
     BitMeter::checkResources(rdb);
-    onColor_  = parent_->g().allocColor( rdb.getResource( "intOnColor" ) );
-    offColor_ = parent_->g().allocColor( rdb.getResource( "intOffColor" ) );
+    onColor_  = rdb.getColor("intOnColor");
+    offColor_ = rdb.getColor("intOffColor");
     priority_ = util::stoi( rdb.getResource( "intPriority" ) );
 }
 
 
 void IntMeter::getirqs( void ) {
-    BSDGetIntrStats(irqs_.data(), inbrs_.data());
+    BSDGetIntrStats(irqs_, inbrs_);
 }
 
 

@@ -19,6 +19,7 @@
 #include "fieldmetergraph.h"
 
 
+
 class LoadMeter : public FieldMeterGraph {
 public:
     LoadMeter( XOSView *parent );
@@ -28,14 +29,14 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getloadinfo( void );
-
 private:
     unsigned long procloadcol_, warnloadcol_, critloadcol_;
     int warnThreshold_, critThreshold_, alarmstate_, lastalarmstate_;
     int old_cpu_speed_, cur_cpu_speed_;
     bool do_cpu_speed_;
+
+    void getloadinfo( void );
 };
+
 
 #endif

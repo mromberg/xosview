@@ -28,14 +28,14 @@ public:
 
     static unsigned int countCpus( void );
 
-protected:
-    void getcoretemp( void );
-
 private:
     int   cpu_, cpucount_;
     float high_;
     std::vector<float> temps_;
     unsigned long actcolor_, highcolor_;
+
+    void getcoretemp( void );
 };
+
 
 #endif

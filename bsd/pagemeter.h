@@ -19,6 +19,7 @@
 #include "fieldmetergraph.h"
 
 
+
 class PageMeter : public FieldMeterGraph {
 public:
     PageMeter( XOSView *parent, double total );
@@ -28,11 +29,11 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getpageinfo( void );
-
 private:
     std::vector<uint64_t> previnfo_;
+
+    void getpageinfo( void );
 };
+
 
 #endif

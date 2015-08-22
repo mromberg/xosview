@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
@@ -17,7 +18,6 @@
 //
 
 #include "memmeter.h"
-#include "defines.h"
 #include "kernel.h"
 
 
@@ -29,6 +29,7 @@ static size_t NFIELDS = 4;
 static const char * const LEGEND = "ACT/INACT/WRD/CA/FREE";
 static size_t NFIELDS = 5;
 #endif
+
 
 
 MemMeter::MemMeter( XOSView *parent )
@@ -47,14 +48,14 @@ void MemMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource("memActiveColor") );
-    setfieldcolor( 1, rdb.getResource("memInactiveColor") );
-    setfieldcolor( 2, rdb.getResource("memWiredColor") );
+    setfieldcolor( 0, rdb.getColor("memActiveColor") );
+    setfieldcolor( 1, rdb.getColor("memInactiveColor") );
+    setfieldcolor( 2, rdb.getColor("memWiredColor") );
 #if defined(HAVE_UVM)
-    setfieldcolor( 3, rdb.getResource("memFreeColor") );
+    setfieldcolor( 3, rdb.getColor("memFreeColor") );
 #else
-    setfieldcolor( 3, rdb.getResource("memCacheColor") );
-    setfieldcolor( 4, rdb.getResource("memFreeColor") );
+    setfieldcolor( 3, rdb.getColor("memCacheColor") );
+    setfieldcolor( 4, rdb.getColor("memFreeColor") );
 #endif
     priority_ = util::stoi( rdb.getResource("memPriority") );
     dodecay_ = rdb.isResourceTrue("memDecay");
@@ -70,7 +71,7 @@ void MemMeter::checkevent( void ) {
 
 
 void MemMeter::getmeminfo( void ) {
-    BSDGetPageStats(meminfo_.data(), NULL);
+    BSDGetMemStats(meminfo_);
     fields_[0] = (double)meminfo_[0];
     fields_[1] = (double)meminfo_[1];
     fields_[2] = (double)meminfo_[2];

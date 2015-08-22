@@ -19,6 +19,7 @@
 #include "fieldmetergraph.h"
 
 
+
 class NetMeter : public FieldMeterGraph {
 public:
     NetMeter( XOSView *parent, double max );
@@ -28,14 +29,14 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getstats(void);
-
 private:
     uint64_t lastBytesIn_, lastBytesOut_;
     double netBandwidth_;
     std::string netIface_;
     bool ignored_;
+
+    void getstats(void);
 };
+
 
 #endif

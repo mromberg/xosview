@@ -25,7 +25,7 @@ PageMeter::PageMeter( XOSView *parent, double total )
 
     total_ = total;
     BSDPageInit();
-    BSDGetPageStats(NULL, previnfo_.data());
+    BSDGetPageStats(previnfo_);
 }
 
 
@@ -37,9 +37,9 @@ void PageMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource("pageInColor") );
-    setfieldcolor( 1, rdb.getResource("pageOutColor") );
-    setfieldcolor( 2, rdb.getResource("pageIdleColor") );
+    setfieldcolor( 0, rdb.getColor("pageInColor") );
+    setfieldcolor( 1, rdb.getColor("pageOutColor") );
+    setfieldcolor( 2, rdb.getColor("pageIdleColor") );
     priority_ = util::stoi( rdb.getResource("pagePriority") );
     dodecay_ = rdb.isResourceTrue("pageDecay");
     useGraph_ = rdb.isResourceTrue("pageGraph");
@@ -54,8 +54,8 @@ void PageMeter::checkevent( void ) {
 
 
 void PageMeter::getpageinfo( void ) {
-    uint64_t info[2];
-    BSDGetPageStats(NULL, info);
+    std::vector<uint64_t> info;
+    BSDGetPageStats(info);
 
     fields_[0] = info[0] - previnfo_[0];
     fields_[1] = info[1] - previnfo_[1];

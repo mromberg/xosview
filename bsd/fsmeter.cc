@@ -10,13 +10,12 @@
 
 #include <cerrno>
 
-
 #include <sys/types.h>
 #include <sys/statvfs.h>
 
 #if defined(XOSVIEW_NETBSD)
 static const int XOS_NO_WAIT = ST_NOWAIT;
-#elif defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
+#else
 #include <sys/param.h>
 #include <sys/ucred.h>
 #include <sys/mount.h>
@@ -41,11 +40,10 @@ void FSMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    _bgColor = parent_->g().allocColor(rdb.getResource(
-          "filesysBGColor"));
-    _umountColor = parent_->g().allocColor(rdb.getResource(
-          "filesysNoneColor"));
-    setfieldcolor(0, rdb.getResource("filesysFGColor"));
+    _bgColor = rdb.getColor("filesysBGColor");
+    _umountColor = rdb.getColor("filesysNoneColor");
+
+    setfieldcolor(0, rdb.getColor("filesysFGColor"));
     setfieldcolor(1, _bgColor);
 
     priority_ = util::stoi(rdb.getResource("filesysPriority"));
@@ -121,7 +119,7 @@ std::vector<std::string> FSMeter::getAuto(void) {
 
 #if defined(XOSVIEW_NETBSD)
     struct statvfs *mntbufp;
-#elif defined (XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
+#else
     struct statfs *mntbufp;
 #endif
 
@@ -149,7 +147,7 @@ bool FSMeter::isMount(const std::string &path) {
 
 #if defined(XOSVIEW_NETBSD)
     struct statvfs *mntbufp;
-#elif defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_OPENBSD)
+#else
     struct statfs *mntbufp;
 #endif
 

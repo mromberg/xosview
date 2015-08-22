@@ -96,13 +96,14 @@ xosview*memSwapCacheColor:  #AF0BEB
 xosview*memFreeColor:       #03315E
 xosview*memTextColor:       blue
 xosview*memOtherColor:      orange
-xosview*memActiveColor:	    #03315E
-xosview*memInactiveColor:   #33618E
+xosview*memActiveColor:	    #56E67B
+xosview*memInactiveColor:   #0DA707
+xosview*memWiredColor:      #FC842B
 xosview*memPriority:        10
 xosview*memDecay:           False
 xosview*memGraph:           False
 xosview*memUsedFormat:	    autoscale
-xosview*memWiredColor:      blue
+
 
 
 ! ** Disk Meter Resources

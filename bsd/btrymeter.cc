@@ -18,26 +18,21 @@ BtryMeter::BtryMeter( XOSView *parent )
       old_state_(256) {
 }
 
+
 BtryMeter::~BtryMeter( void ) {
 }
+
 
 void BtryMeter::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
 
-    leftcolor_ = parent_->g().allocColor( rdb.getResource(
-          "batteryLeftColor") );
-    usedcolor_ = parent_->g().allocColor( rdb.getResource(
-          "batteryUsedColor") );
-    chargecolor_ = parent_->g().allocColor( rdb.getResource(
-          "batteryChargeColor") );
-    fullcolor_ = parent_->g().allocColor( rdb.getResource(
-          "batteryFullColor") );
-    lowcolor_ = parent_->g().allocColor( rdb.getResource(
-          "batteryLowColor") );
-    critcolor_ = parent_->g().allocColor( rdb.getResource(
-          "batteryCritColor") );
-    nonecolor_ = parent_->g().allocColor( rdb.getResource(
-          "batteryNoneColor") );
+    leftcolor_ = rdb.getColor("batteryLeftColor");
+    usedcolor_ = rdb.getColor("batteryUsedColor");
+    chargecolor_ = rdb.getColor("batteryChargeColor");
+    fullcolor_ = rdb.getColor("batteryFullColor");
+    lowcolor_ = rdb.getColor("batteryLowColor");
+    critcolor_ = rdb.getColor("batteryCritColor");
+    nonecolor_ = rdb.getColor("batteryNoneColor");
 
     setfieldcolor(0, leftcolor_);
     setfieldcolor(1, usedcolor_);
@@ -46,16 +41,18 @@ void BtryMeter::checkResources(const ResDB &rdb) {
     setUsedFormat( rdb.getResource("batteryUsedFormat") );
 }
 
+
 void BtryMeter::checkevent( void ) {
     getstats();
     drawfields(parent_->g());
 }
 
+
 void BtryMeter::getstats( void ) {
     int remaining;
     unsigned int state;
 
-    BSDGetBatteryInfo(&remaining, &state);
+    BSDGetBatteryInfo(remaining, state);
 
     if (state != old_state_) {
         if (state == XOSVIEW_BATT_NONE) { // no battery present

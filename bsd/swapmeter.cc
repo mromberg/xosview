@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
@@ -17,6 +18,7 @@
 #include "kernel.h"
 
 
+
 SwapMeter::SwapMeter( XOSView *parent )
     : FieldMeterGraph( parent, 2, "SWAP", "USED/FREE" ) {
 
@@ -32,8 +34,8 @@ void SwapMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource("swapUsedColor") );
-    setfieldcolor( 1, rdb.getResource("swapFreeColor") );
+    setfieldcolor( 0, rdb.getColor("swapUsedColor") );
+    setfieldcolor( 1, rdb.getColor("swapFreeColor") );
     priority_ = util::stoi( rdb.getResource("swapPriority") );
     dodecay_ = rdb.isResourceTrue("swapDecay");
     useGraph_ = rdb.isResourceTrue("swapGraph");
@@ -50,7 +52,7 @@ void SwapMeter::checkevent( void ) {
 void SwapMeter::getswapinfo( void ) {
     uint64_t total = 0, used = 0;
 
-    BSDGetSwapInfo(&total, &used);
+    BSDGetSwapInfo(total, used);
 
     total_ = (double)total;
     if ( total_ == 0.0 )

@@ -37,15 +37,12 @@ void LoadMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    procloadcol_ = parent_->g().allocColor( rdb.getResource(
-          "loadProcColor") );
-    warnloadcol_ = parent_->g().allocColor( rdb.getResource(
-          "loadWarnColor") );
-    critloadcol_ = parent_->g().allocColor( rdb.getResource(
-          "loadCritColor") );
+    procloadcol_ = rdb.getColor("loadProcColor");
+    warnloadcol_ = rdb.getColor("loadWarnColor");
+    critloadcol_ = rdb.getColor("loadCritColor");
 
     setfieldcolor( 0, procloadcol_ );
-    setfieldcolor( 1, rdb.getResource("loadIdleColor") );
+    setfieldcolor( 1, rdb.getColor( "loadIdleColor") );
     priority_ = util::stoi( rdb.getResource("loadPriority") );
     dodecay_ = rdb.isResourceTrue("loadDecay");
     useGraph_ = rdb.isResourceTrue("loadGraph");
@@ -90,9 +87,9 @@ void LoadMeter::checkevent( void ) {
         cur_cpu_speed_ = BSDGetCPUSpeed();
 
         if (old_cpu_speed_ != cur_cpu_speed_) {
-            char l[25];
-            snprintf(l, 25, "PROCS/MIN %d MHz", cur_cpu_speed_);
-            legend(l);
+            std::string lgnd("PROCS/MIN ");
+            lgnd += util::repr(cur_cpu_speed_) + " MHz";
+            legend(lgnd);
             drawLegend(parent_->g());
         }
     }

@@ -10,8 +10,6 @@
 
 #include "intratemeter.h"
 #include "kernel.h"
-#include <stdlib.h>
-#include <strings.h>
 
 
 
@@ -38,15 +36,15 @@ IrqRateMeter::~IrqRateMeter( void ) {
 
 void IrqRateMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
-    setfieldcolor( 0, rdb.getResource("irqrateUsedColor") );
-    setfieldcolor( 1, rdb.getResource("irqrateIdleColor") );
+    setfieldcolor( 0, rdb.getColor("irqrateUsedColor") );
+    setfieldcolor( 1, rdb.getColor("irqrateIdleColor") );
     priority_ = util::stoi( rdb.getResource("irqratePriority") );
     dodecay_ = rdb.isResourceTrue("irqrateDecay");
     useGraph_ = rdb.isResourceTrue("irqrateGraph");
     setUsedFormat( rdb.getResource("irqrateUsedFormat") );
     total_ = 2000;
 
-    BSDGetIntrStats(lastirqs_.data(), NULL);
+    BSDGetIntrCount(lastirqs_);
 }
 
 
@@ -60,7 +58,7 @@ void IrqRateMeter::getinfo( void ) {
     int delta = 0;
 
     IntervalTimerStop();
-    BSDGetIntrStats(irqs_.data(), NULL);
+    BSDGetIntrCount(irqs_);
 
     for (uint i = 0; i <= irqcount_; i++) {
         delta += irqs_[i] - lastirqs_[i];

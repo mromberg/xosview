@@ -22,15 +22,14 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getirqs( void );
-    void updateirqcount( bool init = false );
-
 private:
     unsigned int irqcount_;
     std::vector<uint64_t> irqs_, lastirqs_;
     std::vector<unsigned int> inbrs_;
     std::map<int,int> realintnum_;
+    void getirqs( void );
+    void updateirqcount( bool init = false );
 };
+
 
 #endif

@@ -35,12 +35,11 @@ CoreTemp::~CoreTemp( void ) {
 void CoreTemp::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
 
-    actcolor_  = parent_->g().allocColor( rdb.getResource(
-          "coretempActColor" ) );
-    highcolor_ = parent_->g().allocColor( rdb.getResource(
-          "coretempHighColor" ) );
+    actcolor_  = rdb.getColor("coretempActColor");
+    highcolor_ = rdb.getColor("coretempHighColor");
+
     setfieldcolor( 0, actcolor_ );
-    setfieldcolor( 1, rdb.getResource( "coretempIdleColor") );
+    setfieldcolor( 1, rdb.getColor( "coretempIdleColor") );
     setfieldcolor( 2, highcolor_ );
 
     priority_ = util::stoi( rdb.getResource( "coretempPriority" ) );
@@ -53,7 +52,7 @@ void CoreTemp::checkResources(const ResDB &rdb) {
     // Get tjMax here and use as total.
     float total = -300.0;
     std::vector<float> tjmax(cpucount_, 0.0);
-    BSDGetCPUTemperature(temps_.data(), tjmax.data());
+    BSDGetCPUTemperature(temps_, tjmax);
     for (int i = 0; i < cpucount_; i++) {
         if (tjmax[i] > total)
             total = tjmax[i];
@@ -62,29 +61,33 @@ void CoreTemp::checkResources(const ResDB &rdb) {
     if (total > 0.0)
         total_ = total;
 
-    char l[32];
+    std::string lgnd;
     if (!high.size()) {
         high_ = total_;
-        snprintf(l, 32, "ACT(\260C)/HIGH/%d", (int)total_);
+        lgnd = "ACT(\260C)/HIGH/" + util::repr((int)total_);
     }
     else {
         high_ = util::stoi( high );
-        snprintf(l, 32, "ACT(\260C)/%d/%d", (int)high_, (int)total_);
+        lgnd = "ACT(\260C)/" + util::repr((int)high_)
+            + "/" + util::repr((int)total_);
     }
-    legend(l);
+    legend(lgnd);
 }
 
+
 unsigned int CoreTemp::countCpus( void ) {
-    return BSDGetCPUTemperature(NULL, NULL);
+    return BSDGetCPUTemperature();
 }
+
 
 void CoreTemp::checkevent( void ) {
     getcoretemp();
     drawfields(parent_->g());
 }
 
+
 void CoreTemp::getcoretemp( void ) {
-    BSDGetCPUTemperature(temps_.data(), NULL);
+    BSDGetCPUTemperature(temps_);
 
     fields_[0] = 0.0;
     if ( cpu_ >= 0 && cpu_ < cpucount_ ) {  // one core

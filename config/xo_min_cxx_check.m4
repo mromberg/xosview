@@ -27,7 +27,12 @@ AC_MSG_NOTICE([Examining C++ library support...])
 AC_TYPE_LONG_LONG_INT
 AC_TYPE_UNSIGNED_LONG_LONG_INT
 AC_TYPE_UINT64_T
-AC_CHECK_HEADERS(
-    [algorithm cassert cerrno cmath cstddef cstdlib cstring fstream iomanip iostream limits map sstream stdexcept string utility vector],
-    [],[AC_MSG_WARN([Missing C++ library support.  Probably won't build.])])
+dnl----------------------------------------------------
+dnl make headercheck to create list of used C++ headers
+dnl----------------------------------------------------
+AC_CHECK_HEADERS([algorithm cassert cerrno cmath cmath cstddef cstdint dnl
+    cstdlib cstring fstream iomanip iostream limits map set sstream    dnl
+    stdexcept string utility vector],[],
+    [AC_MSG_WARN([Missing C++ library support.])])
+
 ])

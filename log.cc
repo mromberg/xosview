@@ -12,10 +12,6 @@
 #include <fstream>
 #include <sstream>
 
-#ifdef HAVE_FNMATCH_H
-#include <fnmatch.h>
-#endif
-
 namespace util {
 
 static const char *LOGCONFIGFILE = "log.conf";
@@ -62,11 +58,7 @@ bool Log::suppress(const std::string &file, size_t) {
     // as we go.  Later matches override earlier ones
     bool suppress = false;
     for (size_t i = 0 ; i < _slist.size() ; i++) {
-#ifdef HAVE_FNMATCH
-        if (!fnmatch(_slist[i].first.c_str(), file.c_str(), 0)) {
-#else
-        if (_slist[i].first == file) {
-#endif
+        if (util::fnmatch(_slist[i].first.c_str(), file.c_str())) {
             suppress = _slist[i].second;
         }
     }

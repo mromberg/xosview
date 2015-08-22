@@ -97,14 +97,6 @@ AC_PROG_INSTALL
 #------------------------------------------------
 XO_MIN_CXX_CHECK
 
-#------------------------------------------------
-# fnmatch is only used in supressing logDebug
-# and there is a workaround if it is not there.
-# Not sure how common this function is.
-#------------------------------------------------
-AC_CHECK_HEADERS([fnmatch.h])
-AC_CHECK_FUNCS([fnmatch])
-
 #  Check for usleep().  Currently, only HP-UX doesn't have it.
 AC_CHECK_FUNCS(usleep)
 
@@ -142,7 +134,7 @@ case $host_os in
 	host_dir=linux
         host_os=linux
         ;;
-    netbsd*|freebsd*|openbsd*|bsdi*)
+    netbsd*|freebsd*|openbsd*|bsdi*|dragonfly*)
         XO_CONCAT(DOC_FILES,$DOC_FILES,README.bsd)
         XO_BSD_CONFIG
         ;;

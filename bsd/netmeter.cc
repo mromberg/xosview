@@ -15,7 +15,8 @@
 
 #include "netmeter.h"
 #include "kernel.h"
-#include <stdlib.h>
+
+
 
 
 NetMeter::NetMeter( XOSView *parent, double max )
@@ -35,8 +36,9 @@ NetMeter::NetMeter( XOSView *parent, double max )
         lastBytesIn_ = lastBytesOut_ = 0;
         netIface_ = "False";
         ignored_ = false;
-        BSDGetNetInOut(&lastBytesIn_, &lastBytesOut_, netIface_.c_str(),
+        BSDGetNetInOut(lastBytesIn_, lastBytesOut_, netIface_.c_str(),
           ignored_);
+
         IntervalTimerStart();
     }
 }
@@ -50,9 +52,9 @@ void NetMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource("netInColor") );
-    setfieldcolor( 1, rdb.getResource("netOutColor") );
-    setfieldcolor( 2, rdb.getResource("netBackground") );
+    setfieldcolor( 0, rdb.getColor("netInColor") );
+    setfieldcolor( 1, rdb.getColor("netOutColor") );
+    setfieldcolor( 2, rdb.getColor("netBackground") );
     priority_ = util::stoi( rdb.getResource("netPriority") );
     dodecay_ = rdb.isResourceTrue("netDecay");
     useGraph_ = rdb.isResourceTrue("netGraph");
@@ -79,7 +81,7 @@ void NetMeter::getstats(void) {
     uint64_t nowBytesIn, nowBytesOut;
 
     IntervalTimerStop();
-    BSDGetNetInOut(&nowBytesIn, &nowBytesOut, netIface_.c_str(), ignored_);
+    BSDGetNetInOut(nowBytesIn, nowBytesOut, netIface_.c_str(), ignored_);
     double t = (1.0) / IntervalTimeInSecs();
     IntervalTimerStart();
 

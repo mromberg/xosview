@@ -14,6 +14,7 @@
 #include "fieldmetergraph.h"
 
 
+
 class IrqRateMeter : public FieldMeterGraph {
 public:
     IrqRateMeter( XOSView *parent );
@@ -23,12 +24,12 @@ public:
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getinfo( void );
-
 private:
     unsigned int irqcount_;
     std::vector<uint64_t> irqs_, lastirqs_;
+
+    void getinfo( void );
 };
+
 
 #endif

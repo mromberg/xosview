@@ -12,7 +12,6 @@
 //
 
 #include "MeterMaker.h"
-#include "defines.h"
 #include "kernel.h"
 
 #include "loadmeter.h"
@@ -37,6 +36,7 @@
 
 MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
 }
+
 
 std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
@@ -135,7 +135,8 @@ void MeterMaker::coreTempFactory(const ResDB &rdb) {
         if (displayType == "separate") {
             std::string name("CPU");
             for (uint i = 0; i < CoreTemp::countCpus(); i++)
-                _meters.push_back(new CoreTemp(_xos, name + util::repr(i), caption, i));
+                _meters.push_back(new CoreTemp(_xos, name + util::repr(i),
+                    caption, i));
         }
         else if (displayType == "average")
             _meters.push_back(new CoreTemp(_xos, "CPU", caption, -1));
@@ -168,6 +169,7 @@ void MeterMaker::sensorFactory(const ResDB &rdb) {
         s = "bsdsensorLabel" + util::repr(i);
         l = "SEN" + util::repr(i);
         std::string label = rdb.getResourceOrUseDefault(s, l);
-        _meters.push_back(new BSDSensor(_xos, name, high, low, label, caption, i));
+        _meters.push_back(new BSDSensor(_xos, name, high, low, label,
+            caption, i));
     }
 }
