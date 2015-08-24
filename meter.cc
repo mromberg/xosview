@@ -13,10 +13,10 @@ Meter::Meter( XOSView *parent, const std::string &title,
   const std::string &legend, bool docaptions, bool dolegends,
   bool dousedlegends )
     : parent_(parent), x_(0), y_(0), width_(1), height_(1),
-      priority_(1), counter_(0), title_(title), legend_(legend),
+      priority_(1), counter_(0), legend_(legend),
       textcolor_(0), docaptions_(docaptions),
       dolegends_(dolegends), dousedlegends_(dousedlegends), metric_(false),
-      _legendDelimiter("/") {
+      _legendDelimiter("/"), _title(x_, y_, title, Label::BLSW) {
 
     resize( parent->xoff(), parent->newypos(), parent->width() - 10, 10 );
 }
@@ -29,6 +29,7 @@ Meter::~Meter( void ){
 void Meter::checkResources(const ResDB &rdb) {
     textcolor_ = parent_->g().allocColor(rdb.getResource(
           "meterLabelColor"));
+    _title.color(textcolor_);
 }
 
 
@@ -38,12 +39,16 @@ void Meter::resize( int x, int y, int width, int height ){
     width_ = (width>=0) ? width : 0;    // fix for cosmetical bug:
     height_ = (height>=0) ? height : 0; // beware of values < 0 !
     width_ &= ~1;                       // only allow even width_ values
+    _title.move(0, y_ + height_ + 1);
 }
 
+
 void Meter::drawLabels(X11Graphics &g) {
-    drawTitle(g);
+    if (dolegends())
+        _title.draw(g);
     drawLegend(g);
 }
+
 
 void Meter::drawLegend(X11Graphics &g) {
     if (dolegends() && docaptions()) {
@@ -52,13 +57,6 @@ void Meter::drawLegend(X11Graphics &g) {
         // think we always have full window clear here
         g.setFG( textcolor_ );
         g.drawString( x, y, legend_ );
-    }
-}
-
-void Meter::drawTitle(X11Graphics &g) {
-    if (dolegends()) {
-        g.setFG( textcolor_ );
-        g.drawString( 0, y_ + height_ + 1, title_ );
     }
 }
 

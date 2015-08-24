@@ -28,9 +28,13 @@ void Label::clearOld(X11Graphics &g) const {
     int height = g.textHeight();
 
     switch (_anchor) {
+    case BLSE:
+        y += g.textDescent();
     case SE:
         x -= width;
         break;
+    case BLSW:
+        y += g.textDescent();
     case SW:
         break;
     default:
@@ -56,9 +60,13 @@ void Label::draw(X11Graphics &g) {
     int x = _x;
     int y = _y - g.textDescent();
     switch(_anchor) {
+    case BLSE:
+        y += g.textDescent();
     case SE:
         x -= g.textWidth(_current);
         break;
+    case BLSW:
+        y += g.textDescent();
     case SW:
         break;
     default:

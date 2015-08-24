@@ -8,9 +8,11 @@
 #define _METER_H_
 
 #include "xosview.h"	//  To grab MAX_SAMPLES_PER_SECOND.
+#include "label.h"
 #include "strutil.h"
 
 #include <string>
+
 
 
 
@@ -25,8 +27,7 @@ public:
     virtual std::string name( void ) const { return "Meter"; }
 
     virtual void checkResources(const ResDB &rdb);
-    void title( const std::string &title ) { title_ = title; }
-    const std::string &title( void ) const { return title_; }
+    void title( const std::string &title ) { _title.text(title); }
     void legend( const std::string &legend, const std::string &delimiter="/" );
     const std::string &legend( void ) const { return legend_; }
     const std::string &legendDelimiter(void) const { return _legendDelimiter; }
@@ -41,17 +42,7 @@ public:
     int getWidth() const { return width_; }
     int getHeight() const { return height_; }
 
-    // ----------------------------------------------------
-    // Find some way to prevent anything but immediade
-    // "drawing" sub classes implement these.  Possibly
-    // make a meter drawing base class/interface.
-    // IF YOU ARE NOT A DRAWING METER (draw lines rectanges
-    // etc).  Do not call.
-    // ----------------------------------------------------
-    virtual void draw(X11Graphics &g) = 0;
-    virtual void drawLabels(X11Graphics &g);
-    virtual void drawTitle(X11Graphics &g);
-    virtual void drawLegend(X11Graphics &g); // make this go away
+    virtual void draw(X11Graphics &g) = 0; // Draw everything cleared
 
     bool requestevent(void);  // if true wants to sample at this tick
     void resize( int x, int y, int width, int height );
@@ -61,10 +52,11 @@ protected:
     XOSView *parent_;
     int x_, y_, width_, height_;
     int priority_, counter_;
-    std::string title_, legend_;
+    std::string legend_;
     unsigned long textcolor_;
 
 
+    virtual void drawLabels(X11Graphics &g);
 
     double samplesPerSecond(void)
         { return 1.0 * parent_->sampleRate() / priority_; }
@@ -83,6 +75,9 @@ private:
     // setters for these.  So...
     bool docaptions_, dolegends_, dousedlegends_, metric_;
     std::string _legendDelimiter;
+    Label _title;
+
+    virtual void drawLegend(X11Graphics &g); // make this go away
 };
 
 

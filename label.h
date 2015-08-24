@@ -16,7 +16,7 @@ class X11Graphics;
 
 class Label {
 public:
-    enum Anchor { SW, SE };
+    enum Anchor { SW, SE, BLSW, BLSE };
 
     Label(int x, int y, Anchor anchor=SW);
     Label(int x, int y, const std::string &text, Anchor anchor=SW);

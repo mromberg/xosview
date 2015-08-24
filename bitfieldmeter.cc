@@ -122,16 +122,7 @@ void BitFieldMeter::draw(X11Graphics &g) {
 
     g.drawRectangle( x_ + width_/2 +3, y_ - 1, width_/2 - 2,
       height_ + 2 );
-    if (dolegends()){
-        g.setFG( textcolor_ );
-        g.drawString( 0, y_ + height_, title_ );
-
-        if(docaptions()){
-            g.setFG( onColor_ );
-            g.drawString( x_, y_ - 5, legend_ );
-            drawfieldlegend(g);
-        }
-    }
+    drawLabels(g);
     drawBits(g, 1);
     drawfields(g, 1);
 }
