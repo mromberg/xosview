@@ -27,6 +27,7 @@ x11pixmap.o \
 Xrm.o \
 rdb.o \
 defaultstring.o \
+label.o \
 meter.o \
 fieldmeter.o \
 sensorfieldmeter.o \
