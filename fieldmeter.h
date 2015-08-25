@@ -25,9 +25,6 @@ public:
     virtual void drawIfNeeded(X11Graphics &g);
     virtual void checkResources(const ResDB &rdb);
 
-    // Virtual starting here.
-    virtual void drawfields(X11Graphics &g, bool manditory=false);
-
     size_t numfields(void) const { return fields_.size() ; }
     void setfieldcolor( int field, const std::string &color );
     void setfieldcolor( int field, unsigned long color);
@@ -55,6 +52,7 @@ protected:
     bool decayUsed(void) const { return _decayUsed; }
     void decayUsed(bool val) { _decayUsed = val; }
     void updateUsed(void);
+    virtual void drawfields(X11Graphics &g, bool mandatory=false);
 
     bool checkX(int x, int width) const;
 

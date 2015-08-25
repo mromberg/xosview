@@ -149,8 +149,8 @@ void BitFieldMeter::drawfieldlegend(X11Graphics &g) {
     g.setStippleN(0);	/*  Restore default all-bits stipple.  */
 }
 
-void BitFieldMeter::drawused(X11Graphics &g, bool manditory) {
-    if ( !manditory )
+void BitFieldMeter::drawused(X11Graphics &g, bool mandatory) {
+    if ( !mandatory )
         if ( lastused_ == used_ )
             return;
 
@@ -226,7 +226,7 @@ void BitFieldMeter::drawused(X11Graphics &g, bool manditory) {
     lastused_ = used_;
 }
 
-void BitFieldMeter::drawBits(X11Graphics &g, bool manditory){
+void BitFieldMeter::drawBits(X11Graphics &g, bool mandatory){
     static int pass = 1;
 
     int x1 = x_, w;
@@ -234,7 +234,7 @@ void BitFieldMeter::drawBits(X11Graphics &g, bool manditory){
     w = (width_/2 - (numbits()+1)) / numbits();
 
     for ( unsigned int i = 0 ; i < numbits() ; i++ ){
-        if ( (bits_[i] != lastbits_[i]) || manditory ){
+        if ( (bits_[i] != lastbits_[i]) || mandatory ){
             if ( bits_[i] && pass )
                 g.setFG( onColor_ );
             else
@@ -248,7 +248,7 @@ void BitFieldMeter::drawBits(X11Graphics &g, bool manditory){
     }
 }
 
-void BitFieldMeter::drawfields(X11Graphics &g, bool manditory) {
+void BitFieldMeter::drawfields(X11Graphics &g, bool mandatory) {
     int twidth, x = x_ + width_/2 + 4;
 
     if ( total_ == 0 )
@@ -273,7 +273,7 @@ void BitFieldMeter::drawfields(X11Graphics &g, bool manditory) {
         if ( (i == numfields() - 1) && ((x + twidth) != (x_ + width_)) )
             twidth = width_ + x_ - x;
 
-        if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
+        if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
             g.setForeground( colors_[i] );
             g.setStippleN(i%4);
             g.drawFilledRectangle( x, y_, twidth, height_ );
@@ -282,7 +282,7 @@ void BitFieldMeter::drawfields(X11Graphics &g, bool manditory) {
             lastx_[i] = x;
 
             if (dousedlegends())
-                drawused(g, manditory );
+                drawused(g, mandatory );
         }
         x += twidth;
     }

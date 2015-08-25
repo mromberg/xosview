@@ -116,8 +116,6 @@ void LmsTemp::checkResources(const ResDB &rdb) {
 
 void LmsTemp::checkevent( void ){
     getlmstemp();
-
-    drawfields(parent_->g());
 }
 
 // Note:

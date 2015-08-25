@@ -54,8 +54,6 @@ void MemMeter::checkevent( void ){
              << "swcache " << fields_[3] * TOMEG << " "
              << "free "    << fields_[4] * TOMEG
              << std::endl;
-
-    drawfields(parent_->g());
 }
 
 // FIXME: /proc/memstat and /proc/meminfo don't seem to correspond

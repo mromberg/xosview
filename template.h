@@ -57,7 +57,6 @@ void TemplateMeter::checkevent( void ) {
     fields_[0] = 0.4;
     fields_[1] = 0.6;
     setUsed(0.4, 1.0);
-    drawfields(parent_->g());
 }
 
 #endif // REMOVE

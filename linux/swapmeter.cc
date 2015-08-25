@@ -50,7 +50,6 @@ void SwapMeter::checkResources(const ResDB &rdb){
 
 void SwapMeter::checkevent( void ){
     getswapinfo();
-    drawfields(parent_->g());
 }
 
 

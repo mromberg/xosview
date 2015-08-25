@@ -70,7 +70,6 @@ void TZoneMeter::checkevent( void ) {
         setfieldcolor(0, _normColor);
 
     setUsed(ctemp, 1.0);
-    drawfields(parent_->g());
 }
 
 size_t TZoneMeter::count(void) {

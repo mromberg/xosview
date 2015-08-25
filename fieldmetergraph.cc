@@ -49,11 +49,11 @@ FieldMeterGraph::~FieldMeterGraph( void ){
     delete _pmap;
 }
 
-void FieldMeterGraph::drawfields(X11Graphics &g, bool manditory) {
+void FieldMeterGraph::drawfields(X11Graphics &g, bool mandatory) {
     if( !useGraph_ ) {
         // Call FieldMeterDecay code if this meter should not be
         // drawn as a graph
-        FieldMeterDecay::drawfields(g, manditory);
+        FieldMeterDecay::drawfields(g, mandatory);
         return;
     }
 
@@ -63,15 +63,13 @@ void FieldMeterGraph::drawfields(X11Graphics &g, bool manditory) {
     x_ = y_ = 0;
 
     // Draw the graph in the pixmap
-    drawBars(_pmap->g(), manditory);
+    drawBars(_pmap->g(), mandatory);
 
     // put x_ and y_ back to window coords
     x_ = oldx; y_ = oldy;
 
     // and finally copy the pixmap into the window
     _pmap->copyTo(g, 0, 0, width_, height_, x_ + 1, y_ + 1);
-
-    updateUsed();
 }
 
 

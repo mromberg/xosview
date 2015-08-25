@@ -74,8 +74,6 @@ void LoadMeter::checkevent( void ){
             legend( legnd.str().c_str() );
         }
     }
-
-    drawfields(parent_->g());
 }
 
 

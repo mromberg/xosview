@@ -99,6 +99,8 @@ void FieldMeter::setUsed (float val, float total) {
         logFatal << "Error in " << name() << ":  I can't handle a "
                  << "UsedType enum value of " << print_ << "!" << std::endl;
     }
+
+    updateUsed();
 }
 
 
@@ -131,6 +133,8 @@ void FieldMeter::draw(X11Graphics &g) {
 
 
 void FieldMeter::drawIfNeeded(X11Graphics &g) {
+    Meter::drawIfNeeded(g);
+    drawfields(g, false);
     _used.drawIfNeeded(g);
 }
 
@@ -216,10 +220,9 @@ void FieldMeter::updateUsed() {
     _used.text(buf);
 }
 
-void FieldMeter::drawfields(X11Graphics &g, bool manditory) {
-    int twidth, x = x_;
 
-    updateUsed();
+void FieldMeter::drawfields(X11Graphics &g, bool mandatory) {
+    int twidth, x = x_;
 
     if ( total_ == 0 )
         return;
@@ -246,7 +249,7 @@ void FieldMeter::drawfields(X11Graphics &g, bool manditory) {
         if ( (i == numfields() - 1) && ((x + twidth) != (x_ + width_)) )
             twidth = width_ + x_ - x;
 
-        if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
+        if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
             g.setFG( colors_[i] );
             g.setStippleN(i%4);
             g.drawFilledRectangle( x, y_, twidth, height_ );

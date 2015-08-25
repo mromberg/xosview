@@ -31,9 +31,6 @@ public:
     // virtual from Meter
     virtual void checkResources(const ResDB &rdb);
 
-    // virtual from FieldMeter
-    virtual void drawfields(X11Graphics &g, bool manditory=false);
-
 protected:
     void setNumCols( int n );
 
@@ -46,10 +43,13 @@ protected:
      *  corrupted???
      */
     std::vector<float> heightfield_;
+
+    virtual void drawfields(X11Graphics &g, bool mandatory=false);
+
 private:
     X11Pixmap *_pmap;  // backbuffer
 
-    void drawBars(X11Graphics &g, bool manditory);
+    void drawBars(X11Graphics &g, bool mandatory);
     void drawBar(X11Graphics &g, int i);
     void checkBackBuffer(void);
 };

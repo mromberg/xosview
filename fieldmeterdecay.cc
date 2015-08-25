@@ -47,18 +47,15 @@ FieldMeterDecay::FieldMeterDecay(XOSView *parent,
 FieldMeterDecay::~FieldMeterDecay( void ){
 }
 
-void FieldMeterDecay::drawfields(X11Graphics &g, bool manditory) {
+void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
     int twidth, x = x_;
 
     if (!dodecay_) {
         //  If this meter shouldn't be done as a decaying splitmeter,
         //  call the ordinary fieldmeter code.
-        FieldMeter::drawfields(g, manditory);
+        FieldMeter::drawfields(g, mandatory);
         return;
     }
-
-    if (dousedlegends())
-        updateUsed();
 
     if ( total_ == 0.0 )
         return;
@@ -132,14 +129,14 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool manditory) {
 
         //  drawFilledRectangle() adds one to its width and height.
         //    Let's correct for that here.
-        if ( manditory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
+        if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
             if (!checkX(x, twidth))
                 logProblem << "!checkX(" << x << ", " << twidth << ")"
                            << std::endl;
             g.drawFilledRectangle( x, y_, twidth, halfheight );
         }
 
-        if ( manditory || (decay_[i] != lastDecayval_[i]) ){
+        if ( mandatory || (decay_[i] != lastDecayval_[i]) ){
             if (!checkX(decayx, decaytwidth))
                 logProblem << "!checkX(" << decayx << ", " << decaytwidth << ")"
                            << std::endl;

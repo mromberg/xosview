@@ -43,7 +43,7 @@ void BitMeter::checkevent( void ){
     drawBits(parent_->g());
 }
 
-void BitMeter::drawBits(X11Graphics &g, bool manditory){
+void BitMeter::drawBits(X11Graphics &g, bool mandatory){
     static int pass = 1;
 
     int x1 = x_ + 0, x2;
@@ -54,7 +54,7 @@ void BitMeter::drawBits(X11Graphics &g, bool manditory){
         else
             x2 = x_ + (width_+1) - 1;
 
-        if ( (bits_[i] != lastbits_[i]) || manditory ){
+        if ( (bits_[i] != lastbits_[i]) || mandatory ){
             if ( bits_[i] && pass )
                 g.setFG( onColor_ );
             else

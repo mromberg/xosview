@@ -79,8 +79,6 @@ void BtryMeter::checkevent( void ){
         fields_[1] = 100;
         setUsed(fields_[0], total_);
     }
-
-    drawfields(parent_->g());
 }
 
 

@@ -61,7 +61,6 @@ void WLinkMeter::checkevent( void ) {
     fields_[0] = link;
     fields_[1] = total_ - link;
     setUsed(link, total_);
-    drawfields(parent_->g());
 }
 
 

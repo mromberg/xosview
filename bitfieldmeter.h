@@ -26,10 +26,7 @@ public:
     virtual void checkevent( void );
     virtual void checkResources(const ResDB &rdb);
 
-    // virtual from here
-    virtual void drawfields(X11Graphics &g, bool manditory=false);
-
-    void drawBits(X11Graphics &g, bool manditory=false);
+    void drawBits(X11Graphics &g, bool mandatory=false);
 
     void setfieldcolor( int field, const std::string &color );
     void setfieldcolor( int field, unsigned long color);
@@ -37,7 +34,6 @@ public:
 
     void setUsed (float val, float total);
     void setBits(int startbit, unsigned char values);
-
 
     void disableMeter ( void );
 
@@ -60,9 +56,10 @@ protected:
     std::vector<char> lastbits_;
     unsigned int numbits(void) const { return bits_.size(); }
 
+    virtual void drawfields(X11Graphics &g, bool mandatory=false);
     void setUsedFormat ( const std::string &str );
     void drawfieldlegend(X11Graphics &g);
-    void drawused(X11Graphics &g, bool manditory);
+    void drawused(X11Graphics &g, bool mandatory);
     bool checkX(int x, int width) const;
 
     void setNumFields(int n);

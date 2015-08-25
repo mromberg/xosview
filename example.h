@@ -164,9 +164,6 @@ inline void ExampleMeter::checkevent( void ) {
     // we can have the used label report the actual value even
     // if we peak the meter.
     setUsed(percentVal, total_);
-
-    // Call the parent to draw.  Eventually this will not be needed.
-    drawfields(parent_->g());
 }
 
 // What is your name?

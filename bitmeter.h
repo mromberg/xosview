@@ -41,7 +41,7 @@ protected:
 
     void setBits(int startbit, unsigned char values);
 
-    void drawBits(X11Graphics &g, bool manditory=false);
+    void drawBits(X11Graphics &g, bool mandatory=false);
 private:
 };
 
