@@ -1,3 +1,5 @@
+- Add used labels to FS meter
+
 - Xdefaults.in -> Xdefaults
 
 - Add a resouce to specify the meter ordering

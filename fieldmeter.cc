@@ -28,8 +28,15 @@ FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
       lastx_(numfields, 0), colors_(numfields, 0),
       usedcolor_(0), print_(PERCENT), printedZeroTotalMesg_(0),
       numWarnings_(0), _usedAvg(DECAYN, 0.0), _usedAvgIndex(0),
-      _decayUsed(false) {
+      _decayUsed(false), _used(0, 0, Label::BLSE) {
 }
+
+
+void FieldMeter::resize( int x, int y, int width, int height ) {
+    Meter::resize(x, y, width, height);
+    _used.move(x_ - 1, y_ + height_ + 1);
+}
+
 
 void FieldMeter::disableMeter(void) {
     setNumFields(1);
@@ -49,6 +56,7 @@ void FieldMeter::checkResources(const ResDB &rdb){
     Meter::checkResources(rdb);
     usedcolor_ = parent_->g().allocColor(rdb.getResource(
           "usedLabelColor"));
+    _used.color(usedcolor_);
 }
 
 
@@ -122,7 +130,12 @@ void FieldMeter::draw(X11Graphics &g) {
 }
 
 
-void FieldMeter::drawused(X11Graphics &g, bool manditory) {
+void FieldMeter::drawIfNeeded(X11Graphics &g) {
+    _used.drawIfNeeded(g);
+}
+
+
+void FieldMeter::updateUsed() {
     if (!dolegends() || !dousedlegends())
         return;
 
@@ -136,8 +149,6 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
             total += _usedAvg[i];
         dispUsed = total / (float)DECAYN;
     }
-
-    g.setStippleN(0);	/*  Use all-bits stipple.  */
 
     std::ostringstream bufs;
     bufs << std::fixed;
@@ -202,28 +213,13 @@ void FieldMeter::drawused(X11Graphics &g, bool manditory) {
     }
 
     std::string buf = bufs.str();
-    if (!manditory && (buf == _lastUsedStr))
-        return;
-
-    unsigned int twidth = g.textWidth(buf);
-    unsigned int cwidth = std::max(g.textWidth(_lastUsedStr), twidth);
-    unsigned int sheight = g.textHeight();
-    int sx = x_ - (cwidth + 2) - 1;
-    int tx = x_ - (twidth + 2);
-    int sy = y_ + height_ + 1;
-
-    g.clear(sx, sy-g.textAscent(), cwidth, sheight);
-
-    g.setFG( usedcolor_ );
-    g.drawString( tx, sy, buf);
-
-    _lastUsedStr = buf;
+    _used.text(buf);
 }
 
 void FieldMeter::drawfields(X11Graphics &g, bool manditory) {
     int twidth, x = x_;
 
-    drawused( g, manditory );
+    updateUsed();
 
     if ( total_ == 0 )
         return;

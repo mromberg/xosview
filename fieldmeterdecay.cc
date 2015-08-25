@@ -58,7 +58,7 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool manditory) {
     }
 
     if (dousedlegends())
-        drawused(g, manditory);
+        updateUsed();
 
     if ( total_ == 0.0 )
         return;

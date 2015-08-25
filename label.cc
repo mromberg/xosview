@@ -22,10 +22,10 @@ Label::Label(int x, int y, const std::string &text, Anchor anchor)
 
 void Label::clearOld(X11Graphics &g) const {
     // Default SW anchor
-    int x = _x + 1;
+    int x = _x;
     int y = _y - g.textHeight();
-    int width = g.textWidth(_current) - 1;
-    int height = g.textHeight() - 1;
+    int width = g.textWidth(_current);
+    int height = g.textHeight();
 
     switch (_anchor) {
     case BLSE:
@@ -41,7 +41,9 @@ void Label::clearOld(X11Graphics &g) const {
         logBug << "Unknown anchor: " << _anchor << std::endl;
     };
 
-    g.clear(x, y, width, height);
+//    g.setFG("red");
+//    g.drawFilledRectangle(x, y, width, height);
+    g.clear(x, y, width -1, height - 1);
 }
 
 

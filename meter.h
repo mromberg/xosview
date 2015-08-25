@@ -44,7 +44,7 @@ public:
     virtual void drawIfNeeded(X11Graphics &g); // Draw if needed
 
     bool requestevent(void);  // if true wants to sample at this tick
-    void resize( int x, int y, int width, int height );
+    virtual void resize( int x, int y, int width, int height );
     // ----------------------------------------------------
 
 protected:

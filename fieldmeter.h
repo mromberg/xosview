@@ -22,6 +22,7 @@ public:
     // virtual from Meter
     virtual void checkevent( void );
     virtual void draw(X11Graphics &g);
+    virtual void drawIfNeeded(X11Graphics &g);
     virtual void checkResources(const ResDB &rdb);
 
     // Virtual starting here.
@@ -34,8 +35,7 @@ public:
     void reset( void );
 
     void setUsed (float val, float total);
-
-
+    virtual void resize( int x, int y, int width, int height );
     void disableMeter ( void );
 
 protected:
@@ -54,7 +54,7 @@ protected:
     void setUsedFormat ( const std::string &str );
     bool decayUsed(void) const { return _decayUsed; }
     void decayUsed(bool val) { _decayUsed = val; }
-    void drawused(X11Graphics &g, bool manditory);
+    void updateUsed(void);
 
     bool checkX(int x, int width) const;
 
@@ -70,10 +70,11 @@ protected:
 
 private:
     Timer _timer;
-    std::string _lastUsedStr;
     std::vector<float> _usedAvg;
     size_t _usedAvgIndex;
     bool _decayUsed;
+    Label _used;
 };
+
 
 #endif

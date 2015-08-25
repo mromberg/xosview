@@ -53,7 +53,7 @@ void FieldMeterGraph::drawfields(X11Graphics &g, bool manditory) {
     if( !useGraph_ ) {
         // Call FieldMeterDecay code if this meter should not be
         // drawn as a graph
-        FieldMeterDecay::drawfields(parent_->g(), manditory);
+        FieldMeterDecay::drawfields(g, manditory);
         return;
     }
 
@@ -69,10 +69,11 @@ void FieldMeterGraph::drawfields(X11Graphics &g, bool manditory) {
     x_ = oldx; y_ = oldy;
 
     // and finally copy the pixmap into the window
-    _pmap->copyTo(parent_->g(), 0, 0, width_, height_, x_ + 1, y_ + 1);
+    _pmap->copyTo(g, 0, 0, width_, height_, x_ + 1, y_ + 1);
 
-    drawused(g, manditory);
+    updateUsed();
 }
+
 
 void FieldMeterGraph::checkBackBuffer(void) {
     // Create a new Pixmap to match our area if needed
