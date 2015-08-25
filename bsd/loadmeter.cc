@@ -93,7 +93,6 @@ void LoadMeter::checkevent( void ) {
             drawLegend(parent_->g());
         }
     }
-    drawfields(parent_->g());
 }
 
 void LoadMeter::getloadinfo( void ) {

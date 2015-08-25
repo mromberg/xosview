@@ -69,7 +69,6 @@ void NetMeter::checkResources(const ResDB &rdb) {
 
 void NetMeter::checkevent( void ) {
     getstats();
-    drawfields(parent_->g());
 }
 
 

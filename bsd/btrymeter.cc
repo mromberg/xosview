@@ -44,7 +44,6 @@ void BtryMeter::checkResources(const ResDB &rdb) {
 
 void BtryMeter::checkevent( void ) {
     getstats();
-    drawfields(parent_->g());
 }
 
 

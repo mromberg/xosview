@@ -50,8 +50,6 @@ void MemMeter::checkevent( void ){
              << "contig "  << fields_[2] * TOMEG << " "
              << "free "    << fields_[3] * TOMEG
              << std::endl;
-
-    drawfields(parent_->g());
 }
 
 

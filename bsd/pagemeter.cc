@@ -49,7 +49,6 @@ void PageMeter::checkResources(const ResDB &rdb) {
 
 void PageMeter::checkevent( void ) {
     getpageinfo();
-    drawfields(parent_->g());
 }
 
 

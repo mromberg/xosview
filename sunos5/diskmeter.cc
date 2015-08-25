@@ -40,7 +40,6 @@ void DiskMeter::checkResources(const ResDB &rdb) {
 
 void DiskMeter::checkevent( void ) {
     getdiskinfo();
-    drawfields(parent_->g());
 }
 
 

@@ -76,7 +76,6 @@ void CPUMeter::checkevent( void ){
     fields_[4] = (float)ticks[4] / ticktotal;
     total_ = 1.0;
     setUsed(total_ - fields_[4], total_);
-    drawfields(parent_->g());
 }
 
 

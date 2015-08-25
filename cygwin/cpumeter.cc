@@ -78,7 +78,6 @@ void CPUMeter::checkResources(const ResDB &rdb){
 
 void CPUMeter::checkevent( void ){
     getcputime();
-    drawfields(parent_->g());
 }
 
 

@@ -66,7 +66,6 @@ void MemMeter::checkResources(const ResDB &rdb) {
 
 void MemMeter::checkevent( void ) {
     getmeminfo();
-    drawfields(parent_->g());
 }
 
 

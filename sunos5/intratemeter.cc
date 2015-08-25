@@ -40,7 +40,6 @@ void IrqRateMeter::checkResources(const ResDB &rdb) {
 
 void IrqRateMeter::checkevent(void) {
     getinfo();
-    drawfields(parent_->g());
 }
 
 

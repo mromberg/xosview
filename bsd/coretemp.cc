@@ -82,7 +82,6 @@ unsigned int CoreTemp::countCpus( void ) {
 
 void CoreTemp::checkevent( void ) {
     getcoretemp();
-    drawfields(parent_->g());
 }
 
 

@@ -52,8 +52,6 @@ void IrqRateMeter::checkevent( void ){
 
     fields_[0] = rate;
     fields_[1] = total_ - rate;
-
-    drawfields(parent_->g());
 }
 
 unsigned long long IrqRateMeter::getIntCount(void) const {

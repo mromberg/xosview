@@ -49,8 +49,6 @@ void MemMeter::checkevent( void ){
 //             << "swcache " << fields_[3] * TOMEG << " "
              << "free "    << fields_[1] * TOMEG
              << std::endl;
-
-    drawfields(parent_->g());
 }
 
 

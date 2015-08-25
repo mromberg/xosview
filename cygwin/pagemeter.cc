@@ -48,7 +48,6 @@ void PageMeter::checkevent( void ){
         getvmpageinfo();
     else
         getpageinfo();
-    drawfields(parent_->g());
 }
 
 

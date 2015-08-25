@@ -87,7 +87,6 @@ void BSDSensor::checkResources(const ResDB &rdb) {
 
 void BSDSensor::checkevent( void ) {
     getsensor();
-    drawfields(parent_->g());
 }
 
 

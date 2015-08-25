@@ -76,8 +76,6 @@ void FSMeter::checkevent( void ) {
         setUsed(0, 1);
         setBGColor(_umountColor);
     }
-
-    drawfields(parent_->g());
 }
 
 
@@ -86,7 +84,6 @@ void FSMeter::setBGColor(unsigned long c) {
         fields_[0] = 1.0;
         fields_[1] = 0;
         setfieldcolor(1, c);
-        drawfields(parent_->g());
         fields_[0] = 0;
         fields_[1] = 1.0;
         drawLegend(parent_->g());
