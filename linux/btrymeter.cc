@@ -71,7 +71,6 @@ void BtryMeter::checkResources(const ResDB &rdb) {
 
 void BtryMeter::checkevent( void ){
 
-    std::string oldLegend = legend();
     if (!getpwrinfo()) {
         // getting the power info failed (for some reason)
         // reset with sane defaults.
@@ -81,10 +80,9 @@ void BtryMeter::checkevent( void ){
         setUsed(fields_[0], total_);
     }
 
-    if (legend() != oldLegend)
-        drawLegend(parent_->g());
     drawfields(parent_->g());
 }
+
 
 bool BtryMeter::getpwrinfo( void ){
     // Just dispatch the call to the flavor of the day
@@ -169,11 +167,9 @@ bool BtryMeter::getsysinfo(void) {
 
     setUsed(fields_[0], total_);
 
-    size_t oldSize = legend().size();
     std::string newLegend(std::string(std::string("CAP ") + timeLeft
         + "(" + status + ")/USED"));
-    if (newLegend.size() < oldSize)
-        newLegend.resize(oldSize, ' ');
+
     legend(newLegend);
 
     return true;
@@ -402,7 +398,6 @@ bool BtryMeter::getapminfo( void ){
     */
     if ( old_apm_battery_state != apm_battery_state ) {
 
-        size_t oldLegendSize = legend().size();
         std::string newLegend;
 	/* so let's eval the apm_battery_state in some more detail: */
 
@@ -447,12 +442,6 @@ bool BtryMeter::getapminfo( void ){
             newLegend = "Unknown/N.A.";
             break;
 	}
-        // The legend drawing code currently only clears the area
-        // behind the text it is drawig.  Not the area of the old text.
-        // So, for now make sure the legend is wide enough to cover all
-        // cases.
-        if (newLegend.size() < oldLegendSize)
-            newLegend.resize(oldLegendSize, ' ');
 
         legend(newLegend);
     }
@@ -570,7 +559,6 @@ bool BtryMeter::getacpiinfo( void ){
                  << "old=" << old_acpi_charge_state << ", "
                  << "now=" << acpi_charge_state << std::endl;
 
-        size_t oldLegendSize = legend().size();
         std::string newLegend;
 	/* so let's eval the apm_battery_state in some more detail: */
 
@@ -601,9 +589,6 @@ bool BtryMeter::getacpiinfo( void ){
             newLegend = "AC/Charging";
             break;
 	}
-        // add spaces to clear the old text
-        if (newLegend.size() < oldLegendSize)
-            newLegend.resize(oldLegendSize, ' ');
 
         legend(newLegend);
     }

@@ -22,10 +22,10 @@ Label::Label(int x, int y, const std::string &text, Anchor anchor)
 
 void Label::clearOld(X11Graphics &g) const {
     // Default SW anchor
-    int x = _x;
-    int y = _y - g.textAscent();
-    int width = g.textWidth(_current);
-    int height = g.textHeight();
+    int x = _x + 1;
+    int y = _y - g.textHeight();
+    int width = g.textWidth(_current) - 1;
+    int height = g.textHeight() - 1;
 
     switch (_anchor) {
     case BLSE:
@@ -94,14 +94,23 @@ void MCLabel::drawText(X11Graphics &g, int x, int y,
     std::vector<std::string> labelv(util::split(txt, _delim));
 
     for (size_t i = 0 ; i < labelv.size() ; i++) {
+        if (i != 0) {
+            g.setFG(_color);
+            g.drawString(x, y, _delim);
+            x += g.textWidth(_delim);
+        }
         if (i < _colors.size())
             g.setFG(_colors[i]);
         else
             g.setFG(_color);
         g.drawString(x, y, labelv[i]);
         x += g.textWidth(labelv[i]);
-        g.setFG(_color);
-        g.drawString(x, y, _delim);
-        x += g.textWidth(_delim);
     }
+}
+
+
+void MCLabel::setColor(size_t index, unsigned long pixVal) {
+    if (_colors.size() <= index)
+        _colors.resize(index + 1, _color);
+    _colors[index] = pixVal;
 }

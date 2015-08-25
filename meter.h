@@ -29,8 +29,6 @@ public:
     virtual void checkResources(const ResDB &rdb);
     void title( const std::string &title ) { _title.text(title); }
     void legend( const std::string &legend, const std::string &delimiter="/" );
-    const std::string &legend( void ) const { return legend_; }
-    const std::string &legendDelimiter(void) const { return _legendDelimiter; }
     void docaptions(bool val ) { docaptions_ = val; }
     void dolegends(bool val) { dolegends_ = val; }
     void dousedlegends(bool val) { dousedlegends_ = val; }
@@ -43,6 +41,7 @@ public:
     int getHeight() const { return height_; }
 
     virtual void draw(X11Graphics &g) = 0; // Draw everything cleared
+    virtual void drawIfNeeded(X11Graphics &g); // Draw if needed
 
     bool requestevent(void);  // if true wants to sample at this tick
     void resize( int x, int y, int width, int height );
@@ -52,7 +51,6 @@ protected:
     XOSView *parent_;
     int x_, y_, width_, height_;
     int priority_, counter_;
-    std::string legend_;
     unsigned long textcolor_;
 
 
@@ -69,15 +67,13 @@ protected:
     bool metric(void) const { return metric_; }
     void setMetric(bool val) { metric_ = val; }
     double scaleValue(double value, std::string &scale) const;
+    void setLegendColor(size_t index, unsigned long color)
+        { _legend.setColor(index, color); }
 
 private:
-    // Child classes were caught creating their own
-    // setters for these.  So...
     bool docaptions_, dolegends_, dousedlegends_, metric_;
-    std::string _legendDelimiter;
     Label _title;
-
-    virtual void drawLegend(X11Graphics &g); // make this go away
+    MCLabel _legend;
 };
 
 
@@ -90,9 +86,9 @@ inline bool Meter::requestevent( void ){
 
 inline void Meter::legend( const std::string &legend,
   const std::string &delimiter ) {
-    legend_ = legend;
-    _legendDelimiter = delimiter;
-    logAssert(_legendDelimiter.size() == 1) << "delimiter not 1 char string\n";
+    _legend.text(legend);
+    _legend.delimiter(delimiter);
 }
+
 
 #endif

@@ -53,6 +53,7 @@ public:
 
     void delimiter(const std::string &delim) { _delim = delim; }
     void colors(const std::vector<unsigned long> &clst) { _colors = clst; }
+    void setColor(size_t index, unsigned long pixVal);
 
 protected:
     virtual void drawText(X11Graphics &g, int x, int y,

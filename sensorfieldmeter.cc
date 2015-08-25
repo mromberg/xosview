@@ -209,9 +209,6 @@ void SensorFieldMeter::checkFields( double low, double high ){
             fields_[0] = 0;
         fields_[1] = ( fields_[0] > high_ ? 0 : high_ - fields_[0] );
     }
-    fields_[2] = total_ - fields_[1] - fields_[0];
 
-    if (do_legend) {
-        drawLegend(parent_->g());
-    }
+    fields_[2] = total_ - fields_[1] - fields_[0];
 }

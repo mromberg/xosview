@@ -52,13 +52,10 @@ void WLinkMeter::checkevent( void ) {
     if (link > 70)
         link = 70;
 
-    unsigned long ocolor = fieldcolor(0);
     if (link < _poorValue)
         setfieldcolor(0, _poorColor);
     else
         setfieldcolor(0, _goodColor);
-    if (ocolor != fieldcolor(0))
-        drawLegend(parent_->g());
 
     total_ = 70.0;
     fields_[0] = link;

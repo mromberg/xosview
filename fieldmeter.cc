@@ -93,18 +93,23 @@ void FieldMeter::setUsed (float val, float total) {
     }
 }
 
+
 void FieldMeter::reset( void ){
     for ( unsigned int i = 0 ; i < numfields() ; i++ )
         lastvals_[i] = lastx_[i] = -1;
 }
 
+
 void FieldMeter::setfieldcolor( int field, const std::string &color ){
-    colors_[field] = parent_->g().allocColor( color );
+    setfieldcolor(field, parent_->g().allocColor( color ));
 }
+
 
 void FieldMeter::setfieldcolor( int field, unsigned long color ) {
     colors_[field] = color;
+    setLegendColor(field, color);
 }
+
 
 void FieldMeter::draw(X11Graphics &g) {
 
@@ -116,40 +121,6 @@ void FieldMeter::draw(X11Graphics &g) {
     drawfields( g, 1 );
 }
 
-void FieldMeter::drawLegend(X11Graphics &g) {
-    if (!dolegends() || !docaptions())
-        return;
-    // (x_, y_) = coord of upper left of fields
-    // the outline overlaps (x_, y_)
-    // So make the text draw on y_ - 1 - desent of the text (y=0 is top of)
-    //
-    // x + textWidth() is the location to start the next glyph
-
-    size_t pos = 0;
-    int x = x_;
-    int y = y_ - 2 - g.textDescent();
-
-    g.clear(x, y - g.textAscent(), g.textWidth(legend()),
-      g.textHeight());
-
-    for (unsigned int i = 0 ; i < numfields() ; i++) {
-        // string::npos if not found
-        size_t fpos = legend_.find(legendDelimiter(), pos);
-        std::string li = legend_.substr(pos, fpos - pos);
-        pos = fpos + 1;
-
-        g.setStippleN(i%4);
-        g.setFG( colors_[i] );
-        g.drawString( x, y, li);
-        x += g.textWidth( li );
-
-        g.setFG( parent_->foreground() );
-        if ( i != numfields() - 1 )
-            g.drawString( x, y, legendDelimiter() );
-        x += g.textWidth(legendDelimiter());
-    }
-    g.setStippleN(0);	/*  Restore default all-bits stipple.  */
-}
 
 void FieldMeter::drawused(X11Graphics &g, bool manditory) {
     if (!dolegends() || !dousedlegends())

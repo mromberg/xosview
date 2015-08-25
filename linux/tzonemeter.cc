@@ -62,7 +62,6 @@ void TZoneMeter::checkevent( void ) {
     fields_[1] = total_ - fields_[0];
 
     // and the colors
-    unsigned long ocolor = fieldcolor(0);
     if (ctemp >= _critTrip)
         setfieldcolor(0, _critColor);
     else if (ctemp >= _hotTrip)
@@ -70,8 +69,6 @@ void TZoneMeter::checkevent( void ) {
     else
         setfieldcolor(0, _normColor);
 
-    if (ocolor != fieldcolor(0))
-        drawLegend(parent_->g());
     setUsed(ctemp, 1.0);
     drawfields(parent_->g());
 }

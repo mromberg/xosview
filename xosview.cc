@@ -85,6 +85,8 @@ void XOSView::loop(void) {
 
         if (_doFullDraw)
             draw();
+        else
+            drawIfNeeded();
 
         swapBB();
         g().flush();
@@ -172,6 +174,14 @@ void XOSView::visibilityEvent( XVisibilityEvent &event ){
 
 void XOSView::unmapEvent( XUnmapEvent & ){
     _isvisible = false;
+}
+
+
+void XOSView::drawIfNeeded(void) {
+    if (isAtLeastPartiallyVisible()) {
+        for (size_t i = 0 ; i < _meters.size() ; i++)
+            _meters[i]->drawIfNeeded(g());
+    }
 }
 
 
