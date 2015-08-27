@@ -177,6 +177,8 @@ std::vector<unsigned long long> IntMeter::readCounts(void) const {
             if (!ifs)
                 logFatal << "error reading: " << INTFILE << std::endl;
             rval[mi->second] = parseLine(ln);
+            if (mi->second == _maxIRQ)
+                break;
         }
         else
             ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');

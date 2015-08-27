@@ -27,7 +27,7 @@ FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
       used_(0), lastvals_(numfields, 0.0),
       lastx_(numfields, 0), colors_(numfields, 0),
       usedcolor_(0), print_(PERCENT), printedZeroTotalMesg_(0),
-      numWarnings_(0), _usedAvg(DECAYN, 0.0), _usedAvgIndex(0),
+      _usedAvg(DECAYN, 0.0), _usedAvgIndex(0),
       _decayUsed(false), _used(0, 0, Label::BLSE) {
 }
 
@@ -229,20 +229,11 @@ void FieldMeter::drawfields(X11Graphics &g, bool mandatory) {
 
     for ( unsigned int i = 0 ; i < numfields() ; i++ ){
         /*  Look for bogus values.  */
-        if (fields_[i] < 0.0) {
-            /*  Only print a warning 5 times per meter, followed by a
-             *  message about no more warnings.  */
-            numWarnings_ ++;
-            if (numWarnings_ < 5)
-                logProblem << "meter " << name() <<  " had a negative "
-                           << "value of " << fields_[i]
-                           << " for field " << i << std::endl;
-
-            if (numWarnings_ == 5)
-                logProblem << "Future warnings from the " << name()
-                           << " meter will not be displayed."
-                           << std::endl;
-        }
+        logAssert(fields_[i] >= 0.0)
+            << "meter " << name() <<  " had a negative "
+            << "value of " << fields_[i]
+            << " for field " << i << "\n"
+            << "fields_: " << fields_ << std::endl;
 
         twidth = (int) ((width_ * (float) fields_[i]) / total_);
 //    twidth = (int)((fields_[i] * width_) / total_);
@@ -277,21 +268,4 @@ void FieldMeter::setNumFields(size_t n){
     lastx_.resize(n, 0);
 
     total_ = 1.0;
-}
-
-bool FieldMeter::checkX(int x, int width) const {
-    if ((x < x_) || (x + width < x_)
-      || (x > x_ + width_) || (x + width > x_ + width_)){
-        logProblem << "FieldMeter::checkX() : bad horiz values for meter : "
-                   << name() << std::endl
-                   << "value " << x << ", width " << width << ", total_ = "
-                   << total_ << std::endl;
-
-        for (unsigned int i = 0 ; i < numfields() ; i++)
-            logProblem << "fields_[" << i << "] = " << fields_[i] << std::endl;
-
-        return false;
-    }
-
-    return true;
 }

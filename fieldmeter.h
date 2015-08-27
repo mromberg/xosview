@@ -46,7 +46,6 @@ protected:
     unsigned long usedcolor_;
     UsedType print_;
     int printedZeroTotalMesg_;
-    int numWarnings_;
 
     void setUsedFormat ( const std::string &str );
     bool decayUsed(void) const { return _decayUsed; }
@@ -74,5 +73,14 @@ private:
     Label _used;
 };
 
+
+inline bool FieldMeter::checkX(int x, int width) const {
+    logAssert((x >= x_) && (x + width >= x_)
+      && (x <= x_ + width_) && (x + width <= x_ + width_))
+        << "bad horiz values for meter: " << name() << "\n"
+        << "fields_: " << fields_ << std::endl;
+
+    return true;
+}
 
 #endif

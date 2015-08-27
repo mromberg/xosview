@@ -101,13 +101,12 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
         //  We want to round the widths, rather than truncate.
         twidth = (int) (0.5 + (width_ * (float) fields_[i]) / total_);
         decaytwidth = (int) (0.5 + width_ * decay_[i]);
-        if (decaytwidth < 0.0) {
-            logProblem << "FieldMeterDecay " << name()
-                       << ":  decaytwidth of " << std::endl
-                       << decaytwidth << ", width of " << width_
-                       << ", decay_[" << i << std::endl
-                       << "] of " << decay_[i] << std::endl;
-        }
+        logAssert(decaytwidth >= 0.0)
+            << "FieldMeterDecay " << name()
+            << ":  decaytwidth of " << std::endl
+            << decaytwidth << ", width of " << width_
+            << ", decay_[" << i << std::endl
+            << "] of " << decay_[i] << std::endl;
 
         //  However, due to rounding, we may have gone one
         //  pixel too far by the time we get to the later fields...
@@ -130,16 +129,12 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
         //  drawFilledRectangle() adds one to its width and height.
         //    Let's correct for that here.
         if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
-            if (!checkX(x, twidth))
-                logProblem << "!checkX(" << x << ", " << twidth << ")"
-                           << std::endl;
+            checkX(x, twidth);
             g.drawFilledRectangle( x, y_, twidth, halfheight );
         }
 
         if ( mandatory || (decay_[i] != lastDecayval_[i]) ){
-            if (!checkX(decayx, decaytwidth))
-                logProblem << "!checkX(" << decayx << ", " << decaytwidth << ")"
-                           << std::endl;
+            checkX(decayx, decaytwidth);
             g.drawFilledRectangle( decayx, y_+halfheight+1,
               decaytwidth, height_ - halfheight-1);
         }

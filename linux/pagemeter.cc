@@ -9,6 +9,7 @@
 #include "fsutil.h"
 
 #include <fstream>
+#include <limits>
 
 
 PageMeter::PageMeter( XOSView *parent, float max )
@@ -82,13 +83,23 @@ void PageMeter::getvmpageinfo(void) {
     }
     do {
         stats >> buf;
-    } while (!stats.eof() && (util::tolower(buf) != "pswpin"));
-    stats >>pageinfo_[pageindex_][0];
+        std::string pswpin("pswpin");
+        if (buf  == pswpin) {
+            stats >>pageinfo_[pageindex_][0];
+            break;
+        }
+        stats.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    } while (stats);
 
+    std::string pswpout("pswpout");
     do {
         stats >> buf;
-    } while (!stats.eof() && (util::tolower(buf) != "pswpout"));
-    stats >> pageinfo_[pageindex_][1];
+        if (buf == pswpout) {
+            stats >> pageinfo_[pageindex_][1];
+            break;
+        }
+        stats.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    } while (stats);
 
     updateinfo();
 }
