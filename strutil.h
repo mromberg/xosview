@@ -87,7 +87,7 @@ public:
         MATCH=1,      // string matches pattern
         FAIL=0,       // string did not and can not match
         PARTIAL=-1,   // string did not match but could with more characters
-        ERROR=-2      // Bad pattern
+        M_ERROR=-2    // Bad pattern
     };
 
     static MatchResult glob(const std::string &pattern, const std::string &str);

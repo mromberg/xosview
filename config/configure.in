@@ -154,6 +154,13 @@ case $host_os in
 	host_os=gnu
         ;;
     cygwin)
+        AC_CHECK_HEADER(pdh.h)
+        AC_CHECK_LIB(pdh, PdhOpenQuery,
+            [AC_DEFINE(HAVE_PDH,[1],[Have libpdh])
+             XO_CONCAT(LIBS,$LIBS,[-lpdh])])
+        AC_CHECK_LIB(iphlpapi, GetAdaptersAddresses,
+            [AC_DEFINE(HAVE_IPHLPAPI,[1],[Have libiphlpapi])
+            XO_CONCAT(LIBS,$LIBS,[-liphlpapi])])
         XO_CONCAT(DOC_FILES,$DOC_FILES,README.cygwin)
         host_dir=cygwin
         ;;

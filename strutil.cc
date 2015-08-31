@@ -219,7 +219,7 @@ util::Glob::MatchResult util::Glob::pglob(const char *p, const char *s) {
     }
     case '\\': {
         if (!(*++p))
-            return ERROR; // '\\' missing character to escape (end of str)
+            return M_ERROR; // '\\' missing character to escape (end of str)
         if (*p && !*s)
             return PARTIAL;
         if (*s != *p)
@@ -229,7 +229,7 @@ util::Glob::MatchResult util::Glob::pglob(const char *p, const char *s) {
     case '[': {
         GlobRange range(p);
         if (!range.good())
-            return ERROR;
+            return M_ERROR;
         if (!*s)
             return PARTIAL;
         if (!range.match(*s))
@@ -276,7 +276,7 @@ std::istream &util::sink::consume(std::istream &is) const {
         buf += c;
 
         switch (util::glob(_pattern, buf)) {
-        case util::Glob::ERROR:
+        case util::Glob::M_ERROR:
             is.setstate(std::ios::badbit);
         case util::Glob::FAIL:
             if (_greedy && matchedOnce)

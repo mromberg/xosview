@@ -5,6 +5,8 @@
 //  This file may be distributed under terms of the GPL
 //
 
+#include <windows.h>
+
 #include "MeterMaker.h"
 
 #include "loadmeter.h"
@@ -13,6 +15,7 @@
 #include "fsmeter.h"
 #include "swapmeter.h"
 #include "pagemeter.h"
+#include "netmeter.h"
 #include "intratemeter.h"
 #include "example.h"  // The example meter
 
@@ -49,6 +52,9 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     if (rdb.isResourceTrue("page"))
         _meters.push_back(new PageMeter(_xos,
             util::stof(rdb.getResource("pageBandwidth"))));
+
+    if (rdb.isResourceTrue("net"))
+        _meters.push_back(new NetMeter(_xos));
 
     if (rdb.isResourceTrue("irqrate"))
         _meters.push_back(new IrqRateMeter(_xos));
