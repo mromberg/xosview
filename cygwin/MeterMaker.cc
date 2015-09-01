@@ -15,6 +15,7 @@
 #include "fsmeter.h"
 #include "swapmeter.h"
 #include "pagemeter.h"
+#include "diskmeter.h"
 #include "netmeter.h"
 #include "intratemeter.h"
 #include "example.h"  // The example meter
@@ -39,6 +40,9 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
     if (rdb.isResourceTrue("mem"))
         _meters.push_back(new MemMeter(_xos));
+
+    if (rdb.isResourceTrue("disk"))
+        _meters.push_back(new DiskMeter(_xos));
 
     if (rdb.isResourceTrue("filesys")) {
         std::vector<std::string> fs = FSMeter::mounts(rdb);

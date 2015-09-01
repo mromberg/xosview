@@ -19,6 +19,7 @@ cpumeter.o \
 memmeter.o \
 fsmeter.o \
 swapmeter.o \
+diskmeter.o \
 pagemeter.o \
 intratemeter.o \
 winders.o \
