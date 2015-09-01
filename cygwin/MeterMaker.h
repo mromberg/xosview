@@ -30,6 +30,7 @@ private:
     void cpuFactory(const ResDB &rdb);
     void getRange(const std::string &fname, size_t cpuCount,
       size_t &start, size_t &end) const;
+    void tzoneFactory(void);
 };
 
 

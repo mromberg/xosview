@@ -25,6 +25,7 @@ intratemeter.o \
 winders.o \
 perfcount.o \
 netmeter.o \
+tzonemeter.o \
 MeterMaker.o
 
 CFILES := $(OBJS:.o=.cc)

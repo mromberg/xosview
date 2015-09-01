@@ -18,6 +18,7 @@
 #include "diskmeter.h"
 #include "netmeter.h"
 #include "intratemeter.h"
+#include "tzonemeter.h"
 #include "example.h"  // The example meter
 
 
@@ -63,6 +64,9 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     if (rdb.isResourceTrue("irqrate"))
         _meters.push_back(new IrqRateMeter(_xos));
 
+    if (rdb.isResourceTrue("tzone"))
+        tzoneFactory();
+
     return _meters;
 }
 
@@ -101,4 +105,15 @@ void MeterMaker::getRange(const std::string &format,
             end = cpuCount;
         }
     }
+}
+
+
+void MeterMaker::tzoneFactory(void) {
+    size_t nzones = TZoneMeter::count();
+
+    if (!nzones)
+        logProblem << "tzone enabled but no thermal zones found.\n";
+
+    for (size_t i = 0 ; i < nzones ; i++)
+        _meters.push_back(new TZoneMeter(_xos, i));
 }
