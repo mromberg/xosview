@@ -128,6 +128,7 @@ void FieldMeter::draw(X11Graphics &g) {
     g.drawRectangle( x_ - 1, y_ - 1, width_ + 2, height_ + 2 );
 
     drawLabels(g);
+    _used.draw(g);
     drawfields( g, 1 );
 }
 
