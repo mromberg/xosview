@@ -90,7 +90,6 @@ void LoadMeter::checkevent( void ) {
             std::string lgnd("PROCS/MIN ");
             lgnd += util::repr(cur_cpu_speed_) + " MHz";
             legend(lgnd);
-            drawLegend(parent_->g());
         }
     }
 }
@@ -115,7 +114,6 @@ void LoadMeter::getloadinfo( void ) {
             setfieldcolor(0, warnloadcol_);
         else
             setfieldcolor(0, critloadcol_);
-        drawLegend(parent_->g());
         lastalarmstate_ = alarmstate_;
     }
 

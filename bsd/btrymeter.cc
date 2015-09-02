@@ -79,7 +79,6 @@ void BtryMeter::getstats( void ) {
             else
                 legend("CHRG/USED");
         }
-        drawLegend(parent_->g());
         old_state_ = state;
     }
 

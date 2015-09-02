@@ -124,13 +124,11 @@ void CoreTemp::getcoretemp( void ) {
         fields_[1] = 0;
         if (colors_[0] != highcolor_) {
             setfieldcolor( 0, highcolor_ );
-            drawLegend(parent_->g());
         }
     }
     else {
         if (colors_[0] != actcolor_) {
             setfieldcolor( 0, actcolor_ );
-            drawLegend(parent_->g());
         }
     }
 }
