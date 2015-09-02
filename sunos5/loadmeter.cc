@@ -101,7 +101,6 @@ void LoadMeter::checkevent(void) {
         if (old_cpu_speed != cur_cpu_speed) {
             // update the legend:
             legend("PROCS/MIN " + util::repr(cur_cpu_speed) + " MHz");
-            drawLegend(parent_->g());
         }
     }
 }
@@ -145,7 +144,6 @@ void LoadMeter::getloadinfo(void) {
             setfieldcolor(0, warnloadcol);
         else /* if alarmstate == 2 */
             setfieldcolor(0, critloadcol);
-        drawLegend(parent_->g());
         lastalarmstate = alarmstate;
     }
 
