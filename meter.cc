@@ -41,7 +41,7 @@ void Meter::resize( int x, int y, int width, int height ){
     width_ = (width>=0) ? width : 0;    // fix for cosmetical bug:
     height_ = (height>=0) ? height : 0; // beware of values < 0 !
     width_ &= ~1;                       // only allow even width_ values
-    _title.move(0, y_ + height_ + 1);
+    _title.move(0, y_ + height_ + 2);
     _legend.move(x_, y_ - 1);
 }
 

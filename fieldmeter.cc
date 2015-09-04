@@ -34,7 +34,7 @@ FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
 
 void FieldMeter::resize( int x, int y, int width, int height ) {
     Meter::resize(x, y, width, height);
-    _used.move(x_ - 1, y_ + height_ + 1);
+    _used.move(x_ - 2, y_ + height_ + 2);
 }
 
 
