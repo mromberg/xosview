@@ -1,5 +1,3 @@
-- Add used labels to FS meter
-
 - Xdefaults.in -> Xdefaults
 
 - Add a resouce to specify the meter ordering
@@ -9,8 +7,6 @@
 - Use the pixmap in graph meter for expose events/draws
 
 - Opton for labels/used on same line as caption
-
-- Disk/Filesystem free meter
 
 - Make some base classes for the shared linux/bsd meters
 

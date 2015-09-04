@@ -156,20 +156,58 @@ about how a new meter should be added to xosview.
 
 PORTING XOSVIEW
 
-  - The default platform
-    * build and test the example meter
+  This is a general guide to porting xosview to a new platform.  The code
+in xosview is roughly divided into two parts.  The base code which runs on
+every platform (in the top directory) and platform specific "meter" code
+found in a subdirectory.  The configure script will detect the platform and
+assign a subdirectory to be used in the Makefiles.
 
-  - make a new platform sub dir
+  The mapping between platform names and subdirectory names is done in a case
+statement found in config/configure.in.   If the platform xosview is being
+built on is not in this case statement then the code needs to be ported
+to the new platform.  These are the steps:
 
-  - edit config/configure.in to set host_dir
+  - The case statement in config/configure.in will use a default setup
+    for unknown platforms.  It will create Makefiles and set them up to
+    use the default subdirectory.  This default subdirectory contains
+    a MeterMaker class which will simply start the example meter (example.h).
+    This configuration can be used to build and test all the base code.
+    Of course the only meter you will see will be the example meter.  But
+    getting the base code working is a big first step.
 
-  - Add default MeterMaker to new platform
+  - The next big step is to get the base code working with real meters.
+    The easy fork in this road is that the new platform is just a name
+    change in one of the existing supported platforms.  For example,
+    the new platform may be yet another fork of bsd (with a new name).
+    In this case one may be able to simple adjust the case statement in
+    config/configure.in for the new name and thus point xosview at the
+    existing bsd subdirectory.   If the planets are alighned just
+    right, it may just work.  Or it may work with a bit of tweaking.
 
-  - Copy config/Makefile.default.in
+  - If the platform is not a simple variant of an existing one then
+    a new subdirectory for the new platform will need to be created.
+    Make an empty one.
 
-  - Rerun autogen.sh
+  - Edit config/configure.in to set host_dir to point at the
+    new subdirectory in the above mentioned case statement.
 
-  - recompile
+  - Copy default/MeterMaker class to the new platform subdirectory.
+    It will be the starting point of the new code for this platform.
 
-  - Add real meters.
+  - Copy config/Makefile.default.in to config/Makefile.newName.in.
+    Here newName is the same name you gave to the new platform specific
+    subdirectory.  This Makefile template will be the one used to build
+    the code in the platform specific subdirectory.
+
+  - Re-run autogen.sh and then the configure script.  Your new platform
+    subdirectory is now part of the build.  After you re-compile xosview
+    should be using the MeterMaker from the new subdirectory.  Of course
+    it will still just have a single example meter since it is a copy
+    of the default.
+
+  - Add real meters.  Using the other platforms as a guide create
+    meter classes for whatever system specific information you can
+    gather.  Add the new classes to config/Makefile.newName.in and
+    newName/MeterMaker.cc.  Repeat.
+
   
