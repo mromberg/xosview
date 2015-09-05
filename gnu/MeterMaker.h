@@ -10,6 +10,8 @@
 
 #include "rdb.h"
 
+#include <vector>
+
 
 class Meter;
 class XOSView;
