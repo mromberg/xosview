@@ -1,5 +1,13 @@
 Changes since xosview-2.0.0
 
+  - add a default port for unknown platforms
+
+  - minix port
+
+  - code cleanup
+
+  - performance improvements
+
   - cygwin port
 
 Changes since xosview-1.8.4
