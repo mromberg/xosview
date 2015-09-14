@@ -17,7 +17,7 @@
 #include "serialmeter.h"
 #include "loadmeter.h"
 #include "btrymeter.h"
-#include "diskmeter.h"
+#include "pdiskmeter.h"
 #include "raidmeter.h"
 #include "tzonemeter.h"
 #include "lmstemp.h"
@@ -46,8 +46,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
         _meters.push_back(new MemMeter(_xos));
 
     if (rdb.isResourceTrue("disk"))
-        _meters.push_back(new DiskMeter(_xos,
-            util::stof(rdb.getResource("diskBandwidth"))));
+        _meters.push_back(new PrcDiskMeter(_xos));
 
     if (rdb.isResourceTrue("RAID")){
         int RAIDCount = util::stoi(rdb.getResource("RAIDdevicecount"));

@@ -24,10 +24,10 @@ CXX      = @CXX@
 # Flags
 #-----------------------------------------------------------------
 DEFS           = @DEFS@
-CPPFLAGS       = @CPPFLAGS@ -I$(TOP) -I$(TOP)/@host_dir@
+CPPFLAGS       = @CPPFLAGS@ -I$(TOP) -I$(TOP)/cmeter -I$(TOP)/@host_dir@
 CXXFLAGS       = @CXXFLAGS@
-LDFLAGS        = -L$(TOP)/@host_dir@ @LDFLAGS@
-LIBS           = -lmeter @LIBS@
+LDFLAGS        = -L$(TOP)/cmeter -L$(TOP)/@host_dir@ @LDFLAGS@
+LIBS           = -lmeter -lcmeter @LIBS@
 CPP_DEP        = @CPP_DEP@
 
 

@@ -52,16 +52,21 @@ DEPFILES := $(OBJS:%=.%.d)
 # Make rules
 #-----------------------------------------------------------------------
 
-all : meterlib xosview
+all : cmeterlib meterlib xosview
 
 meterlib:
 	cd $(TOP)/@host_dir@ && $(MAKE)
 
+cmeterlib:
+	cd $(TOP)/cmeter && $(MAKE)
+
 $(TOP)/@host_dir@/libmeter.a: meterlib
+
+$(TOP)/cmeter/libcmeter.a: cmeterlib
 
 ##  CXX_BUILD_FLAGS is here 'cause gcc (and other compilers)
 ## can optimize at link time (using profiler data etc).
-xosview: $(OBJS) $(TOP)/@host_dir@/libmeter.a
+xosview: $(OBJS) $(TOP)/@host_dir@/libmeter.a $(TOP)/cmeter/libcmeter.a
 	$(CXX) $(CXX_BUILD_FLAGS) -o xosview $(OBJS) $(LDFLAGS) $(LIBS)
 
 
@@ -84,6 +89,7 @@ distrib: checksource
 
 clean :
 	@echo "***  Cleaning..."
+	cd cmeter && $(MAKE) clean
 	cd @host_dir@ && $(MAKE) clean
 	cd config && $(MAKE) clean
 	rm -f xosview $(OBJS) $(DEPFILES) *~ defaultstring.cc xosview.html

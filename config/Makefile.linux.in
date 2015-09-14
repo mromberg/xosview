@@ -31,7 +31,6 @@ intratemeter.o \
 intmeter.o \
 loadmeter.o \
 btrymeter.o \
-diskmeter.o \
 raidmeter.o \
 tzonemeter.o \
 lmstemp.o \
