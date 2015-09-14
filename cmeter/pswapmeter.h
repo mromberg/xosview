@@ -1,19 +1,18 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 2015
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef SWAPMETER_H
-#define SWAPMETER_H
+#ifndef PSWAPMETER_H
+#define PSWAPMETER_H
+
+#include "cswapmeter.h"
 
 
-#include "pswapmeter.h"
-
-
-class SwapMeter : public PrcSwapMeter {
+class PrcSwapMeter : public ComSwapMeter {
 public:
-    SwapMeter( XOSView *parent ) : PrcSwapMeter(parent) {}
+    PrcSwapMeter( XOSView *parent ) : ComSwapMeter(parent) {}
 
 protected:
     virtual std::pair<uint64_t, uint64_t> getswapinfo( void );

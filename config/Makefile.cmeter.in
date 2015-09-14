@@ -20,6 +20,8 @@ include ../Makefile.config
 #CXXFLAGS += -I$(TOP)
 
 OBJS = \
+cswapmeter.o \
+pswapmeter.o \
 cdiskmeter.o \
 pdiskmeter.o
 
