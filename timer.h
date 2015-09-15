@@ -40,6 +40,8 @@ public:
             + stoptime_.tv_usec - starttime_.tv_usec;
     }
 
+    double report(void) const { return report_usecs() / 1000000.0; } // sec
+
     std::ostream &printOn(std::ostream &os) const {
         return os <<"Timer : ["
                   <<"starttime_ = " <<TimeVal(starttime_)

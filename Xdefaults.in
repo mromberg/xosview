@@ -145,7 +145,7 @@ xosview*swapUsedDecay:      False
 
 ! ** Page Meter Resources
 xosview*page:               True
-xosview*pageBandwidth:      120
+xosview*pageBandwidth:      100000000  ! 100MB/s
 xosview*pageInColor:        #56E67B
 xosview*pageOutColor:       #F2EF44
 xosview*pageIdleColor:      #03315E

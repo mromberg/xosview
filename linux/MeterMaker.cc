@@ -9,7 +9,7 @@
 #include "cpumeter.h"
 #include "memmeter.h"
 #include "swapmeter.h"
-#include "pagemeter.h"
+#include "ppagemeter.h"
 #include "wlinkmeter.h"
 #include "netmeter.h"
 #include "intratemeter.h"
@@ -64,8 +64,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
         _meters.push_back(new SwapMeter(_xos));
 
     if (rdb.isResourceTrue("page"))
-        _meters.push_back(new PageMeter(_xos,
-            util::stof(rdb.getResource("pageBandwidth"))));
+        _meters.push_back(new PrcPageMeter(_xos));
 
     if (rdb.isResourceTrue("wlink"))
         _meters.push_back(new WLinkMeter(_xos));
