@@ -5,29 +5,27 @@
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef IRQRATEMETER_H
-#define IRQRATEMETER_H
+#ifndef CINTRATEMETER_H
+#define CINTRATEMETER_H
 
 #include "fieldmetergraph.h"
-#include "timer.h"
 
 
-class IrqRateMeter : public FieldMeterGraph {
+class ComIrqRateMeter : public FieldMeterGraph {
 public:
-    IrqRateMeter( XOSView *parent );
-    ~IrqRateMeter( void );
+    ComIrqRateMeter( XOSView *parent );
+    ~ComIrqRateMeter( void );
 
     virtual std::string name( void ) const { return "IrqRateMeter"; }
     void checkevent( void );
 
     void checkResources(const ResDB &rdb);
 
-private:
-    unsigned long long _peak;
-    unsigned long long _last;
-    Timer _timer;
+protected:
+    virtual float getIrqRate(void) = 0; // irqs / sec
 
-    unsigned long long getIntCount(void) const;
+private:
+    float _peak;
 };
 
 

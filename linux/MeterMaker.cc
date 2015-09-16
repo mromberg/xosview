@@ -12,7 +12,7 @@
 #include "ppagemeter.h"
 #include "wlinkmeter.h"
 #include "netmeter.h"
-#include "intratemeter.h"
+#include "pintratemeter.h"
 #include "intmeter.h"
 #include "serialmeter.h"
 #include "loadmeter.h"
@@ -82,7 +82,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     serialFactory(rdb);
 
     if (rdb.isResourceTrue("irqrate"))
-        _meters.push_back(new IrqRateMeter(_xos));
+        _meters.push_back(new PrcIrqRateMeter(_xos));
 
     if (rdb.isResourceTrue("interrupts"))
         intFactory(rdb);
