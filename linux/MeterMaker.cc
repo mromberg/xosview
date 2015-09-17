@@ -11,7 +11,7 @@
 #include "swapmeter.h"
 #include "ppagemeter.h"
 #include "wlinkmeter.h"
-#include "netmeter.h"
+#include "pnetmeter.h"
 #include "pintratemeter.h"
 #include "intmeter.h"
 #include "serialmeter.h"
@@ -70,7 +70,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
         _meters.push_back(new WLinkMeter(_xos));
 
     if (rdb.isResourceTrue("net"))
-        _meters.push_back(new NetMeter(_xos));
+        _meters.push_back(new PrcNetMeter(_xos));
 
     if (rdb.isResourceTrue("NFSDStats"))
         _meters.push_back(new NFSDStats(_xos));

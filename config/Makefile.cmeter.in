@@ -24,6 +24,8 @@ cswapmeter.o \
 pswapmeter.o \
 cintratemeter.o \
 pintratemeter.o \
+cnetmeter.o \
+pnetmeter.o \
 cpagemeter.o \
 ppagemeter.o \
 cdiskmeter.o \
