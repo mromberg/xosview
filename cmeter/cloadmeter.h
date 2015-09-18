@@ -7,22 +7,29 @@
 //  Most of this code was written by Werner Fink <werner@suse.de>
 //  Only small changes were made on my part (M.R.)
 //
-#ifndef LOADMETER_H
-#define LOADMETER_H
+#ifndef CLOADMETER_H
+#define CLOADMETER_H
 
 
 #include "fieldmetergraph.h"
 
+#include <stdint.h>
 
-class LoadMeter : public FieldMeterGraph {
+
+
+class ComLoadMeter : public FieldMeterGraph {
 public:
-    LoadMeter( XOSView *parent );
-    ~LoadMeter( void );
+    ComLoadMeter( XOSView *parent );
+    ~ComLoadMeter( void );
 
     std::string name( void ) const { return "LoadMeter"; }
     void checkevent( void );
 
     void checkResources(const ResDB &rdb);
+
+protected:
+    virtual float getLoad(void) = 0;
+    virtual uint64_t getCPUSpeed(void) { return 0; } // cycles/sec
 
 private:
     unsigned long _procloadcol, _warnloadcol, _critloadcol;
@@ -30,11 +37,9 @@ private:
     int _warnThreshold, _critThreshold;
     enum AlarmState { NORM, WARN, CRIT };
     AlarmState _alarmstate, _lastalarmstate;
-    size_t _old_cpu_speed, _cur_cpu_speed;
     bool _do_cpu_speed;
 
-    void getloadinfo( void );
-    void getspeedinfo( void );
+    void setLoadInfo(float load);
 };
 
 

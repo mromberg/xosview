@@ -26,7 +26,6 @@ swapmeter.o \
 wlinkmeter.o \
 nfsmeter.o \
 intmeter.o \
-loadmeter.o \
 btrymeter.o \
 raidmeter.o \
 tzonemeter.o \

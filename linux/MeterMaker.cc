@@ -15,7 +15,7 @@
 #include "pintratemeter.h"
 #include "intmeter.h"
 #include "serialmeter.h"
-#include "loadmeter.h"
+#include "ploadmeter.h"
 #include "btrymeter.h"
 #include "pdiskmeter.h"
 #include "raidmeter.h"
@@ -37,7 +37,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
     // Standard meters (usually added, but users could turn them off)
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new LoadMeter(_xos));
+        _meters.push_back(new PrcLoadMeter(_xos));
 
     if (rdb.isResourceTrue("cpu"))
         cpuFactory(rdb);

@@ -22,6 +22,8 @@ include ../Makefile.config
 OBJS = \
 cswapmeter.o \
 pswapmeter.o \
+cloadmeter.o \
+ploadmeter.o \
 cintratemeter.o \
 pintratemeter.o \
 cnetmeter.o \
