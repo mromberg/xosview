@@ -11,30 +11,22 @@
 #define LOADMETER_H
 
 
-#include "fieldmetergraph.h"
+#include "perfcount.h"
+#include "cloadmeter.h"
 
 
-class LoadMeter : public FieldMeterGraph {
+class LoadMeter : public ComLoadMeter {
 public:
     LoadMeter( XOSView *parent );
-    ~LoadMeter( void );
 
-    std::string name( void ) const { return "LoadMeter"; }
-    void checkevent( void );
-
-    void checkResources(const ResDB &rdb);
+protected:
+    virtual float getLoad(void);
+    virtual uint64_t getCPUSpeed(void);
 
 private:
-    unsigned long _procloadcol, _warnloadcol, _critloadcol;
-
-    int _warnThreshold, _critThreshold;
-    enum AlarmState { NORM, WARN, CRIT };
-    AlarmState _alarmstate, _lastalarmstate;
-    size_t _old_cpu_speed, _cur_cpu_speed;
-    bool _do_cpu_speed;
-
-    void getloadinfo( void );
-    void getspeedinfo( void );
+    size_t _cpus;
+    float _loadAvg;  // 1min load average
+    PerfQuery _query;
 };
 
 
