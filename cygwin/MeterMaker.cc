@@ -17,7 +17,7 @@
 #include "pagemeter.h"
 #include "diskmeter.h"
 #include "netmeter.h"
-#include "intratemeter.h"
+#include "pintratemeter.h"
 #include "tzonemeter.h"
 #include "example.h"  // The example meter
 
@@ -62,7 +62,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
         _meters.push_back(new NetMeter(_xos));
 
     if (rdb.isResourceTrue("irqrate"))
-        _meters.push_back(new IrqRateMeter(_xos));
+        _meters.push_back(new PrcIrqRateMeter(_xos));
 
     if (rdb.isResourceTrue("tzone"))
         tzoneFactory();

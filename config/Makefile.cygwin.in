@@ -21,7 +21,6 @@ fsmeter.o \
 swapmeter.o \
 diskmeter.o \
 pagemeter.o \
-intratemeter.o \
 winders.o \
 perfcount.o \
 netmeter.o \
