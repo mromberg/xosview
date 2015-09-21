@@ -18,7 +18,6 @@ loadmeter.o \
 cpumeter.o \
 memmeter.o \
 fsmeter.o \
-swapmeter.o \
 diskmeter.o \
 winders.o \
 perfcount.o \

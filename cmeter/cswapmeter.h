@@ -25,7 +25,7 @@ public:
 
 protected:
     // first=total, second=free
-    virtual std::pair<uint64_t, uint64_t> getswapinfo( void );
+    virtual std::pair<uint64_t, uint64_t> getswapinfo( void ) = 0;
 };
 
 

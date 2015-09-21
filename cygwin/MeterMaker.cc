@@ -13,7 +13,7 @@
 #include "cpumeter.h"
 #include "memmeter.h"
 #include "fsmeter.h"
-#include "swapmeter.h"
+#include "pswapmeter.h"
 #include "ppagemeter.h"
 #include "diskmeter.h"
 #include "netmeter.h"
@@ -52,7 +52,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     }
 
     if (rdb.isResourceTrue("swap"))
-        _meters.push_back(new SwapMeter(_xos));
+        _meters.push_back(new PrcSwapMeter(_xos));
 
     if (rdb.isResourceTrue("page"))
         _meters.push_back(new PrcPageMeter(_xos));

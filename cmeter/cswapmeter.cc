@@ -7,17 +7,6 @@
 
 #include "cswapmeter.h"
 
-#ifdef USESYSCALLS
-#if defined(GNULIBC) || defined(__GLIBC__)
-#include <sys/sysinfo.h>
-#else
-#include <syscall.h>
-#include <linux/kernel.h>
-#endif
-#endif
-
-
-static const char * const MEMFILENAME = "/proc/meminfo";
 
 
 ComSwapMeter::ComSwapMeter( XOSView *parent )
@@ -51,21 +40,3 @@ void ComSwapMeter::checkevent( void ){
     if (swinfo.first)
         setUsed (fields_[0], total_);
 }
-
-
-#ifdef USESYSCALLS
-std::pair<uint64_t, uint64_t> ComSwapMeter::getswapinfo( void ){
-    struct sysinfo sinfo;
-    int unit;
-
-#if defined(GNULIBC) || defined(__GLIBC__)
-    sysinfo(&sinfo);
-#else
-    syscall( SYS_sysinfo, &sinfo );
-#endif
-
-    unit = (sinfo.mem_unit ? sinfo.mem_unit : 1);
-
-    return std::make_pair(sinfo.totalswap * unit, sinfo.freeswap * unit);
-}
-#endif
