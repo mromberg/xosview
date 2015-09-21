@@ -21,11 +21,14 @@ protected:
     virtual std::pair<float, float> getPageRate(void);
 
 private:
+    bool _vmstat;
     std::pair<uint64_t, uint64_t> _last;
     long _pageSize;
     Timer _timer;
 
     std::pair<uint64_t, uint64_t> getPageCount(void);
+    std::pair<uint64_t, uint64_t> getVMStatPageCount(void);
+    std::pair<uint64_t, uint64_t> getStatPageCount(void);
 };
 
 

@@ -14,7 +14,7 @@
 #include "memmeter.h"
 #include "fsmeter.h"
 #include "swapmeter.h"
-#include "pagemeter.h"
+#include "ppagemeter.h"
 #include "diskmeter.h"
 #include "netmeter.h"
 #include "pintratemeter.h"
@@ -55,8 +55,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
         _meters.push_back(new SwapMeter(_xos));
 
     if (rdb.isResourceTrue("page"))
-        _meters.push_back(new PageMeter(_xos,
-            util::stof(rdb.getResource("pageBandwidth"))));
+        _meters.push_back(new PrcPageMeter(_xos));
 
     if (rdb.isResourceTrue("net"))
         _meters.push_back(new NetMeter(_xos));

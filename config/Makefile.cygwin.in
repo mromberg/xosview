@@ -20,7 +20,6 @@ memmeter.o \
 fsmeter.o \
 swapmeter.o \
 diskmeter.o \
-pagemeter.o \
 winders.o \
 perfcount.o \
 netmeter.o \
