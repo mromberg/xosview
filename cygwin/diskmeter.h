@@ -9,22 +9,18 @@
 #define DISKMETER_H
 
 #include "perfcount.h"
-#include "fieldmetergraph.h"
+#include "cdiskmeter.h"
 
 
 
-class DiskMeter : public FieldMeterGraph {
+class DiskMeter : public ComDiskMeter {
 public:
     DiskMeter( XOSView *parent);
-    ~DiskMeter( void );
 
-    std::string name( void ) const { return "DiskMeter"; }
-    void checkevent( void );
-
-    void checkResources(const ResDB &rdb);
+protected:
+    virtual std::pair<double, double> getRate(void);
 
 private:
-    float _max;
     PerfQuery _query;
 };
 
