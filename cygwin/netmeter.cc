@@ -15,8 +15,7 @@
 
 
 NetMeter::NetMeter( XOSView *parent)
-    : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ), _maxBandwidth(0),
-      _inIndex(0) {
+    : ComNetMeter(parent), _inIndex(0) {
 
     std::vector<std::string> adapters = WinHardware::getAdapters();
     logDebug << "network adapters: " << adapters << std::endl;
@@ -29,65 +28,18 @@ NetMeter::NetMeter( XOSView *parent)
     add(adapters,
       PerfQuery::expand("\\Network Interface(*)\\Bytes Sent/sec"));
 
-
     _query.query();
 }
 
 
-NetMeter::~NetMeter( void ){
-}
-
-
-void NetMeter::checkResources(const ResDB &rdb){
-    FieldMeterGraph::checkResources(rdb);
-
-    _maxBandwidth = util::stof(rdb.getResource( "netBandwidth" ));
-    setfieldcolor( 0, rdb.getColor( "netInColor" ) );
-    setfieldcolor( 1, rdb.getColor( "netOutColor" ) );
-    setfieldcolor( 2, rdb.getColor( "netBackground" ) );
-    priority_ = util::stoi (rdb.getResource( "netPriority" ));
-    useGraph_ = rdb.isResourceTrue( "netGraph" );
-    dodecay_ = rdb.isResourceTrue( "netDecay" );
-    setUsedFormat (rdb.getResource("netUsedFormat"));
-    decayUsed(rdb.isResourceTrue("netUsedDecay"));
-}
-
-
-void NetMeter::checkevent(void) {
-    netpair nstats(getStats());
-
-    unsigned long long in = nstats.first;
-    unsigned long long out = nstats.second;
-
-//    logDebug << "IN : " << in << std::endl;
-//    logDebug << "OUT: " << out << std::endl;
-
-
-    if ((in + out) > _maxBandwidth) { // display percentages
-        total_ = (in + out);
-        fields_[0] = in / total_;
-        fields_[1] = out / total_;
-        fields_[2] = 0;
-        total_ = 1.0;
-    }
-    else {
-        total_ = _maxBandwidth;
-        fields_[0] = in;
-        fields_[1] = out;
-        fields_[2] = total_ - fields_[0] - fields_[1];
-    }
-
-    setUsed(out + in, _maxBandwidth);
-}
-
-NetMeter::netpair NetMeter::getStats(void) {
+std::pair<float, float> NetMeter::getRates(void) {
     _query.query();
 
-    netpair rval(0, 0);
+    std::pair<float, float> rval(0, 0);
     for (size_t i = 0 ; i < _inIndex ; i++)
-        rval.first += _query.counters()[i].longVal();
+        rval.first += _query.counters()[i].doubleVal();
     for (size_t i = _inIndex ; i < _query.counters().size() ; i++)
-        rval.second += _query.counters()[i].longVal();
+        rval.second += _query.counters()[i].doubleVal();
 
     return rval;
 }
