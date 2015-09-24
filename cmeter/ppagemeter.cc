@@ -17,8 +17,8 @@ static const char * const VMSTATFILE = "/proc/vmstat";
 static const char * const STATFILE = "/proc/stat";
 
 
-PrcPageMeter::PrcPageMeter( XOSView *parent)
-    : ComPageMeter(parent), _vmstat(util::fs::isfile(VMSTATFILE)),
+PrcPageMeter::PrcPageMeter( XOSView *parent, bool useVMStat)
+    : ComPageMeter(parent), _vmstat(useVMStat && util::fs::isfile(VMSTATFILE)),
       _last(getPageCount()), _pageSize(sysconf(_SC_PAGESIZE)) {
 }
 

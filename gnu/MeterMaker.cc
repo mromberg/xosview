@@ -9,7 +9,7 @@
 
 #include "cpumeter.h"
 #include "memmeter.h"
-#include "swapmeter.h"
+#include "pswapmeter.h"
 #include "pagemeter.h"
 #include "loadmeter.h"
 #include "fsmeter.h"
@@ -44,14 +44,14 @@ std::vector<Meter *>  MeterMaker::makeMeters(const ResDB &rdb) {
     }
 
     if (rdb.isResourceTrue("swap"))
-        _meters.push_back(new SwapMeter(_xos));
+        _meters.push_back(new PrcSwapMeter(_xos));
 
     if (rdb.isResourceTrue("page"))
-        _meters.push_back(new PageMeter(_xos, util::stof(rdb.getResource(
-                  "pageBandwidth"))));
+        _meters.push_back(new PageMeter(_xos));
 
     return _meters;
 }
+
 
 void MeterMaker::cpuFactory(const ResDB &rdb) {
     size_t start = 0, end = 0;

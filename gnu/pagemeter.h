@@ -8,25 +8,14 @@
 #ifndef PAGEMETER_H
 #define PAGEMETER_H
 
-#include "fieldmetergraph.h"
 
-class PageMeter : public FieldMeterGraph {
+#include "ppagemeter.h"
+
+
+class PageMeter : public PrcPageMeter {
 public:
-    PageMeter( XOSView *parent, float max );
-    ~PageMeter( void );
-
-    virtual std::string name( void ) const { return "PageMeter"; }
-    void checkevent( void );
-
-    void checkResources(const ResDB &rdb);
-
-protected:
-    float pageinfo_[2][2];
-    int pageindex_;
-    float maxspeed_;
-
-    void getpageinfo( void );
-    void updateinfo(void);
+    PageMeter( XOSView *parent ) : PrcPageMeter(parent, false) {}
 };
+
 
 #endif

@@ -15,8 +15,6 @@ CXXFLAGS += -I$(TOP)
 CXXOBJS = \
 cpumeter.o \
 memmeter.o \
-swapmeter.o \
-pagemeter.o \
 fsmeter.o \
 MeterMaker.o
 
