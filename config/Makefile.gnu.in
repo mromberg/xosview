@@ -17,7 +17,6 @@ cpumeter.o \
 memmeter.o \
 swapmeter.o \
 pagemeter.o \
-loadmeter.o \
 fsmeter.o \
 MeterMaker.o
 
