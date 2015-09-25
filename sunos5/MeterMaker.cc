@@ -53,8 +53,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
         _meters.push_back(new MemMeter(_xos, kc));
 
     if (rdb.isResourceTrue("disk"))
-        _meters.push_back(new DiskMeter(_xos, kc, util::stof(rdb.getResource(
-                  "diskBandwidth"))));
+        _meters.push_back(new DiskMeter(_xos, kc));
 
     if (rdb.isResourceTrue("filesys")) {
         std::vector<std::string> fs = FSMeter::mounts(rdb);

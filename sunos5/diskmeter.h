@@ -8,27 +8,22 @@
 #ifndef DISKMETER_H
 #define DISKMETER_H
 
-#include "fieldmetergraph.h"
+#include "cdiskmeter.h"
 #include "kstats.h"
 
 
 
-class DiskMeter : public FieldMeterGraph {
+class DiskMeter : public ComDiskMeter {
 public:
-    DiskMeter( XOSView *parent, kstat_ctl_t *kc, float max );
-    ~DiskMeter( void );
+    DiskMeter( XOSView *parent, kstat_ctl_t *kc);
 
-    virtual std::string name( void ) const { return "DiskMeter"; }
-    void checkevent( void );
-    void checkResources(const ResDB &rdb);
+protected:
+    virtual std::pair<double, double> getRate(void);
 
 private:
     uint64_t _read_prev, _write_prev;
-    float _maxspeed;
     kstat_ctl_t *_kc;
     KStatList *_disks;
-
-    void getdiskinfo( void );
 };
 
 
