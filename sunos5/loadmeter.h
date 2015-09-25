@@ -7,32 +7,23 @@
 #ifndef LOADMETER_H
 #define LOADMETER_H
 
-#include "fieldmetergraph.h"
+#include "cloadmeter.h"
 #include "kstats.h"
 
 
 
-class LoadMeter : public FieldMeterGraph {
+class LoadMeter : public ComLoadMeter {
 public:
     LoadMeter(XOSView *parent, kstat_ctl_t *kcp);
-    ~LoadMeter(void);
 
-    virtual std::string name(void) const { return "LoadMeter"; }
-    void checkevent(void);
-    void checkResources(const ResDB &rdb);
+protected:
+    virtual float getLoad(void);
+    virtual uint64_t getCPUSpeed(void);
 
 private:
-    unsigned long procloadcol, warnloadcol, critloadcol;
-    unsigned int warnThreshold, critThreshold;
-    unsigned int old_cpu_speed, cur_cpu_speed;
-    int lastalarmstate;
-    bool do_cpu_speed;
     KStatList *cpulist;
     kstat_ctl_t *kc;
     kstat_t *ksp;
-
-    void getloadinfo(void);
-    void getspeedinfo(void);
 };
 
 

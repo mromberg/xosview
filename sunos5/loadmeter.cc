@@ -10,7 +10,6 @@
 #include <unistd.h>
 
 #ifdef HAVE_GETLOADAVG
-
 #include <sys/loadavg.h>
 #else
 
@@ -23,15 +22,9 @@
 
 
 LoadMeter::LoadMeter(XOSView *parent, kstat_ctl_t *_kc)
-    : FieldMeterGraph(parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0),
-      procloadcol(0), warnloadcol(0), critloadcol(0),
-      warnThreshold(0), critThreshold(0),
-      old_cpu_speed(0), cur_cpu_speed(0),
-      lastalarmstate(-1), do_cpu_speed(false),
+    : ComLoadMeter(parent),
       cpulist(KStatList::getList(_kc, KStatList::CPU_INFO)),
       kc(_kc), ksp(0) {
-
-    total_ = -1;
 
 #ifndef HAVE_GETLOADAVG
     ksp = kstat_lookup(kc, const_cast<char *>("unix"), 0,
@@ -42,72 +35,7 @@ LoadMeter::LoadMeter(XOSView *parent, kstat_ctl_t *_kc)
 }
 
 
-LoadMeter::~LoadMeter(void) {
-}
-
-
-void LoadMeter::checkResources(const ResDB &rdb) {
-
-    FieldMeterGraph::checkResources(rdb);
-
-    warnloadcol = rdb.getColor("loadWarnColor");
-    procloadcol = rdb.getColor("loadProcColor");
-    critloadcol = rdb.getColor("loadCritColor");
-
-    setfieldcolor(0, procloadcol);
-    setfieldcolor(1, rdb.getColor("loadIdleColor"));
-    priority_ = util::stoi(rdb.getResource("loadPriority"));
-    dodecay_ = rdb.isResourceTrue("loadDecay");
-    useGraph_ = rdb.isResourceTrue("loadGraph");
-    setUsedFormat(rdb.getResource("loadUsedFormat"));
-    do_cpu_speed = rdb.isResourceTrue("loadCpuSpeed");
-
-    std::string warn = rdb.getResource("loadWarnThreshold");
-    if (warn == "auto")
-        warnThreshold = sysconf(_SC_NPROCESSORS_ONLN);
-    else
-        warnThreshold = util::stoi(warn);
-
-    std::string crit = rdb.getResource("loadCritThreshold");
-    if (crit == "auto")
-        critThreshold = warnThreshold * 4;
-    else
-        critThreshold = util::stoi(crit);
-
-    if (dodecay_){
-        /*
-         * Warning: Since the loadmeter changes scale
-         * occasionally, old decay values need to be rescaled.
-         * However, if they are rescaled, they could go off the
-         * edge of the screen.  Thus, for now, to prevent this
-         * whole problem, the load meter can not be a decay
-         * meter.  The load is a decaying average kind of thing
-         * anyway, so having a decaying load average is
-         * redundant.
-         */
-        logProblem << "The loadmeter can not be configured as a decay\n"
-                   << "meter.  See the source code ("
-                   << __FILE__ << ") for further\n"
-                   << "  details.\n";
-        dodecay_ = 0;
-    }
-}
-
-
-void LoadMeter::checkevent(void) {
-    getloadinfo();
-    if (do_cpu_speed) {
-        getspeedinfo();
-        if (old_cpu_speed != cur_cpu_speed) {
-            // update the legend:
-            legend("PROCS/MIN " + util::repr(cur_cpu_speed) + " MHz");
-        }
-    }
-}
-
-
-void LoadMeter::getloadinfo(void) {
-    int alarmstate;
+float LoadMeter::getLoad(void) {
 
 #ifndef HAVE_GETLOADAVG
     // This code is mainly for Solaris 6 and earlier, but should work on
@@ -122,50 +50,17 @@ void LoadMeter::getloadinfo(void) {
     if (k == NULL)
         logFatal << "kstat_data_lookup() failed." << std::endl;
 
-    fields_[0] = kstat_to_double(k) / FSCALE;
+    return kstat_to_double(k) / FSCALE;
 #else
     // getloadavg() if found on Solaris 7 and newer.
     double val;
     getloadavg(&val, 1);
-    fields_[0] = val;
+    return val;
 #endif
-
-    if (fields_[0] <  warnThreshold)
-        alarmstate = 0;
-    else if (fields_[0] >= critThreshold)
-        alarmstate = 2;
-    else /* if fields_[0] >= warnThreshold */
-        alarmstate = 1;
-
-    if (alarmstate != lastalarmstate) {
-        if (alarmstate == 0)
-            setfieldcolor(0, procloadcol);
-        else if (alarmstate == 1)
-            setfieldcolor(0, warnloadcol);
-        else /* if alarmstate == 2 */
-            setfieldcolor(0, critloadcol);
-        lastalarmstate = alarmstate;
-    }
-
-    // Adjust total to next power-of-two of the current load.
-    if ( (fields_[0]*5.0 < total_ && total_ > 1.0) || fields_[0] > total_ ) {
-        unsigned int i = fields_[0];
-        // i = 2^n - 1
-        i |= i >> 1;
-        i |= i >> 2;
-        i |= i >> 4;
-        i |= i >> 8;
-        i |= i >> 16;
-
-        total_ = i + 1;
-    }
-
-    fields_[1] = total_ - fields_[0];
-    setUsed(fields_[0], total_);
 }
 
 
-void LoadMeter::getspeedinfo(void) {
+uint64_t LoadMeter::getCPUSpeed(void) {
     unsigned int total_mhz = 0, i = 0;
     kstat_named_t *k;
     kstat_t *cpu;
@@ -198,6 +93,8 @@ void LoadMeter::getspeedinfo(void) {
             total_mhz += ( kstat_to_ui64(k) / 1000000 );
         }
     }
-    old_cpu_speed = cur_cpu_speed;
-    cur_cpu_speed = ( i > 0 ? total_mhz / i : 0 );
+
+    uint64_t speed = ( i > 0 ? total_mhz / i : 0 );
+
+    return speed * 1000000;
 }
