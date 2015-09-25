@@ -7,48 +7,24 @@
 
 #include "pagemeter.h"
 
+#include <unistd.h>
 #include <sys/sysinfo.h>
 
 
 
-PageMeter::PageMeter(XOSView *parent, kstat_ctl_t *_kc, float max)
-    : FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE"),
+PageMeter::PageMeter(XOSView *parent, kstat_ctl_t *_kc)
+    : ComPageMeter( parent ), _psize(sysconf(_SC_PAGESIZE)),
       pageinfo_(2, std::vector<float>(2, 0.0)),
       pageindex_(0),
-      maxspeed_(max),
       cpustats(KStatList::getList(_kc, KStatList::CPU_STAT)),
       kc(_kc) {
+
+    IntervalTimerStart();
 }
 
 
-PageMeter::~PageMeter(void) {
-}
-
-
-void PageMeter::checkResources(const ResDB &rdb) {
-
-    FieldMeterGraph::checkResources(rdb);
-
-    setfieldcolor(0, rdb.getColor("pageInColor"));
-    setfieldcolor(1, rdb.getColor("pageOutColor"));
-    setfieldcolor(2, rdb.getColor("pageIdleColor"));
-    priority_ = util::stoi(rdb.getResource("pagePriority"));
-    maxspeed_ *= priority_ / 10.0;
-    dodecay_ = rdb.isResourceTrue("pageDecay");
-    useGraph_ = rdb.isResourceTrue("pageGraph");
-    setUsedFormat(rdb.getResource("pageUsedFormat"));
-    decayUsed(rdb.isResourceTrue("pageUsedDecay"));
-}
-
-
-void PageMeter::checkevent(void) {
-    getpageinfo();
-}
-
-
-void PageMeter::getpageinfo(void) {
+std::pair<float, float> PageMeter::getPageRate(void) {
     cpu_stat_t cs;
-    total_ = 0;
     pageinfo_[pageindex_][0] = 0; // pgin
     pageinfo_[pageindex_][1] = 0; // pgout
     cpustats->update(kc);
@@ -61,21 +37,22 @@ void PageMeter::getpageinfo(void) {
     }
 
     int oldindex = (pageindex_ + 1) % 2;
-    for (int i = 0; i < 2; i++) {
+    std::vector<uint64_t> piov(2, 0);
+    for (size_t i = 0; i < piov.size(); i++) {
         if (pageinfo_[oldindex][i] == 0)
             pageinfo_[oldindex][i] = pageinfo_[pageindex_][i];
 
-        fields_[i] = pageinfo_[pageindex_][i] - pageinfo_[oldindex][i];
-        total_ += fields_[i];
+        piov[i] = pageinfo_[pageindex_][i] - pageinfo_[oldindex][i];
     }
 
-    if (total_ > maxspeed_)
-        fields_[2] = 0.0;
-    else {
-        fields_[2] = maxspeed_ - total_;
-        total_ = maxspeed_;
-    }
-
-    setUsed(total_ - fields_[2], maxspeed_);
     pageindex_ = (pageindex_ + 1) % 2;
+
+    IntervalTimerStop();
+    double t = IntervalTimeInSecs();
+    IntervalTimerStart();
+
+    std::pair<float, float> rval((piov[0] * _psize) / t,
+      (piov[1] * _psize) / t);
+
+    return rval;
 }

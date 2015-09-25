@@ -8,24 +8,22 @@
 #ifndef PAGEMETER_H
 #define PAGEMETER_H
 
-#include "fieldmetergraph.h"
+#include "cpagemeter.h"
 #include "kstats.h"
 
 
 
-class PageMeter : public FieldMeterGraph {
+class PageMeter : public ComPageMeter {
 public:
-    PageMeter(XOSView *parent, kstat_ctl_t *kcp, float max);
-    ~PageMeter(void);
+    PageMeter(XOSView *parent, kstat_ctl_t *kcp);
 
-    virtual std::string name(void) const { return "PageMeter"; }
-    void checkevent(void);
-    void checkResources(const ResDB &rdb);
+protected:
+    virtual std::pair<float, float> getPageRate(void);
 
 private:
+    const size_t _psize;
     std::vector<std::vector<float> > pageinfo_;
     int pageindex_;
-    float maxspeed_;
     KStatList *cpustats;
     kstat_ctl_t *kc;
 
