@@ -18,9 +18,8 @@
 
 
 
-NetMeter::NetMeter( XOSView *parent, kstat_ctl_t *kc, float max )
-    : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ),
-      _maxpackets(max),
+NetMeter::NetMeter( XOSView *parent, kstat_ctl_t *kc )
+    : ComNetMeter( parent ),
       _lastBytesIn(0), _lastBytesOut(0),
       _kc(kc),
       _nets(KStatList::getList(_kc, KStatList::NETS)),
@@ -39,16 +38,8 @@ NetMeter::~NetMeter( void ){
 
 void NetMeter::checkResources(const ResDB &rdb) {
 
-    FieldMeterGraph::checkResources(rdb);
+    ComNetMeter::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getColor("netInColor") );
-    setfieldcolor( 1, rdb.getColor("netOutColor") );
-    setfieldcolor( 2, rdb.getColor("netBackground") );
-    priority_ = util::stoi( rdb.getResource("netPriority") );
-    dodecay_ = rdb.isResourceTrue("netDecay");
-    useGraph_ = rdb.isResourceTrue("netGraph");
-    setUsedFormat( rdb.getResource("netUsedFormat") );
-    decayUsed(rdb.isResourceTrue("netUsedDecay"));
     _netIface = rdb.getResource("netIface");
     if (_netIface[0] == '-') {
         _ignored = true;
@@ -57,17 +48,11 @@ void NetMeter::checkResources(const ResDB &rdb) {
 }
 
 
-void NetMeter::checkevent( void ){
-    getnetstats();
-}
-
-
-void NetMeter::getnetstats( void ){
+std::pair<float, float> NetMeter::getRates(void) {
     uint64_t nowBytesIn = 0, nowBytesOut = 0;
     kstat_named_t *k;
     kstat_t *ksp;
     struct lifreq lfr;
-    total_ = _maxpackets;
     _nets->update(_kc);
 
     IntervalTimerStop();
@@ -158,15 +143,12 @@ void NetMeter::getnetstats( void ){
         _lastBytesOut = nowBytesOut;
 
     double t = IntervalTimeInSecs();
-    fields_[0] = (double)(nowBytesIn - _lastBytesIn) / t;
-    fields_[1] = (double)(nowBytesOut - _lastBytesOut) / t;
+    std::pair<float, float> rval((nowBytesIn - _lastBytesIn) / t,
+      (nowBytesOut - _lastBytesOut) / t);
 
     IntervalTimerStart();
     _lastBytesIn = nowBytesIn;
     _lastBytesOut = nowBytesOut;
 
-    if (total_ < fields_[0] + fields_[1])
-        total_ = fields_[0] + fields_[1];
-    fields_[2] = total_ - fields_[0] - fields_[1];
-    setUsed(fields_[0] + fields_[1], total_);
+    return rval;
 }

@@ -8,31 +8,29 @@
 #ifndef NETMETER_H
 #define NETMETER_H
 
-#include "fieldmetergraph.h"
+#include "cnetmeter.h"
 #include "kstats.h"
 
 
 
 
-class NetMeter : public FieldMeterGraph {
+class NetMeter : public ComNetMeter {
 public:
-    NetMeter( XOSView *parent, kstat_ctl_t *kc, float max );
-    ~NetMeter( void );
+    NetMeter( XOSView *parent, kstat_ctl_t *kc );
+    ~NetMeter(void);
 
-    virtual std::string name( void ) const { return "NetMeter"; }
-    void checkevent( void );
-    void checkResources(const ResDB &rdb);
+    virtual void checkResources(const ResDB &rdb);
+
+protected:
+    virtual std::pair<float, float> getRates(void);
 
 private:
-    float _maxpackets;
     uint64_t _lastBytesIn, _lastBytesOut;
     kstat_ctl_t *_kc;
     KStatList *_nets;
     std::string _netIface;
     bool _ignored;
     int _socket;
-
-    void getnetstats( void );
 };
 
 

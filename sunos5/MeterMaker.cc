@@ -68,8 +68,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
         _meters.push_back(new PageMeter(_xos, kc));
 
     if (rdb.isResourceTrue("net"))
-        _meters.push_back(new NetMeter(_xos, kc, util::stof(rdb.getResource(
-                  "netBandwidth"))));
+        _meters.push_back(new NetMeter(_xos, kc));
 
     if (rdb.isResourceTrue("irqrate"))
         _meters.push_back(new IrqRateMeter(_xos, kc));
