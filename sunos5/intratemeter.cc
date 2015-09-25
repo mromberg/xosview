@@ -13,37 +13,14 @@
 
 
 IrqRateMeter::IrqRateMeter(XOSView *parent, kstat_ctl_t *kc)
-    : FieldMeterGraph(parent, 2, "IRQs", "IRQs per sec/IDLE", 1, 1, 0),
+    : ComIrqRateMeter(parent),
       _lastirqcount(0),
       _kc(kc),
       _cpus(KStatList::getList(_kc, KStatList::CPU_SYS)) {
 }
 
 
-IrqRateMeter::~IrqRateMeter(void) {
-}
-
-
-void IrqRateMeter::checkResources(const ResDB &rdb) {
-
-    FieldMeterGraph::checkResources(rdb);
-    setfieldcolor(0, rdb.getColor("irqrateUsedColor"));
-    setfieldcolor(1, rdb.getColor("irqrateIdleColor"));
-    priority_ = util::stoi(rdb.getResource("irqratePriority"));
-    dodecay_ = rdb.isResourceTrue("irqrateDecay");
-    useGraph_ = rdb.isResourceTrue("irqrateGraph");
-    setUsedFormat(rdb.getResource("irqrateUsedFormat"));
-    decayUsed(rdb.isResourceTrue("irqrateUsedDecay"));
-    total_ = 2000;
-}
-
-
-void IrqRateMeter::checkevent(void) {
-    getinfo();
-}
-
-
-void IrqRateMeter::getinfo(void) {
+float IrqRateMeter::getIrqRate(void) {
     kstat_named_t *k;
     uint64_t irqcount = 0;
 
@@ -63,12 +40,9 @@ void IrqRateMeter::getinfo(void) {
     if (_lastirqcount == 0)
         _lastirqcount = irqcount;
 
-    fields_[0] = (irqcount - _lastirqcount) / IntervalTimeInSecs();
+    float rval = (irqcount - _lastirqcount) / IntervalTimeInSecs();
     _lastirqcount = irqcount;
     IntervalTimerStart();
 
-    if (fields_[0] > total_)
-        total_ = fields_[0];
-
-    setUsed(fields_[0], total_);
+    return rval;
 }
