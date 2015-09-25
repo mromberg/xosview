@@ -14,39 +14,15 @@
 
 
 SwapMeter::SwapMeter(XOSView *parent)
-    : FieldMeterGraph(parent, 2, "SWAP", "USED/FREE"),
-      pagesize(sysconf(_SC_PAGESIZE)) {
+    : ComSwapMeter(parent), _pagesize(sysconf(_SC_PAGESIZE)) {
 }
 
 
-SwapMeter::~SwapMeter(void) {
-}
+std::pair<uint64_t, uint64_t> SwapMeter::getswapinfo( void ) {
 
+    std::pair<uint64_t, uint64_t> rval(0, 0);
 
-void SwapMeter::checkResources(const ResDB &rdb) {
-
-    FieldMeterGraph::checkResources(rdb);
-
-    setfieldcolor(0, rdb.getColor("swapUsedColor"));
-    setfieldcolor(1, rdb.getColor("swapFreeColor"));
-    priority_ = util::stoi(rdb.getResource("swapPriority"));
-    dodecay_ = rdb.isResourceTrue("swapDecay");
-    useGraph_ = rdb.isResourceTrue("swapGraph");
-    setUsedFormat(rdb.getResource("swapUsedFormat"));
-    decayUsed(rdb.isResourceTrue("swapUsedDecay"));
-}
-
-
-void SwapMeter::checkevent(void) {
-    getswapinfo();
-}
-
-
-void SwapMeter::getswapinfo(void) {
     int numswap = swapctl(SC_GETNSWP, NULL);
-
-    total_ = fields_[0] = fields_[1] = 0;
-
     if (numswap < 0)
         logFatal << "Can not determine number of swap spaces." << std::endl;
 
@@ -69,12 +45,12 @@ void SwapMeter::getswapinfo(void) {
         // into the rest of swaps (I think [but not like a Sun engineer])
         if (stcount <= numswap) {
             for (int i = 0 ; i < stcount ; i++) {
-                total_ += swaps[0].swt_ent[i].ste_pages;
-                fields_[1] += swaps[0].swt_ent[i].ste_free;
+                rval.first += swaps[0].swt_ent[i].ste_pages;
+                rval.second += swaps[0].swt_ent[i].ste_free;
                 logDebug << swaps[0].swt_ent[i].ste_path << ": "
-                         << swaps[0].swt_ent[i].ste_pages * (pagesize / 1024)
+                         << swaps[0].swt_ent[i].ste_pages * (_pagesize / 1024)
                          << " kB ("
-                         << swaps[0].swt_ent[i].ste_free * (pagesize / 1024)
+                         << swaps[0].swt_ent[i].ste_free * (_pagesize / 1024)
                          << " kB free)" << std::endl;
             }
         }
@@ -83,6 +59,8 @@ void SwapMeter::getswapinfo(void) {
         }
     }
 
-    fields_[0] = total_ - fields_[1];
-    setUsed(fields_[0] * pagesize, total_ * pagesize);
+    rval.first *= _pagesize;
+    rval.second *= _pagesize;
+
+    return rval;
 }
