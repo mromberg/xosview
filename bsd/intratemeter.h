@@ -11,24 +11,20 @@
 #ifndef IRQRATEMETER_H
 #define IRQRATEMETER_H
 
-#include "fieldmetergraph.h"
+#include "cintratemeter.h"
 
 
 
-class IrqRateMeter : public FieldMeterGraph {
+class IrqRateMeter : public ComIrqRateMeter {
 public:
     IrqRateMeter( XOSView *parent );
-    ~IrqRateMeter( void );
 
-    virtual std::string name( void ) const { return "IrqRateMeter"; }
-    void checkevent( void );
-    void checkResources(const ResDB &rdb);
+protected:
+    virtual float getIrqRate(void);
 
 private:
     unsigned int irqcount_;
     std::vector<uint64_t> irqs_, lastirqs_;
-
-    void getinfo( void );
 };
 
 
