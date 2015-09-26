@@ -14,26 +14,19 @@
 #ifndef DISKMETER_H
 #define DISKMETER_H
 
-#include "fieldmetergraph.h"
+#include "cdiskmeter.h"
 
 
 
-class DiskMeter : public FieldMeterGraph {
+class DiskMeter : public ComDiskMeter {
 public:
-    DiskMeter( XOSView *parent, double max );
-    ~DiskMeter( void );
+    DiskMeter( XOSView *parent );
 
-    virtual std::string name( void ) const { return "DiskMeter"; }
-    void checkevent( void );
-    void checkResources(const ResDB &rdb);
+protected:
+    virtual std::pair<double, double> getRate(void);
 
 private:
-#ifndef HAVE_DEVSTAT
     uint64_t prevreads_, prevwrites_;
-#endif
-    double maxBandwidth_;
-
-    void getstats( void );
 };
 
 
