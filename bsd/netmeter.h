@@ -16,26 +16,23 @@
 #ifndef NETMETER_H
 #define NETMETER_H
 
-#include "fieldmetergraph.h"
+#include "cnetmeter.h"
 
 
 
-class NetMeter : public FieldMeterGraph {
+class NetMeter : public ComNetMeter {
 public:
-    NetMeter( XOSView *parent, double max );
-    ~NetMeter( void );
+    NetMeter( XOSView *parent );
 
-    virtual std::string name( void ) const { return "NetMeter"; }
-    void checkevent( void );
     void checkResources(const ResDB &rdb);
+
+protected:
+    virtual std::pair<float, float> getRates(void);
 
 private:
     uint64_t lastBytesIn_, lastBytesOut_;
-    double netBandwidth_;
     std::string netIface_;
     bool ignored_;
-
-    void getstats(void);
 };
 
 

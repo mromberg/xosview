@@ -73,8 +73,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
         _meters.push_back(new PageMeter(_xos));
 
     if ( rdb.isResourceTrue("net") )
-        _meters.push_back(new NetMeter(_xos,
-            util::stof(rdb.getResource("netBandwidth"))));
+        _meters.push_back(new NetMeter(_xos));
 
     if ( rdb.isResourceTrue("disk") )
         _meters.push_back(new DiskMeter(_xos,
