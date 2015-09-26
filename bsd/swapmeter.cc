@@ -20,44 +20,16 @@
 
 
 SwapMeter::SwapMeter( XOSView *parent )
-    : FieldMeterGraph( parent, 2, "SWAP", "USED/FREE" ) {
+    : ComSwapMeter( parent ) {
 
     BSDSwapInit();
 }
 
 
-SwapMeter::~SwapMeter( void ) {
-}
-
-
-void SwapMeter::checkResources(const ResDB &rdb) {
-
-    FieldMeterGraph::checkResources(rdb);
-
-    setfieldcolor( 0, rdb.getColor("swapUsedColor") );
-    setfieldcolor( 1, rdb.getColor("swapFreeColor") );
-    priority_ = util::stoi( rdb.getResource("swapPriority") );
-    dodecay_ = rdb.isResourceTrue("swapDecay");
-    useGraph_ = rdb.isResourceTrue("swapGraph");
-    setUsedFormat( rdb.getResource("swapUsedFormat") );
-}
-
-
-void SwapMeter::checkevent( void ) {
-    getswapinfo();
-}
-
-
-void SwapMeter::getswapinfo( void ) {
+std::pair<uint64_t, uint64_t> SwapMeter::getswapinfo( void ) {
     uint64_t total = 0, used = 0;
 
     BSDGetSwapInfo(total, used);
 
-    total_ = (double)total;
-    if ( total_ == 0.0 )
-        total_ = 1.0;  /* We don't want any division by zero, now, do we?  :) */
-    fields_[0] = (double)used;
-    fields_[1] = total_;
-
-    setUsed(fields_[0], total_);
+    return std::make_pair(total, total - used);
 }

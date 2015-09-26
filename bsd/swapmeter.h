@@ -14,21 +14,16 @@
 #ifndef SWAPMETER_H
 #define SWAPMETER_H
 
-#include "fieldmetergraph.h"
+#include "cswapmeter.h"
 
 
 
-class SwapMeter : public FieldMeterGraph {
+class SwapMeter : public ComSwapMeter {
 public:
     SwapMeter( XOSView *parent );
-    ~SwapMeter( void );
 
-    virtual std::string name( void ) const { return "SwapMeter"; }
-    void checkevent( void );
-    void checkResources(const ResDB &rdb);
-
-private:
-    void getswapinfo( void );
+protected:
+    virtual std::pair<uint64_t, uint64_t> getswapinfo( void );
 };
 
 
