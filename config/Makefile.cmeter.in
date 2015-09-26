@@ -33,14 +33,10 @@ ppagemeter.o \
 cdiskmeter.o \
 pdiskmeter.o
 
-FAIL_ARCHS = arm m68k powerpc s390 sparc 3D s390x powerpc64
-
 
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)
 
-vpath %.h $(TOP)
-vpath %.cc $(TOP)
 
 #-----------------------------------------------------------------------
 
