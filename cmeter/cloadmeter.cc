@@ -14,8 +14,6 @@
 #include <iomanip>
 
 
-static const char * const LOADFILENAME = "/proc/loadavg";
-static const char * const SPEEDFILENAME = "/proc/cpuinfo";
 
 
 ComLoadMeter::ComLoadMeter( XOSView *parent )

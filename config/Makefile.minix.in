@@ -15,7 +15,6 @@ include ../Makefile.config
 
 OBJS = \
 xosvproc.o \
-loadmeter.o \
 cpumeter.o \
 memmeter.o \
 fsmeter.o \

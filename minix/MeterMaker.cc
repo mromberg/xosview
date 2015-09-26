@@ -7,7 +7,7 @@
 
 #include "MeterMaker.h"
 
-#include "loadmeter.h"
+#include "ploadmeter.h"
 #include "cpumeter.h"
 #include "memmeter.h"
 #include "fsmeter.h"
@@ -26,7 +26,7 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
         _meters.push_back(new ExampleMeter(_xos));
 
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new LoadMeter(_xos));
+        _meters.push_back(new PrcLoadMeter(_xos));
 
     if (rdb.isResourceTrue("cpu"))
         _meters.push_back(new CPUMeter(_xos));
