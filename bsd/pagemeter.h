@@ -16,23 +16,20 @@
 #ifndef PAGEMETER_H
 #define PAGEMETER_H
 
-#include "fieldmetergraph.h"
+#include "cpagemeter.h"
 
 
 
-class PageMeter : public FieldMeterGraph {
+class PageMeter : public ComPageMeter {
 public:
-    PageMeter( XOSView *parent, double total );
-    ~PageMeter( void );
+    PageMeter( XOSView *parent );
 
-    virtual std::string name( void ) const { return "PageMeter"; }
-    void checkevent( void );
-    void checkResources(const ResDB &rdb);
+protected:
+    virtual std::pair<float, float> getPageRate(void);
 
 private:
+    const size_t _psize;
     std::vector<uint64_t> previnfo_;
-
-    void getpageinfo( void );
 };
 
 

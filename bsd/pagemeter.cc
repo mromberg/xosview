@@ -17,53 +17,33 @@
 #include "pagemeter.h"
 #include "kernel.h"
 
+#include <unistd.h>
 
 
-PageMeter::PageMeter( XOSView *parent, double total )
-    : FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE" ),
+
+PageMeter::PageMeter( XOSView *parent )
+    : ComPageMeter( parent ), _psize(sysconf(_SC_PAGESIZE)),
       previnfo_(2, 0) {
 
-    total_ = total;
     BSDPageInit();
     BSDGetPageStats(previnfo_);
+    IntervalTimerStart();
 }
 
 
-PageMeter::~PageMeter( void ) {
-}
+std::pair<float, float> PageMeter::getPageRate(void) {
 
-
-void PageMeter::checkResources(const ResDB &rdb) {
-
-    FieldMeterGraph::checkResources(rdb);
-
-    setfieldcolor( 0, rdb.getColor("pageInColor") );
-    setfieldcolor( 1, rdb.getColor("pageOutColor") );
-    setfieldcolor( 2, rdb.getColor("pageIdleColor") );
-    priority_ = util::stoi( rdb.getResource("pagePriority") );
-    dodecay_ = rdb.isResourceTrue("pageDecay");
-    useGraph_ = rdb.isResourceTrue("pageGraph");
-    setUsedFormat( rdb.getResource("pageUsedFormat") );
-}
-
-
-void PageMeter::checkevent( void ) {
-    getpageinfo();
-}
-
-
-void PageMeter::getpageinfo( void ) {
+    IntervalTimerStop();
+    double t = IntervalTimeInSecs();
     std::vector<uint64_t> info;
     BSDGetPageStats(info);
+    IntervalTimerStart();
 
-    fields_[0] = info[0] - previnfo_[0];
-    fields_[1] = info[1] - previnfo_[1];
+    std::pair<float, float> rval(((info[0] - previnfo_[0]) * _psize) / t ,
+      ((info[1] - previnfo_[1]) * _psize) / t);
+
     previnfo_[0] = info[0];
     previnfo_[1] = info[1];
 
-    if (total_ < fields_[0] + fields_[1])
-        total_ = fields_[0] + fields_[1];
-
-    fields_[2] = total_ - fields_[0] - fields_[1];
-    setUsed(total_ - fields_[2], total_);
+    return rval;
 }
