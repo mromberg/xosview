@@ -27,9 +27,6 @@ public:
 protected:
     virtual float getLoad(void);
     virtual uint64_t getCPUSpeed(void);
-
-private:
-    void getloadinfo( void );
 };
 
 
