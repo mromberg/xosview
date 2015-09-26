@@ -19,112 +19,18 @@
 
 
 LoadMeter::LoadMeter( XOSView *parent )
-    : FieldMeterGraph( parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0 ),
-      procloadcol_(0), warnloadcol_(0), critloadcol_(0),
-      warnThreshold_(0), critThreshold_(0), alarmstate_(0), lastalarmstate_(0),
-      old_cpu_speed_(0), cur_cpu_speed_(0),
-      do_cpu_speed_(false) {
-
-    total_ = -1.0;
+    : ComLoadMeter( parent ) {
 }
 
 
-LoadMeter::~LoadMeter( void ) {
-}
-
-
-void LoadMeter::checkResources(const ResDB &rdb) {
-
-    FieldMeterGraph::checkResources(rdb);
-
-    procloadcol_ = rdb.getColor("loadProcColor");
-    warnloadcol_ = rdb.getColor("loadWarnColor");
-    critloadcol_ = rdb.getColor("loadCritColor");
-
-    setfieldcolor( 0, procloadcol_ );
-    setfieldcolor( 1, rdb.getColor( "loadIdleColor") );
-    priority_ = util::stoi( rdb.getResource("loadPriority") );
-    dodecay_ = rdb.isResourceTrue("loadDecay");
-    useGraph_ = rdb.isResourceTrue("loadGraph");
-    setUsedFormat( rdb.getResource("loadUsedFormat") );
-    do_cpu_speed_ = rdb.isResourceTrue("loadCpuSpeed");
-
-    std::string warn = rdb.getResource("loadWarnThreshold");
-    if (warn == "auto")
-        warnThreshold_ = BSDCountCpus();
-    else
-        warnThreshold_ = util::stoi(warn);
-
-    std::string crit = rdb.getResource("loadCritThreshold");
-    if (crit == "auto")
-        critThreshold_ = warnThreshold_ * 4;
-    else
-        critThreshold_ = util::stoi(crit);
-
-    alarmstate_ = lastalarmstate_ = 0;
-
-    if (dodecay_) {
-        //  Warning:  Since the loadmeter changes scale occasionally, old
-        //  decay values need to be rescaled.  However, if they are rescaled,
-        //  they could go off the edge of the screen.  Thus, for now, to
-        //  prevent this whole problem, the load meter can not be a decay
-        //  meter.  The load is a decaying average kind of thing anyway,
-        //  so having a decaying load average is redundant.
-        logProblem << "The loadmeter can not be configured as a decay\n"
-                   << "  meter.  See the source code (" << __FILE__
-                   << ") for further\n"
-                   << "  details.\n";
-        dodecay_ = 0;
-    }
-}
-
-
-void LoadMeter::checkevent( void ) {
-    getloadinfo();
-
-    if (do_cpu_speed_) {
-        old_cpu_speed_ = cur_cpu_speed_;
-        cur_cpu_speed_ = BSDGetCPUSpeed();
-
-        if (old_cpu_speed_ != cur_cpu_speed_) {
-            std::string lgnd("PROCS/MIN ");
-            lgnd += util::repr(cur_cpu_speed_) + " MHz";
-            legend(lgnd);
-        }
-    }
-}
-
-void LoadMeter::getloadinfo( void ) {
+float LoadMeter::getLoad(void) {
     double oneMinLoad;
-
     getloadavg(&oneMinLoad, 1);  //  Only get the 1-minute-average sample.
-    fields_[0] = oneMinLoad;
 
-    if (fields_[0] <  warnThreshold_)
-        alarmstate_ = 0;
-    else if (fields_[0] >= critThreshold_)
-        alarmstate_ = 2;
-    else
-        alarmstate_ = 1;
+    return oneMinLoad;
+}
 
-    if (alarmstate_ != lastalarmstate_) {
-        if (alarmstate_ == 0)
-            setfieldcolor(0, procloadcol_);
-        else if (alarmstate_ == 1)
-            setfieldcolor(0, warnloadcol_);
-        else
-            setfieldcolor(0, critloadcol_);
-        lastalarmstate_ = alarmstate_;
-    }
 
-    // Adjust total to next power-of-two of the current load.
-    if ( (fields_[0]*5.0 < total_ && total_ > 1.0) || fields_[0] > total_ ) {
-        unsigned int i = fields_[0];
-        // i = 2^n - 1
-        i |= i >> 1; i |= i >> 2; i |= i >> 4; i |= i >> 8; i |= i >> 16;
-        total_ = i + 1;
-    }
-
-    fields_[1] = total_ - fields_[0];
-    setUsed(fields_[0], total_);
+uint64_t LoadMeter::getCPUSpeed(void) {
+    return BSDGetCPUSpeed() * 1000000;
 }
