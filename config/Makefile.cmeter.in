@@ -26,6 +26,7 @@ cloadmeter.o \
 ploadmeter.o \
 cintratemeter.o \
 pintratemeter.o \
+cfsmeter.o \
 cnetmeter.o \
 pnetmeter.o \
 cpagemeter.o \

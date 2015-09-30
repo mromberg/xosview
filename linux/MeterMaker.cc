@@ -22,7 +22,7 @@
 #include "tzonemeter.h"
 #include "lmstemp.h"
 #include "nfsmeter.h"
-#include "fsmeter.h"
+#include "cfsmeter.h"
 #include "example.h"  // The example meter
 
 #include <iomanip>
@@ -54,11 +54,8 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
             _meters.push_back(new RAIDMeter(_xos, i));
     }
 
-    if (rdb.isResourceTrue("filesys")) {
-        std::vector<std::string> fs = FSMeter::mounts(rdb);
-        for (size_t i = 0 ; i < fs.size() ; i++)
-            _meters.push_back(new FSMeter(_xos, fs[i]));
-    }
+    if (rdb.isResourceTrue("filesys"))
+        util::concat(_meters, ComFSMeterFactory().make(rdb, _xos));
 
     if (rdb.isResourceTrue("swap"))
         _meters.push_back(new SwapMeter(_xos));

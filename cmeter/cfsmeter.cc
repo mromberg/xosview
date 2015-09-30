@@ -4,7 +4,7 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#include "fsmeter.h"
+#include "cfsmeter.h"
 #include "fsutil.h"
 #include "strutil.h"
 
@@ -14,7 +14,7 @@
 static const char * const MOUNT_FNAME = "/proc/mounts";
 
 
-FSMeter::FSMeter(XOSView *parent, const std::string &path)
+ComFSMeter::ComFSMeter(XOSView *parent, const std::string &path)
     : FieldMeterGraph(parent, 2, "FS", "USED/FREE", true, true, true),
       _bgColor(0), _umountColor(0), _path(path){
 
@@ -22,11 +22,11 @@ FSMeter::FSMeter(XOSView *parent, const std::string &path)
 }
 
 
-FSMeter::~FSMeter(void) {
+ComFSMeter::~ComFSMeter(void) {
 }
 
 
-void FSMeter::checkResources(const ResDB &rdb) {
+void ComFSMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
@@ -43,7 +43,7 @@ void FSMeter::checkResources(const ResDB &rdb) {
 }
 
 
-void FSMeter::checkevent( void ) {
+void ComFSMeter::checkevent( void ) {
     total_ = 1.0;
 
     if (isMount(_path)) {
@@ -68,7 +68,7 @@ void FSMeter::checkevent( void ) {
 }
 
 
-void FSMeter::setBGColor(unsigned long c) {
+void ComFSMeter::setBGColor(unsigned long c) {
     if (fieldcolor(1) != c) {
         fields_[0] = 1.0;
         fields_[1] = 0;
@@ -78,7 +78,40 @@ void FSMeter::setBGColor(unsigned long c) {
     }
 }
 
-std::vector<std::string> FSMeter::mounts(const ResDB &rdb) {
+
+bool ComFSMeter::isMount(const std::string &path) {
+    std::ifstream ifs(MOUNT_FNAME);
+    if (!ifs) {
+        logProblem << "Could not open: " << MOUNT_FNAME << std::endl;
+        return false;
+    }
+
+    while (!ifs.eof()) {
+        std::string dev, mpath, type, line;
+        ifs >> dev >> mpath >> type;
+        std::getline(ifs, line);
+        if (ifs && (mpath == path))
+            return true;
+    }
+
+    return false;
+}
+
+
+std::vector<Meter *> ComFSMeterFactory::make(const ResDB &rdb,
+  XOSView *parent) {
+
+    std::vector<Meter *> rval;
+
+    std::vector<std::string> fs(mounts(rdb));
+    for (size_t i = 0 ; i < fs.size() ; i++)
+        rval.push_back(new ComFSMeter(parent, fs[i]));
+
+    return rval;
+}
+
+
+std::vector<std::string> ComFSMeterFactory::mounts(const ResDB &rdb) {
     std::string mounts = rdb.getResource("filesysMounts");
 
     logDebug << "MOUNTS: " << mounts << std::endl;
@@ -96,7 +129,7 @@ std::vector<std::string> FSMeter::mounts(const ResDB &rdb) {
 }
 
 
-std::vector<std::string> FSMeter::getAuto(void) {
+std::vector<std::string> ComFSMeterFactory::getAuto(void) {
     //  Create a list of entries in mounts where the device
     //  and mount point are absolute paths.
 
@@ -119,23 +152,4 @@ std::vector<std::string> FSMeter::getAuto(void) {
     }
 
     return rval;
-}
-
-
-bool FSMeter::isMount(const std::string &path) {
-    std::ifstream ifs(MOUNT_FNAME);
-    if (!ifs) {
-        logProblem << "Could not open: " << MOUNT_FNAME << std::endl;
-        return false;
-    }
-
-    while (!ifs.eof()) {
-        std::string dev, mpath, type, line;
-        ifs >> dev >> mpath >> type;
-        std::getline(ifs, line);
-        if (ifs && (mpath == path))
-            return true;
-    }
-
-    return false;
 }

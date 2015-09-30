@@ -5,23 +5,21 @@
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef FSMETER_H
-#define FSMETER_H
+#ifndef CFSMETER_H
+#define CFSMETER_H
 
 #include "fieldmetergraph.h"
 
 
 
-class FSMeter : public FieldMeterGraph {
+class ComFSMeter : public FieldMeterGraph {
 public:
-    FSMeter(XOSView *parent, const std::string &path);
-    virtual ~FSMeter(void);
+    ComFSMeter(XOSView *parent, const std::string &path);
+    virtual ~ComFSMeter(void);
 
     virtual std::string name( void ) const { return "FSMeter"; }
     virtual void checkevent( void );
     virtual void checkResources(const ResDB &rdb);
-
-    static std::vector<std::string> mounts(const ResDB &rdb);
 
 private:
     unsigned long _bgColor;
@@ -29,9 +27,16 @@ private:
     std::string _path;
 
     void setBGColor(unsigned long c);
-    static std::vector<std::string> getAuto(void);
     static bool isMount(const std::string &path);
 };
 
 
-#endif // end FSMETER_H
+class ComFSMeterFactory {
+public:
+    virtual std::vector<Meter *> make(const ResDB &rdb, XOSView *parent);
+    virtual std::vector<std::string> mounts(const ResDB &rdb);
+    virtual std::vector<std::string> getAuto(void);
+};
+
+
+#endif // end CFSMETER_H

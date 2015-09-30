@@ -135,6 +135,13 @@ inline std::istream &operator>>(std::istream &is, const sink &s) {
 }
 
 
+template <class T>
+inline void concat(std::vector<T> &a, const std::vector<T> &b) {
+    a.reserve(a.size() + b.size());
+    a.insert(a.end(), b.begin(), b.end());
+}
+
+
 } // namespace util
 
 
