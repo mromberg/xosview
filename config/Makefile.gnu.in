@@ -15,7 +15,6 @@ CXXFLAGS += -I$(TOP)
 CXXOBJS = \
 cpumeter.o \
 memmeter.o \
-fsmeter.o \
 MeterMaker.o
 
 OBJS = $(CXXOBJS) get_def_pager.o
