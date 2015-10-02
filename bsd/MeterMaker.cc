@@ -60,11 +60,8 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     if ( rdb.isResourceTrue("mem") )
         _meters.push_back(new MemMeter(_xos));
 
-    if (rdb.isResourceTrue("filesys")) {
-        std::vector<std::string> fs = FSMeter::mounts(rdb);
-        for (size_t i = 0 ; i < fs.size() ; i++)
-            _meters.push_back(new FSMeter(_xos, fs[i]));
-    }
+    if (rdb.isResourceTrue("filesys"))
+        util::concat(_meters, FSMeterFactory().make(rdb, _xos));
 
     if ( rdb.isResourceTrue("swap") )
         _meters.push_back(new SwapMeter(_xos));

@@ -6,12 +6,7 @@
 //
 #include "cfsmeter.h"
 #include "fsutil.h"
-#include "strutil.h"
 
-#include <fstream>
-
-
-static const char * const MOUNT_FNAME = "/proc/mounts";
 
 
 ComFSMeter::ComFSMeter(XOSView *parent, const std::string &path)
@@ -29,7 +24,6 @@ ComFSMeter::~ComFSMeter(void) {
 void ComFSMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
-
 
     _bgColor = rdb.getColor("filesysBGColor");
     _umountColor = rdb.getColor("filesysNoneColor");
@@ -95,61 +89,4 @@ bool ComFSMeter::isMount(const std::string &path) {
     }
 
     return false;
-}
-
-
-std::vector<Meter *> ComFSMeterFactory::make(const ResDB &rdb,
-  XOSView *parent) {
-
-    std::vector<Meter *> rval;
-
-    std::vector<std::string> fs(mounts(rdb));
-    for (size_t i = 0 ; i < fs.size() ; i++)
-        rval.push_back(new ComFSMeter(parent, fs[i]));
-
-    return rval;
-}
-
-
-std::vector<std::string> ComFSMeterFactory::mounts(const ResDB &rdb) {
-    std::string mounts = rdb.getResource("filesysMounts");
-
-    logDebug << "MOUNTS: " << mounts << std::endl;
-
-    if (mounts == "auto")
-        return getAuto();
-
-    // Then filesysMounts is a list of directories
-    std::vector<std::string> rval;
-    rval = util::split(mounts, " ");
-
-    logDebug << "MOUNTS: " << rval << std::endl;
-
-    return rval;
-}
-
-
-std::vector<std::string> ComFSMeterFactory::getAuto(void) {
-    //  Create a list of entries in mounts where the device
-    //  and mount point are absolute paths.
-
-    std::vector<std::string> rval;
-
-    std::ifstream ifs(MOUNT_FNAME);
-    if (!ifs) {
-        logProblem << "Could not open: " << MOUNT_FNAME << std::endl;
-        return rval;
-    }
-
-    while (!ifs.eof()) {
-        std::string dev, path, type, line;
-        ifs >> dev >> path >> type;
-        std::getline(ifs, line);
-        if (ifs) {
-            if (dev[0] == '/' && path[0] == '/')
-                rval.push_back(path);
-        }
-    }
-
-    return rval;
 }
