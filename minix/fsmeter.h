@@ -8,27 +8,21 @@
 #ifndef FSMETER_H
 #define FSMETER_H
 
-#include "fieldmetergraph.h"
+#include "cfsmeter.h"
 
-class FSMeter : public FieldMeterGraph {
+class FSMeter : public ComFSMeter {
 public:
-    FSMeter(XOSView *parent, const std::string &path);
-    virtual ~FSMeter(void);
+    FSMeter(XOSView *parent, const std::string &path)
+        : ComFSMeter(parent, path) {}
 
-    virtual std::string name( void ) const { return "FSMeter"; }
-    virtual void checkevent( void );
-    virtual void checkResources(const ResDB &rdb);
+protected:
+    virtual bool isMount(const std::string &path);
+};
 
-    static std::vector<std::string> mounts(const ResDB &rdb);
 
-private:
-    unsigned long _bgColor;
-    unsigned long _umountColor;
-    std::string _path;
-
-    void setBGColor(unsigned long c);
-    static std::vector<std::string> getAuto(void);
-    static bool isMount(const std::string &path);
+class FSMeterFactory : public FSMFactory<FSMeter> {
+public:
+    virtual std::vector<std::string> getAuto(void);
 };
 
 
