@@ -10,7 +10,7 @@ if test "$GXX" = "yes"; then
     if test "$xosvdebug" = no; then
       	 XO_CONCAT(CXXFLAGS,$CXXFLAGS,[-O3])
     else
-      	 XO_CONCAT(CXXFLAGS,$CXXFLAGS,[-g])
+      	 XO_CONCAT(CXXFLAGS,$CXXFLAGS,[-g -D_GLIBCXX_DEBUG])
     fi
 fi
 ])

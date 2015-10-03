@@ -10,21 +10,10 @@
 
 - Opton for labels/used on same line as caption
 
-- Make some base classes for the shared linux/bsd meters
-
 - Make all data gathering classes interact through a clear interface.
-
-- Add -D_GLIBCXX_DEBUG to enable-debug (available with GCC 3.4.0 and later)
 
 - Make the linux netmeter support individual interfaces.  Possibly even
   the loopback
-
-- Have some meter base class(s) remember previous values and call things
-  like drawfields() drawlegend() etc only if the values have not changed.
-  This way the leaf classes just gather stats and report back.  But don't
-  worry about display.
-
-- Pass a Graphics to checkResources
 
 - Look into a decay only option on the field meter.
 
