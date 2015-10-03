@@ -143,6 +143,13 @@
               bitmeter which displays a sequence of binary values
               as on or off "lights".
 
+cmeter/*      Common meter code.   All the code in here uses POSIX calls and
+              is used by more than one system.  Files such as cloadmeter contain
+              common base classes that handle setup and call virtual functions
+              for data collection.  Files such as ploadmeter implement those
+              functions as methods that open and read files in the /proc
+              filesystem (popular on many platforms).
+
  os/*meter.cc: Specialized instances of drawing meters that
                know how to gather the data to be displayed by their
                base class.  They don't draw.  They just collect

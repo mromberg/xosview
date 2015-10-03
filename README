@@ -32,7 +32,9 @@
 
   - OpenBSD
 
-  - cygwin
+  - cygwin (displayed stats are for windows)
+
+  - minix (dev snapshot with X11)
 
 * To build xosview:
 
