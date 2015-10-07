@@ -5,12 +5,21 @@ AC_DEFUN(XO_GCC_CXXFLAGS, [
 #------------------------------------
 if test "$GXX" = "yes"; then
     if test -z "$CXXFLAGS"; then
+        # Turn on warnings
         CXXFLAGS="-Wall -Wextra"
-    fi
-    if test "$xosvdebug" = no; then
-      	 XO_CONCAT(CXXFLAGS,$CXXFLAGS,[-O3])
-    else
-      	 XO_CONCAT(CXXFLAGS,$CXXFLAGS,[-g -D_GLIBCXX_DEBUG])
+
+        if test "$xosvdebug" = no; then
+            # Optimize
+      	    XO_CONCAT(CXXFLAGS,$CXXFLAGS,[-O3])
+        else
+            # Debug options
+            XO_CONCAT(CXXFLAGS,$CXXFLAGS,[-g])
+
+            # Debug libgc++ except for windows (where it blows up)
+            if test "$host_os" != cygwin; then
+                XO_CONCAT(CXXFLAGS,$CXXFLAGS,[-D_GLIBCXX_DEBUG])
+            fi
+        fi
     fi
 fi
 ])
