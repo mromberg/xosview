@@ -32,26 +32,21 @@ public:
     virtual void checkResources(const ResDB &rdb);
 
 protected:
-    void setNumCols( int n );
-
     bool useGraph_;
-    int graphNumCols_;
-    int graphpos_;
-    bool firstTimeDrawn_;
-    /*  There's some sort of corruption going on -- we can't have
-     *  variables after the heightfield_ below, otherwise they get
-     *  corrupted???
-     */
-    std::vector<float> heightfield_;
 
     virtual void drawfields(X11Graphics &g, bool mandatory=false);
 
 private:
+    int graphNumCols_;
+    int graphpos_;
+    std::vector<float> heightfield_;
     X11Pixmap *_pmap;  // backbuffer
 
-    void drawBars(X11Graphics &g, bool mandatory);
-    void drawBar(X11Graphics &g, int i);
+    void setNumCols( int n );
+    void drawBars(X11Graphics &g);
+    void drawBar(X11Graphics &g, int i) const;
     void checkBackBuffer(void);
 };
+
 
 #endif

@@ -27,7 +27,7 @@
 
 #include <fstream>
 
-#include <math.h>		//  For fabs()
+#include <cmath>		//  For fabs()
 
 
 static const size_t DEF_COLS = 100;
@@ -41,13 +41,15 @@ FieldMeterGraph::FieldMeterGraph(XOSView *parent,
       dolegends, dousedlegends),
       useGraph_(false),
       graphNumCols_(DEF_COLS), graphpos_(DEF_COLS-1),
-      firstTimeDrawn_(true), heightfield_(0),
+      heightfield_(0),
       _pmap(0) {
 }
+
 
 FieldMeterGraph::~FieldMeterGraph( void ){
     delete _pmap;
 }
+
 
 void FieldMeterGraph::drawfields(X11Graphics &g, bool mandatory) {
     if( !useGraph_ ) {
@@ -63,7 +65,7 @@ void FieldMeterGraph::drawfields(X11Graphics &g, bool mandatory) {
     x_ = y_ = 0;
 
     // Draw the graph in the pixmap
-    drawBars(_pmap->g(), mandatory);
+    drawBars(_pmap->g());
 
     // put x_ and y_ back to window coords
     x_ = oldx; y_ = oldy;
@@ -99,7 +101,8 @@ void FieldMeterGraph::checkBackBuffer(void) {
     }
 }
 
-void FieldMeterGraph::drawBars(X11Graphics &g, bool) {
+
+void FieldMeterGraph::drawBars(X11Graphics &g) {
     int i;
 
     if( total_ <= 0.0 )
@@ -144,43 +147,25 @@ void FieldMeterGraph::drawBars(X11Graphics &g, bool) {
         heightfield_[graphpos_*numfields()+i] = a;
     }
 
-    if( !firstTimeDrawn_ ) {
-        // scroll area
-        int col_width = width_/graphNumCols_;
-        if( col_width < 1 )
-            col_width = 1;
+    // scroll area then draw new bar
+    int col_width = width_/graphNumCols_;
+    if( col_width < 1 )
+        col_width = 1;
 
-        int sx = x_ + col_width;
-        int swidth = width_ - col_width;
-        int sheight = height_;
-        if( swidth > 0 && sheight > 0 ) {
-            g.copyArea( sx, y_, swidth, sheight, x_, y_ );
-        }
-        drawBar(g, graphNumCols_ - 1);
-    }
-    else {
-        if (firstTimeDrawn_) {
-            logDebug << "firstTimeDrawn_: " << firstTimeDrawn_ << std::endl;
-            firstTimeDrawn_ = false;
-        }
-        else
-            logDebug << "Full draw:  isAtLeastPart "
-                     << parent_->isAtLeastPartiallyVisible()
-                     << std::endl;
+    int sx = x_ + col_width;
+    int swidth = width_ - col_width;
+    int sheight = height_;
+    if( swidth > 0 && sheight > 0 )
+        g.copyArea( sx, y_, swidth, sheight, x_, y_ );
 
-        // need to draw entire graph on expose event
-        for( i = 0; i < graphNumCols_; i++ ) {
-            drawBar(g, i);
-        }
-    }
+    drawBar(g, graphNumCols_ - 1);
 
     graphpos_++;
     g.setStippleN(0);	//  Restore all-bits stipple.
-
 }
 
 
-void FieldMeterGraph::drawBar(X11Graphics &g, int i) {
+void FieldMeterGraph::drawBar(X11Graphics &g, int i) const {
     int y = y_ + height_;
     int x = x_ + i*width_/graphNumCols_;
     int barwidth = (x_ + (i+1)*width_/graphNumCols_)-x;
@@ -209,6 +194,7 @@ void FieldMeterGraph::drawBar(X11Graphics &g, int i) {
     }
 }
 
+
 void FieldMeterGraph::checkResources(const ResDB &rdb) {
     FieldMeterDecay::checkResources(rdb);
 
@@ -222,6 +208,7 @@ void FieldMeterGraph::checkResources(const ResDB &rdb) {
         }
     }
 }
+
 
 void FieldMeterGraph::setNumCols( int n ) {
     graphNumCols_ = n;

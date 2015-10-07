@@ -6,8 +6,6 @@
 
 - Add cpu powersave policy display
 
-- Use the pixmap in graph meter for expose events/draws
-
 - Opton for labels/used on same line as caption
 
 - Make all data gathering classes interact through a clear interface.
