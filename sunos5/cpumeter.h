@@ -18,7 +18,7 @@ public:
     CPUMeter(XOSView *parent, kstat_ctl_t *kcp, int cpuid = 0);
     ~CPUMeter(void);
 
-    virtual std::string name(void) const { return "CPUMeter"; }
+    virtual std::string resName(void) const { return "cpu"; }
     void checkevent(void);
     void checkResources(const ResDB &rdb);
     static std::string cpuStr(int num);
