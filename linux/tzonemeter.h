@@ -6,27 +6,19 @@
 #ifndef TZONEMETER_H
 #define TZONEMETER_H
 
-#include "fieldmetergraph.h"
+#include "ctzonemeter.h"
 
-class TZoneMeter : public FieldMeterGraph {
+class TZoneMeter : public ComTZoneMeter {
 public:
     TZoneMeter(XOSView *parent, size_t zoneNum);
-    virtual ~TZoneMeter(void);
-
-    virtual std::string resName( void ) const { return "tzone"; }
-    virtual void checkevent( void );
-    virtual void checkResources(const ResDB &rdb);
 
     // Number of thermal zones
     static size_t count(void);
 
+protected:
+    virtual float getTemp(void);
+
 private:
-    float _peak;
-    float _hotTrip;
-    float _critTrip;
-    unsigned long _normColor;
-    unsigned long _hotColor;
-    unsigned long _critColor;
     std::string _tempFName;
 };
 
