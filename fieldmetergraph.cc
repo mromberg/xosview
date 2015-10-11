@@ -95,8 +95,8 @@ void FieldMeterGraph::checkBackBuffer(void) {
                  << std::endl;
 
         // Fill is with the last "idle" color
-        _pmap->g().setBG(colors_[numfields()-1]);
-        _pmap->g().setFG(colors_[numfields()-1]);
+        _pmap->g().setBG(fieldcolor(numfields()-1));
+        _pmap->g().setFG(fieldcolor(numfields()-1));
         _pmap->g().drawFilledRectangle(0, 0, _pmap->width(), _pmap->height());
     }
 }
@@ -177,7 +177,7 @@ void FieldMeterGraph::drawBar(X11Graphics &g, int i) const {
              *  converting to an int.  */
             barheight = (int)((heightfield_[i*numfields()+j]*height_)+0.5);
 
-            g.setForeground( colors_[j] );
+            g.setForeground( fieldcolor(j) );
             g.setStippleN(j%4);
 
             if( barheight > (y-y_) )

@@ -24,8 +24,6 @@ void ComSwapMeter::checkResources(const ResDB &rdb){
     setfieldcolor( 0, rdb.getColor( "swapUsedColor" ) );
     setfieldcolor( 1, rdb.getColor( "swapFreeColor" ) );
     priority_ = util::stoi (rdb.getResource( "swapPriority" ));
-    setUsedFormat (rdb.getResource("swapUsedFormat"));
-    decayUsed(rdb.isResourceTrue("swapUsedDecay"));
 }
 
 

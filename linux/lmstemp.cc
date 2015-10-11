@@ -110,7 +110,6 @@ void LmsTemp::checkResources(const ResDB &rdb) {
     setfieldcolor( 2, _highColor );
 
     priority_ = util::stoi (rdb.getResource( "lmstempPriority" ));
-    setUsedFormat(rdb.getResource( "lmstempUsedFormat" ) );
 }
 
 

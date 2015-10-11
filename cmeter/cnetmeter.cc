@@ -25,8 +25,6 @@ void ComNetMeter::checkResources(const ResDB &rdb){
     setfieldcolor( 1, rdb.getColor( "netOutColor" ) );
     setfieldcolor( 2, rdb.getColor( "netBackground" ) );
     priority_ = util::stoi (rdb.getResource( "netPriority" ));
-    setUsedFormat (rdb.getResource("netUsedFormat"));
-    decayUsed(rdb.isResourceTrue("netUsedDecay"));
 }
 
 

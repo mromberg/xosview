@@ -31,7 +31,6 @@ void ComFSMeter::checkResources(const ResDB &rdb) {
     setfieldcolor(1, _bgColor);
 
     priority_ = util::stoi(rdb.getResource("filesysPriority"));
-    setUsedFormat(rdb.getResource("filesysUsedFormat"));
 }
 
 

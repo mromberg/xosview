@@ -24,38 +24,21 @@ public:
     virtual void draw(X11Graphics &g);
     virtual void drawIfNeeded(X11Graphics &g);
     virtual void checkResources(const ResDB &rdb);
+    virtual void resize( int x, int y, int width, int height );
 
+protected:
+    std::vector<float> fields_;
+    float total_;
+    std::vector<int> lastvals_;
+    std::vector<int> lastx_;
+
+    void setNumFields(size_t n);
     size_t numfields(void) const { return fields_.size() ; }
     void setfieldcolor( int field, const std::string &color );
     void setfieldcolor( int field, unsigned long color);
     unsigned long fieldcolor(size_t field) const { return colors_[field]; }
-    void reset( void );
 
     void setUsed (float val, float total);
-    virtual void resize( int x, int y, int width, int height );
-    void disableMeter ( void );
-
-protected:
-    enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };
-
-    std::vector<float> fields_;
-    float total_, used_;
-    std::vector<int> lastvals_;
-    std::vector<int> lastx_;
-    std::vector<unsigned long> colors_;
-    unsigned long usedcolor_;
-    UsedType print_;
-    int printedZeroTotalMesg_;
-
-    void setUsedFormat ( const std::string &str );
-    bool decayUsed(void) const { return _decayUsed; }
-    void decayUsed(bool val) { _decayUsed = val; }
-    void updateUsed(void);
-    virtual void drawfields(X11Graphics &g, bool mandatory=false);
-
-    bool checkX(int x, int width) const;
-
-    void setNumFields(size_t n);
 
     void IntervalTimerStart() { _timer.start(); }
     void IntervalTimerStop() { _timer.stop(); }
@@ -65,12 +48,26 @@ protected:
     double IntervalTimeInMicrosecs() { return _timer.report_usecs(); }
     double IntervalTimeInSecs() { return _timer.report_usecs()/1e6; }
 
+    virtual void drawfields(X11Graphics &g, bool mandatory=false);
+    bool checkX(int x, int width) const;
+
 private:
+    enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };
+
+    float used_;
+    std::vector<unsigned long> colors_;
+    UsedType print_;
+    int printedZeroTotalMesg_;
     Timer _timer;
     std::vector<float> _usedAvg;
     size_t _usedAvgIndex;
     bool _decayUsed;
     Label _used;
+
+    void setUsedFormat ( const std::string &str );
+    bool decayUsed(void) const { return _decayUsed; }
+    void decayUsed(bool val) { _decayUsed = val; }
+    void updateUsed(void);
 };
 
 

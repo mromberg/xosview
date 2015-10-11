@@ -26,8 +26,6 @@ void ComDiskMeter::checkResources(const ResDB &rdb) {
     setfieldcolor( 1, rdb.getColor("diskWriteColor") );
     setfieldcolor( 2, rdb.getColor("diskIdleColor") );
     priority_ = util::stoi (rdb.getResource( "diskPriority" ));
-    setUsedFormat(rdb.getResource("diskUsedFormat"));
-    decayUsed(rdb.isResourceTrue("diskUsedDecay"));
 }
 
 

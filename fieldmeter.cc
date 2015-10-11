@@ -24,9 +24,9 @@ FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
   bool dousedlegends)
     : Meter(parent, title, legend, docaptions, dolegends, dousedlegends),
       fields_(numfields, 0.0), total_(1.0),
-      used_(0), lastvals_(numfields, 0.0),
-      lastx_(numfields, 0), colors_(numfields, 0),
-      usedcolor_(0), print_(PERCENT), printedZeroTotalMesg_(0),
+      lastvals_(numfields, 0.0),
+      lastx_(numfields, 0), used_(0), colors_(numfields, 0),
+      print_(PERCENT), printedZeroTotalMesg_(0),
       _usedAvg(DECAYN, 0.0), _usedAvgIndex(0),
       _decayUsed(false), _used(0, 0, Label::BLSE) {
 }
@@ -38,25 +38,15 @@ void FieldMeter::resize( int x, int y, int width, int height ) {
 }
 
 
-void FieldMeter::disableMeter(void) {
-    setNumFields(1);
-    setfieldcolor (0, "gray");
-    Meter::legend ("Disabled");
-    // And specify the total of 1.0, so the meter is grayed out.
-    total_ = 1.0;
-    fields_[0] = 1.0;
-}
-
-
 FieldMeter::~FieldMeter( void ){
 }
 
 
 void FieldMeter::checkResources(const ResDB &rdb){
     Meter::checkResources(rdb);
-    usedcolor_ = parent_->g().allocColor(rdb.getResource(
-          "usedLabelColor"));
-    _used.color(usedcolor_);
+    setUsedFormat(rdb.getResource(resName() + "UsedFormat"));
+    decayUsed(rdb.isResourceTrue(resName() + "UsedDecay"));
+    _used.color(rdb.getColor("usedLabelColor"));
 }
 
 
@@ -101,12 +91,6 @@ void FieldMeter::setUsed (float val, float total) {
     }
 
     updateUsed();
-}
-
-
-void FieldMeter::reset( void ){
-    for ( unsigned int i = 0 ; i < numfields() ; i++ )
-        lastvals_[i] = lastx_[i] = -1;
 }
 
 

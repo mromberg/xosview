@@ -110,8 +110,6 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
     // And our parent's to control display
     priority_ = util::stoi(rdb.getResourceOrUseDefault(
           "examplePriority", "10"));
-    setUsedFormat(rdb.getResourceOrUseDefault(
-          "exampleUsedFormat", "percent"));
 
     // set the color with a string (requires a lookup)
     setfieldcolor(0, "green");

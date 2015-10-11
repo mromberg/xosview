@@ -24,8 +24,6 @@ void ComIrqRateMeter::checkResources(const ResDB &rdb) {
     setfieldcolor(1, rdb.getColor("irqrateIdleColor"));
 
     priority_ = util::stoi(rdb.getResource("irqratePriority"));
-    setUsedFormat(rdb.getResource("irqrateUsedFormat"));
-    decayUsed(rdb.isResourceTrue("irqrateUsedDecay"));
     _peak = util::stof(rdb.getResource("irqratePeak"));
     total_ = _peak;
 }

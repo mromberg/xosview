@@ -131,7 +131,7 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
           && ((decayx + decaytwidth) != (x_ + width_)))
             decaytwidth = width_ + x_ - decayx;
 
-        g.setFG( colors_[i] );
+        g.setFG( fieldcolor(i) );
         g.setStippleN(i%4);
 
         //  drawFilledRectangle() adds one to its width and height.

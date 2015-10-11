@@ -64,13 +64,6 @@ void NFSDStats::checkResources(const ResDB &rdb){
     setfieldcolor( 1, rdb.getColor( "NFSDStatUDPColor" ) );
     setfieldcolor( 2, rdb.getColor( "NFSDStatTCPColor" ) );
     setfieldcolor( 3, rdb.getColor( "NFSDStatIdleColor" ) );
-
-    setUsedFormat (rdb.getResource("NFSDStatUsedFormat"));
-    decayUsed(rdb.isResourceTrue("NFSDStatUsedDecay"));
-    //useGraph_ = 1;
-    //dodecay_ = 1;
-    //setUsedFormat ("autoscale");
-    //setUsedFormat ("percent");
 }
 
 
@@ -157,10 +150,6 @@ void NFSStats::checkResources(const ResDB &rdb){
     setfieldcolor( 1, rdb.getColor( "NFSStatAuthRefrshColor" ) );
     setfieldcolor( 2, rdb.getColor( "NFSStatCallsColor" ) );
     setfieldcolor( 3, rdb.getColor( "NFSStatIdleColor" ) );
-
-    setUsedFormat (rdb.getResource("NFSStatUsedFormat"));
-    //setUsedFormat ("autoscale");
-    //setUsedFormat ("percent");
 }
 
 

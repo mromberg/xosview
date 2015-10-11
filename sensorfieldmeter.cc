@@ -183,19 +183,19 @@ void SensorFieldMeter::checkFields( double low, double high ){
 
     // check for alarms
     if (fields_[0] > high_) { // alarm: T > max
-        if (colors_[0] != highcolor_) {
+        if (fieldcolor(0) != highcolor_) {
             setfieldcolor( 0, highcolor_ );
             do_legend = true;
         }
     }
     else if (fields_[0] < low_) { // alarm: T < min
-        if (colors_[0] != lowcolor_) {
+        if (fieldcolor(0) != lowcolor_) {
             setfieldcolor( 0, lowcolor_ );
             do_legend = true;
         }
     }
     else {
-        if (colors_[0] != actcolor_) {
+        if (fieldcolor(0) != actcolor_) {
             setfieldcolor( 0, actcolor_ );
             do_legend = true;
         }
