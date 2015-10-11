@@ -24,7 +24,7 @@ public:
       const std::string &caption, int nbr );
     ~BSDSensor( void );
 
-    virtual std::string name( void ) const { return "BSDSensor"; }
+    virtual std::string resName( void ) const { return "bsdsensor"; }
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 

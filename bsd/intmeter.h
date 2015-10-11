@@ -18,7 +18,7 @@ public:
       int dolegends = 0, int dousedlegends = 0 );
     ~IntMeter( void );
 
-    virtual std::string name( void ) const { return "IntMeter"; }
+    virtual std::string resName( void ) const { return "int"; }
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 

@@ -19,7 +19,7 @@ public:
     BtryMeter( XOSView *parent );
     ~BtryMeter( void );
 
-    virtual std::string name( void ) const { return "BtryMeter"; }
+    virtual std::string resName( void ) const { return "battery"; }
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
