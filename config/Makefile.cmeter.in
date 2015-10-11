@@ -31,6 +31,7 @@ cnetmeter.o \
 pnetmeter.o \
 cpagemeter.o \
 ppagemeter.o \
+ctzonemeter.o \
 cdiskmeter.o \
 pdiskmeter.o
 
