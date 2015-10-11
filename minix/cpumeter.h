@@ -17,7 +17,7 @@ public:
     CPUMeter(XOSView *parent, unsigned int cpu=0);
     ~CPUMeter(void);
 
-    std::string name(void) const { return "CPUMeter"; }
+    std::string resName(void) const { return "cpu"; }
     void checkevent(void);
 
     void checkResources(const ResDB &rdb);
