@@ -29,8 +29,6 @@ void ComFSMeter::checkResources(const ResDB &rdb) {
     _umountColor = rdb.getColor("filesysNoneColor");
     setfieldcolor(0, rdb.getColor("filesysFGColor"));
     setfieldcolor(1, _bgColor);
-
-    priority_ = util::stoi(rdb.getResource("filesysPriority"));
 }
 
 

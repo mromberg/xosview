@@ -71,7 +71,7 @@ void RAIDMeter::checkResources(const ResDB &rdb){
     doneColor_ = rdb.getColor("RAIDresyncdoneColor");
     todoColor_ = rdb.getColor("RAIDresynctodoColor");
     completeColor_= rdb.getColor("RAIDresynccompleteColor");
-    priority_ = util::stoi(rdb.getResource("RAIDPriority"));
+
     setfieldcolor( 0, doneColor_ );
     setfieldcolor( 1, todoColor_ );
     setUsedFormat(rdb.getResource( "RAIDUsedFormat" ) );

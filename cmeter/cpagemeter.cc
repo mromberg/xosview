@@ -26,7 +26,6 @@ void ComPageMeter::checkResources(const ResDB &rdb){
     setfieldcolor( 0, rdb.getColor( "pageInColor" ) );
     setfieldcolor( 1, rdb.getColor( "pageOutColor" ) );
     setfieldcolor( 2, rdb.getColor( "pageIdleColor" ) );
-    priority_ = util::stoi (rdb.getResource( "pagePriority" ));
 }
 
 

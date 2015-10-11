@@ -34,8 +34,6 @@ void MemMeter::checkResources(const ResDB &rdb){
     setfieldcolor( 2, rdb.getColor( "memCacheColor" ) );
     setfieldcolor( 3, rdb.getColor( "memSwapCacheColor") );
     setfieldcolor( 4, rdb.getColor( "memFreeColor" ) );
-
-    priority_ = util::stoi (rdb.getResource( "memPriority" ));
 }
 
 

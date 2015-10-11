@@ -107,10 +107,6 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
     _designMaximum = util::stoi(rdb.getResourceOrUseDefault(
           "exampleDesignMax", "550"));
 
-    // And our parent's to control display
-    priority_ = util::stoi(rdb.getResourceOrUseDefault(
-          "examplePriority", "10"));
-
     // set the color with a string (requires a lookup)
     setfieldcolor(0, "green");
 

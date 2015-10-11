@@ -33,7 +33,6 @@ void ComTZoneMeter::checkResources(const ResDB &rdb) {
     _peak = util::stof(rdb.getResource("tzonePeak"));
     _hotTrip = util::stof(rdb.getResource("tzoneHotTrip"));
     _critTrip = util::stof(rdb.getResource("tzoneCritTrip"));
-    priority_ = util::stoi(rdb.getResource("tzonePriority"));
 }
 
 

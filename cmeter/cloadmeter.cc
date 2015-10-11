@@ -35,7 +35,6 @@ void ComLoadMeter::checkResources(const ResDB &rdb){
 
     setfieldcolor( 0, _procloadcol );
     setfieldcolor( 1, rdb.getColor( "loadIdleColor" ) );
-    priority_ = util::stoi (rdb.getResource( "loadPriority" ));
 
     _warnThreshold = util::stoi (rdb.getResource("loadWarnThreshold"));
     _critThreshold = util::stoi (rdb.getResource("loadCritThreshold"));

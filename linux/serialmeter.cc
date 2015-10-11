@@ -64,7 +64,6 @@ void SerialMeter::checkResources(const ResDB &rdb){
     BitMeter::checkResources(rdb);
     onColor_ = rdb.getColor("serialOnColor");
     offColor_ = rdb.getColor("serialOffColor");
-    priority_ = util::stoi(rdb.getResource( "serialPriority"));
 
     _port = getPortBase(rdb, _device);
     if (!getport(_port + UART_LSR) || !getport(_port + UART_MSR)){

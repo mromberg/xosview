@@ -53,7 +53,10 @@ public:
 protected:
     XOSView *parent_;
     int x_, y_, width_, height_;
-    int priority_, counter_;
+private:
+    int priority_;
+protected:
+    int counter_;
     unsigned long textcolor_;
 
 

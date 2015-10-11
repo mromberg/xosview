@@ -34,8 +34,6 @@ void WLinkMeter::checkResources(const ResDB &rdb) {
     _poorValue = util::stoi(rdb.getResource("wlinkPoorValue"));
     setfieldcolor(0, _goodColor);
     setfieldcolor(1, rdb.getColor("wlinkBackground"));
-
-    priority_ = util::stoi(rdb.getResource("wlinkPriority"));
 }
 
 

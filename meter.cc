@@ -28,8 +28,8 @@ Meter::~Meter( void ){
 
 
 void Meter::checkResources(const ResDB &rdb) {
-    textcolor_ = parent_->g().allocColor(rdb.getResource(
-          "meterLabelColor"));
+    priority_ = util::stoi(rdb.getResource( resName() + "Priority" ));
+    textcolor_ = rdb.getColor("meterLabelColor");
     _title.color(textcolor_);
     _legend.color(textcolor_);
 }

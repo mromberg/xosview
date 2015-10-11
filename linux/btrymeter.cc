@@ -64,8 +64,6 @@ void BtryMeter::checkResources(const ResDB &rdb) {
 
     setfieldcolor( 0, _leftColor);
     setfieldcolor( 1, rdb.getResource( "batteryUsedColor" ) );
-
-    priority_ = util::stoi(rdb.getResource( "batteryPriority" ));
 }
 
 void BtryMeter::checkevent( void ){
