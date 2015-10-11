@@ -14,13 +14,14 @@ public:
     CPUMeter(XOSView *parent, unsigned int cpu=0);
     ~CPUMeter(void);
 
-    std::string name(void) const { return "CPUMeter"; }
+    std::string resName(void) const { return "cpu"; }
     void checkevent(void);
 
     void checkResources(const ResDB &rdb);
 
     static size_t countCPUs(void);
     static std::string cpuStr(size_t num);
+
 protected:
     size_t _lineNum;
     std::vector<unsigned long long> _oldStats;
