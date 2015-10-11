@@ -18,8 +18,6 @@ class PrcIrqRateMeter : public ComIrqRateMeter {
 public:
     PrcIrqRateMeter(XOSView *parent);
 
-    virtual std::string resName(void) const { return "irqrate"; }
-
 protected:
     virtual float getIrqRate(void);
 

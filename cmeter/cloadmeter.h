@@ -22,7 +22,7 @@ public:
     ComLoadMeter( XOSView *parent );
     ~ComLoadMeter( void );
 
-    std::string name( void ) const { return "LoadMeter"; }
+    std::string resName( void ) const { return "load"; }
     void checkevent( void );
 
     void checkResources(const ResDB &rdb);

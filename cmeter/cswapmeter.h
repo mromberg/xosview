@@ -18,7 +18,7 @@ public:
     ComSwapMeter( XOSView *parent );
     ~ComSwapMeter( void );
 
-    std::string name( void ) const { return "SwapMeter"; }
+    std::string resName( void ) const { return "swap"; }
     void checkevent( void );
 
     void checkResources(const ResDB &rdb);

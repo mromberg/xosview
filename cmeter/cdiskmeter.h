@@ -17,7 +17,7 @@ public:
     ComDiskMeter( XOSView *parent );
     ~ComDiskMeter( void );
 
-    std::string name( void ) const { return "DiskMeter"; }
+    std::string resName( void ) const { return "disk"; }
     void checkevent( void );
 
     void checkResources(const ResDB &rdb);

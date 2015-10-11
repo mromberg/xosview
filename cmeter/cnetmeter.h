@@ -16,7 +16,7 @@ public:
     ComNetMeter(XOSView *parent);
     ~ComNetMeter( void );
 
-    std::string name( void ) const { return "NetMeter"; }
+    std::string resName( void ) const { return "net"; }
     void checkevent( void );
 
     void checkResources(const ResDB &rdb);

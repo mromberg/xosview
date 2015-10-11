@@ -16,7 +16,7 @@ public:
     ComPageMeter( XOSView *parent);
     ~ComPageMeter( void );
 
-    std::string name( void ) const { return "PageMeter"; }
+    std::string resName( void ) const { return "page"; }
     void checkevent( void );
 
     void checkResources(const ResDB &rdb);

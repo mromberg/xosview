@@ -18,8 +18,6 @@ class PrcNetMeter : public ComNetMeter {
 public:
     PrcNetMeter(XOSView *parent);
 
-    virtual std::string resName(void) const { return "net"; }
-
 protected:
     virtual std::pair<float, float> getRates(void);
 

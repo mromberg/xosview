@@ -16,7 +16,7 @@ public:
     ComIrqRateMeter( XOSView *parent );
     ~ComIrqRateMeter( void );
 
-    virtual std::string name( void ) const { return "IrqRateMeter"; }
+    virtual std::string resName( void ) const { return "irqrate"; }
     void checkevent( void );
 
     void checkResources(const ResDB &rdb);
