@@ -18,7 +18,7 @@ public:
     MemMeter( XOSView *parent );
     ~MemMeter( void );
 
-    std::string name( void ) const { return "MemMeter"; }
+    std::string resName( void ) const { return "mem"; }
     void checkevent(void);
 
     void checkResources(const ResDB &rdb);

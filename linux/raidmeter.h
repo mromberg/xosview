@@ -19,6 +19,8 @@ public:
 
     void checkevent( void );
 
+    virtual std::string resName(void) const { return "RAID"; }
+
     void checkResources(const ResDB &rdb);
 
     static int countRAIDs( void );

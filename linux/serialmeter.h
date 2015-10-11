@@ -23,6 +23,7 @@ public:
 
     void checkevent( void );
 
+    virtual std::string resName(void) const { return "serial"; }
     void checkResources(const ResDB &rdb);
 
 private:

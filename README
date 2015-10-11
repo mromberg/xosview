@@ -32,6 +32,8 @@
 
   - OpenBSD
 
+  - Dragonfly BSD
+
   - cygwin (displayed stats are for windows)
 
   - minix (dev snapshot with X11)

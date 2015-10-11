@@ -13,7 +13,7 @@ public:
     TZoneMeter(XOSView *parent, size_t zoneNum);
     virtual ~TZoneMeter(void);
 
-    virtual std::string name( void ) const { return "TZoneMeter"; }
+    virtual std::string resName( void ) const { return "tzone"; }
     virtual void checkevent( void );
     virtual void checkResources(const ResDB &rdb);
 

@@ -14,7 +14,7 @@ public:
     WLinkMeter(XOSView *parent);
     virtual ~WLinkMeter(void);
 
-    virtual std::string name( void ) const { return "WLinkMeter"; }
+    virtual std::string resName( void ) const { return "wlink"; }
     virtual void checkevent( void );
     virtual void checkResources(const ResDB &rdb);
 

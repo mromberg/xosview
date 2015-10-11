@@ -19,6 +19,8 @@ public:
     PrcDiskMeter(XOSView *parent);
     ~PrcDiskMeter(void);
 
+    virtual std::string resName(void) const { return "disk"; }
+
 protected:
     virtual std::pair<double, double> getRate(void);
 

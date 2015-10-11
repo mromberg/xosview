@@ -21,7 +21,7 @@ public:
 
     ~LmsTemp( void );
 
-    std::string name( void ) const { return "LmsTemp"; }
+    std::string resName( void ) const { return "lmstemp"; }
     void checkevent( void );
 
     void checkResources(const ResDB &rdb);

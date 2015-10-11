@@ -22,6 +22,7 @@ public:
 
     void checkevent( void );
 
+    virtual std::string resName(void) const { return "int"; }
     void checkResources(const ResDB &rdb);
 
 private:

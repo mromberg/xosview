@@ -21,6 +21,7 @@ public:
     ~NFSMeter( void );
 
     std::string name( void ) const { return _statname; }
+    std::string resName( void ) const { return "NFSStat"; }
     void checkResources(const ResDB &rdb);
     void starttimer(void) { return _timer.start(); };
     void stoptimer(void) { return _timer.stop(); };

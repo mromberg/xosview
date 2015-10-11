@@ -24,7 +24,10 @@ public:
 
     virtual ~Meter( void );
 
-    virtual std::string name( void ) const { return "Meter"; }
+    virtual std::string name(void) const { return resName() + "Meter"; }
+
+    // prefix name for resouces such as cpu in cpuPriority
+    virtual std::string resName(void) const = 0;
 
     virtual void checkResources(const ResDB &rdb);
     void title( const std::string &title ) { _title.text(title); }

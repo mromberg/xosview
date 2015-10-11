@@ -17,6 +17,8 @@ class PrcPageMeter : public ComPageMeter {
 public:
     PrcPageMeter( XOSView *parent, bool useVMStat=true);
 
+    virtual std::string resName(void) const { return "page"; }
+
 protected:
     virtual std::pair<float, float> getPageRate(void);
 

@@ -20,7 +20,7 @@ public:
 
     // virtual methods called by our parents
     // when we should take action (more below)
-    virtual std::string name( void ) const;
+    virtual std::string resName( void ) const;
     virtual void checkevent( void );
     virtual void checkResources(const ResDB &rdb);
 
@@ -167,8 +167,8 @@ inline void ExampleMeter::checkevent( void ) {
 }
 
 // What is your name?
-inline std::string ExampleMeter::name( void ) const {
-    return "ExampleMeter";
+inline std::string ExampleMeter::resName( void ) const {
+    return "wcore";
 }
 
 inline void ExampleMeter::readWarpCoreTemp(void) {

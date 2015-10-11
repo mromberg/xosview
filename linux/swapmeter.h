@@ -15,6 +15,8 @@ class SwapMeter : public PrcSwapMeter {
 public:
     SwapMeter( XOSView *parent ) : PrcSwapMeter(parent) {}
 
+    virtual std::string resName(void) const { return "swap"; }
+
 protected:
     virtual std::pair<uint64_t, uint64_t> getswapinfo( void );
 };

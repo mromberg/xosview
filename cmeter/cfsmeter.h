@@ -23,6 +23,8 @@ public:
 
     virtual std::string name( void ) const { return "FSMeter"; }
     virtual void checkevent( void );
+
+    virtual std::string resName(void) const { return "filesys"; }
     virtual void checkResources(const ResDB &rdb);
 
 protected:
