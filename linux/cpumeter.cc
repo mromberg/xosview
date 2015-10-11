@@ -70,8 +70,6 @@ void CPUMeter::checkResources(const ResDB &rdb){
 
     decayUsed(rdb.isResourceTrue("cpuUsedDecay"));
     priority_ = util::stoi (rdb.getResource( "cpuPriority" ));
-    dodecay_ = rdb.isResourceTrue( "cpuDecay" );
-    useGraph_ = rdb.isResourceTrue( "cpuGraph" );
     setUsedFormat (rdb.getResource("cpuUsedFormat"));
 }
 

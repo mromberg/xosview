@@ -198,6 +198,8 @@ void FieldMeterGraph::drawBar(X11Graphics &g, int i) const {
 void FieldMeterGraph::checkResources(const ResDB &rdb) {
     FieldMeterDecay::checkResources(rdb);
 
+    useGraph_ = rdb.isResourceTrue( resName() + "Graph" );
+
     // exit(1) if does not exist
     std::string ptr = rdb.getResource( "graphNumCols" );
 

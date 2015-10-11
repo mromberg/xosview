@@ -44,8 +44,16 @@ FieldMeterDecay::FieldMeterDecay(XOSView *parent,
     decay_[numfields-1] = 1.0;  //  Initialize to all free...
 }
 
+
 FieldMeterDecay::~FieldMeterDecay( void ){
 }
+
+
+void FieldMeterDecay::checkResources(const ResDB &rdb) {
+    FieldMeter::checkResources(rdb);
+    dodecay_ = rdb.isResourceTrue( resName() + "Decay" );
+}
+
 
 void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
     int twidth, x = x_;

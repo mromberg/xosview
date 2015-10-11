@@ -27,8 +27,6 @@ void ComPageMeter::checkResources(const ResDB &rdb){
     setfieldcolor( 1, rdb.getColor( "pageOutColor" ) );
     setfieldcolor( 2, rdb.getColor( "pageIdleColor" ) );
     priority_ = util::stoi (rdb.getResource( "pagePriority" ));
-    dodecay_ = rdb.isResourceTrue( "pageDecay" );
-    useGraph_ = rdb.isResourceTrue( "pageGraph" );
     setUsedFormat (rdb.getResource("pageUsedFormat"));
     decayUsed(rdb.isResourceTrue("pageUsedDecay"));
 }

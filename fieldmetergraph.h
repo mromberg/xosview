@@ -32,11 +32,10 @@ public:
     virtual void checkResources(const ResDB &rdb);
 
 protected:
-    bool useGraph_;
-
     virtual void drawfields(X11Graphics &g, bool mandatory=false);
 
 private:
+    bool useGraph_;
     int graphNumCols_;
     int graphpos_;
     std::vector<float> heightfield_;

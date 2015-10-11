@@ -31,13 +31,17 @@ public:
       bool dousedlegends=false);
     virtual ~FieldMeterDecay( void );
 
+    virtual void checkResources(const ResDB &rdb);
+
 protected:
+    virtual void drawfields(X11Graphics &g, bool mandatory=false);
+
+private:
     bool dodecay_;
     bool firsttime_;  //Used to set up decaying fields right the first time.
     std::vector<float> decay_;
     std::vector<float> lastDecayval_;
-
-    virtual void drawfields(X11Graphics &g, bool mandatory=false);
 };
+
 
 #endif

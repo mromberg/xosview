@@ -34,8 +34,6 @@ void ComTZoneMeter::checkResources(const ResDB &rdb) {
     _hotTrip = util::stof(rdb.getResource("tzoneHotTrip"));
     _critTrip = util::stof(rdb.getResource("tzoneCritTrip"));
     priority_ = util::stoi(rdb.getResource("tzonePriority"));
-    dodecay_ = rdb.isResourceTrue("tzoneDecay");
-    useGraph_ = rdb.isResourceTrue("tzoneGraph");
     setUsedFormat(rdb.getResource("tzoneUsedFormat"));
     decayUsed(rdb.isResourceTrue("tzoneUsedDecay"));
 }
