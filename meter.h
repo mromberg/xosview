@@ -24,49 +24,26 @@ public:
 
     virtual ~Meter( void );
 
-    virtual std::string name(void) const { return resName() + "Meter"; }
-
     // prefix name for resouces such as cpu in cpuPriority
     virtual std::string resName(void) const = 0;
+    virtual std::string name(void) const { return resName() + "Meter"; }
 
     virtual void checkResources(const ResDB &rdb);
-    void title( const std::string &title ) { _title.text(title); }
-    void legend( const std::string &legend, const std::string &delimiter="/" );
+    virtual void checkevent( void ) = 0;
+    virtual void draw(X11Graphics &g) = 0; // Draw everything cleared
+    virtual void drawIfNeeded(X11Graphics &g); // Draw if needed
+    virtual void resize( int x, int y, int width, int height );
+
+    bool requestevent(void);  // if true wants to sample at this tick
     void docaptions(bool val ) { docaptions_ = val; }
     void dolegends(bool val) { dolegends_ = val; }
     void dousedlegends(bool val) { dousedlegends_ = val; }
 
-    virtual void checkevent( void ) = 0;
-
-    int getX() const { return x_; }
-    int getY() const { return y_; }
-    int getWidth() const { return width_; }
-    int getHeight() const { return height_; }
-
-    virtual void draw(X11Graphics &g) = 0; // Draw everything cleared
-    virtual void drawIfNeeded(X11Graphics &g); // Draw if needed
-
-    bool requestevent(void);  // if true wants to sample at this tick
-    virtual void resize( int x, int y, int width, int height );
-    // ----------------------------------------------------
-
 protected:
     XOSView *parent_;
-    int x_, y_, width_, height_;
-private:
-    int priority_;
-protected:
-    int counter_;
-    unsigned long textcolor_;
 
-
-    virtual void drawLabels(X11Graphics &g);
-
-    double samplesPerSecond(void)
-        { return 1.0 * parent_->sampleRate() / priority_; }
-
-    double secondsPerSample() { return 1.0/samplesPerSecond(); }
-
+    void title( const std::string &title ) { _title.text(title); }
+    void legend( const std::string &legend, const std::string &delimiter="/" );
     bool docaptions(void) const { return docaptions_; }
     bool dolegends(void) const { return dolegends_; }
     bool dousedlegends(void) const { return dousedlegends_; }
@@ -75,8 +52,19 @@ protected:
     double scaleValue(double value, std::string &scale) const;
     void setLegendColor(size_t index, unsigned long color)
         { _legend.setColor(index, color); }
+    virtual void drawLabels(X11Graphics &g);
+
+    int x(void) const { return x_; }
+    int y(void) const { return y_; }
+    void x(int v) { x_ = v; }
+    void y(int v) { y_ = v; }
+    int width() const { return width_; }
+    int height() const { return height_; }
 
 private:
+    int x_, y_, width_, height_;
+    int priority_;
+    int counter_;
     bool docaptions_, dolegends_, dousedlegends_, metric_;
     Label _title;
     MCLabel _legend;

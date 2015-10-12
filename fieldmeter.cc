@@ -34,7 +34,7 @@ FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
 
 void FieldMeter::resize( int x, int y, int width, int height ) {
     Meter::resize(x, y, width, height);
-    _used.move(x_ - 2, y_ + height_ + 2);
+    _used.move(Meter::x() - 2, Meter::y() + Meter::height() + 2);
 }
 
 
@@ -109,7 +109,7 @@ void FieldMeter::draw(X11Graphics &g) {
 
     /*  Draw the outline for the fieldmeter.  */
     g.setFG( parent_->foreground() );
-    g.drawRectangle( x_ - 1, y_ - 1, width_ + 2, height_ + 2 );
+    g.drawRectangle( x() - 1, y() - 1, width() + 2, height() + 2 );
 
     drawLabels(g);
     _used.draw(g);
@@ -207,7 +207,7 @@ void FieldMeter::updateUsed() {
 
 
 void FieldMeter::drawfields(X11Graphics &g, bool mandatory) {
-    int twidth, x = x_;
+    int twidth, x = Meter::x();
 
     if ( total_ == 0 )
         return;
@@ -220,15 +220,16 @@ void FieldMeter::drawfields(X11Graphics &g, bool mandatory) {
             << " for field " << i << "\n"
             << "fields_: " << fields_ << std::endl;
 
-        twidth = (int) ((width_ * (float) fields_[i]) / total_);
+        twidth = (int) ((width() * (float) fields_[i]) / total_);
 //    twidth = (int)((fields_[i] * width_) / total_);
-        if ( (i == numfields() - 1) && ((x + twidth) != (x_ + width_)) )
-            twidth = width_ + x_ - x;
+        if ( (i == numfields() - 1)
+          && ((x + twidth) != (Meter::x() + width())) )
+            twidth = width() + Meter::x() - x;
 
         if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
             g.setFG( colors_[i] );
             g.setStippleN(i%4);
-            g.drawFilledRectangle( x, y_, twidth, height_ );
+            g.drawFilledRectangle( x, y(), twidth, height() );
             g.setStippleN(0);	/*  Restore all-bits stipple.  */
             lastvals_[i] = twidth;
             lastx_[i] = x;

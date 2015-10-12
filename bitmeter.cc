@@ -46,13 +46,13 @@ void BitMeter::checkevent( void ){
 void BitMeter::drawBits(X11Graphics &g, bool mandatory){
     static int pass = 1;
 
-    int x1 = x_ + 0, x2;
+    int x1 = x() + 0, x2;
 
     for ( unsigned int i = 0 ; i < numbits() ; i++ ){
         if ( i != (numbits() - 1) )
-            x2 = x_ + ((i + 1) * (width_+1)) / numbits() - 1;
+            x2 = x() + ((i + 1) * (width() + 1)) / numbits() - 1;
         else
-            x2 = x_ + (width_+1) - 1;
+            x2 = x() + (width() + 1) - 1;
 
         if ( (bits_[i] != lastbits_[i]) || mandatory ){
             if ( bits_[i] && pass )
@@ -60,7 +60,7 @@ void BitMeter::drawBits(X11Graphics &g, bool mandatory){
             else
                 g.setFG( offColor_ );
 
-            g.drawFilledRectangle( x1, y_, x2 - x1, height_);
+            g.drawFilledRectangle( x1, y(), x2 - x1, height());
         }
 
         lastbits_[i] = bits_[i];
@@ -72,7 +72,7 @@ void BitMeter::drawBits(X11Graphics &g, bool mandatory){
 void BitMeter::draw(X11Graphics &g){
     g.lineWidth( 1 );
     g.setFG( parent_->foreground() );
-    g.drawFilledRectangle( x_ -1, y_ - 1, width_ + 2, height_ + 2 );
+    g.drawFilledRectangle( x() - 1, y() - 1, width() + 2, height() + 2 );
 
     g.lineWidth( 0 );
 

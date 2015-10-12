@@ -71,9 +71,9 @@ private:
 };
 
 
-inline bool FieldMeter::checkX(int x, int width) const {
-    logAssert((x >= x_) && (x + width >= x_)
-      && (x <= x_ + width_) && (x + width <= x_ + width_))
+inline bool FieldMeter::checkX(int xv, int widthv) const {
+    logAssert((xv >= x()) && (xv + widthv >= x())
+      && (xv <= x() + width()) && (xv + widthv <= x() + width()))
         << "bad horiz values for meter: " << name() << "\n"
         << "fields_: " << fields_ << std::endl;
 

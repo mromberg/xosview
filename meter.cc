@@ -14,7 +14,7 @@ Meter::Meter( XOSView *parent, const std::string &title,
   bool dousedlegends )
     : parent_(parent), x_(0), y_(0), width_(1), height_(1),
       priority_(1), counter_(0),
-      textcolor_(0), docaptions_(docaptions),
+      docaptions_(docaptions),
       dolegends_(dolegends), dousedlegends_(dousedlegends), metric_(false),
       _title(x_, y_, title, Label::BLSW),
       _legend(x_, y_, legend, "/") {
@@ -29,9 +29,9 @@ Meter::~Meter( void ){
 
 void Meter::checkResources(const ResDB &rdb) {
     priority_ = util::stoi(rdb.getResource( resName() + "Priority" ));
-    textcolor_ = rdb.getColor("meterLabelColor");
-    _title.color(textcolor_);
-    _legend.color(textcolor_);
+    unsigned long tcolor = rdb.getColor("meterLabelColor");
+    _title.color(tcolor);
+    _legend.color(tcolor);
 }
 
 

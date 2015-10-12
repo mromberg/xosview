@@ -1,3 +1,5 @@
+- dolegends etc may not be needed in meter ctors
+
 - Have basemeter (fieldmeter, decay, etc) set their own resources
 
 - Xdefaults.in -> Xdefaults

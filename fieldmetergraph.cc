@@ -61,17 +61,19 @@ void FieldMeterGraph::drawfields(X11Graphics &g, bool mandatory) {
 
     checkBackBuffer();
     // Repositon x_ and y_ relative to the pixmap
-    int oldx = x_, oldy = y_;
-    x_ = y_ = 0;
+    int oldx = x(), oldy = y();
+    x(0);
+    y(0);
 
     // Draw the graph in the pixmap
     drawBars(_pmap->g());
 
     // put x_ and y_ back to window coords
-    x_ = oldx; y_ = oldy;
+    x(oldx);
+    y(oldy);
 
     // and finally copy the pixmap into the window
-    _pmap->copyTo(g, 0, 0, width_, height_, x_ + 1, y_ + 1);
+    _pmap->copyTo(g, 0, 0, width(), height(), x() + 1, y() + 1);
 }
 
 
@@ -79,8 +81,8 @@ void FieldMeterGraph::checkBackBuffer(void) {
     // Create a new Pixmap to match our area if needed
     bool allocNew = false;
     if (!_pmap
-      || _pmap->width() != width_
-      || _pmap->height() != height_)
+      || _pmap->width() != width()
+      || _pmap->height() != height())
         allocNew = true;
 
     if (allocNew) {
@@ -90,8 +92,8 @@ void FieldMeterGraph::checkBackBuffer(void) {
         // the x_ and x_ if a FieldMeter are relative to
         // the parent window.  The width_ and height_ are for
         // the actual meter graphic display (where x_ and y_ are upper left
-        _pmap = parent_->newX11Pixmap(width_, height_);
-        logDebug << "new X11Pixmap: " << width_ <<", " << height_
+        _pmap = parent_->newX11Pixmap(width(), height());
+        logDebug << "new X11Pixmap: " << width() << ", " << height()
                  << std::endl;
 
         // Fill is with the last "idle" color
@@ -148,15 +150,15 @@ void FieldMeterGraph::drawBars(X11Graphics &g) {
     }
 
     // scroll area then draw new bar
-    int col_width = width_/graphNumCols_;
+    int col_width = width() / graphNumCols_;
     if( col_width < 1 )
         col_width = 1;
 
-    int sx = x_ + col_width;
-    int swidth = width_ - col_width;
-    int sheight = height_;
+    int sx = x() + col_width;
+    int swidth = width() - col_width;
+    int sheight = height();
     if( swidth > 0 && sheight > 0 )
-        g.copyArea( sx, y_, swidth, sheight, x_, y_ );
+        g.copyArea( sx, y(), swidth, sheight, x(), y() );
 
     drawBar(g, graphNumCols_ - 1);
 
@@ -166,26 +168,26 @@ void FieldMeterGraph::drawBars(X11Graphics &g) {
 
 
 void FieldMeterGraph::drawBar(X11Graphics &g, int i) const {
-    int y = y_ + height_;
-    int x = x_ + i*width_/graphNumCols_;
-    int barwidth = (x_ + (i+1)*width_/graphNumCols_)-x;
+    int y = Meter::y() + height();
+    int x = Meter::x() + i * width() / graphNumCols_;
+    int barwidth = (Meter::x() + (i + 1) * width() / graphNumCols_) - x;
 
     if( barwidth>0 ) {
         int barheight;
         for( unsigned int j = 0 ; j < numfields(); j++ ) {
             /*  Round up, by adding 0.5 before
              *  converting to an int.  */
-            barheight = (int)((heightfield_[i*numfields()+j]*height_)+0.5);
+            barheight = (int)((heightfield_[i*numfields()+j] * height()) + 0.5);
 
             g.setForeground( fieldcolor(j) );
             g.setStippleN(j%4);
 
-            if( barheight > (y-y_) )
-                barheight = (y-y_);
+            if( barheight > (y - Meter::y()) )
+                barheight = (y - Meter::y());
 
             // hack to ensure last field always reaches top of graph area
             if( j == numfields()-1 )
-                barheight = (y-y_);
+                barheight = (y - Meter::y());
 
             y -= barheight;
             if( barheight>0 )

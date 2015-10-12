@@ -118,10 +118,11 @@ void BitFieldMeter::draw(X11Graphics &g) {
     /*  Draw the outline for the fieldmeter.  */
     g.setFG( parent_->foreground() );
     g.lineWidth( 1 );
-    g.drawFilledRectangle( x_ - 1, y_ - 1, width_/2 + 2, height_ + 2 );
+    g.drawFilledRectangle( x() - 1, y() - 1, width() / 2 + 2, height() + 2 );
 
-    g.drawRectangle( x_ + width_/2 +3, y_ - 1, width_/2 - 2,
-      height_ + 2 );
+    g.drawRectangle( x() + width() / 2 +3, y() - 1,
+      width() / 2 - 2, height() + 2 );
+
     drawLabels(g);
     drawBits(g, 1);
     drawfields(g, 1);
@@ -129,7 +130,7 @@ void BitFieldMeter::draw(X11Graphics &g) {
 
 void BitFieldMeter::drawfieldlegend(X11Graphics &g) {
     size_t pos = 0;
-    int x = x_ + width_/2 + 4;
+    int x = Meter::x() + width() / 2 + 4;
 
     for (unsigned int i = 0 ; i < numfields() ; i++) {
         size_t fpos = fieldLegend_.find("/", pos);  // string::npos if not found
@@ -138,11 +139,11 @@ void BitFieldMeter::drawfieldlegend(X11Graphics &g) {
 
         g.setStippleN(i%4);
         g.setFG( colors_[i] );
-        g.drawString( x, y_ - 5, li );
+        g.drawString( x, y() - 5, li );
         x += g.textWidth( li );
         g.setFG( parent_->foreground() );
         if ( i != numfields() - 1 )
-            g.drawString( x, y_ - 5, "/" );
+            g.drawString( x, y() - 5, "/" );
         x += g.textWidth( "/" );
     }
 
@@ -216,12 +217,11 @@ void BitFieldMeter::drawused(X11Graphics &g, bool mandatory) {
         bufs << std::setprecision(1) << used_;
     }
 
-    g.clear( x_ - xoffset, y_ + height_ - g.textHeight(),
+    g.clear( x() - xoffset, y() + height() - g.textHeight(),
       xoffset - onechar / 2, g.textHeight() + 1 );
     g.setFG( usedcolor_ );
     std::string buf = bufs.str();
-    g.drawString( x_ - (buf.size() + 1 ) * onechar + 2,
-      y_ + height_, buf );
+    g.drawString( x() - (buf.size() + 1 ) * onechar + 2, y() + height(), buf );
 
     lastused_ = used_;
 }
@@ -229,9 +229,9 @@ void BitFieldMeter::drawused(X11Graphics &g, bool mandatory) {
 void BitFieldMeter::drawBits(X11Graphics &g, bool mandatory){
     static int pass = 1;
 
-    int x1 = x_, w;
+    int x1 = x(), w;
 
-    w = (width_/2 - (numbits()+1)) / numbits();
+    w = (width() / 2 - (numbits() + 1)) / numbits();
 
     for ( unsigned int i = 0 ; i < numbits() ; i++ ){
         if ( (bits_[i] != lastbits_[i]) || mandatory ){
@@ -239,7 +239,7 @@ void BitFieldMeter::drawBits(X11Graphics &g, bool mandatory){
                 g.setFG( onColor_ );
             else
                 g.setFG( offColor_ );
-            g.drawFilledRectangle( x1, y_, w, height_);
+            g.drawFilledRectangle( x1, y(), w, height());
         }
 
         lastbits_[i] = bits_[i];
@@ -249,7 +249,7 @@ void BitFieldMeter::drawBits(X11Graphics &g, bool mandatory){
 }
 
 void BitFieldMeter::drawfields(X11Graphics &g, bool mandatory) {
-    int twidth, x = x_ + width_/2 + 4;
+    int twidth, x = Meter::x() + width() / 2 + 4;
 
     if ( total_ == 0 )
         return;
@@ -269,14 +269,14 @@ void BitFieldMeter::drawfields(X11Graphics &g, bool mandatory) {
                            << "will not be displayed." << std::endl;
         }
 
-        twidth = (int) (((width_/2 - 3) * (float) fields_[i]) / total_);
-        if ( (i == numfields() - 1) && ((x + twidth) != (x_ + width_)) )
-            twidth = width_ + x_ - x;
+        twidth = (int) (((width()/2 - 3) * (float) fields_[i]) / total_);
+        if ( (i == numfields() - 1) && ((x + twidth) != (Meter::x() + width())))
+            twidth = width() + Meter::x() - x;
 
         if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
             g.setForeground( colors_[i] );
             g.setStippleN(i%4);
-            g.drawFilledRectangle( x, y_, twidth, height_ );
+            g.drawFilledRectangle( x, y(), twidth, height() );
             g.setStippleN(0);	/*  Restore all-bits stipple.  */
             lastvals_[i] = twidth;
             lastx_[i] = x;
@@ -315,8 +315,9 @@ void BitFieldMeter::setNumFields(int n){
 }
 
 bool BitFieldMeter::checkX(int x, int width) const {
-    if ((x < x_) || (x + width < x_)
-      || (x > x_ + width_) || (x + width > x_ + width_)){
+    if ((x < Meter::x()) || (x + width < Meter::x())
+      || (x > Meter::x() + Meter::width())
+      || (x + width > Meter::x() + Meter::width())){
         logProblem << "BitFieldMeter::checkX() : bad horiz values for meter : "
                    << name() << std::endl
                    << "value " << x << ", width "<< width << ", total_ = "

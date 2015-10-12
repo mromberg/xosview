@@ -56,7 +56,7 @@ void FieldMeterDecay::checkResources(const ResDB &rdb) {
 
 
 void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
-    int twidth, x = x_;
+    int twidth, x = Meter::x();
 
     if (!dodecay_) {
         //  If this meter shouldn't be done as a decaying splitmeter,
@@ -68,8 +68,8 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
     if ( total_ == 0.0 )
         return;
 
-    int halfheight = height_ / 2;
-    int decaytwidth, decayx = x_;
+    int halfheight = height() / 2;
+    int decaytwidth, decayx = Meter::x();
 
     //  This code is supposed to make the average display look just like
     //  the ordinary display for the first drawfields, but it doesn't seem
@@ -107,29 +107,30 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
         decay_[i] = ALPHA*decay_[i] + (1-ALPHA)*(fields_[i]*1.0/total_);
 
         //  We want to round the widths, rather than truncate.
-        twidth = (int) (0.5 + (width_ * (float) fields_[i]) / total_);
-        decaytwidth = (int) (0.5 + width_ * decay_[i]);
+        twidth = (int) (0.5 + (width() * (float) fields_[i]) / total_);
+        decaytwidth = (int) (0.5 + width() * decay_[i]);
         logAssert(decaytwidth >= 0.0)
             << "FieldMeterDecay " << name()
             << ":  decaytwidth of " << std::endl
-            << decaytwidth << ", width of " << width_
+            << decaytwidth << ", width of " << width()
             << ", decay_[" << i << std::endl
             << "] of " << decay_[i] << std::endl;
 
         //  However, due to rounding, we may have gone one
         //  pixel too far by the time we get to the later fields...
-        if (x + twidth > x_ + width_)
-            twidth = width_ + x_ - x;
-        if (decayx + decaytwidth > x_ + width_)
-            decaytwidth = width_ + x_ - decayx;
+        if (x + twidth > Meter::x() + width())
+            twidth = width() + Meter::x() - x;
+        if (decayx + decaytwidth > Meter::x() + width())
+            decaytwidth = width() + Meter::x() - decayx;
 
         //  Also, due to rounding error, the last field may not go far
         //  enough...
-        if ( (i == numfields() - 1) && ((x + twidth) != (x_ + width_)) )
-            twidth = width_ + x_ - x;
         if ( (i == numfields() - 1)
-          && ((decayx + decaytwidth) != (x_ + width_)))
-            decaytwidth = width_ + x_ - decayx;
+          && ((x + twidth) != (Meter::x() + width())) )
+            twidth = width() + Meter::x() - x;
+        if ( (i == numfields() - 1)
+          && ((decayx + decaytwidth) != (Meter::x() + width())))
+            decaytwidth = width() + Meter::x() - decayx;
 
         g.setFG( fieldcolor(i) );
         g.setStippleN(i%4);
@@ -138,13 +139,13 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
         //    Let's correct for that here.
         if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
             checkX(x, twidth);
-            g.drawFilledRectangle( x, y_, twidth, halfheight );
+            g.drawFilledRectangle( x, y(), twidth, halfheight );
         }
 
         if ( mandatory || (decay_[i] != lastDecayval_[i]) ){
             checkX(decayx, decaytwidth);
-            g.drawFilledRectangle( decayx, y_+halfheight+1,
-              decaytwidth, height_ - halfheight-1);
+            g.drawFilledRectangle( decayx, y() + halfheight + 1,
+              decaytwidth, height() - halfheight - 1);
         }
 
         lastvals_[i] = twidth;
