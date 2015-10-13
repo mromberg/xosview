@@ -5,6 +5,7 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "fieldmeter.h"
+#include "xosview.h"
 
 #include <iostream>
 #include <fstream>

@@ -26,6 +26,7 @@
 //   4.  Make the checkResources () function in the meter set the
 //	 dodecay_ variable according to the, e.g., xosview*cpuDecay resource.
 #include "fieldmeterdecay.h"
+#include "x11graphics.h"
 
 #include <iostream>
 #include <fstream>

@@ -24,6 +24,7 @@
 //	 useGraph_ variable according to the, e.g., xosview*cpuGraph resource.
 #include "fieldmetergraph.h"
 #include "x11pixmap.h"
+#include "xosview.h"
 
 #include <fstream>
 

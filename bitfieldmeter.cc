@@ -7,6 +7,7 @@
 //
 //
 #include "bitfieldmeter.h"
+#include "xosview.h"
 
 #include <fstream>
 #include <sstream>

@@ -4,16 +4,14 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _METER_H_
-#define _METER_H_
+#ifndef METER_H
+#define METER_H
 
-#include "xosview.h"	//  To grab MAX_SAMPLES_PER_SECOND.
+#include "rdb.h"
 #include "label.h"
 #include "strutil.h"
 
-#include <string>
-
-
+class XOSView;
 
 
 class Meter {
