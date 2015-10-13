@@ -12,7 +12,7 @@
 
 LoadMeter::LoadMeter( XOSView *parent )
     : ComLoadMeter(parent), _cpus(CPUMeter::countCPUs()),
-      _loadAvg(0.0) {
+      _sampRate(5), _loadAvg(0.0) {
 
     if (!_query.add("\\Processor(_Total)\\% Processor Time") ||
       !_query.add("\\System\\Processor Queue Length") ||
@@ -20,6 +20,13 @@ LoadMeter::LoadMeter( XOSView *parent )
         logFatal << "failed to add processor queue counters." << std::endl;
 
     _query.query();
+}
+
+
+void LoadMeter::checkResources(const ResDB &rdb) {
+    ComLoadMeter::checkResources(rdb);
+    _sampRate = util::stof(rdb.getResource("loadPriority"))
+        / util::stof(rdb.getResource("samplesPerSec"));
 }
 
 
@@ -33,7 +40,7 @@ float LoadMeter::getLoad(void) {
     float load = queueLen + usedCPU / 100.0 * _cpus;
 
     // calculate the exponential moving average
-    _loadAvg = load + exp(-1.0 * secondsPerSample() / 60.0) * (_loadAvg - load);
+    _loadAvg = load + exp(-1.0 * _sampRate / 60.0) * (_loadAvg - load);
 
     logDebug << "cpu: " << usedCPU << ", queue: " << queueLen << std::endl;
     logDebug << "load: " << load << ", AVG: " << _loadAvg << std::endl;

@@ -19,12 +19,15 @@ class LoadMeter : public ComLoadMeter {
 public:
     LoadMeter( XOSView *parent );
 
+    virtual void checkResources(const ResDB &rdb);
+
 protected:
     virtual float getLoad(void);
     virtual uint64_t getCPUSpeed(void);
 
 private:
     size_t _cpus;
+    float _sampRate;
     float _loadAvg;  // 1min load average
     PerfQuery _query;
 };
