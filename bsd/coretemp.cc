@@ -42,12 +42,10 @@ void CoreTemp::checkResources(const ResDB &rdb) {
     setfieldcolor( 1, rdb.getColor( "coretempIdleColor") );
     setfieldcolor( 2, highcolor_ );
 
-    priority_ = util::stoi( rdb.getResource( "coretempPriority" ) );
     std::string highest = rdb.getResourceOrUseDefault(
         "coretempHighest", "100" );
     total_ = util::stoi( highest );
     std::string high = rdb.getResourceOrUseDefault("coretempHigh", "");
-    setUsedFormat( rdb.getResource( "coretempUsedFormat" ) );
 
     // Get tjMax here and use as total.
     float total = -300.0;
@@ -122,12 +120,12 @@ void CoreTemp::getcoretemp( void ) {
 
     if (fields_[1] < 0) { // alarm: T > high
         fields_[1] = 0;
-        if (colors_[0] != highcolor_) {
+        if (fieldcolor(0) != highcolor_) {
             setfieldcolor( 0, highcolor_ );
         }
     }
     else {
-        if (colors_[0] != actcolor_) {
+        if (fieldcolor(0) != actcolor_) {
             setfieldcolor( 0, actcolor_ );
         }
     }

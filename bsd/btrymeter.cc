@@ -36,9 +36,6 @@ void BtryMeter::checkResources(const ResDB &rdb) {
 
     setfieldcolor(0, leftcolor_);
     setfieldcolor(1, usedcolor_);
-
-    priority_ = util::stoi( rdb.getResource("batteryPriority") );
-    setUsedFormat( rdb.getResource("batteryUsedFormat") );
 }
 
 

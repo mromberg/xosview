@@ -61,7 +61,6 @@ void BSDSensor::checkResources(const ResDB &rdb) {
     setfieldcolor( 0, actcolor_  );
     setfieldcolor( 1, rdb.getColor( "bsdsensorIdleColor" ) );
     setfieldcolor( 2, highcolor_ );
-    priority_ = util::stoi( rdb.getResource( "bsdsensorPriority" ) );
 
     std::string tmp(rdb.getResourceOrUseDefault(
           "bsdsensorHighest", "0" ));
@@ -69,9 +68,6 @@ void BSDSensor::checkResources(const ResDB &rdb) {
     s += util::repr(nbr_);
     total_ = fabs( util::stof( rdb.getResourceOrUseDefault(s, tmp) ) );
     s = "bsdsensorUsedFormat" + util::repr(nbr_);
-    std::string f = rdb.getResourceOrUseDefault(s, "");
-    setUsedFormat( f.size() ? f : rdb.getResource(
-          "bsdsensorUsedFormat" ) );
 
     if (!has_high_)
         high_ = total_;

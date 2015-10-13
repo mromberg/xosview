@@ -56,7 +56,6 @@ void IntMeter::checkResources(const ResDB &rdb) {
     BitMeter::checkResources(rdb);
     onColor_  = rdb.getColor("intOnColor");
     offColor_ = rdb.getColor("intOffColor");
-    priority_ = util::stoi( rdb.getResource( "intPriority" ) );
 }
 
 
