@@ -36,11 +36,6 @@ void CPUMeter::checkResources(const ResDB &rdb) {
     setfieldcolor(1, rdb.getColor("cpuSystemColor"));
     setfieldcolor(2, rdb.getColor("cpuInterruptColor"));
     setfieldcolor(3, rdb.getColor("cpuFreeColor"));
-    priority_ = util::stoi(rdb.getResource("cpuPriority"));
-    dodecay_ = rdb.isResourceTrue("cpuDecay");
-    useGraph_ = rdb.isResourceTrue("cpuGraph");
-    setUsedFormat(rdb.getResource("cpuUsedFormat"));
-    decayUsed(rdb.isResourceTrue("cpuUsedDecay"));
 }
 
 

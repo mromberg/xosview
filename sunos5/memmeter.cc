@@ -38,10 +38,6 @@ void MemMeter::checkResources(const ResDB &rdb) {
     setfieldcolor(1, rdb.getColor("memCacheColor"));
     setfieldcolor(2, rdb.getColor("memUsedColor"));
     setfieldcolor(3, rdb.getColor("memFreeColor"));
-    priority_ = util::stoi(rdb.getResource("memPriority"));
-    dodecay_ = rdb.isResourceTrue("memDecay");
-    useGraph_ = rdb.isResourceTrue("memGraph");
-    setUsedFormat(rdb.getResource("memUsedFormat"));
 }
 
 
