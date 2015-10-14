@@ -12,7 +12,7 @@
 
 
 BtryMeter::BtryMeter( XOSView *parent )
-    : FieldMeter( parent, 2, "BTRY", "CHRG/USED", 1, 1, 0 ),
+    : FieldMeter( parent, 2, "BTRY", "CHRG/USED" ),
       leftcolor_(0), usedcolor_(0), chargecolor_(0), fullcolor_(0),
       lowcolor_(0), critcolor_(0), nonecolor_(0),
       old_state_(256) {

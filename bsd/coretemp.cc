@@ -19,7 +19,7 @@
 
 CoreTemp::CoreTemp( XOSView *parent, const std::string &label,
   const std::string &caption, int cpu)
-    : FieldMeter( parent, 3, label, caption, 1, 1, 1 ),
+    : FieldMeter( parent, 3, label, caption ),
       cpu_(cpu), cpucount_(countCpus()),
       high_(0), temps_(cpucount_, 0),
       actcolor_(0), highcolor_(0) {

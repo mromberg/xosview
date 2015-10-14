@@ -20,7 +20,7 @@ BSDSensor::BSDSensor( XOSView *parent, const std::string &name,
   const std::string &high,
   const std::string &low, const std::string &label,
   const std::string &caption, int nbr )
-    : SensorFieldMeter( parent, label, caption, 1, 1, 0 ) {
+    : SensorFieldMeter( parent, label, caption ) {
 
     nbr_ = nbr;
     highname_[0] = highval_[0] = '\0';
