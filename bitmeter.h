@@ -18,8 +18,8 @@ class BitMeter : public Meter {
 public:
     BitMeter( XOSView *parent,
       const std::string &title = "", const std::string &legend ="",
-      size_t numBits = 1, bool docaptions=false, bool dolegends=false,
-      bool dousedlegends=false);
+      size_t numBits = 1);
+
     virtual ~BitMeter( void );
 
     // virtual from Meter

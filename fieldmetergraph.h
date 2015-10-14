@@ -23,9 +23,8 @@ class X11Pixmap;
 class FieldMeterGraph : public FieldMeterDecay {
 public:
     FieldMeterGraph( XOSView *parent, size_t numfields,
-      const std::string &title = "", const std::string &legend = "",
-      bool docaptions=false, bool dolegends=false,
-      bool dousedlegends=false);
+      const std::string &title = "", const std::string &legend = "");
+
     virtual ~FieldMeterGraph( void );
 
     // virtual from Meter

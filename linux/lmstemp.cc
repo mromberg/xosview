@@ -24,7 +24,7 @@ static const char * const PROC_SENSORS_26 = "/sys/class/hwmon";
 
 LmsTemp::LmsTemp( XOSView *parent, const std::string &filename,
   const std::string &label, const std::string &caption)
-    : FieldMeter( parent, 3, label, caption, 1, 1, 0 ),
+    : FieldMeter( parent, 3, label, caption ),
       _highColor(0), _actColor(0) {
 
     if(!checksensors(1, PROC_SENSORS_24, filename)) {

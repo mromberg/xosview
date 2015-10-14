@@ -56,7 +56,7 @@ private:
 // associated graphics do not yet exist when a meter
 // is constructed.
 inline ExampleMeter::ExampleMeter(XOSView *parent)
-    : FieldMeterGraph(parent, 2, "WCOR", "TEMP/USED", true, true, true),
+    : FieldMeterGraph(parent, 2, "WCOR", "TEMP/USED"),
       _warpCoreTemp(0), _testMaximum(0), _designMaximum(0) {
 
     // Generally leave the ctor empty.  But is is ok to call

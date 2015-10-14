@@ -13,9 +13,8 @@
 
 
 SensorFieldMeter::SensorFieldMeter( XOSView *parent, const std::string &title,
-  const std::string &legend,  bool docaptions,
-  bool dolegends, bool dousedlegends )
-    : FieldMeter(parent, 3, title, legend, docaptions, dolegends, dousedlegends),
+  const std::string &legend )
+    : FieldMeter(parent, 3, title, legend),
       high_(0), low_(0), has_high_(false), has_low_(false), negative_(false),
       actcolor_(0), highcolor_(0), lowcolor_(0) {
 

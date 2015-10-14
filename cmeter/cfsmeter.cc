@@ -10,7 +10,7 @@
 
 
 ComFSMeter::ComFSMeter(XOSView *parent, const std::string &path)
-    : FieldMeterGraph(parent, 2, "FS", "USED/FREE", true, true, true),
+    : FieldMeterGraph(parent, 2, "FS", "USED/FREE"),
       _bgColor(0), _umountColor(0), _path(path){
 
     legend(_path + ":FREE", ":");

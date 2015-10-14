@@ -26,9 +26,8 @@
 class FieldMeterDecay : public FieldMeter {
 public:
     FieldMeterDecay(XOSView *parent, size_t numfields,
-      const std::string &title = "", const std::string &legend = "",
-      bool docaptions=false, bool dolegends=false,
-      bool dousedlegends=false);
+      const std::string &title = "", const std::string &legend = "");
+
     virtual ~FieldMeterDecay( void );
 
     virtual void checkResources(const ResDB &rdb);

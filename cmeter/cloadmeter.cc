@@ -17,7 +17,7 @@
 
 
 ComLoadMeter::ComLoadMeter( XOSView *parent )
-    : FieldMeterGraph( parent, 2, "LOAD", "PROCS/MIN", 1, 1, 0 ),
+    : FieldMeterGraph( parent, 2, "LOAD", "PROCS/MIN" ),
       _alarmstate(NORM), _lastalarmstate(NORM), _do_cpu_speed(false) {
 }
 

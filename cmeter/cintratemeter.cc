@@ -9,7 +9,7 @@
 
 
 ComIrqRateMeter::ComIrqRateMeter( XOSView *parent )
-    : FieldMeterGraph( parent, 2, "IRQR", "IRQs per sec/IDLE", 1, 1, 0 ),
+    : FieldMeterGraph( parent, 2, "IRQR", "IRQs per sec/IDLE" ),
       _peak(1000) {
 }
 

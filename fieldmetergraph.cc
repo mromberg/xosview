@@ -36,10 +36,8 @@ static const size_t DEF_COLS = 100;
 
 FieldMeterGraph::FieldMeterGraph(XOSView *parent,
   size_t numfields, const std::string &title,
-  const std::string &legend, bool docaptions, bool dolegends,
-  bool dousedlegends)
-    : FieldMeterDecay (parent, numfields, title, legend, docaptions,
-      dolegends, dousedlegends),
+  const std::string &legend)
+    : FieldMeterDecay (parent, numfields, title, legend),
       useGraph_(false),
       graphNumCols_(DEF_COLS), graphpos_(DEF_COLS-1),
       heightfield_(0),

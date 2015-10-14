@@ -20,10 +20,8 @@
 static const size_t DECAYN = 8;
 
 FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
-  const std::string &title,
-  const std::string &legend, bool docaptions, bool dolegends,
-  bool dousedlegends)
-    : Meter(parent, title, legend, docaptions, dolegends, dousedlegends),
+  const std::string &title, const std::string &legend)
+    : Meter(parent, title, legend),
       fields_(numfields, 0.0), total_(1.0),
       lastvals_(numfields, 0.0),
       lastx_(numfields, 0), used_(0), colors_(numfields, 0),
@@ -45,7 +43,8 @@ FieldMeter::~FieldMeter( void ){
 
 void FieldMeter::checkResources(const ResDB &rdb){
     Meter::checkResources(rdb);
-    setUsedFormat(rdb.getResource(resName() + "UsedFormat"));
+    setUsedFormat(rdb.getResourceOrUseDefault(resName() + "UsedFormat",
+        "percent"));
     decayUsed(rdb.isResourceTrue(resName() + "UsedDecay"));
     _used.color(rdb.getColor("usedLabelColor"));
 }

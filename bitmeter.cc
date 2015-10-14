@@ -10,9 +10,8 @@
 #include "xosview.h"
 
 BitMeter::BitMeter(XOSView *parent,
-  const std::string &title, const std::string &legend, size_t numBits,
-  bool docaptions, bool, bool dousedlegends)
-    : Meter( parent, title, legend, docaptions, dousedlegends, dousedlegends ),
+  const std::string &title, const std::string &legend, size_t numBits)
+    : Meter( parent, title, legend ),
       onColor_(0), offColor_(0), bits_(numBits, 0), lastbits_(numBits, 0),
       disabled_(false)  {
 }

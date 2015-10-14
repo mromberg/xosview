@@ -17,8 +17,7 @@ class XOSView;
 class Meter {
 public:
     Meter( XOSView *parent, const std::string &title = "",
-      const std::string &legend ="", bool docaptions=false,
-      bool dolegends=false, bool dousedlegends=false);
+      const std::string &legend ="");
 
     virtual ~Meter( void );
 

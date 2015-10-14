@@ -10,12 +10,11 @@
 #include "xosview.h"
 
 Meter::Meter( XOSView *parent, const std::string &title,
-  const std::string &legend, bool docaptions, bool dolegends,
-  bool dousedlegends )
+  const std::string &legend)
     : parent_(parent), x_(0), y_(0), width_(1), height_(1),
       priority_(1), counter_(0),
-      docaptions_(docaptions),
-      dolegends_(dolegends), dousedlegends_(dousedlegends), metric_(false),
+      docaptions_(false),
+      dolegends_(false), dousedlegends_(false), metric_(false),
       _title(x_, y_, title, Label::BLSW),
       _legend(x_, y_, legend, "/") {
 
@@ -28,7 +27,8 @@ Meter::~Meter( void ){
 
 
 void Meter::checkResources(const ResDB &rdb) {
-    priority_ = util::stoi(rdb.getResource( resName() + "Priority" ));
+    priority_ = util::stoi(rdb.getResourceOrUseDefault(resName() + "Priority",
+          "10"));
     unsigned long tcolor = rdb.getColor("meterLabelColor");
     _title.color(tcolor);
     _legend.color(tcolor);
