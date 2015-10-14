@@ -31,11 +31,6 @@ void MemMeter::checkResources(const ResDB &rdb){
 }
 
 void MemMeter::checkevent( void ){
-    getmeminfo();
-    drawfields(parent_->g());
-}
-
-void MemMeter::getmeminfo( void ){
     kern_return_t err;
 
     err = vm_statistics (mach_task_self(), &vmstats);

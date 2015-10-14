@@ -24,9 +24,6 @@ public:
 
     void checkResources(const ResDB &rdb);
 
-protected:
-    void getmeminfo( void );
-
 private:
     struct vm_statistics vmstats;
 };
