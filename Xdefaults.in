@@ -266,8 +266,8 @@ xosview*serialPriority:     1
 ! ** RAID
 xosview*RAID:                 False
 xosview*RAIDdevicecount:      1
-xosview*RAIDdiskOnlineColor:  green
-xosview*RAIDdiskFailureColor: red
+xosview*RAIDdiskonColor:      green
+xosview*RAIDoffColor:         red
 xosview*RAIDresyncdoneColor:  yellow
 xosview*RAIDresynctodoColor:  red
 xosview*RAIDresynccompleteColor:  green

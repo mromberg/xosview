@@ -4,20 +4,20 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-
-#include "general.h"
 #include "bitmeter.h"
 #include "xosview.h"
+
 
 BitMeter::BitMeter(XOSView *parent,
   const std::string &title, const std::string &legend, size_t numBits)
     : Meter( parent, title, legend ),
-      onColor_(0), offColor_(0), bits_(numBits, 0), lastbits_(numBits, 0),
-      disabled_(false)  {
+      onColor_(0), offColor_(0), bits_(numBits, 0), lastbits_(numBits, 0) {
 }
+
 
 BitMeter::~BitMeter( void ){
 }
+
 
 void BitMeter::setNumBits(size_t n){
     bits_.resize(n);
@@ -27,20 +27,16 @@ void BitMeter::setNumBits(size_t n){
         bits_[i] = lastbits_[i] = 0;
 }
 
-void BitMeter::disableMeter ( void ) {
-    disabled_ = true;
-    onColor_ = parent_->g().allocColor ("gray");
-    offColor_ = onColor_;
-    Meter::legend ("Disabled");
-}
 
 void BitMeter::checkResources(const ResDB &rdb){
     Meter::checkResources(rdb);
 }
 
+
 void BitMeter::checkevent( void ){
     drawBits(parent_->g());
 }
+
 
 void BitMeter::drawBits(X11Graphics &g, bool mandatory){
     static int pass = 1;
@@ -68,6 +64,7 @@ void BitMeter::drawBits(X11Graphics &g, bool mandatory){
     }
 }
 
+
 void BitMeter::draw(X11Graphics &g){
     g.lineWidth( 1 );
     g.setFG( parent_->foreground() );
@@ -79,6 +76,7 @@ void BitMeter::draw(X11Graphics &g){
 
     drawBits(g, true);
 }
+
 
 void BitMeter::setBits(int startbit, unsigned char values){
     unsigned char mask = 1;

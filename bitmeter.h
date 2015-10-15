@@ -9,10 +9,9 @@
 
 #include "meter.h"
 
-#include <string>
-#include <vector>
 
 class XOSView;
+
 
 class BitMeter : public Meter {
 public:
@@ -27,8 +26,6 @@ public:
     virtual void draw(X11Graphics &g);
     virtual void checkResources(const ResDB &rdb);
 
-    void disableMeter ( void );
-
     size_t numBits(void) const { return bits_.size(); }
     void setNumBits(size_t n);
 
@@ -36,13 +33,11 @@ protected:
     unsigned long onColor_, offColor_;
     std::vector<char> bits_;
     std::vector<char> lastbits_;
+
     size_t numbits(void) const { return bits_.size(); }
-    bool disabled_;
-
     void setBits(int startbit, unsigned char values);
-
     void drawBits(X11Graphics &g, bool mandatory=false);
-private:
 };
+
 
 #endif

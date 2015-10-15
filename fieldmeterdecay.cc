@@ -28,9 +28,6 @@
 #include "fieldmeterdecay.h"
 #include "x11graphics.h"
 
-#include <iostream>
-#include <fstream>
-#include <cmath>		//  For fabs()
 
 
 FieldMeterDecay::FieldMeterDecay(XOSView *parent,
@@ -76,10 +73,9 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
     //  to 0.0 initially!
 
     if (firsttime_) {
-        firsttime_ = 0;
-        for (unsigned int i = 0; i < numfields(); i++) {
-            decay_[i] = 1.0*fields_[i]/total_;
-        }
+        firsttime_ = false;
+        for (unsigned int i = 0; i < numfields(); i++)
+            decay_[i] = fields_[i] / total_;
     }
 
     //  Update the decay fields.  This is not quite accurate, since if
@@ -91,7 +87,7 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
     //  exponential rates for the average.  No fancy math is done to
     //  set it to correspond to a five-second decay or anything -- I
     //  just played with it until I thought it looked good!  :)  BCG
-#define ALPHA 0.97
+    const float ALPHA = 0.97;
 
     /*  This is majorly ugly code.  It needs a rewrite.  BCG  */
     /*  I think one good way to do it may be to normalize all of the
@@ -101,9 +97,9 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
      *  then turn to ints.  I think this will solve a whole bunch of
      *  our problems with rounding that before we tackled at a whole
      *  lot of places.  BCG */
-    for ( unsigned int i = 0 ; i < numfields() ; i++ ){
+    for ( size_t i = 0 ; i < numfields() ; i++ ){
 
-        decay_[i] = ALPHA*decay_[i] + (1-ALPHA)*(fields_[i]*1.0/total_);
+        decay_[i] = ALPHA * decay_[i] + (1.0 - ALPHA) * (fields_[i] / total_);
 
         //  We want to round the widths, rather than truncate.
         twidth = (int) (0.5 + (width() * (float) fields_[i]) / total_);

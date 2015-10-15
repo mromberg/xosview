@@ -1,5 +1,3 @@
-- Xdefaults.in -> Xdefaults
-
 - Add a resouce to specify the meter ordering
 
 - Add cpu powersave policy display
@@ -15,11 +13,6 @@
 
 - if using Xft fonts rescale the font based on the height of the meter.
 
-- See if the new X11Graphics can be done as a pass down from the top
-  sorta thing.  Right now some low level meters have to grab a Graphics
-  from the parent to draw from checkevent.  Should we even be drawing
-  in checkevent?
-
 - Add a "scripting" interface so new meters (for non rapidly updating)
   things could be written in python/ruby/shell?
 
@@ -33,9 +26,6 @@
 -  NetBSD:  Add interrupt-rate meter, add tape-drive meter (or
     arbitrary device throughput meter?)
 
-* Do if(dolegends_) fix for loadmeter.cc for all ports.
-   - Fixed on linux.  Loadmeter peaks at critical level (no re-scaling)
-
 * Make xosview re-check resources when the resources are changed,
     or when a signal is sent to it, or a key is pressed in it?
 
@@ -44,32 +34,3 @@
 
 * Add in stipple support for those stuck with 1-bit displays (black,
     or white) (just MacBSD people?).
-
-* Make a better resource for turning meters off/on.  Currently, we
-    overload other resources.
-
-  NetBSD:  Clean up symbol defs in netbsd.cc
-  NetBSD:  Merge swapinternal.cc (or at least a lot of it) into kernel.cc
-  NetBSD, Linux, hp:  Instead of allowing each meter to figure out the
-    per-sec rate for a measurement (page, disk, net), add a fieldmeter
-    function that does the calculation, using SAMPLE_MSECS and
-    priority_.  See the netbsd/diskmeter.cc code for what I think is the
-    correct formula (it took me a few attempts to get it right!)
-
-  Change the CacheColor stuff from Tom Pavel's patches to be a
-    new memWiredColor.
-
-* Change the names on all NetBSD* functions to just be BSD*,
-    since they are shared across multiple *BSD ports.
-
-* Merge in NetBSD interrupt support.
-
-* Add auto-detect for number of interrupts for NetBSD.
-
-x Add in support and auto-detect for new NetBSD UVM stuff.
-  (added, but no auto-detect).
-
-* The Netmeter under *BSD has wrap problems:  the internal
-    counter in the kernel is 32 bits, so once we receive 4G of
-    traffic, we wrap, and it looks like we received a lot of
-    negative traffic?  (I _think_ this is the cause).

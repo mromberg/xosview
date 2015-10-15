@@ -10,8 +10,7 @@
 #include "meter.h"
 #include "timer.h"
 
-#include <string>
-#include <vector>
+
 
 class BitFieldMeter : public Meter {
 public:
@@ -26,52 +25,23 @@ public:
     virtual void checkevent( void );
     virtual void checkResources(const ResDB &rdb);
 
-    void drawBits(X11Graphics &g, bool mandatory=false);
+protected:
+    std::vector<float> fields_;
+    float total_;
+    std::vector<char> bits_;
 
+    size_t numfields(void) const { return fields_.size(); }
     void setfieldcolor( int field, const std::string &color );
     void setfieldcolor( int field, unsigned long color);
     void reset( void );
-
     void setUsed (float val, float total);
     void setBits(int startbit, unsigned char values);
-
-    void disableMeter ( void );
-
-protected:
-    enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };
-
-    size_t numfields(void) const { return fields_.size(); }
-    std::vector<float> fields_;
-    float total_, used_, lastused_;
-    std::vector<int> lastvals_;
-    std::vector<int> lastx_;
-    std::vector<unsigned long> colors_;
-    unsigned long usedcolor_;
-    UsedType print_;
-    bool printedZeroTotalMesg_;
-    size_t numWarnings_;
-
-    unsigned long onColor_, offColor_;
-    std::vector<char> bits_;
-    std::vector<char> lastbits_;
     unsigned int numbits(void) const { return bits_.size(); }
-
     virtual void drawfields(X11Graphics &g, bool mandatory=false);
-    void setUsedFormat ( const std::string &str );
-    void drawfieldlegend(X11Graphics &g);
-    void drawused(X11Graphics &g, bool mandatory);
-    bool checkX(int x, int width) const;
-
     void setNumFields(int n);
     void setNumBits(int n);
-    std::string fieldLegend_;
-
     void setfieldlegend(const std::string &fieldlegend)
         { fieldLegend_ = fieldlegend; }
-
-private:
-    Timer _timer;
-protected:
     void IntervalTimerStart() { _timer.start(); }
     void IntervalTimerStop() { _timer.stop(); }
     //  Before, we simply called _timer.report(), which returns usecs.
@@ -79,6 +49,29 @@ protected:
     //  instead we use doubles for everything.
     double IntervalTimeInMicrosecs() { return _timer.report_usecs(); }
     double IntervalTimeInSecs() { return _timer.report_usecs()/1e6; }
+
+private:
+    enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };
+
+    float used_, lastused_;
+    std::vector<int> lastvals_;
+    std::vector<int> lastx_;
+    std::vector<unsigned long> colors_;
+    unsigned long usedcolor_;
+    UsedType print_;
+    bool printedZeroTotalMesg_;
+    size_t numWarnings_;
+    unsigned long onColor_, offColor_;
+    std::vector<char> lastbits_;
+    std::string fieldLegend_;
+    Timer _timer;
+
+    void setUsedFormat ( const std::string &str );
+    void drawBits(X11Graphics &g, bool mandatory=false);
+    void drawfieldlegend(X11Graphics &g);
+    void drawused(X11Graphics &g, bool mandatory);
+    bool checkX(int x, int width) const;
 };
+
 
 #endif

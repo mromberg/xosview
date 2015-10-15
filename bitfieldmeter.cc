@@ -9,8 +9,6 @@
 #include "bitfieldmeter.h"
 #include "xosview.h"
 
-#include <fstream>
-#include <sstream>
 #include <iomanip>
 
 
@@ -20,35 +18,25 @@ BitFieldMeter::BitFieldMeter(XOSView *parent, size_t numBits, size_t numfields,
   const std::string &title,
   const std::string &bitslegend, const std::string &fieldLegend)
     : Meter(parent, title, bitslegend),
-      fields_(numfields, 0.0), total_(0.0), used_(0),
+      fields_(numfields, 0.0), total_(0.0), bits_(numBits, 0), used_(0),
       lastused_(-1), lastvals_(numfields, 0), lastx_(numfields, 0),
       colors_(numfields, 0), usedcolor_(0),
       print_(PERCENT), printedZeroTotalMesg_(false), numWarnings_(0),
-      onColor_(0), offColor_(0), bits_(numBits, 0), lastbits_(numBits, 0),
+      onColor_(0), offColor_(0), lastbits_(numBits, 0),
       fieldLegend_(fieldLegend) {
-    /*  We need to set print_ to something valid -- the meters
-     *  apparently get drawn before the meters have a chance to call
-     *  CheckResources() themselves.
-     */
-}
-
-void BitFieldMeter::disableMeter ( ) {
-    setNumFields(1);
-    setfieldcolor (0, "grey");
-    setfieldlegend ("Disabled");
-    total_ = fields_[0] = 1.0;
-    setNumBits(1);
-    offColor_ = onColor_ = parent_->g().allocColor("grey");
 }
 
 
 BitFieldMeter::~BitFieldMeter( void ){
 }
 
+
 void BitFieldMeter::checkResources(const ResDB &rdb){
     Meter::checkResources(rdb);
-    usedcolor_ = parent_->g().allocColor( rdb.getResource(
-          "usedLabelColor"));
+    usedcolor_ = rdb.getColor("usedLabelColor");
+    onColor_ = rdb.getColor(resName() + "onColor");
+    offColor_ = rdb.getColor(resName() + "offColor");
+    setUsedFormat(rdb.getResource( resName() + "UsedFormat" ) );
 }
 
 
@@ -76,6 +64,7 @@ void BitFieldMeter::setUsedFormat ( const std::string &fmt ) {
     }
 }
 
+
 void BitFieldMeter::setUsed (float val, float total) {
     if (print_ == FLOAT)
         used_ = val;
@@ -100,14 +89,17 @@ void BitFieldMeter::setUsed (float val, float total) {
     }
 }
 
+
 void BitFieldMeter::reset( void ){
     for ( unsigned int i = 0 ; i < numfields() ; i++ )
         lastvals_[i] = lastx_[i] = -1;
 }
 
+
 void BitFieldMeter::setfieldcolor( int field, const std::string &color ){
     colors_[field] = parent_->g().allocColor( color );
 }
+
 
 void BitFieldMeter::setfieldcolor( int field, unsigned long color ) {
     colors_[field] = color;
@@ -127,6 +119,7 @@ void BitFieldMeter::draw(X11Graphics &g) {
     drawBits(g, 1);
     drawfields(g, 1);
 }
+
 
 void BitFieldMeter::drawfieldlegend(X11Graphics &g) {
     size_t pos = 0;
@@ -149,6 +142,7 @@ void BitFieldMeter::drawfieldlegend(X11Graphics &g) {
 
     g.setStippleN(0);	/*  Restore default all-bits stipple.  */
 }
+
 
 void BitFieldMeter::drawused(X11Graphics &g, bool mandatory) {
     if ( !mandatory )
@@ -226,6 +220,7 @@ void BitFieldMeter::drawused(X11Graphics &g, bool mandatory) {
     lastused_ = used_;
 }
 
+
 void BitFieldMeter::drawBits(X11Graphics &g, bool mandatory){
     static int pass = 1;
 
@@ -247,6 +242,7 @@ void BitFieldMeter::drawBits(X11Graphics &g, bool mandatory){
         x1 += (w + 2);
     }
 }
+
 
 void BitFieldMeter::drawfields(X11Graphics &g, bool mandatory) {
     int twidth, x = Meter::x() + width() / 2 + 4;
@@ -288,10 +284,12 @@ void BitFieldMeter::drawfields(X11Graphics &g, bool mandatory) {
     }
 }
 
+
 void BitFieldMeter::checkevent( void ){
     drawBits(parent_->g());
     drawfields(parent_->g());
 }
+
 
 void BitFieldMeter::setBits(int startbit, unsigned char values){
     unsigned char mask = 1;
@@ -300,6 +298,7 @@ void BitFieldMeter::setBits(int startbit, unsigned char values){
         mask = mask << 1;
     }
 }
+
 
 void BitFieldMeter::setNumFields(int n){
     fields_.resize(n);
@@ -313,6 +312,7 @@ void BitFieldMeter::setNumFields(int n){
         lastvals_[i] = lastx_[i] = 0;
     }
 }
+
 
 bool BitFieldMeter::checkX(int x, int width) const {
     if ((x < Meter::x()) || (x + width < Meter::x())

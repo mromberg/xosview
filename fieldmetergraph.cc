@@ -26,10 +26,6 @@
 #include "x11pixmap.h"
 #include "xosview.h"
 
-#include <fstream>
-
-#include <cmath>		//  For fabs()
-
 
 static const size_t DEF_COLS = 100;
 

@@ -27,7 +27,7 @@ RAIDMeter::RAIDMeter( XOSView *parent, int raiddev)
 
     getRAIDstate();
     if(disknum<1)
-        disableMeter();
+        logFatal << "No raid disks found." << std::endl;
 
     legend("MD" + util::repr(raiddev));
     if(disknum>=1){
@@ -66,15 +66,12 @@ void RAIDMeter::checkevent( void ){
 void RAIDMeter::checkResources(const ResDB &rdb){
     BitFieldMeter::checkResources(rdb);
 
-    onColor_ = rdb.getColor("RAIDdiskOnlineColor");
-    offColor_ = rdb.getColor("RAIDdiskFailureColor");
     doneColor_ = rdb.getColor("RAIDresyncdoneColor");
     todoColor_ = rdb.getColor("RAIDresynctodoColor");
     completeColor_= rdb.getColor("RAIDresynccompleteColor");
 
     setfieldcolor( 0, doneColor_ );
     setfieldcolor( 1, todoColor_ );
-    setUsedFormat(rdb.getResource( "RAIDUsedFormat" ) );
 }
 
 

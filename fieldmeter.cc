@@ -7,9 +7,6 @@
 #include "fieldmeter.h"
 #include "xosview.h"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
 #include <iomanip>
 
 // Size in sample to use for decaying used labels.
@@ -18,6 +15,8 @@
 // with text draws yet still give some reasonable
 // update rate.
 static const size_t DECAYN = 8;
+
+
 
 FieldMeter::FieldMeter(XOSView *parent, size_t numfields,
   const std::string &title, const std::string &legend)
@@ -239,9 +238,11 @@ void FieldMeter::drawfields(X11Graphics &g, bool mandatory) {
     }
 }
 
+
 void FieldMeter::checkevent( void ){
     drawfields(parent_->g());
 }
+
 
 void FieldMeter::setNumFields(size_t n){
     fields_.clear();
