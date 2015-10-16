@@ -40,6 +40,8 @@ private:
     unsigned long long _warpCoreTemp;   // current value
     unsigned long long _testMaximum;    // test max temp
     unsigned long long _designMaximum;  // design max temp
+    // colors
+    unsigned long _normColor, _warnColor, _alarmColor;
 
     void readWarpCoreTemp(void);        // read the current temp
 };
@@ -57,7 +59,8 @@ private:
 // is constructed.
 inline ExampleMeter::ExampleMeter(XOSView *parent)
     : FieldMeterGraph(parent, 2, "WCOR", "TEMP/USED"),
-      _warpCoreTemp(0), _testMaximum(0), _designMaximum(0) {
+      _warpCoreTemp(0), _testMaximum(0), _designMaximum(0),
+      _normColor(0), _warnColor(0), _alarmColor(0) {
 
     // Generally leave the ctor empty.  But is is ok to call
     // a data gathering method as long as it does not depend
@@ -108,15 +111,14 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
           "exampleDesignMax", "550"));
 
     // set the color with a string (requires a lookup)
-    setfieldcolor(0, "green");
+    setfieldcolor(1, rdb.getColor("warpBG", "blue"));
 
     // Set the color with a pixel value we may
-    // save to avoid repeated lookups.  This is
-    // just an example since we are not saving it
-    // to show the use of the graphics object
-    // from here.  Eventually this object will be passed in
-    unsigned long color = rdb.getColor("exampleColor", "blue");
-    setfieldcolor(1, color);
+    // save to avoid repeated lookups.
+    _normColor = rdb.getColor("warpColor", "green");
+    _warnColor = rdb.getColor("warpWarnColor", "yellow");
+    _alarmColor = rdb.getColor("warpAlarmColor", "red");
+    setfieldcolor(0, _normColor);
 }
 
 // Called when we have scheduled our data collection
@@ -148,11 +150,11 @@ inline void ExampleMeter::checkevent( void ) {
 
     // Change the field color to show our level of concern
     if (percentVal > 0.9)
-        setfieldcolor(0, "red");
+        setfieldcolor(0, _alarmColor);
     else if (percentVal > 0.75)
-        setfieldcolor(0, "yellow");
+        setfieldcolor(0, _warnColor);
     else
-        setfieldcolor(0, "green");
+        setfieldcolor(0, _normColor);
 
     // we can have the used label report the actual value even
     // if we peak the meter.

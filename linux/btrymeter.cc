@@ -63,7 +63,7 @@ void BtryMeter::checkResources(const ResDB &rdb) {
     _noneColor = rdb.getColor("batteryNoneColor");
 
     setfieldcolor( 0, _leftColor);
-    setfieldcolor( 1, rdb.getResource( "batteryUsedColor" ) );
+    setfieldcolor( 1, rdb.getColor( "batteryUsedColor" ) );
 }
 
 void BtryMeter::checkevent( void ){

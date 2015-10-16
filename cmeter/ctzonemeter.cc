@@ -28,7 +28,7 @@ void ComTZoneMeter::checkResources(const ResDB &rdb) {
     _critColor = rdb.getColor("tzoneCritColor");
 
     setfieldcolor(0, _normColor);
-    setfieldcolor(1, rdb.getResource("tzoneBackground"));
+    setfieldcolor(1, rdb.getColor("tzoneBackground"));
 
     _peak = util::stof(rdb.getResource("tzonePeak"));
     _hotTrip = util::stof(rdb.getResource("tzoneHotTrip"));

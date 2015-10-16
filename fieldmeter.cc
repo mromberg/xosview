@@ -93,11 +93,6 @@ void FieldMeter::setUsed (float val, float total) {
 }
 
 
-void FieldMeter::setfieldcolor( int field, const std::string &color ){
-    setfieldcolor(field, parent_->g().allocColor( color ));
-}
-
-
 void FieldMeter::setfieldcolor( int field, unsigned long color ) {
     colors_[field] = color;
     setLegendColor(field, color);
