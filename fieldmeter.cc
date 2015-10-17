@@ -234,11 +234,6 @@ void FieldMeter::drawfields(X11Graphics &g, bool mandatory) {
 }
 
 
-void FieldMeter::checkevent( void ){
-    drawfields(parent_->g());
-}
-
-
 void FieldMeter::setNumFields(size_t n){
     fields_.clear();
     fields_.resize(n, 0);

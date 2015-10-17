@@ -20,7 +20,6 @@ public:
     virtual ~FieldMeter( void );
 
     // virtual from Meter
-    virtual void checkevent( void );
     virtual void draw(X11Graphics &g);
     virtual void drawIfNeeded(X11Graphics &g);
     virtual void checkResources(const ResDB &rdb);
