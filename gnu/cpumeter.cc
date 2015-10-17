@@ -57,16 +57,16 @@ CPUMeter::~CPUMeter( void ){
 void CPUMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource( "cpuUserColor" ) );
-    setfieldcolor( 1, rdb.getResource( "cpuNiceColor" ) );
-    setfieldcolor( 2, rdb.getResource( "cpuSystemColor" ) );
-    setfieldcolor( 3, rdb.getResource( "cpuWaitColor" ) );
-    setfieldcolor( 4, rdb.getResource( "cpuInterruptColor" ) );
-    setfieldcolor( 5, rdb.getResource( "cpuSoftIntColor" ) );
-    setfieldcolor( 6, rdb.getResource( "cpuStolenColor" ) );
-    setfieldcolor( 7, rdb.getResource( "cpuGuestColor" ) );
-    setfieldcolor( 8, rdb.getResource( "cpuNiceGuestColor" ) );
-    setfieldcolor( 9, rdb.getResource( "cpuFreeColor" ) );
+    setfieldcolor( 0, rdb.getColor( "cpuUserColor" ) );
+    setfieldcolor( 1, rdb.getColor( "cpuNiceColor" ) );
+    setfieldcolor( 2, rdb.getColor( "cpuSystemColor" ) );
+    setfieldcolor( 3, rdb.getColor( "cpuWaitColor" ) );
+    setfieldcolor( 4, rdb.getColor( "cpuInterruptColor" ) );
+    setfieldcolor( 5, rdb.getColor( "cpuSoftIntColor" ) );
+    setfieldcolor( 6, rdb.getColor( "cpuStolenColor" ) );
+    setfieldcolor( 7, rdb.getColor( "cpuGuestColor" ) );
+    setfieldcolor( 8, rdb.getColor( "cpuNiceGuestColor" ) );
+    setfieldcolor( 9, rdb.getColor( "cpuFreeColor" ) );
 }
 
 void CPUMeter::checkevent( void ){

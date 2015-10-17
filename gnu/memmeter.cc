@@ -24,10 +24,10 @@ MemMeter::~MemMeter( void ){
 void MemMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource( "memActiveColor" ) );
-    setfieldcolor( 1, rdb.getResource( "memInactiveColor" ) );
-    setfieldcolor( 2, rdb.getResource( "memCacheColor" ) );
-    setfieldcolor( 3, rdb.getResource( "memFreeColor" ) );
+    setfieldcolor( 0, rdb.getColor( "memActiveColor" ) );
+    setfieldcolor( 1, rdb.getColor( "memInactiveColor" ) );
+    setfieldcolor( 2, rdb.getColor( "memCacheColor" ) );
+    setfieldcolor( 3, rdb.getColor( "memFreeColor" ) );
 }
 
 void MemMeter::checkevent( void ){
