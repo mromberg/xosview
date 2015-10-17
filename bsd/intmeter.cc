@@ -14,7 +14,7 @@ IntMeter::IntMeter(XOSView *parent)
       irqcount_(0) {
 
     if (!BSDIntrInit())
-        disableMeter();
+        logFatal << "BSDIntrInit() failed." << std::endl;
     irqcount_ = BSDNumInts();
     irqs_.resize(irqcount_ + 1, 0);
     lastirqs_.resize(irqcount_ + 1, 0);
@@ -46,8 +46,6 @@ void IntMeter::checkevent( void ) {
         inbrs_[i] = 0;
         irqs_[i] = 0;
     }
-
-    BitMeter::checkevent();
 }
 
 
