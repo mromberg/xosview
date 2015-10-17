@@ -47,11 +47,11 @@ CPUMeter::~CPUMeter( void ){
 void CPUMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getResource( "cpuUserColor" ) );
-    setfieldcolor( 1, rdb.getResource( "cpuNiceColor" ) );
-    setfieldcolor( 2, rdb.getResource( "cpuWaitColor" ) );
-    setfieldcolor( 3, rdb.getResource( "cpuSystemColor" ) );
-    setfieldcolor( 4, rdb.getResource( "cpuFreeColor" ) );
+    setfieldcolor( 0, rdb.getColor( "cpuUserColor" ) );
+    setfieldcolor( 1, rdb.getColor( "cpuNiceColor" ) );
+    setfieldcolor( 2, rdb.getColor( "cpuWaitColor" ) );
+    setfieldcolor( 3, rdb.getColor( "cpuSystemColor" ) );
+    setfieldcolor( 4, rdb.getColor( "cpuFreeColor" ) );
 }
 
 
