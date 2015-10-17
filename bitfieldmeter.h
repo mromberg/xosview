@@ -22,7 +22,7 @@ public:
 
     // virtual from Meter
     virtual void draw(X11Graphics &g);
-    virtual void checkevent( void );
+    virtual void drawIfNeeded(X11Graphics &g);
     virtual void checkResources(const ResDB &rdb);
 
 protected:
@@ -31,7 +31,6 @@ protected:
     std::vector<char> bits_;
 
     size_t numfields(void) const { return fields_.size(); }
-    void setfieldcolor( int field, const std::string &color );
     void setfieldcolor( int field, unsigned long color);
     void reset( void );
     void setUsed (float val, float total);

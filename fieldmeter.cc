@@ -5,7 +5,7 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "fieldmeter.h"
-#include "xosview.h"
+#include "x11graphics.h"
 
 #include <iomanip>
 
@@ -102,7 +102,7 @@ void FieldMeter::setfieldcolor( int field, unsigned long color ) {
 void FieldMeter::draw(X11Graphics &g) {
 
     /*  Draw the outline for the fieldmeter.  */
-    g.setFG( parent_->foreground() );
+    g.setFG( fgColor() );
     g.drawRectangle( x() - 1, y() - 1, width() + 2, height() + 2 );
 
     drawLabels(g);

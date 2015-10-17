@@ -5,7 +5,6 @@
 //  This file may be distributed under terms of the GPL
 //
 
-#include "general.h"
 #include "meter.h"
 #include "xosview.h"
 
@@ -16,7 +15,7 @@ Meter::Meter( XOSView *parent, const std::string &title,
       docaptions_(false),
       dolegends_(false), dousedlegends_(false), metric_(false),
       _title(x_, y_, title, Label::BLSW),
-      _legend(x_, y_, legend, "/") {
+      _legend(x_, y_, legend, "/"), _fgColor(0), _bgColor(0) {
 
     resize( parent->xoff(), parent->newypos(), parent->width() - 10, 10 );
 }
@@ -29,6 +28,8 @@ Meter::~Meter( void ){
 void Meter::checkResources(const ResDB &rdb) {
     priority_ = util::stoi(rdb.getResourceOrUseDefault(resName() + "Priority",
           "10"));
+    _fgColor = rdb.getColor("foreground");
+    _bgColor = rdb.getColor("background");
     unsigned long tcolor = rdb.getColor("meterLabelColor");
     _title.color(tcolor);
     _legend.color(tcolor);

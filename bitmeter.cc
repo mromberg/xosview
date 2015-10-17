@@ -5,7 +5,7 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "bitmeter.h"
-#include "xosview.h"
+#include "x11graphics.h"
 
 
 BitMeter::BitMeter(XOSView *parent,
@@ -33,8 +33,8 @@ void BitMeter::checkResources(const ResDB &rdb){
 }
 
 
-void BitMeter::checkevent( void ){
-    drawBits(parent_->g());
+void BitMeter::drawIfNeeded(X11Graphics &g){
+    drawBits(g);
 }
 
 
@@ -67,7 +67,7 @@ void BitMeter::drawBits(X11Graphics &g, bool mandatory){
 
 void BitMeter::draw(X11Graphics &g){
     g.lineWidth( 1 );
-    g.setFG( parent_->foreground() );
+    g.setFG( fgColor() );
     g.drawFilledRectangle( x() - 1, y() - 1, width() + 2, height() + 2 );
 
     g.lineWidth( 0 );

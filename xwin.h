@@ -37,14 +37,6 @@ public:
     unsigned int height(void) const { return height_; }
     void height(unsigned int val) { height_ = val; }
 
-    // These return the configured color.  Not the current color.
-    unsigned long foreground(void) { return fgcolor_; }
-    unsigned long background(void) { return bgcolor_; }
-
-    Visual *visual(void) const { return visual_; }
-    Display *display(void) const { return display_; }
-    Window window(void) const { return window_; }
-
     void title(const std::string &str)
         { XStoreName( display_, window_, str.c_str() ); }
     void iconname(const std::string &str)
@@ -63,6 +55,9 @@ public:
     //-----------------------------------------------
 
 protected:
+    Visual *visual(void) const { return visual_; }
+    Display *display(void) const { return display_; }
+    Window window(void) const { return window_; }
     virtual void setEvents(void);
     void createWindow(void);
     void setDisplayName(const std::string &new_display_name)
@@ -80,6 +75,10 @@ protected:
     void map( void ) { XMapWindow( display_, window_ ); }
     void unmap( void ) { XUnmapWindow( display_, window_ ); }
     void swapBB(void) const;
+
+    // These return the configured color.  Not the current color.
+    unsigned long foreground(void) { return fgcolor_; }
+    unsigned long background(void) { return bgcolor_; }
 
     //------------------------------------------------------
     // Resouce interface

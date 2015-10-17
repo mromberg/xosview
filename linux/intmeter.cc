@@ -44,8 +44,6 @@ void IntMeter::checkevent( void ){
         bits_[i] = newc[i] - _last[i];
     }
     _last = newc;
-
-    BitMeter::checkevent();
 }
 
 

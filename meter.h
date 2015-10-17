@@ -39,6 +39,8 @@ public:
 protected:
     XOSView *parent_;
 
+    unsigned long fgColor(void) const { return _fgColor; }
+    unsigned long bgColor(void) const { return _bgColor; }
     void title( const std::string &title ) { _title.text(title); }
     void legend( const std::string &legend, const std::string &delimiter="/" );
     bool docaptions(void) const { return docaptions_; }
@@ -65,6 +67,7 @@ private:
     bool docaptions_, dolegends_, dousedlegends_, metric_;
     Label _title;
     MCLabel _legend;
+    unsigned long _fgColor, _bgColor;
 };
 
 

@@ -22,8 +22,8 @@ public:
     virtual ~BitMeter( void );
 
     // virtual from Meter
-    virtual void checkevent( void );
     virtual void draw(X11Graphics &g);
+    virtual void drawIfNeeded(X11Graphics &g);
     virtual void checkResources(const ResDB &rdb);
 
     size_t numBits(void) const { return bits_.size(); }

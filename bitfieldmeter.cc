@@ -7,7 +7,7 @@
 //
 //
 #include "bitfieldmeter.h"
-#include "xosview.h"
+#include "x11graphics.h"
 
 #include <iomanip>
 
@@ -96,11 +96,6 @@ void BitFieldMeter::reset( void ){
 }
 
 
-void BitFieldMeter::setfieldcolor( int field, const std::string &color ){
-    colors_[field] = parent_->g().allocColor( color );
-}
-
-
 void BitFieldMeter::setfieldcolor( int field, unsigned long color ) {
     colors_[field] = color;
 }
@@ -108,7 +103,7 @@ void BitFieldMeter::setfieldcolor( int field, unsigned long color ) {
 
 void BitFieldMeter::draw(X11Graphics &g) {
     /*  Draw the outline for the fieldmeter.  */
-    g.setFG( parent_->foreground() );
+    g.setFG( fgColor() );
     g.lineWidth( 1 );
     g.drawFilledRectangle( x() - 1, y() - 1, width() / 2 + 2, height() + 2 );
 
@@ -134,7 +129,7 @@ void BitFieldMeter::drawfieldlegend(X11Graphics &g) {
         g.setFG( colors_[i] );
         g.drawString( x, y() - 5, li );
         x += g.textWidth( li );
-        g.setFG( parent_->foreground() );
+        g.setFG( fgColor() );
         if ( i != numfields() - 1 )
             g.drawString( x, y() - 5, "/" );
         x += g.textWidth( "/" );
@@ -285,9 +280,9 @@ void BitFieldMeter::drawfields(X11Graphics &g, bool mandatory) {
 }
 
 
-void BitFieldMeter::checkevent( void ){
-    drawBits(parent_->g());
-    drawfields(parent_->g());
+void BitFieldMeter::drawIfNeeded( X11Graphics &g ) {
+    drawBits(g);
+    drawfields(g);
 }
 
 
