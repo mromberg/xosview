@@ -72,6 +72,8 @@ public:
     void copyArea(int x, int y, unsigned int width, unsigned int height,
       int dest_x, int dest_y);
 
+    X11Pixmap *newX11Pixmap(unsigned int width, unsigned int height);
+
     //------------------------------------------------------------
     // Depricated interface
     //------------------------------------------------------------
@@ -97,6 +99,7 @@ private:
     unsigned int _height;
     XOSVFont *_font;
     XftGraphics *_xftg;
+    Visual *_visual;
 
     void updateInfo(void); // update _width, _height, _depth
 

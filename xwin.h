@@ -18,7 +18,6 @@
 
 
 class XWin;
-class X11Pixmap;
 
 typedef void (XWin::*EventCallBack)( XEvent &event );
 
@@ -51,7 +50,6 @@ public:
     //-----------------------------------------------
     X11Graphics &g(void) { return *_graphics; }
     const X11Graphics &g(void) const { return *_graphics; }
-    X11Pixmap *newX11Pixmap(unsigned int width, unsigned int height);
     //-----------------------------------------------
 
 protected:

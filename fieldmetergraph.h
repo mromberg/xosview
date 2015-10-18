@@ -43,7 +43,7 @@ private:
     void setNumCols( int n );
     void drawBars(X11Graphics &g);
     void drawBar(X11Graphics &g, int i) const;
-    void checkBackBuffer(void);
+    void checkBackBuffer(X11Graphics &g);
 };
 
 

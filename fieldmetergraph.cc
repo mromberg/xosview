@@ -54,7 +54,7 @@ void FieldMeterGraph::drawfields(X11Graphics &g, bool mandatory) {
         return;
     }
 
-    checkBackBuffer();
+    checkBackBuffer(g);
     // Repositon x_ and y_ relative to the pixmap
     int oldx = x(), oldy = y();
     x(0);
@@ -72,7 +72,7 @@ void FieldMeterGraph::drawfields(X11Graphics &g, bool mandatory) {
 }
 
 
-void FieldMeterGraph::checkBackBuffer(void) {
+void FieldMeterGraph::checkBackBuffer(X11Graphics &g) {
     // Create a new Pixmap to match our area if needed
     bool allocNew = false;
     if (!_pmap
@@ -87,7 +87,7 @@ void FieldMeterGraph::checkBackBuffer(void) {
         // the x_ and x_ if a FieldMeter are relative to
         // the parent window.  The width_ and height_ are for
         // the actual meter graphic display (where x_ and y_ are upper left
-        _pmap = parent_->newX11Pixmap(width(), height());
+        _pmap = g.newX11Pixmap(width(), height());
         logDebug << "new X11Pixmap: " << width() << ", " << height()
                  << std::endl;
 

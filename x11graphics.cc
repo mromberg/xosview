@@ -24,7 +24,7 @@ X11Graphics::X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
       _gc(0), _depth(0),
       _fgPixel(0), _bgPixel(bgPixVal), _bgPixmap(0),
       _width(0), _height(0), _font(0),
-      _xftg(0), _doStippling(false) {
+      _xftg(0), _visual(v), _doStippling(false) {
 #if HAVE_XFT
     _xftg = new XftGraphics(_dsp, v, _drawable, _isWindow, _cmap, _bgPixel);
     _font = &_xftg->font();
@@ -270,4 +270,12 @@ void X11Graphics::resize(unsigned int width, unsigned int height) {
     logDebug << "Kick Xft..." << std::endl;
     _xftg->kick();
 #endif
+}
+
+
+X11Pixmap *X11Graphics::newX11Pixmap(unsigned int width, unsigned int height) {
+    logAssert(_isWindow) << "Drawable is not a window." << std::endl;
+
+    return new X11Pixmap(_dsp, _visual, _drawable, _cmap, _bgPixel,
+      width, height, _depth);
 }

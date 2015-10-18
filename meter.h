@@ -36,8 +36,9 @@ public:
     void dolegends(bool val) { dolegends_ = val; }
     void dousedlegends(bool val) { dousedlegends_ = val; }
 
-protected:
+private:
     XOSView *parent_;
+protected:
 
     unsigned long fgColor(void) const { return _fgColor; }
     unsigned long bgColor(void) const { return _bgColor; }

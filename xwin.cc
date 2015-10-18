@@ -499,12 +499,6 @@ XWin::Event::Event( XWin *parent, int event, EventCallBack callBack )
 }
 
 
-X11Pixmap *XWin::newX11Pixmap(unsigned int width, unsigned int height) {
-    return new X11Pixmap(display_, visual_, _bb,
-      colormap_, bgcolor_, width, height, g().depth());
-}
-
-
 std::vector<XVisualInfo> XWin::getVisuals(void) {
     std::vector<XVisualInfo> rval;
 
