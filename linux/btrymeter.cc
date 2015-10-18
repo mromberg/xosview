@@ -6,7 +6,6 @@
 //
 
 #include "btrymeter.h"
-#include "xosview.h"
 #include "fsutil.h"
 
 #include <fstream>
