@@ -6,7 +6,7 @@
 //
 
 #include "meter.h"
-#include "xosview.h"
+
 
 Meter::Meter( XOSView *parent, const std::string &title,
   const std::string &legend)
@@ -16,8 +16,6 @@ Meter::Meter( XOSView *parent, const std::string &title,
       dolegends_(false), dousedlegends_(false), metric_(false),
       _title(x_, y_, title, Label::BLSW),
       _legend(x_, y_, legend, "/"), _fgColor(0), _bgColor(0) {
-
-    resize( parent->xoff(), parent->newypos(), parent->width() - 10, 10 );
 }
 
 
