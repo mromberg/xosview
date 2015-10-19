@@ -14,8 +14,8 @@ static const char * const NETFILENAME = "/proc/net/dev";
 
 
 
-PrcNetMeter::PrcNetMeter(XOSView *parent)
-    : ComNetMeter(parent), _last(getStats()) {
+PrcNetMeter::PrcNetMeter(void)
+    : ComNetMeter(), _last(getStats()) {
 }
 
 

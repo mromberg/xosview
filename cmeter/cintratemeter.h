@@ -13,7 +13,7 @@
 
 class ComIrqRateMeter : public FieldMeterGraph {
 public:
-    ComIrqRateMeter( XOSView *parent );
+    ComIrqRateMeter( void );
     ~ComIrqRateMeter( void );
 
     virtual std::string resName( void ) const { return "irqrate"; }

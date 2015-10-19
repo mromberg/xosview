@@ -8,9 +8,9 @@
 #include "x11graphics.h"
 
 
-BitMeter::BitMeter(XOSView *parent,
-  const std::string &title, const std::string &legend, size_t numBits)
-    : Meter( parent, title, legend ),
+BitMeter::BitMeter(const std::string &title, const std::string &legend,
+  size_t numBits)
+    : Meter( title, legend ),
       onColor_(0), offColor_(0), bits_(numBits, 0), lastbits_(numBits, 0) {
 }
 

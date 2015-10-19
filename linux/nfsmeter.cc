@@ -32,9 +32,9 @@ static const char * const NFSSVCSTAT = "/proc/net/rpc/nfsd";
 static const char * const NFSCLTSTAT = "/proc/net/rpc/nfs";
 
 
-NFSMeter::NFSMeter(XOSView *parent, const std::string &name, int nfields,
+NFSMeter::NFSMeter(const std::string &name, int nfields,
   const std::string &fields, const std::string &statfile)
-    : FieldMeterGraph( parent, nfields, name, fields ),
+    : FieldMeterGraph( nfields, name, fields ),
       _statname(name), _statfile(statfile) {
 }
 
@@ -47,8 +47,8 @@ void NFSMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 }
 
-NFSDStats::NFSDStats(XOSView *parent)
-    : NFSMeter(parent, "NFSD", 4, "BAD/UDP/TCP/IDLE", NFSSVCSTAT ){
+NFSDStats::NFSDStats(void)
+    : NFSMeter("NFSD", 4, "BAD/UDP/TCP/IDLE", NFSSVCSTAT ){
     starttimer();
 }
 
@@ -133,8 +133,8 @@ void NFSDStats::checkevent(void) {
 }
 
 
-NFSStats::NFSStats(XOSView *parent)
-    : NFSMeter(parent, "NFS", 4, "RETRY/AUTH/CALL/IDLE", NFSCLTSTAT ){
+NFSStats::NFSStats(void)
+    : NFSMeter("NFS", 4, "RETRY/AUTH/CALL/IDLE", NFSCLTSTAT ){
     starttimer();
 }
 

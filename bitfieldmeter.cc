@@ -14,10 +14,10 @@
 
 
 
-BitFieldMeter::BitFieldMeter(XOSView *parent, size_t numBits, size_t numfields,
-  const std::string &title,
-  const std::string &bitslegend, const std::string &fieldLegend)
-    : Meter(parent, title, bitslegend),
+BitFieldMeter::BitFieldMeter(size_t numBits, size_t numfields,
+  const std::string &title, const std::string &bitslegend,
+  const std::string &fieldLegend)
+    : Meter(title, bitslegend),
       fields_(numfields, 0.0), total_(0.0), bits_(numBits, 0), used_(0),
       lastused_(-1), lastvals_(numfields, 0), lastx_(numfields, 0),
       colors_(numfields, 0), usedcolor_(0),

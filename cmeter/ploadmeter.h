@@ -12,7 +12,7 @@
 
 class PrcLoadMeter : public ComLoadMeter {
 public:
-    PrcLoadMeter(XOSView *parent) : ComLoadMeter(parent) {}
+    PrcLoadMeter(void) : ComLoadMeter() {}
 
 protected:
     virtual float getLoad(void);

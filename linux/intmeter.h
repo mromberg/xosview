@@ -17,7 +17,7 @@
 class IntMeter : public BitMeter {
 public:
     // cpu=0 (cummulate meter), cpu=1 (irqs for cpu0), cpu=2 (irqs for cpu1)
-    IntMeter( XOSView *parent, unsigned int cpu = 0, unsigned int cpuTot=1);
+    IntMeter( unsigned int cpu = 0, unsigned int cpuTot=1);
     ~IntMeter( void );
 
     void checkevent( void );

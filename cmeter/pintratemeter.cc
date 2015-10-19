@@ -14,8 +14,8 @@ static const char * const STATFNAME = "/proc/stat";
 
 
 
-PrcIrqRateMeter::PrcIrqRateMeter(XOSView *parent)
-    : ComIrqRateMeter(parent), _last(getIntCount()) {
+PrcIrqRateMeter::PrcIrqRateMeter(void)
+    : ComIrqRateMeter(), _last(getIntCount()) {
 }
 
 

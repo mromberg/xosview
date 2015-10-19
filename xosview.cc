@@ -97,7 +97,7 @@ void XOSView::loop(void) {
 
 
 void XOSView::createMeters(void) {
-    MeterMaker mm(this);
+    MeterMaker mm;
     _meters = mm.makeMeters(resdb());
 
     if (_meters.size() == 0)

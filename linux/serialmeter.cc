@@ -43,8 +43,8 @@
 
 
 
-SerialMeter::SerialMeter( XOSView *parent, Device device )
-    : BitMeter( parent, getTitle(device), "LSR bits(0-7), MSR bits(0-7)", 16){
+SerialMeter::SerialMeter( Device device )
+    : BitMeter( getTitle(device), "LSR bits(0-7), MSR bits(0-7)", 16){
     _device = device;
     _port = 0;
 }

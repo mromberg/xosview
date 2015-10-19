@@ -14,7 +14,7 @@
 
 class ComDiskMeter : public FieldMeterGraph {
 public:
-    ComDiskMeter( XOSView *parent );
+    ComDiskMeter( void );
     ~ComDiskMeter( void );
 
     std::string resName( void ) const { return "disk"; }

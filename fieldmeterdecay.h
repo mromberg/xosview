@@ -25,8 +25,8 @@
 
 class FieldMeterDecay : public FieldMeter {
 public:
-    FieldMeterDecay(XOSView *parent, size_t numfields,
-      const std::string &title = "", const std::string &legend = "");
+    FieldMeterDecay(size_t numfields, const std::string &title = "",
+      const std::string &legend = "");
 
     virtual ~FieldMeterDecay( void );
 

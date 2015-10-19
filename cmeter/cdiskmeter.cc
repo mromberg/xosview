@@ -9,8 +9,8 @@
 
 
 
-ComDiskMeter::ComDiskMeter( XOSView *parent)
-    : FieldMeterGraph(parent, 3, "DISK", "READ/WRITE/IDLE") {
+ComDiskMeter::ComDiskMeter( void )
+    : FieldMeterGraph(3, "DISK", "READ/WRITE/IDLE") {
 }
 
 

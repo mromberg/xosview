@@ -17,8 +17,8 @@ std::map<size_t,unsigned int> IntMeter::_irqmap; // linenum -> irq
 
 
 
-IntMeter::IntMeter( XOSView *parent, unsigned int cpu, unsigned int cpuTot)
-    : BitMeter( parent, "INT", "" ), _cpu(cpu), _cpuTot(cpuTot) {
+IntMeter::IntMeter( unsigned int cpu, unsigned int cpuTot)
+    : BitMeter( "INT", "" ), _cpu(cpu), _cpuTot(cpuTot) {
     // if cpu == 0:  act as cummulative
     // if cpu >= 1:  meter for cpu - 1 (in /proc/interrupts)
 

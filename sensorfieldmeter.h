@@ -14,8 +14,7 @@
 
 class SensorFieldMeter : public FieldMeter {
 public:
-    SensorFieldMeter( XOSView *parent, const std::string &title = "",
-      const std::string &legend = "");
+    SensorFieldMeter(const std::string &title="", const std::string &legend="");
 
     ~SensorFieldMeter( void );
 

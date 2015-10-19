@@ -15,7 +15,7 @@
 
 class ExampleMeter : public FieldMeterGraph {
 public:
-    ExampleMeter(XOSView *parent);
+    ExampleMeter(void);
     virtual ~ExampleMeter(void);
 
     // virtual methods called by our parents
@@ -57,8 +57,8 @@ private:
 // any drawing from here because the window and
 // associated graphics do not yet exist when a meter
 // is constructed.
-inline ExampleMeter::ExampleMeter(XOSView *parent)
-    : FieldMeterGraph(parent, 2, "WCOR", "TEMP/USED"),
+inline ExampleMeter::ExampleMeter(void)
+    : FieldMeterGraph(2, "WCOR", "TEMP/USED"),
       _warpCoreTemp(0), _testMaximum(0), _designMaximum(0),
       _normColor(0), _warnColor(0), _alarmColor(0) {
 

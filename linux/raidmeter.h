@@ -14,7 +14,7 @@
 
 class RAIDMeter : public BitFieldMeter {
 public:
-    RAIDMeter( XOSView *parent, int raiddev = 0);
+    RAIDMeter( int raiddev = 0 );
     ~RAIDMeter( void );
 
     void checkevent( void );

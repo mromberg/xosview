@@ -13,7 +13,7 @@
 
 class ComNetMeter : public FieldMeterGraph {
 public:
-    ComNetMeter(XOSView *parent);
+    ComNetMeter(void);
     ~ComNetMeter( void );
 
     std::string resName( void ) const { return "net"; }

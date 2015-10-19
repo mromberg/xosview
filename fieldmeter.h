@@ -14,8 +14,8 @@
 
 class FieldMeter : public Meter {
 public:
-    FieldMeter( XOSView *parent, size_t numfields,
-      const std::string &title = "", const std::string &legend = "");
+    FieldMeter( size_t numfields, const std::string &title = "",
+      const std::string &legend = "");
 
     virtual ~FieldMeter( void );
 

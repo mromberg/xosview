@@ -16,7 +16,7 @@
 
 class PrcIrqRateMeter : public ComIrqRateMeter {
 public:
-    PrcIrqRateMeter(XOSView *parent);
+    PrcIrqRateMeter(void);
 
 protected:
     virtual float getIrqRate(void);

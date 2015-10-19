@@ -11,7 +11,7 @@
 
 class WLinkMeter : public FieldMeterGraph {
 public:
-    WLinkMeter(XOSView *parent);
+    WLinkMeter(void);
     virtual ~WLinkMeter(void);
 
     virtual std::string resName( void ) const { return "wlink"; }

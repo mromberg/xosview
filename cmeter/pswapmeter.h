@@ -12,7 +12,7 @@
 
 class PrcSwapMeter : public ComSwapMeter {
 public:
-    PrcSwapMeter( XOSView *parent ) : ComSwapMeter(parent) {}
+    PrcSwapMeter( void ) : ComSwapMeter() {}
 
 protected:
     virtual std::pair<uint64_t, uint64_t> getswapinfo( void );

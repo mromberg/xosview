@@ -19,7 +19,7 @@
 
 class ComLoadMeter : public FieldMeterGraph {
 public:
-    ComLoadMeter( XOSView *parent );
+    ComLoadMeter( void );
     ~ComLoadMeter( void );
 
     std::string resName( void ) const { return "load"; }

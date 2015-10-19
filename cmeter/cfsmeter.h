@@ -18,7 +18,7 @@
 
 class ComFSMeter : public FieldMeterGraph {
 public:
-    ComFSMeter(XOSView *parent, const std::string &path);
+    ComFSMeter(const std::string &path);
     virtual ~ComFSMeter(void);
 
     virtual std::string name( void ) const { return "FSMeter"; }
@@ -42,7 +42,7 @@ private:
 template <class X>
 class FSMFactory {
 public:
-    virtual std::vector<Meter *> make(const ResDB &rdb, XOSView *parent);
+    virtual std::vector<Meter *> make(const ResDB &rdb);
     virtual std::vector<std::string> mounts(const ResDB &rdb);
     virtual std::vector<std::string> getAuto(void);
 };
@@ -52,14 +52,13 @@ typedef FSMFactory<ComFSMeter> ComFSMeterFactory;
 
 
 template <class X>
-std::vector<Meter *> FSMFactory<X>::make(const ResDB &rdb,
-  XOSView *parent) {
+std::vector<Meter *> FSMFactory<X>::make(const ResDB &rdb) {
 
     std::vector<Meter *> rval;
 
     std::vector<std::string> fs(mounts(rdb));
     for (size_t i = 0 ; i < fs.size() ; i++)
-        rval.push_back(new X(parent, fs[i]));
+        rval.push_back(new X(fs[i]));
 
     return rval;
 }

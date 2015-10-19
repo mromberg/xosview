@@ -6,8 +6,8 @@
 #include "fsutil.h"
 
 
-ComTZoneMeter::ComTZoneMeter(XOSView *parent, size_t zoneNum)
-    : FieldMeterGraph(parent, 2, "TZ" + util::repr(zoneNum),
+ComTZoneMeter::ComTZoneMeter(size_t zoneNum)
+    : FieldMeterGraph(2, "TZ" + util::repr(zoneNum),
       "DEG C/USED"), _peak(100.0),
       _hotTrip(70), _critTrip(84),
       _normColor(0), _hotColor(0), _critColor(0) {

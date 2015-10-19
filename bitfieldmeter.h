@@ -14,7 +14,7 @@
 
 class BitFieldMeter : public Meter {
 public:
-    BitFieldMeter( XOSView *parent, size_t numBits=1, size_t numfields=1,
+    BitFieldMeter( size_t numBits=1, size_t numfields=1,
       const std::string &title = "", const std::string &bitlegend = "",
       const std::string &fieldlegend = "");
 

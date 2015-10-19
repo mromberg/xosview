@@ -10,8 +10,8 @@
 #include <limits>
 
 
-PrcDiskMeter::PrcDiskMeter(XOSView *parent)
-    : ComDiskMeter(parent), _last(getTotals()) {
+PrcDiskMeter::PrcDiskMeter(void)
+    : ComDiskMeter(), _last(getTotals()) {
 }
 
 PrcDiskMeter::~PrcDiskMeter(void) {

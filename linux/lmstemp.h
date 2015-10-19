@@ -16,8 +16,8 @@
 
 class LmsTemp : public FieldMeter {
 public:
-    LmsTemp( XOSView *parent, const std::string &filename,
-      const std::string &label, const std::string &caption);
+    LmsTemp( const std::string &filename, const std::string &label,
+      const std::string &caption);
 
     ~LmsTemp( void );
 

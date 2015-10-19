@@ -10,7 +10,7 @@
 
 class ComTZoneMeter : public FieldMeterGraph {
 public:
-    ComTZoneMeter(XOSView *parent, size_t zoneNum);
+    ComTZoneMeter(size_t zoneNum);
     virtual ~ComTZoneMeter(void);
 
     virtual std::string resName( void ) const { return "tzone"; }

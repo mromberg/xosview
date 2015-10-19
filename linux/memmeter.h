@@ -15,7 +15,7 @@
 
 class MemMeter : public FieldMeterGraph {
 public:
-    MemMeter( XOSView *parent );
+    MemMeter( void );
     ~MemMeter( void );
 
     std::string resName( void ) const { return "mem"; }

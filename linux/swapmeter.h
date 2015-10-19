@@ -13,7 +13,7 @@
 
 class SwapMeter : public PrcSwapMeter {
 public:
-    SwapMeter( XOSView *parent ) : PrcSwapMeter(parent) {}
+    SwapMeter( void ) : PrcSwapMeter() {}
 
     virtual std::string resName(void) const { return "swap"; }
 

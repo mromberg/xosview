@@ -14,11 +14,11 @@
 class SerialMeter : public BitMeter {
 public:
     enum Device { S0, S1, S2, S3, S4, S5, S6, S7, S8, S9 };
-    static int numDevices(void) { return 10; }
 
-    SerialMeter( XOSView *parent, Device device);
+    SerialMeter(Device device);
     ~SerialMeter( void );
 
+    static int numDevices(void) { return 10; }
     static std::string getResourceName(Device dev);
 
     void checkevent( void );

@@ -13,7 +13,7 @@
 
 class ComPageMeter : public FieldMeterGraph {
 public:
-    ComPageMeter( XOSView *parent);
+    ComPageMeter( void );
     ~ComPageMeter( void );
 
     std::string resName( void ) const { return "page"; }

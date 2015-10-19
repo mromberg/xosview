@@ -16,7 +16,7 @@
 
 class PrcDiskMeter : public ComDiskMeter {
 public:
-    PrcDiskMeter(XOSView *parent);
+    PrcDiskMeter(void);
     ~PrcDiskMeter(void);
 
 protected:

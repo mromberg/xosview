@@ -8,8 +8,8 @@
 
 
 
-ComNetMeter::ComNetMeter( XOSView *parent)
-    : FieldMeterGraph( parent, 3, "NET", "IN/OUT/IDLE" ), _maxBandwidth(0) {
+ComNetMeter::ComNetMeter( void )
+    : FieldMeterGraph( 3, "NET", "IN/OUT/IDLE" ), _maxBandwidth(0) {
 }
 
 

@@ -11,13 +11,11 @@
 #include "label.h"
 #include "strutil.h"
 
-class XOSView;
 
 
 class Meter {
 public:
-    Meter( XOSView *parent, const std::string &title = "",
-      const std::string &legend ="");
+    Meter( const std::string &title = "", const std::string &legend ="");
 
     virtual ~Meter( void );
 
@@ -36,10 +34,7 @@ public:
     void dolegends(bool val) { dolegends_ = val; }
     void dousedlegends(bool val) { dousedlegends_ = val; }
 
-private:
-    XOSView *parent_;
 protected:
-
     unsigned long fgColor(void) const { return _fgColor; }
     unsigned long bgColor(void) const { return _bgColor; }
     void title( const std::string &title ) { _title.text(title); }

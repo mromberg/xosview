@@ -12,8 +12,8 @@ static const char * const WIRELESSFNAME = "/proc/net/wireless";
 
 
 
-WLinkMeter::WLinkMeter(XOSView *parent)
-    : FieldMeterGraph(parent, 2, "WLNK", "LINK/70"),
+WLinkMeter::WLinkMeter(void)
+    : FieldMeterGraph(2, "WLNK", "LINK/70"),
       _goodColor(0), _poorColor(0), _poorValue(39) {
 
     // scale is always 0 - 70 (I think)

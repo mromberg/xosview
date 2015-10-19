@@ -15,7 +15,7 @@
 
 class ComSwapMeter : public FieldMeterGraph {
 public:
-    ComSwapMeter( XOSView *parent );
+    ComSwapMeter( void );
     ~ComSwapMeter( void );
 
     std::string resName( void ) const { return "swap"; }

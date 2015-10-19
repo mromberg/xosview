@@ -33,59 +33,59 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        _meters.push_back(new ExampleMeter(_xos));
+        _meters.push_back(new ExampleMeter());
 
     // Standard meters (usually added, but users could turn them off)
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new PrcLoadMeter(_xos));
+        _meters.push_back(new PrcLoadMeter());
 
     if (rdb.isResourceTrue("cpu"))
         cpuFactory(rdb);
 
     if (rdb.isResourceTrue("mem"))
-        _meters.push_back(new MemMeter(_xos));
+        _meters.push_back(new MemMeter());
 
     if (rdb.isResourceTrue("disk"))
-        _meters.push_back(new PrcDiskMeter(_xos));
+        _meters.push_back(new PrcDiskMeter());
 
     if (rdb.isResourceTrue("RAID")){
         int RAIDCount = util::stoi(rdb.getResource("RAIDdevicecount"));
         for (int i = 0 ; i < RAIDCount ; i++)
-            _meters.push_back(new RAIDMeter(_xos, i));
+            _meters.push_back(new RAIDMeter(i));
     }
 
     if (rdb.isResourceTrue("filesys"))
-        util::concat(_meters, ComFSMeterFactory().make(rdb, _xos));
+        util::concat(_meters, ComFSMeterFactory().make(rdb));
 
     if (rdb.isResourceTrue("swap"))
-        _meters.push_back(new SwapMeter(_xos));
+        _meters.push_back(new SwapMeter());
 
     if (rdb.isResourceTrue("page"))
-        _meters.push_back(new PrcPageMeter(_xos));
+        _meters.push_back(new PrcPageMeter());
 
     if (rdb.isResourceTrue("wlink"))
-        _meters.push_back(new WLinkMeter(_xos));
+        _meters.push_back(new WLinkMeter());
 
     if (rdb.isResourceTrue("net"))
-        _meters.push_back(new PrcNetMeter(_xos));
+        _meters.push_back(new PrcNetMeter());
 
     if (rdb.isResourceTrue("NFSDStats"))
-        _meters.push_back(new NFSDStats(_xos));
+        _meters.push_back(new NFSDStats());
 
     if (rdb.isResourceTrue("NFSStats"))
-        _meters.push_back(new NFSStats(_xos));
+        _meters.push_back(new NFSStats());
 
     // serial factory checks all resources.
     serialFactory(rdb);
 
     if (rdb.isResourceTrue("irqrate"))
-        _meters.push_back(new PrcIrqRateMeter(_xos));
+        _meters.push_back(new PrcIrqRateMeter());
 
     if (rdb.isResourceTrue("interrupts"))
         intFactory(rdb);
 
     if (rdb.isResourceTrue("battery"))
-        _meters.push_back(new BtryMeter(_xos));
+        _meters.push_back(new BtryMeter());
 
     if (rdb.isResourceTrue("tzone"))
         tzoneFactory();
@@ -129,7 +129,7 @@ void MeterMaker::cpuFactory(const ResDB &rdb) {
     logDebug << "start=" << start << ", end=" << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
-        _meters.push_back(new CPUMeter(_xos, i));
+        _meters.push_back(new CPUMeter(i));
 }
 
 
@@ -151,8 +151,7 @@ void MeterMaker::serialFactory(const ResDB &rdb) {
         }
 
         if ( ok )
-            _meters.push_back(new SerialMeter(_xos,
-                (SerialMeter::Device)i));
+            _meters.push_back(new SerialMeter((SerialMeter::Device)i));
     }
 #endif
 }
@@ -166,7 +165,7 @@ void MeterMaker::intFactory(const ResDB &rdb) {
     logDebug << "int range: " << start << ", " << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
-        _meters.push_back(new IntMeter(_xos, i, cpuCount));
+        _meters.push_back(new IntMeter(i, cpuCount));
 }
 
 
@@ -182,7 +181,7 @@ void MeterMaker::lmsTempFactory(const ResDB &rdb) {
         std::ostringstream s2;
         s2 << "lmstempLabel" << i;
         std::string lab = rdb.getResourceOrUseDefault(s2.str(), "TMP");
-        _meters.push_back(new LmsTemp(_xos, res, lab, caption));
+        _meters.push_back(new LmsTemp(res, lab, caption));
     }
 }
 
@@ -194,5 +193,5 @@ void MeterMaker::tzoneFactory(void) {
         logProblem << "tzone enabled but no thermal zones found.\n";
 
     for (size_t i = 0 ; i < nzones ; i++)
-        _meters.push_back(new TZoneMeter(_xos, i));
+        _meters.push_back(new TZoneMeter(i));
 }

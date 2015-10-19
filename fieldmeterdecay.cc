@@ -30,10 +30,9 @@
 
 
 
-FieldMeterDecay::FieldMeterDecay(XOSView *parent,
-  size_t numfields, const std::string &title,
+FieldMeterDecay::FieldMeterDecay(size_t numfields, const std::string &title,
   const std::string &legend)
-    : FieldMeter (parent, numfields, title, legend),
+    : FieldMeter (numfields, title, legend),
       dodecay_(true), firsttime_(true), decay_(numfields, 0.0),
       lastDecayval_(numfields, 0.0) {
 

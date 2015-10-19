@@ -14,8 +14,8 @@
 static const char * const RAIDFILE = "/proc/mdstat";
 
 
-RAIDMeter::RAIDMeter( XOSView *parent, int raiddev)
-    : BitFieldMeter( parent, 1, 2, "RAID"),
+RAIDMeter::RAIDMeter( int raiddev)
+    : BitFieldMeter( 1, 2, "RAID"),
       _raiddev(raiddev),
       mdnum(0),
       state(),

@@ -9,8 +9,8 @@
 
 
 
-ComSwapMeter::ComSwapMeter( XOSView *parent )
-: FieldMeterGraph( parent, 2, "SWAP", "USED/FREE" ){
+ComSwapMeter::ComSwapMeter( void )
+: FieldMeterGraph( 2, "SWAP", "USED/FREE" ){
 }
 
 

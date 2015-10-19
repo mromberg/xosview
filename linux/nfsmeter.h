@@ -13,7 +13,6 @@ class Host;
 class NFSMeter : public FieldMeterGraph {
 public:
     NFSMeter(
-        XOSView *parent,
         const std::string &name,
         int   nfields,
         const std::string &files,
@@ -38,7 +37,7 @@ private:
 
 class NFSStats : public NFSMeter {
 public:
-    NFSStats(XOSView *parent);
+    NFSStats(void);
     ~NFSStats(void);
 
     void checkevent( void );
@@ -52,7 +51,7 @@ private:
 
 class NFSDStats : public NFSMeter {
 public:
-    NFSDStats(XOSView *parent);
+    NFSDStats(void);
     ~NFSDStats(void);
 
     void checkevent( void );

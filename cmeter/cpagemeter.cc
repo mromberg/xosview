@@ -10,8 +10,8 @@
 
 
 
-ComPageMeter::ComPageMeter( XOSView *parent)
-    : FieldMeterGraph( parent, 3, "PAGE", "IN/OUT/IDLE" ), _maxspeed(0) {
+ComPageMeter::ComPageMeter( void )
+    : FieldMeterGraph( 3, "PAGE", "IN/OUT/IDLE" ), _maxspeed(0) {
 }
 
 

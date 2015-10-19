@@ -9,8 +9,8 @@ static const char * const TZDIR  = "/sys/class/thermal";
 static const char * const TZSDIR = "thermal_zone";
 
 
-TZoneMeter::TZoneMeter(XOSView *parent, size_t zoneNum)
-    : ComTZoneMeter(parent, zoneNum) {
+TZoneMeter::TZoneMeter(size_t zoneNum)
+    : ComTZoneMeter(zoneNum) {
 
     _tempFName = std::string(TZDIR) + "/" + TZSDIR + util::repr(zoneNum)
         + "/" + "temp";

@@ -8,9 +8,8 @@
 #include "meter.h"
 
 
-Meter::Meter( XOSView *parent, const std::string &title,
-  const std::string &legend)
-    : parent_(parent), x_(0), y_(0), width_(1), height_(1),
+Meter::Meter(const std::string &title, const std::string &legend)
+    : x_(0), y_(0), width_(1), height_(1),
       priority_(1), counter_(0),
       docaptions_(false),
       dolegends_(false), dousedlegends_(false), metric_(false),

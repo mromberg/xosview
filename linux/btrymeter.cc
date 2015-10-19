@@ -19,8 +19,8 @@
 static const char LEGEND[] = "CAP/USED";
 static const char SYSDIRNAME[] = "/sys/class/power_supply/";
 
-BtryMeter::BtryMeter( XOSView *parent )
-    : FieldMeter( parent, 2, "BTRY", LEGEND), _stype(NONE),
+BtryMeter::BtryMeter( void )
+    : FieldMeter( 2, "BTRY", LEGEND), _stype(NONE),
       _critColor(0), _lowColor(0), _leftColor(0),
       _chargeColor(0), _fullColor(0), _noneColor(0) {
 
