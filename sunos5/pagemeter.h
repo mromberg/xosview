@@ -15,7 +15,7 @@
 
 class PageMeter : public ComPageMeter {
 public:
-    PageMeter(XOSView *parent, kstat_ctl_t *kcp);
+    PageMeter(kstat_ctl_t *kcp);
 
 protected:
     virtual std::pair<float, float> getPageRate(void);

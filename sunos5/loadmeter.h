@@ -14,7 +14,7 @@
 
 class LoadMeter : public ComLoadMeter {
 public:
-    LoadMeter(XOSView *parent, kstat_ctl_t *kcp);
+    LoadMeter(kstat_ctl_t *kcp);
 
 protected:
     virtual float getLoad(void);

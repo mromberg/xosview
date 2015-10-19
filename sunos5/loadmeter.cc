@@ -21,8 +21,8 @@
 
 
 
-LoadMeter::LoadMeter(XOSView *parent, kstat_ctl_t *_kc)
-    : ComLoadMeter(parent),
+LoadMeter::LoadMeter(kstat_ctl_t *_kc)
+    : ComLoadMeter(),
       cpulist(KStatList::getList(_kc, KStatList::CPU_INFO)),
       kc(_kc), ksp(0) {
 

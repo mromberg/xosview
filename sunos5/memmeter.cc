@@ -12,8 +12,8 @@
 
 
 
-MemMeter::MemMeter(XOSView *parent, kstat_ctl_t *_kc)
-    : FieldMeterGraph(parent, 4, "MEM", "SYS/ZFS/OTHER/FREE"),
+MemMeter::MemMeter(kstat_ctl_t *_kc)
+    : FieldMeterGraph(4, "MEM", "SYS/ZFS/OTHER/FREE"),
       pageSize(sysconf(_SC_PAGESIZE)),
       kc(_kc),
       ksp_sp(0), ksp_zfs(0) {

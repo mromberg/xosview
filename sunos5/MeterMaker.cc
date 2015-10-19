@@ -26,7 +26,7 @@
 
 
 
-MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
+MeterMaker::MeterMaker(void) {
 }
 
 
@@ -40,35 +40,35 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        _meters.push_back(new ExampleMeter(_xos));
+        _meters.push_back(new ExampleMeter());
 
     // Standard meters (usually added, but users could turn them off)
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new LoadMeter(_xos, kc));
+        _meters.push_back(new LoadMeter(kc));
 
     if (rdb.isResourceTrue("cpu"))
         cpuFactory(rdb, kc);
 
     if (rdb.isResourceTrue("mem"))
-        _meters.push_back(new MemMeter(_xos, kc));
+        _meters.push_back(new MemMeter(kc));
 
     if (rdb.isResourceTrue("disk"))
-        _meters.push_back(new DiskMeter(_xos, kc));
+        _meters.push_back(new DiskMeter(kc));
 
     if (rdb.isResourceTrue("filesys"))
-        util::concat(_meters, FSMeterFactory().make(rdb, _xos));
+        util::concat(_meters, FSMeterFactory().make(rdb));
 
     if (rdb.isResourceTrue("swap"))
-        _meters.push_back(new SwapMeter(_xos));
+        _meters.push_back(new SwapMeter());
 
     if (rdb.isResourceTrue("page"))
-        _meters.push_back(new PageMeter(_xos, kc));
+        _meters.push_back(new PageMeter(kc));
 
     if (rdb.isResourceTrue("net"))
-        _meters.push_back(new NetMeter(_xos, kc));
+        _meters.push_back(new NetMeter(kc));
 
     if (rdb.isResourceTrue("irqrate"))
-        _meters.push_back(new IrqRateMeter(_xos, kc));
+        _meters.push_back(new IrqRateMeter(kc));
 
     return _meters;
 }
@@ -90,12 +90,12 @@ void MeterMaker::cpuFactory(const ResDB &rdb, kstat_ctl_t *kc) {
     }
 
     if (single || both)
-        _meters.push_back(new CPUMeter(_xos, kc, -1));
+        _meters.push_back(new CPUMeter(kc, -1));
 
     if (all || both) {
         KStatList *cpulist = KStatList::getList(kc, KStatList::CPU_STAT);
         for (unsigned int i = 0; i < cpulist->count(); i++)
-            _meters.push_back(new CPUMeter(_xos, kc,
+            _meters.push_back(new CPUMeter(kc,
                 (*cpulist)[i]->ks_instance));
     }
 }

@@ -12,8 +12,8 @@
 
 
 
-PageMeter::PageMeter(XOSView *parent, kstat_ctl_t *_kc)
-    : ComPageMeter( parent ), _psize(sysconf(_SC_PAGESIZE)),
+PageMeter::PageMeter(kstat_ctl_t *_kc)
+    : ComPageMeter(), _psize(sysconf(_SC_PAGESIZE)),
       pageinfo_(2, std::vector<float>(2, 0.0)),
       pageindex_(0),
       cpustats(KStatList::getList(_kc, KStatList::CPU_STAT)),

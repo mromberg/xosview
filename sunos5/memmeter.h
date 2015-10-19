@@ -13,7 +13,7 @@
 
 class MemMeter : public FieldMeterGraph {
 public:
-    MemMeter(XOSView *parent, kstat_ctl_t *kcp);
+    MemMeter(kstat_ctl_t *kcp);
     ~MemMeter(void);
 
     virtual std::string resName(void) const { return "mem"; }

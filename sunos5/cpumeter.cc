@@ -11,8 +11,8 @@
 
 
 
-CPUMeter::CPUMeter(XOSView *parent, kstat_ctl_t *kc, int cpuid)
-    : FieldMeterGraph(parent, CPU_STATES, cpuStr(cpuid), "USER/SYS/WAIT/IDLE"),
+CPUMeter::CPUMeter(kstat_ctl_t *kc, int cpuid)
+    : FieldMeterGraph(CPU_STATES, cpuStr(cpuid), "USER/SYS/WAIT/IDLE"),
       cputime_(2, std::vector<float>(CPU_STATES, 0.0)), cpuindex_(0),
       _cpustats(KStatList::getList(kc, KStatList::CPU_STAT)),
       _aggregate(cpuid < 0), _kc(kc), _ksp(0) {

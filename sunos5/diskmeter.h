@@ -15,7 +15,7 @@
 
 class DiskMeter : public ComDiskMeter {
 public:
-    DiskMeter( XOSView *parent, kstat_ctl_t *kc);
+    DiskMeter( kstat_ctl_t *kc);
 
 protected:
     virtual std::pair<double, double> getRate(void);

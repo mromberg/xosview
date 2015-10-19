@@ -15,7 +15,7 @@
 
 class SwapMeter : public ComSwapMeter {
 public:
-    SwapMeter(XOSView *parent);
+    SwapMeter(void);
 
 protected:
     virtual std::pair<uint64_t, uint64_t> getswapinfo( void );

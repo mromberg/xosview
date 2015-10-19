@@ -10,8 +10,8 @@
 
 
 
-DiskMeter::DiskMeter( XOSView *parent, kstat_ctl_t *kc)
-    : ComDiskMeter( parent ),
+DiskMeter::DiskMeter( kstat_ctl_t *kc)
+    : ComDiskMeter(),
       _read_prev(0), _write_prev(0),
       _kc(kc),
       _disks(KStatList::getList(_kc, KStatList::DISKS)) {

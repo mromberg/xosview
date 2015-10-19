@@ -12,8 +12,8 @@
 
 
 
-IrqRateMeter::IrqRateMeter(XOSView *parent, kstat_ctl_t *kc)
-    : ComIrqRateMeter(parent),
+IrqRateMeter::IrqRateMeter(kstat_ctl_t *kc)
+    : ComIrqRateMeter(),
       _lastirqcount(0),
       _kc(kc),
       _cpus(KStatList::getList(_kc, KStatList::CPU_SYS)) {

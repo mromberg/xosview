@@ -16,7 +16,7 @@
 
 class NetMeter : public ComNetMeter {
 public:
-    NetMeter( XOSView *parent, kstat_ctl_t *kc );
+    NetMeter( kstat_ctl_t *kc );
     ~NetMeter(void);
 
     virtual void checkResources(const ResDB &rdb);

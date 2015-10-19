@@ -18,8 +18,8 @@
 
 
 
-NetMeter::NetMeter( XOSView *parent, kstat_ctl_t *kc )
-    : ComNetMeter( parent ),
+NetMeter::NetMeter( kstat_ctl_t *kc )
+    : ComNetMeter(),
       _lastBytesIn(0), _lastBytesOut(0),
       _kc(kc),
       _nets(KStatList::getList(_kc, KStatList::NETS)),

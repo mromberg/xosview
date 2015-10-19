@@ -13,8 +13,8 @@
 
 
 
-SwapMeter::SwapMeter(XOSView *parent)
-    : ComSwapMeter(parent), _pagesize(sysconf(_SC_PAGESIZE)) {
+SwapMeter::SwapMeter(void)
+    : ComSwapMeter(), _pagesize(sysconf(_SC_PAGESIZE)) {
 }
 
 
