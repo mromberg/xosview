@@ -21,8 +21,8 @@
 
 
 
-PageMeter::PageMeter( XOSView *parent )
-    : ComPageMeter( parent ), _psize(sysconf(_SC_PAGESIZE)),
+PageMeter::PageMeter( void )
+    : ComPageMeter(), _psize(sysconf(_SC_PAGESIZE)),
       previnfo_(2, 0) {
 
     BSDPageInit();

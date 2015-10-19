@@ -9,8 +9,8 @@
 
 
 
-IntMeter::IntMeter(XOSView *parent)
-    : BitMeter( parent, "INTS", "IRQs" ),
+IntMeter::IntMeter(void)
+    : BitMeter( "INTS", "IRQs" ),
       irqcount_(0) {
 
     if (!BSDIntrInit())

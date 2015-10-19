@@ -15,8 +15,8 @@
 #include "kernel.h"
 
 
-DiskMeter::DiskMeter( XOSView *parent )
-    : ComDiskMeter( parent ),
+DiskMeter::DiskMeter( void )
+    : ComDiskMeter(),
       prevreads_(0), prevwrites_(0) {
 
     if (!BSDDiskInit())

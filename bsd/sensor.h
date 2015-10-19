@@ -18,8 +18,7 @@
 
 class BSDSensor : public SensorFieldMeter {
 public:
-    BSDSensor( XOSView *parent, const std::string &name,
-      const std::string &high,
+    BSDSensor( const std::string &name, const std::string &high,
       const std::string &low, const std::string &label,
       const std::string &caption, int nbr );
     ~BSDSensor( void );

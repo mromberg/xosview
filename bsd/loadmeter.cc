@@ -18,8 +18,8 @@
 
 
 
-LoadMeter::LoadMeter( XOSView *parent )
-    : ComLoadMeter( parent ) {
+LoadMeter::LoadMeter( void )
+    : ComLoadMeter() {
 }
 
 

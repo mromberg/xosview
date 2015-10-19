@@ -19,8 +19,8 @@
 
 
 
-SwapMeter::SwapMeter( XOSView *parent )
-    : ComSwapMeter( parent ) {
+SwapMeter::SwapMeter( void )
+    : ComSwapMeter() {
 
     BSDSwapInit();
 }

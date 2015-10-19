@@ -34,7 +34,7 @@
 
 
 
-MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
+MeterMaker::MeterMaker(void) {
 }
 
 
@@ -48,41 +48,41 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        _meters.push_back(new ExampleMeter(_xos));
+        _meters.push_back(new ExampleMeter());
 
     // Standard meters (usually added, but users could turn them off)
     if ( rdb.isResourceTrue("load") )
-        _meters.push_back(new LoadMeter(_xos));
+        _meters.push_back(new LoadMeter());
 
     if ( rdb.isResourceTrue("cpu") )
         cpuFactory(rdb);
 
     if ( rdb.isResourceTrue("mem") )
-        _meters.push_back(new MemMeter(_xos));
+        _meters.push_back(new MemMeter());
 
     if (rdb.isResourceTrue("filesys"))
-        util::concat(_meters, FSMeterFactory().make(rdb, _xos));
+        util::concat(_meters, FSMeterFactory().make(rdb));
 
     if ( rdb.isResourceTrue("swap") )
-        _meters.push_back(new SwapMeter(_xos));
+        _meters.push_back(new SwapMeter());
 
     if ( rdb.isResourceTrue("page") )
-        _meters.push_back(new PageMeter(_xos));
+        _meters.push_back(new PageMeter());
 
     if ( rdb.isResourceTrue("net") )
-        _meters.push_back(new NetMeter(_xos));
+        _meters.push_back(new NetMeter());
 
     if ( rdb.isResourceTrue("disk") )
-        _meters.push_back(new DiskMeter(_xos));
+        _meters.push_back(new DiskMeter());
 
     if ( rdb.isResourceTrue("interrupts") )
-        _meters.push_back(new IntMeter(_xos));
+        _meters.push_back(new IntMeter());
 
     if ( rdb.isResourceTrue("irqrate") )
-        _meters.push_back(new IrqRateMeter(_xos));
+        _meters.push_back(new IrqRateMeter());
 
     if ( rdb.isResourceTrue("battery") && BSDHasBattery() )
-        _meters.push_back(new BtryMeter(_xos));
+        _meters.push_back(new BtryMeter());
 
     if ( rdb.isResourceTrue("coretemp") )
         coreTempFactory(rdb);
@@ -110,11 +110,11 @@ void MeterMaker::cpuFactory(const ResDB &rdb) {
     }
 
     if (single || both)
-        _meters.push_back(new CPUMeter(_xos, 0));
+        _meters.push_back(new CPUMeter(0));
 
     if (all || both) {
         for (unsigned int i = 1; i <= cpuCount; i++)
-            _meters.push_back(new CPUMeter(_xos, i));
+            _meters.push_back(new CPUMeter(i));
     }
 }
 
@@ -129,13 +129,13 @@ void MeterMaker::coreTempFactory(const ResDB &rdb) {
         if (displayType == "separate") {
             std::string name("CPU");
             for (uint i = 0; i < CoreTemp::countCpus(); i++)
-                _meters.push_back(new CoreTemp(_xos, name + util::repr(i),
+                _meters.push_back(new CoreTemp(name + util::repr(i),
                     caption, i));
         }
         else if (displayType == "average")
-            _meters.push_back(new CoreTemp(_xos, "CPU", caption, -1));
+            _meters.push_back(new CoreTemp("CPU", caption, -1));
         else if (displayType == "maximum")
-            _meters.push_back(new CoreTemp(_xos, "CPU", caption, -2));
+            _meters.push_back(new CoreTemp("CPU", caption, -2));
         else {
             logFatal << "Unknown value of coretempDisplayType: "
                      << displayType << std::endl;
@@ -163,7 +163,7 @@ void MeterMaker::sensorFactory(const ResDB &rdb) {
         s = "bsdsensorLabel" + util::repr(i);
         l = "SEN" + util::repr(i);
         std::string label = rdb.getResourceOrUseDefault(s, l);
-        _meters.push_back(new BSDSensor(_xos, name, high, low, label,
+        _meters.push_back(new BSDSensor(name, high, low, label,
             caption, i));
     }
 }

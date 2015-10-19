@@ -32,8 +32,8 @@
 
 
 
-CPUMeter::CPUMeter( XOSView *parent, unsigned int nbr )
-    : FieldMeterGraph( parent, 5, "CPU", "USR/NICE/SYS/INT/FREE" ),
+CPUMeter::CPUMeter( unsigned int nbr )
+    : FieldMeterGraph( 5, "CPU", "USR/NICE/SYS/INT/FREE" ),
       cputime_(2, std::vector<uint64_t>(CPUSTATES, 0)),
       cpuindex_(0), nbr_(nbr) {
 

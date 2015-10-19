@@ -18,7 +18,7 @@
 
 class CoreTemp : public FieldMeter {
 public:
-    CoreTemp( XOSView *parent, const std::string &label,
+    CoreTemp( const std::string &label,
       const std::string &caption, int cpu);
     ~CoreTemp( void );
 

@@ -19,8 +19,8 @@
 
 
 
-NetMeter::NetMeter( XOSView *parent )
-    : ComNetMeter( parent ),
+NetMeter::NetMeter( void )
+    : ComNetMeter(),
       lastBytesIn_(0), lastBytesOut_(0),
       netIface_("False"), ignored_(false) {
 

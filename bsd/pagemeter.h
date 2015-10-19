@@ -22,7 +22,7 @@
 
 class PageMeter : public ComPageMeter {
 public:
-    PageMeter( XOSView *parent );
+    PageMeter( void );
 
 protected:
     virtual std::pair<float, float> getPageRate(void);

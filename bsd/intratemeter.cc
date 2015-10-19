@@ -13,8 +13,8 @@
 
 
 
-IrqRateMeter::IrqRateMeter( XOSView *parent )
-    : ComIrqRateMeter( parent ),
+IrqRateMeter::IrqRateMeter( void )
+    : ComIrqRateMeter(),
       irqcount_(0) {
 
     if (!BSDIntrInit())

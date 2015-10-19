@@ -32,8 +32,8 @@ static size_t NFIELDS = 5;
 
 
 
-MemMeter::MemMeter( XOSView *parent )
-    : FieldMeterGraph( parent, NFIELDS, "MEM", LEGEND ),
+MemMeter::MemMeter( void )
+    : FieldMeterGraph( NFIELDS, "MEM", LEGEND ),
       meminfo_(5, 0) {
 
     BSDPageInit();

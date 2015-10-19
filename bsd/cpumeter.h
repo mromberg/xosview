@@ -22,7 +22,7 @@
 
 class CPUMeter : public FieldMeterGraph {
 public:
-    CPUMeter( XOSView *parent, unsigned int nbr );
+    CPUMeter( unsigned int nbr );
     ~CPUMeter( void );
 
     virtual std::string resName( void ) const { return "cpu"; }

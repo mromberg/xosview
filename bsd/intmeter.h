@@ -14,7 +14,7 @@
 
 class IntMeter : public BitMeter {
 public:
-    IntMeter(XOSView *parent);
+    IntMeter(void);
     ~IntMeter( void );
 
     virtual std::string resName( void ) const { return "int"; }

@@ -16,7 +16,7 @@
 
 class BtryMeter : public FieldMeter {
 public:
-    BtryMeter( XOSView *parent );
+    BtryMeter( void );
     ~BtryMeter( void );
 
     virtual std::string resName( void ) const { return "battery"; }

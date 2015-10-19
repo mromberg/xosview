@@ -22,7 +22,7 @@
 
 class LoadMeter : public ComLoadMeter {
 public:
-    LoadMeter( XOSView *parent );
+    LoadMeter( void );
 
 protected:
     virtual float getLoad(void);

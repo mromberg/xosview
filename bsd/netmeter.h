@@ -22,7 +22,7 @@
 
 class NetMeter : public ComNetMeter {
 public:
-    NetMeter( XOSView *parent );
+    NetMeter( void );
 
     void checkResources(const ResDB &rdb);
 
