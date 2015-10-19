@@ -12,8 +12,7 @@
 
 class FSMeter : public ComFSMeter {
 public:
-    FSMeter(XOSView *parent, const std::string &path)
-        : ComFSMeter(parent, path) {}
+    FSMeter(const std::string &path) : ComFSMeter(path) {}
 
 protected:
     virtual bool isMount(const std::string &path);

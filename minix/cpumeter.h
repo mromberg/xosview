@@ -14,7 +14,7 @@
 
 class CPUMeter : public FieldMeterGraph {
 public:
-    CPUMeter(XOSView *parent, unsigned int cpu=0);
+    CPUMeter(unsigned int cpu=0);
     ~CPUMeter(void);
 
     std::string resName(void) const { return "cpu"; }

@@ -15,8 +15,8 @@
 static const char * const MEMFILENAME = "/proc/meminfo";
 
 
-MemMeter::MemMeter( XOSView *parent ) : FieldMeterGraph( parent, 4, "MEM",
-  "USED/CACHE/CFREE/FREE" ){
+MemMeter::MemMeter( void )
+    : FieldMeterGraph( 4, "MEM", "USED/CACHE/CFREE/FREE" ) {
 }
 
 

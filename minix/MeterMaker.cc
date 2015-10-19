@@ -14,7 +14,7 @@
 #include "example.h"  // The example meter
 
 
-MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
+MeterMaker::MeterMaker(void) {
 }
 
 
@@ -23,19 +23,19 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        _meters.push_back(new ExampleMeter(_xos));
+        _meters.push_back(new ExampleMeter());
 
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new PrcLoadMeter(_xos));
+        _meters.push_back(new PrcLoadMeter());
 
     if (rdb.isResourceTrue("cpu"))
-        _meters.push_back(new CPUMeter(_xos));
+        _meters.push_back(new CPUMeter());
 
     if (rdb.isResourceTrue("mem"))
-        _meters.push_back(new MemMeter(_xos));
+        _meters.push_back(new MemMeter());
 
     if (rdb.isResourceTrue("filesys"))
-        util::concat(_meters, FSMeterFactory().make(rdb, _xos));
+        util::concat(_meters, FSMeterFactory().make(rdb));
 
     return _meters;
 }

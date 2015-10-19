@@ -28,8 +28,8 @@
 //--------------------------------------------------------------
 
 
-CPUMeter::CPUMeter(XOSView *parent, unsigned int cpu)
-    : FieldMeterGraph( parent, 5, util::toupper(CPUMeter::cpuStr(cpu)),
+CPUMeter::CPUMeter(unsigned int cpu)
+    : FieldMeterGraph( 5, util::toupper(CPUMeter::cpuStr(cpu)),
       "USR/NI/KERN/SYS/IDL"), _cpu(cpu) {
 
     // Suppress the warning about _cpu being unused.  In the future
