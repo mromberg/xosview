@@ -17,7 +17,7 @@
 
 class LoadMeter : public ComLoadMeter {
 public:
-    LoadMeter( XOSView *parent );
+    LoadMeter( void );
 
     virtual void checkResources(const ResDB &rdb);
 

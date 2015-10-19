@@ -14,8 +14,8 @@
 
 
 
-NetMeter::NetMeter( XOSView *parent)
-    : ComNetMeter(parent), _inIndex(0) {
+NetMeter::NetMeter(void)
+    : ComNetMeter(), _inIndex(0) {
 
     std::vector<std::string> adapters = WinHardware::getAdapters();
     logDebug << "network adapters: " << adapters << std::endl;

@@ -6,8 +6,8 @@
 
 
 
-TZoneMeter::TZoneMeter(XOSView *parent, size_t zoneNum)
-    : ComTZoneMeter(parent, zoneNum) {
+TZoneMeter::TZoneMeter(size_t zoneNum)
+    : ComTZoneMeter(zoneNum) {
 
     std::vector<std::string> clist(
         PerfQuery::expand("\\Thermal Zone Information(*)\\Temperature"));

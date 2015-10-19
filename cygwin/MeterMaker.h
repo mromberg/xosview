@@ -14,17 +14,15 @@
 
 
 class Meter;
-class XOSView;
 
 
 class MeterMaker {
 public:
-    MeterMaker(XOSView *xos);
+    MeterMaker(void);
 
     std::vector<Meter *> makeMeters(const ResDB &rdb);
 
 private:
-    XOSView *_xos;
     std::vector<Meter *> _meters;
 
     void cpuFactory(const ResDB &rdb);

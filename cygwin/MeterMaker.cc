@@ -22,7 +22,7 @@
 #include "example.h"  // The example meter
 
 
-MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
+MeterMaker::MeterMaker(void) {
 }
 
 
@@ -31,34 +31,34 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        _meters.push_back(new ExampleMeter(_xos));
+        _meters.push_back(new ExampleMeter());
 
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new LoadMeter(_xos));
+        _meters.push_back(new LoadMeter());
 
     if (rdb.isResourceTrue("cpu"))
         cpuFactory(rdb);
 
     if (rdb.isResourceTrue("mem"))
-        _meters.push_back(new MemMeter(_xos));
+        _meters.push_back(new MemMeter());
 
     if (rdb.isResourceTrue("disk"))
-        _meters.push_back(new DiskMeter(_xos));
+        _meters.push_back(new DiskMeter());
 
     if (rdb.isResourceTrue("filesys"))
-        util::concat(_meters, FSMeterFactory().make(rdb, _xos));
+        util::concat(_meters, FSMeterFactory().make(rdb));
 
     if (rdb.isResourceTrue("swap"))
-        _meters.push_back(new PrcSwapMeter(_xos));
+        _meters.push_back(new PrcSwapMeter());
 
     if (rdb.isResourceTrue("page"))
-        _meters.push_back(new PrcPageMeter(_xos));
+        _meters.push_back(new PrcPageMeter());
 
     if (rdb.isResourceTrue("net"))
-        _meters.push_back(new NetMeter(_xos));
+        _meters.push_back(new NetMeter());
 
     if (rdb.isResourceTrue("irqrate"))
-        _meters.push_back(new PrcIrqRateMeter(_xos));
+        _meters.push_back(new PrcIrqRateMeter());
 
     if (rdb.isResourceTrue("tzone"))
         tzoneFactory();
@@ -74,7 +74,7 @@ void MeterMaker::cpuFactory(const ResDB &rdb) {
     logDebug << "start=" << start << ", end=" << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
-        _meters.push_back(new CPUMeter(_xos, i));
+        _meters.push_back(new CPUMeter(i));
 }
 
 
@@ -111,5 +111,5 @@ void MeterMaker::tzoneFactory(void) {
         logProblem << "tzone enabled but no thermal zones found.\n";
 
     for (size_t i = 0 ; i < nzones ; i++)
-        _meters.push_back(new TZoneMeter(_xos, i));
+        _meters.push_back(new TZoneMeter(i));
 }

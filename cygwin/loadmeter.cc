@@ -10,8 +10,8 @@
 #include <cmath>
 
 
-LoadMeter::LoadMeter( XOSView *parent )
-    : ComLoadMeter(parent), _cpus(CPUMeter::countCPUs()),
+LoadMeter::LoadMeter( void )
+    : ComLoadMeter(), _cpus(CPUMeter::countCPUs()),
       _sampRate(5), _loadAvg(0.0) {
 
     if (!_query.add("\\Processor(_Total)\\% Processor Time") ||

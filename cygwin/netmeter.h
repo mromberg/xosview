@@ -14,7 +14,7 @@
 
 class NetMeter : public ComNetMeter {
 public:
-    NetMeter(XOSView *parent);
+    NetMeter(void);
 
 protected:
     virtual std::pair<float, float> getRates(void);

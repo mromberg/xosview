@@ -9,8 +9,8 @@
 
 
 
-DiskMeter::DiskMeter( XOSView *parent)
-    : ComDiskMeter(parent) {
+DiskMeter::DiskMeter(void)
+    : ComDiskMeter() {
 
     if (!_query.add("\\LogicalDisk(_Total)\\Disk Read Bytes/sec")
       || !_query.add("\\LogicalDisk(_Total)\\Disk Write Bytes/sec"))

@@ -11,7 +11,7 @@
 
 class TZoneMeter : public ComTZoneMeter {
 public:
-    TZoneMeter(XOSView *parent, size_t zoneNum);
+    TZoneMeter(size_t zoneNum);
 
     // Number of thermal zones
     static size_t count(void);
