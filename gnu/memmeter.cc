@@ -14,8 +14,8 @@ extern "C" {
 #include <mach/mach_interface.h>
 }
 
-MemMeter::MemMeter( XOSView *parent )
-    : FieldMeterGraph( parent, 4, "MEM", "ACT/INACT/WIRE/FREE" ){
+MemMeter::MemMeter( void )
+    : FieldMeterGraph( 4, "MEM", "ACT/INACT/WIRE/FREE" ){
 }
 
 MemMeter::~MemMeter( void ){

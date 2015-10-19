@@ -16,8 +16,7 @@
 #include "example.h"  // The example meter
 
 
-MeterMaker::MeterMaker(XOSView *xos){
-    _xos = xos;
+MeterMaker::MeterMaker() {
 }
 
 
@@ -26,25 +25,25 @@ std::vector<Meter *>  MeterMaker::makeMeters(const ResDB &rdb) {
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        _meters.push_back(new ExampleMeter(_xos));
+        _meters.push_back(new ExampleMeter());
 
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new LoadMeter(_xos));
+        _meters.push_back(new LoadMeter());
 
     if (rdb.isResourceTrue("cpu"))
         cpuFactory(rdb);
 
     if (rdb.isResourceTrue("mem"))
-        _meters.push_back(new MemMeter(_xos));
+        _meters.push_back(new MemMeter());
 
     if (rdb.isResourceTrue("filesys"))
-        util::concat(_meters, ComFSMeterFactory().make(rdb, _xos));
+        util::concat(_meters, ComFSMeterFactory().make(rdb));
 
     if (rdb.isResourceTrue("swap"))
-        _meters.push_back(new PrcSwapMeter(_xos));
+        _meters.push_back(new PrcSwapMeter());
 
     if (rdb.isResourceTrue("page"))
-        _meters.push_back(new PageMeter(_xos));
+        _meters.push_back(new PageMeter());
 
     return _meters;
 }
@@ -57,7 +56,7 @@ void MeterMaker::cpuFactory(const ResDB &rdb) {
     logDebug << "start=" << start << ", end=" << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
-        _meters.push_back(new CPUMeter(_xos, i));
+        _meters.push_back(new CPUMeter(i));
 }
 
 void MeterMaker::getRange(const ResDB &rdb, const std::string &resource,

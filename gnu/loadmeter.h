@@ -13,7 +13,7 @@
 
 class LoadMeter : public PrcLoadMeter {
 public:
-    LoadMeter( XOSView *parent ) : PrcLoadMeter(parent) {}
+    LoadMeter( void ) : PrcLoadMeter() {}
 
 protected:
     virtual uint64_t getCPUSpeed(void) { return 0; }

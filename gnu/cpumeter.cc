@@ -32,19 +32,19 @@
 
 
 #include "cpumeter.h"
-#include "xosview.h"
+
 #include <fstream>
 #include <stdlib.h>
 #include <string>
 #include <sstream>
 #include <limits>
 
-static const char STATFILENAME[] = "/proc/stat";
+static const char * const STATFILENAME = "/proc/stat";
 static const size_t MAX_PROCSTAT_LENGTH = 4096;
 
 
-CPUMeter::CPUMeter(XOSView *parent, unsigned int cpu)
-    : FieldMeterGraph( parent, 10, util::toupper(CPUMeter::cpuStr(cpu)),
+CPUMeter::CPUMeter(unsigned int cpu)
+    : FieldMeterGraph( 10, util::toupper(CPUMeter::cpuStr(cpu)),
       "USR/NI/SYS/IO/I/SI/ST/GST/NGST/IDL"), _cpu(cpu) {
     _oldStats.resize(numfields());
     _lineNum = findLine();
@@ -71,7 +71,6 @@ void CPUMeter::checkResources(const ResDB &rdb){
 
 void CPUMeter::checkevent( void ){
     getcputime();
-    drawfields(parent_->g());
 }
 
 void CPUMeter::getcputime( void ){

@@ -14,7 +14,7 @@
 
 class PageMeter : public PrcPageMeter {
 public:
-    PageMeter( XOSView *parent ) : PrcPageMeter(parent, false) {}
+    PageMeter( void ) : PrcPageMeter(false) {}
 };
 
 

@@ -4,14 +4,14 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _CPUMETER_H_
-#define _CPUMETER_H_
+#ifndef CPUMETER_H
+#define CPUMETER_H
 
 #include "fieldmetergraph.h"
 
 class CPUMeter : public FieldMeterGraph {
 public:
-    CPUMeter(XOSView *parent, unsigned int cpu=0);
+    CPUMeter(unsigned int cpu=0);
     ~CPUMeter(void);
 
     std::string resName(void) const { return "cpu"; }
