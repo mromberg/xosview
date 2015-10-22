@@ -145,11 +145,9 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
         lastvals_[i] = twidth;
         lastx_[i] = x;
         lastDecayval_[i] = decay_[i];
-
-        g.setStippleN(0);	/*  Restore all-bits stipple.  */
-
         x += twidth;
-
         decayx += decaytwidth;
     }
+
+    g.setStippleN(0);	/*  Restore all-bits stipple.  */
 }
