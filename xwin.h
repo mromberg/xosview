@@ -6,20 +6,14 @@
 //
 #ifndef XWIN_H
 #define XWIN_H
-#include "configxosv.h"
 #include "x11graphics.h"
-#include "rdb.h"
-
-#include <string>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
 
+class ResDB;
 
-class XWin;
-
-typedef void (XWin::*EventCallBack)( XEvent &event );
 
 
 class XWin {
@@ -42,17 +36,10 @@ public:
         { XSetIconName( display_, window_, str.c_str() ); }
     const std::string &appName(void) const { return name_; }
 
-    //-----------------------------------------------
-    // New Graphics interface
-    // Drawing should be done by using a member of g()
-    // Preferable rewrite the meters to pass an
-    // reference/pointer to g() to their draw methods.
-    //-----------------------------------------------
+protected:
     X11Graphics &g(void) { return *_graphics; }
     const X11Graphics &g(void) const { return *_graphics; }
-    //-----------------------------------------------
 
-protected:
     Visual *visual(void) const { return visual_; }
     Display *display(void) const { return display_; }
     Window window(void) const { return window_; }
@@ -87,6 +74,7 @@ protected:
     //-----------------------------------
     //--- Events ------------------------
     //-----------------------------------
+    typedef void (XWin::*EventCallBack)( XEvent &event );
 
     void addEvent(int eventType, XWin *xwin, EventCallBack callBack);
     void selectEvents(long mask);

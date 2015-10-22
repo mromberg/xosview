@@ -19,12 +19,22 @@ class XOSVFont;
 namespace util { class CLOpts; }
 
 
-class XOSView : public XWin {
+class XOSView : private XWin {
 public:
     XOSView(void);
     virtual ~XOSView(void);
 
     void run(int argc, char **argv);
+
+protected:
+    Xrm *_xrm;
+    bool caption_, legend_, usedlabels_;
+    int xoff_, yoff_;
+    int hmargin_, vmargin_, vspacing_;
+    unsigned long sleeptime_, usleeptime_;
+    bool _isvisible;
+    bool _ispartiallyvisible;
+    std::vector<Meter *> _meters;
 
     // Samples/sec max
     double sampleRate(void) const { return _sampleRate; }
@@ -38,16 +48,6 @@ public:
         { return _isvisible && !_ispartiallyvisible; }
     bool isAtLeastPartiallyVisible() const { return _isvisible; }
     std::string versionStr(void) const;
-
-protected:
-    Xrm *_xrm;
-    bool caption_, legend_, usedlabels_;
-    int xoff_, yoff_;
-    int hmargin_, vmargin_, vspacing_;
-    unsigned long sleeptime_, usleeptime_;
-    bool _isvisible;
-    bool _ispartiallyvisible;
-    std::vector<Meter *> _meters;
 
     //------------------------------------------------------
     // Resouce interface
