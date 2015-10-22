@@ -10,17 +10,13 @@
 #include "example.h"  // The example meter
 
 
-MeterMaker::MeterMaker(XOSView *xos) : _xos(xos) {
-}
-
-
 std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     std::vector<Meter *> rval;
 
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (true || rdb.getResourceOrUseDefault("example", "False") == "True")
-        rval.push_back(new ExampleMeter(_xos));
+        rval.push_back(new ExampleMeter());
 
     return rval;
 }
