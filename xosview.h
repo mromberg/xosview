@@ -58,7 +58,7 @@ protected:
     void loadConfiguration(int argc, char **argv);
     void setCommandLineArgs(util::CLOpts &o);
     void draw(void);
-    void drawIfNeeded(void);
+    void drawIfNeeded(std::vector<Meter *> &mtrs);
     virtual std::string className(void) { return _xrm->className(); }
     virtual std::string instanceName(void) { return _xrm->instanceName(); }
     void resize(void);

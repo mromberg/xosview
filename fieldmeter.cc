@@ -107,7 +107,7 @@ void FieldMeter::draw(X11Graphics &g) {
 
     drawLabels(g);
     _used.draw(g);
-    drawfields( g, 1 );
+    drawfields( g, true );
 }
 
 
@@ -195,8 +195,7 @@ void FieldMeter::updateUsed() {
         bufs << std::setprecision(1) << dispUsed;
     }
 
-    std::string buf = bufs.str();
-    _used.text(buf);
+    _used.text(bufs.str());
 }
 
 

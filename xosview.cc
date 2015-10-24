@@ -67,7 +67,11 @@ void XOSView::run(int argc, char **argv) {
 
 void XOSView::loop(void) {
 
+    std::vector<Meter *> drawv;
+    drawv.reserve(_meters.size());
+
     while( !done() ){
+        drawv.clear();
         _doFullDraw = false;
         checkevent();
 
@@ -78,15 +82,17 @@ void XOSView::loop(void) {
 
         if (_isvisible){
             for (size_t i = 0 ; i < _meters.size() ; i++) {
-                if ( _meters[i]->requestevent() )
+                if ( _meters[i]->requestevent() ) {
                     _meters[i]->checkevent();
+                    drawv.push_back(_meters[i]);
+                }
             }
         }
 
         if (_doFullDraw)
             draw();
         else
-            drawIfNeeded();
+            drawIfNeeded(drawv);
 
         swapBB();
         g().flush();
@@ -177,10 +183,10 @@ void XOSView::unmapEvent( XUnmapEvent & ){
 }
 
 
-void XOSView::drawIfNeeded(void) {
+void XOSView::drawIfNeeded(std::vector<Meter *> &mtrs) {
     if (isAtLeastPartiallyVisible()) {
-        for (size_t i = 0 ; i < _meters.size() ; i++)
-            _meters[i]->drawIfNeeded(g());
+        for (size_t i = 0 ; i < mtrs.size() ; i++)
+            mtrs[i]->drawIfNeeded(g());
     }
 }
 

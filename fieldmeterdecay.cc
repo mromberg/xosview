@@ -51,7 +51,6 @@ void FieldMeterDecay::checkResources(const ResDB &rdb) {
 
 
 void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
-    int twidth, x = Meter::x();
 
     if (!dodecay_) {
         //  If this meter shouldn't be done as a decaying splitmeter,
@@ -62,9 +61,6 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
 
     if ( total_ == 0.0 )
         return;
-
-    int halfheight = height() / 2;
-    int decaytwidth, decayx = Meter::x();
 
     //  This code is supposed to make the average display look just like
     //  the ordinary display for the first drawfields, but it doesn't seem
@@ -96,13 +92,16 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
      *  then turn to ints.  I think this will solve a whole bunch of
      *  our problems with rounding that before we tackled at a whole
      *  lot of places.  BCG */
+    const int halfheight = height() / 2;
+    int decayx = Meter::x();
+    int x = Meter::x();
     for ( size_t i = 0 ; i < numfields() ; i++ ){
 
         decay_[i] = ALPHA * decay_[i] + (1.0 - ALPHA) * (fields_[i] / total_);
 
         //  We want to round the widths, rather than truncate.
-        twidth = (int) (0.5 + (width() * (float) fields_[i]) / total_);
-        decaytwidth = (int) (0.5 + width() * decay_[i]);
+        int twidth = (int) (0.5 + (width() * (float) fields_[i]) / total_);
+        int decaytwidth = (int) (0.5 + width() * decay_[i]);
         logAssert(decaytwidth >= 0.0)
             << "FieldMeterDecay " << name()
             << ":  decaytwidth of " << std::endl
@@ -126,25 +125,30 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
           && ((decayx + decaytwidth) != (Meter::x() + width())))
             decaytwidth = width() + Meter::x() - decayx;
 
-        g.setFG( fieldcolor(i) );
-        g.setStippleN(i%4);
-
         //  drawFilledRectangle() adds one to its width and height.
         //    Let's correct for that here.
+        bool fgSet = false;
         if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
             checkX(x, twidth);
+            g.setFG( fieldcolor(i) );
+            g.setStippleN(i%4);
+            fgSet = true;
             g.drawFilledRectangle( x, y(), twidth, halfheight );
+            lastvals_[i] = twidth;
+            lastx_[i] = x;
         }
 
         if ( mandatory || (decay_[i] != lastDecayval_[i]) ){
             checkX(decayx, decaytwidth);
+            if (!fgSet) {
+                g.setFG( fieldcolor(i) );
+                g.setStippleN(i%4);
+            }
             g.drawFilledRectangle( decayx, y() + halfheight + 1,
               decaytwidth, height() - halfheight - 1);
+            lastDecayval_[i] = decay_[i];
         }
 
-        lastvals_[i] = twidth;
-        lastx_[i] = x;
-        lastDecayval_[i] = decay_[i];
         x += twidth;
         decayx += decaytwidth;
     }
