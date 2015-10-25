@@ -37,14 +37,8 @@ __EOF
 #
 
 AC_DEFUN([XO_GCC_AUTO_DEPEND],[ dnl
-CPP_DEP=""
-AUTODEPEND=
-AUTODEPRULE='dnl
-##  Autodepend rule defaults to disabled.
-#-include Makefile.GNU.autodep'
-AUTODEPRULE_SUBDIR='dnl
-##  Autodepend rule defaults to disabled.
-#-include ../Makefile.GNU.autodep'
+CPP_DEP=''
+AUTODEPEND='#-include $(DEPFILES)'
 
 if test "$1" = "yes"; then
     CPP_DEP=""
@@ -57,14 +51,9 @@ if test "$1" = "yes"; then
         m4_pushdef([my_dep_name],[[.$][@.d]])dnl
         CPP_DEP='-Wp,-MD,my_dep_name'
         m4_popdef([my_dep_name])dnl
-    else
-        AUTODEPRULE_SUBDIR='-include ../Makefile.GNU.autodep'
-        AUTODEPRULE='-include Makefile.GNU.autodep'
     fi
 fi
 
 AC_SUBST(CPP_DEP)
 AC_SUBST(AUTODEPEND)
-AC_SUBST(AUTODEPRULE)
-AC_SUBST(AUTODEPRULE_SUBDIR)
 ])

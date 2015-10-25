@@ -2,27 +2,19 @@
 # @configure_input@
 # Any edits of this file will be lost
 # the next time configure is run.
+#
+# BSD Makefile
+#
 #-------------------------------------------------------------------------
 
-#
-# NetBSD Makefile template
-#
-#
-# $Id: Makefile.bsd.in,v 1.12 1999/11/17 07:00:18 bgrayson Exp $
-#
 include ../Makefile.config
-@AUTODEPRULE_SUBDIR@
-
-CXXFLAGS += -I$(TOP)
 
 
-# No longer runs (kernel changes I think)
-#swapinternal.o \
-#diskmeter.o \
-#intmeter.o \
+#-------------------------------------------------------------------------
+# File lists
+#-------------------------------------------------------------------------
 
 OBJS = \
-MeterMaker.o \
 btrymeter.o \
 cpumeter.o \
 diskmeter.o \
@@ -36,23 +28,26 @@ pagemeter.o \
 swapmeter.o \
 fsmeter.o \
 sensor.o \
-coretemp.o
-
+coretemp.o \
+MeterMaker.o
 
 
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)
 
 #-----------------------------------------------------------------------
+# Rules
+#-----------------------------------------------------------------------
 
 all : libmeter.a # concatdepend
-
-clean :
-	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
 
 libmeter.a : $(OBJS)
 	ar cvr libmeter.a $(OBJS)
 	@RANLIB@ $@
+
+clean :
+	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
+
 
 #----------------------------------------------------------------
 # FIXME: cleanup kernel.cc at some point

@@ -216,7 +216,6 @@ AC_CONFIG_FILES([Makefile:config/Makefile.top.in])
 AC_CONFIG_FILES([cmeter/Makefile:config/Makefile.cmeter.in])
 AC_CONFIG_FILES([$host_dir/Makefile:config/Makefile.$host_dir.in])
 AC_CONFIG_FILES([Makefile.config:config/Makefile.config.in])
-AC_CONFIG_FILES([Makefile.GNU.autodep:config/Makefile.GNU.autodep.in])
 AC_CONFIG_FILES([Xdefaults:Xdefaults.in])
 AC_CONFIG_FILES([xosview.1:xosview.1.in])
 

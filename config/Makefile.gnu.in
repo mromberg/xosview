@@ -1,41 +1,37 @@
+#-------------------------------------------------------------------------
+# @configure_input@
+# Any edits of this file will be lost
+# the next time configure is run.
 #
-# GNU Makefile template
+# GNU/hurd Makefile
 #
-#
-# $Id: Makefile.gnu.in,v 1.1 2008/02/28 23:46:57 romberg Exp $
-#
+#-------------------------------------------------------------------------
 include ../Makefile.config
-@AUTODEPRULE_SUBDIR@
 
-#arch=$(shell uname -m)
-#export arch
-
-CXXFLAGS += -I$(TOP)
-
-CXXOBJS = \
+#-------------------------------------------------------------------------
+# File lists
+#-------------------------------------------------------------------------
+OBJS = \
 cpumeter.o \
 memmeter.o \
+get_def_pager.o \
 MeterMaker.o
 
-OBJS = $(CXXOBJS) get_def_pager.o
-
-ARCH = @host_cpu@
-
-CFILES := $(CXXOBJS:.o=.cc) get_def_pager.c
+CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)
 
-vpath %.h $(TOP)
-vpath %.cc $(TOP)
-
+#-----------------------------------------------------------------------
+# Rules
 #-----------------------------------------------------------------------
 
 all : libmeter.a
-
-clean :
-	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
 
 libmeter.a : $(OBJS)
 	ar cvr libmeter.a $(OBJS)
 	@RANLIB@ $@
 
+clean :
+	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
+
+# Automatic dependencies
 @AUTODEPEND@

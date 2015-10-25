@@ -1,3 +1,5 @@
+- Fix warnings in bsd/kernel.cc
+
 - Add a resouce to specify the meter ordering
 
 - Add cpu powersave policy display
@@ -23,14 +25,10 @@
     module.  Fist, I need to get it (lm78) working well on one of my
     systems.
 
--  NetBSD:  Add interrupt-rate meter, add tape-drive meter (or
-    arbitrary device throughput meter?)
+-  NetBSD:  Add tape-drive meter (or arbitrary device throughput meter?)
 
 * Make xosview re-check resources when the resources are changed,
     or when a signal is sent to it, or a key is pressed in it?
 
 * Redo the fieldmeter drawing code -- it (and the decayfieldmeter
     code) is very ugly.
-
-* Add in stipple support for those stuck with 1-bit displays (black,
-    or white) (just MacBSD people?).

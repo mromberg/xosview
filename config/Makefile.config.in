@@ -2,13 +2,13 @@
 # @configure_input@
 # Any edits of this file will be lost
 # the next time configure is run.
-#-------------------------------------------------------------------------
-
+#
 # Common rules and values used by all xosview Makefiles.
 #
 # The configure script should set up this file for most all cases.
 # One can override compile / link options here if needed.
 #
+#-------------------------------------------------------------------------
 
 # version number for release
 VERS = @PACKAGE_VERSION@
@@ -18,17 +18,18 @@ TOP = @abs_top_srcdir@
 #---------------
 # The compiler
 #---------------
-CXX      = @CXX@
+CXX = @CXX@
+
 
 #---------------
 # Flags
 #-----------------------------------------------------------------
-DEFS           = @DEFS@
-CPPFLAGS       = @CPPFLAGS@ -I$(TOP) -I$(TOP)/cmeter -I$(TOP)/@host_dir@
-CXXFLAGS       = @CXXFLAGS@
-LDFLAGS        = -L$(TOP)/cmeter -L$(TOP)/@host_dir@ @LDFLAGS@
-LIBS           = -lmeter -lcmeter @LIBS@
-CPP_DEP        = @CPP_DEP@
+DEFS     = @DEFS@
+CPPFLAGS = @CPPFLAGS@ -I$(TOP) -I$(TOP)/cmeter -I$(TOP)/@host_dir@
+CXXFLAGS = @CXXFLAGS@
+LDFLAGS  = -L$(TOP)/cmeter -L$(TOP)/@host_dir@ @LDFLAGS@
+LIBS     = -lmeter -lcmeter @LIBS@
+CPP_DEP  = @CPP_DEP@
 
 
 #-----------------------------------------------------------------
@@ -39,5 +40,3 @@ CXX_BUILD_FLAGS = $(CXXFLAGS) $(DEFS) $(CPP_DEP) $(CPPFLAGS)
 
 .cc.o:
 	$(CXX) $(CXX_BUILD_FLAGS) -c $< -o $@
-
-@AUTODEPRULE@

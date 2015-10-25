@@ -2,36 +2,37 @@
 # @configure_input@
 # Any edits of this file will be lost
 # the next time configure is run.
-#-------------------------------------------------------------------------
-
 #
 # default Makefile template
 #
 # This is for platforms xosview has not been ported to yet.
 # Just contains an example meter (always on).
 #
+#-------------------------------------------------------------------------
 include ../Makefile.config
-@AUTODEPRULE_SUBDIR@
 
+#-------------------------------------------------------------------------
+# File lists
+#-------------------------------------------------------------------------
 OBJS = \
 MeterMaker.o
 
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)
 
-vpath %.h $(TOP)
-vpath %.cc $(TOP)
 
+#-----------------------------------------------------------------------
+# Rules
 #-----------------------------------------------------------------------
 
 all : libmeter.a
-
-
-clean :
-	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
 
 libmeter.a : $(OBJS)
 	ar cvr libmeter.a $(OBJS)
 	@RANLIB@ $@
 
+clean :
+	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
+
+# Auto depend support
 @AUTODEPEND@

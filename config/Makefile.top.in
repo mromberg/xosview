@@ -2,14 +2,12 @@
 # @configure_input@
 # Any edits of this file will be lost
 # the next time configure is run.
+#
+# Top level Makefile for xosview.
 #-------------------------------------------------------------------------
 
-
-#
-# Top level Makefile Template for xosview.
-#
-#
 include Makefile.config
+
 
 #--------------------------------------------------------
 # File lists
@@ -17,7 +15,6 @@ include Makefile.config
 
 # build these only if Xft is found (probably will be)
 XFT_OBJS = xftfont.o xftgraphics.o
-
 
 OBJS = \
 xwin.o \
@@ -64,38 +61,24 @@ $(TOP)/@host_dir@/libmeter.a: meterlib
 
 $(TOP)/cmeter/libcmeter.a: cmeterlib
 
+defaultstring.cc: Xdefaults defresources.awk
+	@AWK@ -f defresources.awk Xdefaults > defaultstring.cc
+
+# This seems to be the "accepted" way of inserting paths into the binary
+Xrm.o: Xrm.cc
+	$(CXX) $(CXX_BUILD_FLAGS) -DXAPPLOADDIR=\"$(xapploaddir)\" -c $< -o $@
+
 ##  CXX_BUILD_FLAGS is here 'cause gcc (and other compilers)
 ## can optimize at link time (using profiler data etc).
 xosview: $(OBJS) $(TOP)/@host_dir@/libmeter.a $(TOP)/cmeter/libcmeter.a
 	$(CXX) $(CXX_BUILD_FLAGS) -o xosview $(OBJS) $(LDFLAGS) $(LIBS)
 
-
-xosview.html: xosview.1
-	groff -mandoc -Thtml xosview.1 > xosview.html
-
-defaultstring.cc: Xdefaults defresources.awk
-	@AWK@ -f defresources.awk Xdefaults > defaultstring.cc
-
-PKG_NAME = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
-
-distrib: checksource
-	git archive --prefix=stage/ master | tar xf -
-	cd stage && ./autogen.sh
-	rm -rf stage/config/autom4te.cache
-	mv stage $(PKG_NAME)
-	tar cf - $(PKG_NAME) | gzip -9 > $(PKG_NAME).tar.gz
-	rm -rf $(PKG_NAME)
-
-
-clean :
+clean:
 	@echo "***  Cleaning..."
 	cd cmeter && $(MAKE) clean
 	cd @host_dir@ && $(MAKE) clean
 	cd config && $(MAKE) clean
 	rm -f xosview $(OBJS) $(DEPFILES) *~ defaultstring.cc xosview.html
-
-checksource:
-	$(TOP)/chk-src.sh
 
 # Cleans everything except files that will be distributed
 distclean: clean
@@ -109,6 +92,9 @@ distclean: clean
 maintainer-clean: distclean
 	rm -f configure config.h.in xosview.spec
 
+xosview.html: xosview.1
+	groff -mandoc -Thtml xosview.1 > xosview.html
+
 # For updating configure.in's checks for C++ header files.
 # This finds all uses of '#include <.*>'
 headercheck:
@@ -117,6 +103,20 @@ headercheck:
           | sort - | uniq | cut -d " " -f2 - | cut -d "<" -f2 - \
           | cut -d ">" -f1 -
 
+checksource:
+	$(TOP)/chk-src.sh
+
+PKG_NAME = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
+
+distrib: checksource
+	git archive --prefix=stage/ master | tar xf -
+	cd stage && ./autogen.sh
+	rm -rf stage/config/autom4te.cache
+	mv stage $(PKG_NAME)
+	tar cf - $(PKG_NAME) | gzip -9 > $(PKG_NAME).tar.gz
+	rm -rf $(PKG_NAME)
+
+
 #-----------------------------------------------
 # Install related section
 #-----------------------------------------------
@@ -124,29 +124,27 @@ INSTALL            = @INSTALL@
 #-----------------------------------------------
 # Gnu Makefile conventions (subset really)
 #-----------------------------------------------
-PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_TARNAME   = @PACKAGE_TARNAME@
 PACKAGE_CLASSNAME = @PACKAGE_CLASSNAME@
-PACKAGE_VERSION = @PACKAGE_VERSION@
-prefix = @prefix@
-exec_prefix = @exec_prefix@
-bindir = @bindir@
-datarootdir = @datarootdir@
-datadir = @datadir@
-#xapploaddir = ${datarootdir}/X11/app-defaults
-xapploaddir = @xapploaddir@
-docdir = @docdir@
-libdir = @libdir@
-mandir = @mandir@
-man1dir = $(mandir)/man1
-srcdir = @srcdir@
+PACKAGE_VERSION   = @PACKAGE_VERSION@
 
-# This seems to be the "accepted" way of inserting paths into the binary
-CXXFLAGS += -DXAPPLOADDIR=\"$(xapploaddir)\"
-DOC_FILES = @DOC_FILES@
+prefix      = @prefix@
+exec_prefix = @exec_prefix@
+bindir      = @bindir@
+datarootdir = @datarootdir@
+datadir     = @datadir@
+xapploaddir = @xapploaddir@
+docdir      = @docdir@
+libdir      = @libdir@
+mandir      = @mandir@
+man1dir     = $(mandir)/man1
+srcdir      = @srcdir@
+
+DOC_FILES =  @DOC_FILES@
 DOC_FILES := $(DOC_FILES:%=$(srcdir)/%)
 
 #-----------------------------------------------------------------------
-# New install (DESTDIR) in a gnu convention that only applies to install
+# New install (DESTDIR) is a gnu convention that only applies to install
 #-----------------------------------------------------------------------
 INST_DIRS = $(DESTDIR)$(bindir) $(DESTDIR)$(man1dir)\
             $(DESTDIR)$(docdir) $(DESTDIR)$(xapploaddir)
@@ -163,5 +161,5 @@ install: xosview
 
 #-------------------------------------------------------
 
-
+# automatic dependency support
 @AUTODEPEND@

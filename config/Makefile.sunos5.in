@@ -1,14 +1,17 @@
+#-------------------------------------------------------------------------
+# @configure_input@
+# Any edits of this file will be lost
+# the next time configure is run.
 #
-# SunOS 5 Makefile template
+# SunOS/Solaris Makefile
 #
-#
-# $Id: Makefile.sunos5.in,v 1.2 1999/11/12 04:28:45 romberg Exp $
-#
+#-------------------------------------------------------------------------
 include ../Makefile.config
-@AUTODEPRULE_SUBDIR@
 
-CXXFLAGS += -I$(TOP)
 
+#-------------------------------------------------------------------------
+# File lists
+#-------------------------------------------------------------------------
 OBJS = \
 kstats.o \
 loadmeter.o \
@@ -22,22 +25,22 @@ fsmeter.o \
 swapmeter.o \
 MeterMaker.o
 
-
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)
 
-vpath %.h $(TOP)
-vpath %.cc $(TOP)
 
+#-----------------------------------------------------------------------
+# Rules
 #-----------------------------------------------------------------------
 
 all : libmeter.a
-
-clean :
-	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
 
 libmeter.a : $(OBJS)
 	ar cvr libmeter.a $(OBJS)
 	@RANLIB@ $@
 
+clean :
+	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
+
+# Auto depend support
 @AUTODEPEND@

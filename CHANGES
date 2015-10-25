@@ -1,3 +1,11 @@
+Changes since xosview-2.1.0
+
+  - performance improvements
+
+  - code re-organization and cleanup
+
+  - cygwin load meter operates from windows perf counters
+
 Changes since xosview-2.0.0
 
   - add a default port for unknown platforms

@@ -2,23 +2,16 @@
 # @configure_input@
 # Any edits of this file will be lost
 # the next time configure is run.
+#
+# Linux Makefile
+#
 #-------------------------------------------------------------------------
-
-
-#
-# Linux Makefile template
-#
-#
-# $Id: Makefile.linux.in,v 1.18 2008/02/28 22:36:13 romberg Exp $
-#
 include ../Makefile.config
-@AUTODEPRULE_SUBDIR@
 
-#arch=$(shell uname -m)
-#export arch
 
-#CXXFLAGS += -I$(TOP)
-
+#-------------------------------------------------------------------------
+# File lists
+#-------------------------------------------------------------------------
 OBJS = \
 cpumeter.o \
 memmeter.o \
@@ -30,50 +23,24 @@ btrymeter.o \
 raidmeter.o \
 tzonemeter.o \
 lmstemp.o \
+serialmeter.o \
 MeterMaker.o
-
-FAIL_ARCHS = arm m68k powerpc s390 sparc 3D s390x powerpc64
-
-# Test for arm specifically, because arm can show up as a number of
-# things prefixed by "arm"
-# This means that no return value for host_cpu that contains a
-# substring of "arm" will ever have a serialmeter.  Oh well.
-#
-# With the ioperm checks in serialmeter.cc, this should no longer be
-# necessary.  In fact, it may no longer be necessary to perform this
-# check at all, but it is left here just in case until this can be
-# tested.
-#
-# ifneq (,$(findstring arm, @host_cpu@))
-# ARCH = arm
-# else
-# ARCH = @host_cpu@
-# endif
-
-ARCH = @host_cpu@
-
-ifneq (,$(findstring $(ARCH), $(FAIL_ARCHS)))
-# Don't include serialmeter for above architectures
-else
-OBJS += serialmeter.o
-endif
 
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)
 
-vpath %.h $(TOP)
-vpath %.cc $(TOP)
-
+#-----------------------------------------------------------------------
+# Rules
 #-----------------------------------------------------------------------
 
 all : libmeter.a
-
-
-clean :
-	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
 
 libmeter.a : $(OBJS)
 	ar cvr libmeter.a $(OBJS)
 	@RANLIB@ $@
 
+clean :
+	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
+
+# Automatic dependencies
 @AUTODEPEND@

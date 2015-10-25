@@ -39,9 +39,7 @@ AC_TYPE_UINT64_T
 dnl----------------------------------------------------
 dnl make headercheck to create list of used C++ headers
 dnl----------------------------------------------------
-AC_CHECK_HEADERS([algorithm cassert cerrno cmath cmath cstddef cstdint dnl
-    cstdlib cstring fstream iomanip iostream limits map set sstream    dnl
-    stdexcept string utility vector],[],
+AC_CHECK_HEADERS([algorithm cassert cctype cerrno cmath cstddef cstdint cstdlib cstring fstream iomanip iostream limits map set sstream stdexcept string utility vector],[],
     [AC_MSG_WARN([Missing C++ library support.])])
 
 ])

@@ -2,23 +2,17 @@
 # @configure_input@
 # Any edits of this file will be lost
 # the next time configure is run.
+#
+# Common meter Makefile
+#
 #-------------------------------------------------------------------------
 
-
-#
-# Linux Makefile template
-#
-#
-# $Id: Makefile.linux.in,v 1.18 2008/02/28 22:36:13 romberg Exp $
-#
 include ../Makefile.config
-@AUTODEPRULE_SUBDIR@
 
-#arch=$(shell uname -m)
-#export arch
 
-#CXXFLAGS += -I$(TOP)
-
+#-------------------------------------------------------------------------
+# File lists
+#-------------------------------------------------------------------------
 OBJS = \
 cswapmeter.o \
 pswapmeter.o \
@@ -35,21 +29,22 @@ ctzonemeter.o \
 cdiskmeter.o \
 pdiskmeter.o
 
-
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)
 
 
 #-----------------------------------------------------------------------
+# Targets
+#-----------------------------------------------------------------------
 
 all : libcmeter.a
-
-
-clean :
-	rm -f $(OBJS) $(DEPFILES) libcmeter.a *~
 
 libcmeter.a : $(OBJS)
 	ar cvr libcmeter.a $(OBJS)
 	@RANLIB@ $@
 
+clean :
+	rm -f $(OBJS) $(DEPFILES) libcmeter.a *~
+
+# auto dependency makefile fragments
 @AUTODEPEND@
