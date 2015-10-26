@@ -107,62 +107,66 @@ static int mib_uvm[2] = { CTL_VM, VM_UVMEXP };
 // ------------------------  local variables  ----------------------------------
 
 //  This single kvm_t is shared by all of the kvm routines.
-kvm_t* kd = NULL;
+static kvm_t* kd = NULL;
+
+// Macro for a struct nlist initializer
+#define MK_NLIST(name) \
+    { const_cast<char *>(name), 0, 0, 0, 0 }
+
+// We put a dummy symbol for a don't care, and ignore warnings about
+// this later on.  This keeps the indices within the nlist constant.
+static const char * const DUMMY_SYM = "dummy_sym";
 
 //  This struct has the list of all the symbols we want from the kernel.
 static struct nlist nlst[] = {
-// We put a dummy symbol for a don't care, and ignore warnings about
-// this later on.  This keeps the indices within the nlist constant.
-#define DUMMY_SYM "dummy_sym"
-
 #if defined(XOSVIEW_FREEBSD)
-    { "_cnt", 0, 0, 0, 0 },
+    MK_NLIST("_cnt"),
 #define VMMETER_SYM_INDEX    0
 #else
-    { DUMMY_SYM, 0, 0, 0, 0 },
+    MK_NLIST(DUMMY_SYM),
 #define DUMMY_0
 #endif
 #if !defined(XOSVIEW_OPENBSD)
-    { "_ifnet", 0, 0, 0, 0 },
+    MK_NLIST("_ifnet"),
 #define IFNET_SYM_INDEX      1
 #else
-    { DUMMY_SYM, 0, 0, 0, 0 },
+    MK_NLIST(DUMMY_SYM),
 #define DUMMY_1
 #endif
 
 #if defined(XOSVIEW_OPENBSD)
-    { "_disklist", 0, 0, 0, 0 },
+    MK_NLIST("_disklist"),
 #define DISKLIST_SYM_INDEX   2
 #else
-    { DUMMY_SYM, 0, 0, 0, 0 },
+    MK_NLIST(DUMMY_SYM),
 #define DUMMY_2
 #endif
 #if defined(XOSVIEW_NETBSD)
-    { "_allevents", 0, 0, 0, 0 },
+    MK_NLIST("_allevents"),
 #define ALLEVENTS_SYM_INDEX  3
-    { "_bufmem", 0, 0, 0, 0 },
+    MK_NLIST("_bufmem"),
 #define BUFMEM_SYM_INDEX     4
 #else
-    { DUMMY_SYM, 0, 0, 0, 0 },
+    MK_NLIST(DUMMY_SYM),
 #define DUMMY_3
-    { DUMMY_SYM, 0, 0, 0, 0 },
+    MK_NLIST(DUMMY_SYM),
 #define DUMMY_4
 #endif
 #if defined(XOSVIEW_FREEBSD)
-    { "_intrnames", 0, 0, 0, 0 },
+    MK_NLIST("_intrnames"),
 #define INTRNAMES_SYM_INDEX  5
 # if __FreeBSD_version >= 900040
-    { "_sintrnames", 0, 0, 0, 0 },
+    MK_NLIST("_sintrnames"),
 # else
-    { "_eintrnames", 0, 0, 0, 0 },
+    MK_NLIST("_eintrnames"),
 # endif
 #define EINTRNAMES_SYM_INDEX 6
-    { "_intrcnt", 0, 0, 0, 0 },
+    MK_NLIST("_intrcnt"),
 #define INTRCNT_SYM_INDEX    7
 # if __FreeBSD_version >= 900040
-    { "_sintrcnt", 0, 0, 0, 0 },
+    MK_NLIST("_sintrcnt"),
 # else
-    { "_eintrcnt", 0, 0, 0, 0 },
+    MK_NLIST("_eintrcnt"),
 # endif
 #define EINTRCNT_SYM_INDEX   8
 #endif
