@@ -116,57 +116,57 @@ static struct nlist nlst[] = {
 #define DUMMY_SYM "dummy_sym"
 
 #if defined(XOSVIEW_FREEBSD)
-    { "_cnt" },
+    { "_cnt", 0, 0, 0, 0 },
 #define VMMETER_SYM_INDEX    0
 #else
-    { DUMMY_SYM },
+    { DUMMY_SYM, 0, 0, 0, 0 },
 #define DUMMY_0
 #endif
 #if !defined(XOSVIEW_OPENBSD)
-    { "_ifnet" },
+    { "_ifnet", 0, 0, 0, 0 },
 #define IFNET_SYM_INDEX      1
 #else
-    { DUMMY_SYM },
+    { DUMMY_SYM, 0, 0, 0, 0 },
 #define DUMMY_1
 #endif
 
 #if defined(XOSVIEW_OPENBSD)
-    { "_disklist" },
+    { "_disklist", 0, 0, 0, 0 },
 #define DISKLIST_SYM_INDEX   2
 #else
-    { DUMMY_SYM },
+    { DUMMY_SYM, 0, 0, 0, 0 },
 #define DUMMY_2
 #endif
 #if defined(XOSVIEW_NETBSD)
-    { "_allevents" },
+    { "_allevents", 0, 0, 0, 0 },
 #define ALLEVENTS_SYM_INDEX  3
-    { "_bufmem" },
+    { "_bufmem", 0, 0, 0, 0 },
 #define BUFMEM_SYM_INDEX     4
 #else
-    { DUMMY_SYM },
+    { DUMMY_SYM, 0, 0, 0, 0 },
 #define DUMMY_3
-    { DUMMY_SYM },
+    { DUMMY_SYM, 0, 0, 0, 0 },
 #define DUMMY_4
 #endif
 #if defined(XOSVIEW_FREEBSD)
-    { "_intrnames" },
+    { "_intrnames", 0, 0, 0, 0 },
 #define INTRNAMES_SYM_INDEX  5
 # if __FreeBSD_version >= 900040
-    { "_sintrnames" },
+    { "_sintrnames", 0, 0, 0, 0 },
 # else
-    { "_eintrnames" },
+    { "_eintrnames", 0, 0, 0, 0 },
 # endif
 #define EINTRNAMES_SYM_INDEX 6
-    { "_intrcnt" },
+    { "_intrcnt", 0, 0, 0, 0 },
 #define INTRCNT_SYM_INDEX    7
 # if __FreeBSD_version >= 900040
-    { "_sintrcnt" },
+    { "_sintrcnt", 0, 0, 0, 0 },
 # else
-    { "_eintrcnt" },
+    { "_eintrcnt", 0, 0, 0, 0 },
 # endif
 #define EINTRCNT_SYM_INDEX   8
 #endif
-    { NULL }
+    { NULL, 0, 0, 0, 0 }
 };
 
 static char kernelFileName[_POSIX2_LINE_MAX];

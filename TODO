@@ -1,4 +1,4 @@
-- Fix warnings in bsd/kernel.cc
+- XAPPRESDIR
 
 - Add a resouce to specify the meter ordering
 

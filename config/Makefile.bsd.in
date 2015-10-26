@@ -49,12 +49,5 @@ clean :
 	rm -f $(OBJS) $(DEPFILES) libmeter.a *~
 
 
-#----------------------------------------------------------------
-# FIXME: cleanup kernel.cc at some point
-#----------------------------------------------------------------
-SHAME_FLAGS = -Wno-missing-field-initializers -Wno-write-strings
-kernel.o: kernel.cc
-	$(CXX) $(CXX_BUILD_FLAGS) $(SHAME_FLAGS) -c $< -o $@
-#----------------------------------------------------------------
-
+# Auto depend support
 @AUTODEPEND@
