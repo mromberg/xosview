@@ -187,7 +187,7 @@ xosview*netDecay:           True
 xosview*netGraph:           False
 xosview*netUsedFormat:	    autoscale
 xosview*netUsedDecay:       True
-xosview*netIface:           False  ! Linux does not use. If others do not nuke
+xosview*netIface:           -lo0
 
 
 ! ** Interrupt Rate Meter Resources

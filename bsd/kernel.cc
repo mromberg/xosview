@@ -35,10 +35,12 @@
 #include <sys/sysctl.h>
 #include <net/if.h>
 
+
 #if defined(XOSVIEW_DFBSD)
 #define _KERNEL_STRUCTURES
 #include <kinfo.h>
 #endif
+
 
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 static const char * const ACPIDEV = "/dev/acpi";
@@ -51,15 +53,15 @@ static int maxcpus = 1;
 #include <machine/apm_bios.h>
 #endif
 
+
 #if defined(XOSVIEW_NETBSD)
 #include <sys/sched.h>
 #include <sys/iostat.h>
 #include <sys/envsys.h>
 #include <prop/proplib.h>
 #include <paths.h>
-static int mib_cpt[2] = { CTL_KERN, KERN_CP_TIME };
-static int mib_dsk[3] = { CTL_HW, HW_IOSTATS, sizeof(struct io_sysctl) };
 #endif
+
 
 #if defined(XOSVIEW_OPENBSD)
 #include <sys/sched.h>
@@ -72,15 +74,11 @@ static int mib_dsk[3] = { CTL_HW, HW_IOSTATS, sizeof(struct io_sysctl) };
 #include <sys/mount.h>
 #include <net/route.h>
 #include <net/if_dl.h>
-static int mib_spd[2] = { CTL_HW, HW_CPUSPEED };
-static int mib_cpt[2] = { CTL_KERN, KERN_CPTIME };
-static int mib_cpt2[3] = { CTL_KERN, KERN_CPTIME2, 0 };
-static int mib_ifl[6] = { CTL_NET, AF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
 #endif
+
 
 #if defined(XOSVIEW_OPENBSD) || defined(XOSVIEW_DFBSD)
 #include <sys/sensors.h>
-static int mib_sen[5] = { CTL_HW, HW_SENSORS };
 #endif
 
 #if defined(HAVE_DEVSTAT)
@@ -90,11 +88,6 @@ static int mib_sen[5] = { CTL_HW, HW_SENSORS };
 #if defined(HAVE_UVM)
 #include <sys/device.h>
 #include <uvm/uvm_extern.h>
-#ifdef VM_UVMEXP2
-static int mib_uvm[2] = { CTL_VM, VM_UVMEXP2 };
-#else
-static int mib_uvm[2] = { CTL_VM, VM_UVMEXP };
-#endif
 #else
 #include <sys/vmmeter.h>
 #endif
@@ -112,6 +105,8 @@ static kvm_t* kd = NULL;
 // Macro for a struct nlist initializer
 #define MK_NLIST(name) \
     { const_cast<char *>(name), 0, 0, 0, 0 }
+
+#define ASIZE(ar) (sizeof(ar) / sizeof(ar[0]))
 
 // We put a dummy symbol for a don't care, and ignore warnings about
 // this later on.  This keeps the indices within the nlist constant.
@@ -303,8 +298,9 @@ int BSDGetCPUSpeed() {
     if (avail_cpus > 1)
         cpu_speed /= avail_cpus;
 #elif defined(XOSVIEW_OPENBSD)
+    const int mib_spd[] = { CTL_HW, HW_CPUSPEED };
     size = sizeof(cpu_speed);
-    if ( sysctl(mib_spd, 2, &cpu_speed, &size, NULL, 0) < 0 )
+    if ( sysctl(mib_spd, ASIZE(mib_spd), &cpu_speed, &size, NULL, 0) < 0 )
         logFatal << "syscl hw.cpuspeed failed" << std::endl;
 #else  /* XOSVIEW_NETBSD || XOSVIEW_DFBSD */
     uint64_t speed = 0;
@@ -335,11 +331,13 @@ void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
 #if defined(HAVE_UVM)
 #ifdef VM_UVMEXP2
     struct uvmexp_sysctl uvm;
+    const int mib_uvm[] = { CTL_VM, VM_UVMEXP2 };
 #else
     struct uvmexp uvm;
+    const int mib_uvm[] = { CTL_VM, VM_UVMEXP };
 #endif
     size_t size = sizeof(uvm);
-    if ( sysctl(mib_uvm, 2, &uvm, &size, NULL, 0) < 0 )
+    if ( sysctl(mib_uvm, ASIZE(mib_uvm), &uvm, &size, NULL, 0) < 0 )
         logFatal << "sysctl vm.uvmexp failed" << std::endl;
 
     meminfo.resize(5);
@@ -454,7 +452,12 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 #if defined(XOSVIEW_FREEBSD)
         if ( sysctlbyname("kern.cp_time", times.data(), &size, NULL, 0) < 0 )
 #else  // XOSVIEW_NETBSD || XOSVIEW_OPENBSD
-        if ( sysctl(mib_cpt, 2, times.data(), &size, NULL, 0) < 0 )
+#if defined(XOSVIEW_NETBSD)
+        const int mib_cpt[] = { CTL_KERN, KERN_CP_TIME };
+#else
+        const int mib_cpt[] = { CTL_KERN, KERN_CPTIME };
+#endif
+        if ( sysctl(mib_cpt, ASIZE(mib_cpt), times.data(), &size, NULL, 0) < 0 )
 #endif
             logFatal << "sysctl kern.cp_time failed" << std::endl;
     }
@@ -468,11 +471,13 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 
 #elif defined(XOSVIEW_NETBSD)
         size *= BSDCountCpus();
-        if ( sysctl(mib_cpt, 2, times.data() + CPUSTATES, &size, NULL, 0) < 0 )
+        const int mib_cpt[] = { CTL_KERN, KERN_CP_TIME };
+        if ( sysctl(mib_cpt, ASIZE(mib_cpt), times.data() + CPUSTATES, &size,
+            NULL, 0) < 0 )
             logFatal << "sysctl kern.cp_time failed" << std::endl;
 #else  // XOSVIEW_OPENBSD
-        mib_cpt2[2] = cpu - 1;
-        if ( sysctl(mib_cpt2, 3, times.data(), &size, NULL, 0) < 0 )
+        int mib_cpt2[] = { CTL_KERN, KERN_CPTIME2, (int)cpu - 1 };
+        if (sysctl(mib_cpt2, ASIZE(mib_cpt2), times.data(), &size, NULL, 0) < 0)
             logFatal << "sysctl kern.cp_time2 failed" << std::endl;
 #endif
     }
@@ -497,50 +502,66 @@ int BSDNetInit() {
 #endif
 }
 
+#if defined(XOSVIEW_OPENBSD)
+static void OpenBSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
+  const std::string &netIface, bool ignored) {
+
+    const int mib_ifl[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
+
+    size_t size;
+    if ( sysctl(mib_ifl, ASIZE(mib_ifl), NULL, &size, NULL, 0) < 0 )
+        logFatal << "BSDGetNetInOut(): sysctl 1 failed" << std::endl;
+
+    std::vector<char> bufv(size, 0);
+    if ( sysctl(mib_ifl, ASIZE(mib_ifl), bufv.data(), &size, NULL, 0) < 0 )
+        logFatal << "BSDGetNetInOut(): sysctl 2 failed" << std::endl;
+
+    struct if_msghdr *ifm = (struct if_msghdr *)bufv.data();
+
+    char *bufp = bufv.data();
+    struct rt_msghdr *rtm = (struct rt_msghdr *)bufp;
+
+    for ( ; bufp < bufv.data() + size ; bufp += rtm->rtm_msglen) {
+
+        rtm = (struct rt_msghdr *)bufp;
+        if (rtm->rtm_version != RTM_VERSION)
+            continue;
+
+        if (rtm->rtm_type == RTM_IFINFO) {
+            ifm = (struct if_msghdr *)bufp;
+            struct sockaddr_dl *sdl = (struct sockaddr_dl *)(ifm + 1); // vodoo?
+            if (sdl->sdl_family != AF_LINK)
+                continue;
+            std::string ifname(sdl->sdl_data, 0, sdl->sdl_nlen);
+
+            if (netIface != "False") {
+                if ( (!ignored && netIface != ifname)
+                  || (ignored && netIface == ifname) )
+                    continue;
+            }
+
+            inbytes += ifm->ifm_data.ifi_ibytes;;
+            outbytes += ifm->ifm_data.ifi_obytes;
+
+            logDebug << "iface (in, out): " << ifname << " ("
+                     << ifm->ifm_data.ifi_ibytes << ", "
+                     << ifm->ifm_data.ifi_obytes << ")" << std::endl;
+        }
+    }
+}
+#endif
+
 
 void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
   const std::string &netIface, bool ignored) {
 
-    std::string ifname;
     inbytes = 0;
     outbytes = 0;
+
 #if defined(XOSVIEW_OPENBSD)
-    size_t size;
-    struct if_msghdr *ifm;
-    struct if_data ifd;
-    struct sockaddr_dl *sdl;
-
-    if ( sysctl(mib_ifl, 6, NULL, &size, NULL, 0) < 0 )
-        logFatal << "BSDGetNetInOut(): sysctl 1 failed" << std::endl;
-
-    std::vector<char> bufv(size);
-    bufv.data();
-
-    if ( sysctl(mib_ifl, 6, bufv.data(), &size, NULL, 0) < 0 )
-        logFatal << "BSDGetNetInOut(): sysctl 2 failed" << std::endl;
-
-    for (char *next = bufv.data(); next < bufv.data() + size;
-         next += ifm->ifm_msglen) {
-        bool skipif = false;
-        ifm = (struct if_msghdr *)next;
-        if (ifm->ifm_type != RTM_IFINFO || (ifm->ifm_addrs & RTAX_IFP) == 0)
-            continue;
-        ifd = ifm->ifm_data;
-        sdl = (struct sockaddr_dl *)(ifm + 1);
-        if (sdl->sdl_family != AF_LINK)
-            continue;
-        if (netIface != "False") {
-            ifname = std::string(sdl->sdl_data, 0, sdl->sdl_nlen);
-            if ( (!ignored && ifname != netIface) ||
-              ( ignored && ifname == netIface) )
-                skipif = true;
-        }
-        if (!skipif) {
-            inbytes += ifd.ifi_ibytes;
-            outbytes += ifd.ifi_obytes;
-        }
-    }
-#else  /* XOSVIEW_OPENBSD */
+    OpenBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
+#else
+    std::string ifname;
     struct ifnet *ifnetp;
     struct ifnet ifnet;
 #if defined (XOSVIEW_NETBSD)
@@ -552,7 +573,7 @@ void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
     ifnetp = TAILQ_FIRST(&ifnethd);
 
     while (ifnetp) {
-        bool skipif = false;
+
         //  Now, dereference the pointer to get the ifnet struct.
         safe_kvm_read((unsigned long)ifnetp, &ifnet, sizeof(ifnet));
         ifname = std::string(ifnet.if_xname, 0, sizeof(ifname));
@@ -563,27 +584,27 @@ void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 #endif
         if (!(ifnet.if_flags & IFF_UP))
             continue;
+
         if (netIface != "False") {
-            if ( (!ignored && netIface != ifname) ||
-              ( ignored && netIface == ifname) )
-                skipif = true;
+            if ( (!ignored && netIface != ifname)
+              || (ignored && netIface == ifname) )
+                continue;
         }
-        if (!skipif) {
+
 #if defined(XOSVIEW_DFBSD) && __DragonFly_version > 300304
-            struct ifdata_pcpu *ifdatap = ifnet.if_data_pcpu;
-            struct ifdata_pcpu ifdata;
-            int ncpus = BSDCountCpus();
-            for (int cpu = 0; cpu < ncpus; cpu++) {
-                safe_kvm_read((unsigned long)ifdatap + cpu * sizeof(ifdata),
-                  &ifdata, sizeof(ifdata));
-                inbytes  += ifdata.ifd_ibytes;
-                outbytes += ifdata.ifd_obytes;
-            }
-#else
-            inbytes  += ifnet.if_ibytes;
-            outbytes += ifnet.if_obytes;
-#endif
+        struct ifdata_pcpu *ifdatap = ifnet.if_data_pcpu;
+        struct ifdata_pcpu ifdata;
+        int ncpus = BSDCountCpus();
+        for (int cpu = 0; cpu < ncpus; cpu++) {
+            safe_kvm_read((unsigned long)ifdatap + cpu * sizeof(ifdata),
+              &ifdata, sizeof(ifdata));
+            inbytes  += ifdata.ifd_ibytes;
+            outbytes += ifdata.ifd_obytes;
         }
+#else
+        inbytes  += ifnet.if_ibytes;
+        outbytes += ifnet.if_obytes;
+#endif
     }
 #endif  /* XOSVIEW_OPENBSD */
 }
@@ -877,14 +898,15 @@ uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes) {
     size_t size;
     // Do a sysctl with a NULL data pointer to get the size that would
     // have been returned, and use that to figure out # drives.
-    if ( sysctl(mib_dsk, 3, NULL, &size, NULL, 0) < 0 )
+    const int mib_dsk[] = { CTL_HW, HW_IOSTATS, sizeof(struct io_sysctl) };
+    if ( sysctl(mib_dsk, ASIZE(mib_dsk), NULL, &size, NULL, 0) < 0 )
         logFatal << "BSDGetDiskXFerBytes(): sysctl hw.iostats #1 failed\n";
 
     unsigned int ndrives = size / mib_dsk[2];
     struct io_sysctl drive_stats[ndrives];
 
     // Get the stats.
-    if ( sysctl(mib_dsk, 3, drive_stats, &size, NULL, 0) < 0 )
+    if ( sysctl(mib_dsk, ASIZE(mib_dsk), drive_stats, &size, NULL, 0) < 0 )
         logFatal << "BSDGetDiskXFerBytes(): sysctl hw.iostats #2 failed\n";
 
     // Now accumulate the total.
@@ -1289,6 +1311,7 @@ static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,
     struct sensordev sd;
     struct sensor s;
     int cpu = 0;
+    int mib_sen[] = { CTL_HW, HW_SENSORS, 0, 0, 0 };
 
     for (int dev = 0; dev < 1024; dev++) {  // go through all sensor devices
         mib_sen[2] = dev;
@@ -1502,6 +1525,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
     int index = -1;
     struct sensordev sd;
     struct sensor s;
+    int mib_sen[] = { CTL_HW, HW_SENSORS, 0, 0, 0 };
 
     for (int dev = 0; dev < 1024; dev++) {  // go through all sensor devices
         mib_sen[2] = dev;
