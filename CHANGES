@@ -1,5 +1,7 @@
 Changes since xosview-2.1.0
 
+  - OpenBSD net meter fix
+
   - performance improvements
 
   - code re-organization and cleanup

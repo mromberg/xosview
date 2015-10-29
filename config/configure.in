@@ -16,6 +16,7 @@ m4_include([xo_gcc_auto_depend.m4])
 m4_include([xo_linux_config.m4])
 m4_include([xo_bsd_config.m4])
 m4_include([xo_xft_support.m4])
+m4_include([xo_define_dir.m4])
 
 AC_CANONICAL_HOST
 
@@ -82,6 +83,9 @@ AC_ARG_WITH([app-defaults],
             [AS_HELP_STRING([--with-app-defaults=DIR],dnl
                 [X resource directory [DATAROOTDIR/X11/app-defaults]])],
             [xapploaddir="$with_app_defaults"])
+AC_DEFINE_DIR([XAPPLOADDIR],[xapploaddir],dnl
+    [location of xosview Xdefaults])
+
 
 # Programs
 AC_PROG_AWK
@@ -209,7 +213,6 @@ AC_SUBST(XOSV_FONT)
 AC_SUBST(BTRYMETER)
 AC_SUBST(INSTALL_ARGS)
 AC_SUBST(host_dir)
-AC_SUBST(xapploaddir)
 AC_SUBST(DOC_FILES)
 
 AC_CONFIG_FILES([Makefile:config/Makefile.top.in])

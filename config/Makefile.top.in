@@ -64,9 +64,6 @@ $(TOP)/cmeter/libcmeter.a: cmeterlib
 defaultstring.cc: Xdefaults defresources.awk
 	@AWK@ -f defresources.awk Xdefaults > defaultstring.cc
 
-# This seems to be the "accepted" way of inserting paths into the binary
-Xrm.o: Xrm.cc
-	$(CXX) $(CXX_BUILD_FLAGS) -DXAPPLOADDIR=\"$(xapploaddir)\" -c $< -o $@
 
 ##  CXX_BUILD_FLAGS is here 'cause gcc (and other compilers)
 ## can optimize at link time (using profiler data etc).

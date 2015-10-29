@@ -1,7 +1,3 @@
-- openbsd netmeter seems broken
-
-- XAPPRESDIR
-
 - Add a resouce to specify the meter ordering
 
 - Add cpu powersave policy display
