@@ -28,10 +28,10 @@ AC_CANONICAL_HOST
 # in that it can be overrided at build time.
 # Put nothing into CXXFLAGS that is important
 # to a proper build.
-CPPFLAGS=""
-${CXXFLAGS=""}
-LDFLAGS=""
-LIBS=""
+CPPFLAGS=${CPPFLAGS:-}
+CXXFLAGS=${CXXFLAGS:-}
+LDFLAGS=${LDFLAGS:-}
+LIBS=${LIBS:-}
 
 # Find and set the C++ compiler.
 # Everything is C++ no need to change this again.
