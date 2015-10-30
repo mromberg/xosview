@@ -2,64 +2,97 @@
 //  Copyright (c) 2015
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
+#ifndef EXAMPLE_H
+#define EXAMPLE_H
 
-//-------------------------------------------------------
-// BASIC Data Meter Template.  See example.h for comments
-//-------------------------------------------------------
+#include "fieldmetergraph.h"  // our parent drawing class
 
-#ifndef TEMPLATE_H
-#define TEMPLATE_H
-
-#include "fieldmetergraph.h"
-
-class TemplateMeter : public FieldMeterGraph {
+class ExampleMeter : public FieldMeterGraph {
 public:
-    TemplateMeter(XOSView *parent);
-    virtual ~TemplateMeter(void);
+    ExampleMeter(void);
+    virtual ~ExampleMeter(void);
 
-    virtual std::string name( void ) const { return "TemplateMeter"; }
+    virtual std::string resName( void ) const { return "wcore"; }
     virtual void checkevent( void );
-    virtual void checkResources( void );
+    virtual void checkResources(const ResDB &rdb);
 
 private:
+    unsigned long long _warpCoreTemp;   // current value
+    unsigned long long _testMaximum;    // test max temp
+    unsigned long long _designMaximum;  // design max temp
+    // colors
+    unsigned long _normColor, _warnColor, _alarmColor;
+
+    void readWarpCoreTemp(void);        // read the current temp
 };
 
-//-----------CUT-CUT-CUT---------------------------------
-//-------------------------------------------------------
-// For .cc file
-//-------------------------------------------------------
-#if 0  // REMOVE
+//----------  .cc  -------------------------------------------------------
 
-TemplateMeter::TemplateMeter(XOSView *parent)
-    : FieldMeterGraph(parent, 2, "TMPL", "VALUE/USED", true, true, true) {
+inline ExampleMeter::ExampleMeter(void)
+    : FieldMeterGraph(2, "WCOR", "TEMP/USED"),
+      _warpCoreTemp(0), _testMaximum(0), _designMaximum(0),
+      _normColor(0), _warnColor(0), _alarmColor(0) {
+
+    readWarpCoreTemp();
 }
 
-TemplateMeter::~TemplateMeter(void) {
+
+inline ExampleMeter::~ExampleMeter(void) {
 }
 
-void TemplateMeter::checkResources( void ) {
 
-    FieldMeterGraph::checkResources();
+inline void ExampleMeter::checkResources(const ResDB &rdb) {
 
-    // change "template" to real meter name
-    setfieldcolor(0, parent_->getResource("templateForeGround"));
-    setfieldcolor(1, parent_->getResource("templateBackground"));
+    FieldMeterGraph::checkResources(rdb);
 
-    priority_ = util::stoi(parent_->getResource("templatePriority"));
-    dodecay_ = parent_->isResourceTrue("templateDecay");
-    useGraph_ = parent_->isResourceTrue("templateGraph");
-    setUsedFormat(parent_->getResource("templateUsedFormat"));
-    decayUsed(parent_->isResourceTrue("templateUsedDecay"));
+    _testMaximum = util::stoi(rdb.getResourceOrUseDefault(
+          "exampleTestMax", "500"));
+    _designMaximum = util::stoi(rdb.getResourceOrUseDefault(
+          "exampleDesignMax", "550"));
+
+    setfieldcolor(1, rdb.getColor("warpBG", "blue"));
+
+    _normColor = rdb.getColor("warpColor", "green");
+    _warnColor = rdb.getColor("warpWarnColor", "yellow");
+    _alarmColor = rdb.getColor("warpAlarmColor", "red");
+    setfieldcolor(0, _normColor);
 }
 
-void TemplateMeter::checkevent( void ) {
+
+inline void ExampleMeter::checkevent( void ) {
+
+    readWarpCoreTemp();
+
+    float percentVal = static_cast<float>(_warpCoreTemp)
+        / static_cast<float>(_testMaximum);
     total_ = 1.0;
-    fields_[0] = 0.4;
-    fields_[1] = 0.6;
-    setUsed(0.4, 1.0);
+    fields_[0] = percentVal;
+    if (fields_[0] > 1.0) // peak the meter
+        fields_[0] = 1.0;
+    fields_[1] = 1.0 - fields_[0];
+
+    // Change the field color to show our level of concern
+    if (percentVal > 0.9)
+        setfieldcolor(0, _alarmColor);
+    else if (percentVal > 0.75)
+        setfieldcolor(0, _warnColor);
+    else
+        setfieldcolor(0, _normColor);
+
+    setUsed(percentVal, total_);
 }
 
-#endif // REMOVE
-//-----------CUT-CUT-CUT---------------------------------
 
-#endif // end TEMPLATE_H
+inline void ExampleMeter::readWarpCoreTemp(void) {
+
+    static size_t count = 0;
+
+    count++;
+
+    _warpCoreTemp = count * 10;
+
+    if (_warpCoreTemp > _designMaximum + 30) // Q hits reset switch
+        count = 0;
+}
+
+#endif

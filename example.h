@@ -161,7 +161,8 @@ inline void ExampleMeter::checkevent( void ) {
     setUsed(percentVal, total_);
 }
 
-// What is your name?
+// What is your name?  This is the prefix for resource names
+// that will be used by the parent classes.  For example "wcorePriority"
 inline std::string ExampleMeter::resName( void ) const {
     return "wcore";
 }
