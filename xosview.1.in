@@ -8,66 +8,18 @@
 .SH NAME
 xosview \- X based system monitor
 .SH SYNOPSIS
-xosview [options]
+.SY xosview
+.OP OPTIONS
 .\"  ================  Macros  =============================
 .\"  First, let's define some handy roff macros.
 .\"  A macro begins with .de <xx> where one will invoke this macro with .xx
 .\"  The macro definition ends with the .. line.
 .\"  I don't know what macro abbreviations are free, so I just chose a few,
 .\"  and haven't noticed a problem so far!  bgrayson
-
+.\"
 .\"  There are several paragraphs that are repeated in the resource section.
 .\"  Rather than typing the whole stuff out each time, we define a few macros.
-
-.\"  The .pp macro takes a single argument (net, disk, etc), and
-.\" prints a paragraph description of a Priority resource.  Only the
-.\" header (xosview*diskPriority: \fIpriority\fP) needs to be specified in
-.\" addition to the .pp macro.
-.\"  Usage:   .pp load
-.de pp
-xosview*\\$1Priority: \fIpriority\fP
-.RS
-This number (which must be an integer >= 1) sets the number of tenths of
-a second that the \\$1 meter waits between updates.  A value of 1 has xosview
-update the meter 10 times per second (the fastest).  A value of 600 would
-cause xosview to update the meter once a minute.
-.RE
-..
-.\"  The .dc macro is similar to the .pp macro, except that it is for
-.\" the decay resource paragraphs.
-.\"  Usage:  .dc net
-.de dc
-xosview*\\$1Decay: (True or False)
-.RS
-If True then the \\$1 meter will be split vertically in two.  The top
-half will show the instantaneous state, while the bottom half will
-display a decaying average of the state.
-.RE
-..
-.\" The .dg macro is similar to the .dc macro, except that it is for
-.\" the scrolling graph resource paragraphs.
-.\" Usage:  .dg net
-.de dg
-xosview*\\$1Graph: (True or False)
-.RS
-If this is set to True then the \\$1 meter will be drawn as a horizontally
-scrolling bargraph showing the state value verses time.
-.RE
-..
-.\"  The .pm macro is for ``plus/minus'' -- for the
-.\"  enable/disable command-line options.
-.de pm
--\\$1
-.RS
-This option overrides the xosview*\\$1 resource.  It is
-equivalent to setting xosview*\\$1 to "False".
-.RE
-+\\$1
-.RS
-This option overrides the xosview*\\$1 resource.  It is
-equivalent to setting xosview*\\$1 to "True".
-.RE
-..
+.\"
 .\"  The .xt macro is for ``Xresource true'' -- for enabling a
 .\"  meter, like the .pm macro/-+foo.
 .de xt
@@ -76,40 +28,9 @@ xosview*\\$1: (True or False)
 If True then xosview will display a \\$1 meter.
 .RE
 ..
-.\"  The .ud macro is for the ``used decay'' option.
-.de ud
-xosview*\\$1UsedDecay:   (True or False)
-.RS
-If True then xosview will display the used labels as an average
-over the last N samples.  N is a vague number set at the
-factory.  It reduces the text drawing load on the X server.
-.RE
-..
-.\"  The .uf macro is for the ``used format'' stuff.
-.de uf
-xosview*\\$1UsedFormat:	  (float, percent or autoscale)
-.RS
-This resource tells xosview how to display "used" labels.  The formats work
-as follows:
-
-\fBfloat\fP:
-.RS
-Display the value as a floating point number.
-.RE
-\fBpercent\fP:
-.RS
-Display the value as a percentage of the total.
-.RE
-\fBautoscale\fP:
-.RS
-Display the absolute value and automatically print the units (K, M, or G) as
-appropriate.
-.RE
-.RE
-..
 .\"  Define a color macro for the various xosview*fooXXXColor: resources.
 .\"  Usage:  .cc swap Used used "swap space"  <--  keep 'swap
-\"                                                       space' as one arg.
+.\"                                                       space' as one arg.
 .de cc
 xosview*\\$1\\$2Color: \fIcolor\fP
 .RS
@@ -120,92 +41,48 @@ The \\$1 meter will use this color to display the \\$3 field.
 .SH DESCRIPTION
 \fIxosview\fP is a program which displays the status of several system based
 parameters.  These include CPU usage, load average, memory usage, swap
-space usage, network usage, interrupts, and serial port status and more.
+space usage, network usage, interrupts, file system capacity and more.
 Each of these is displayed as a horizontal bar which is separated into color
 coded regions.  Each region represents a percentage of the resource which is
 being put to a particular use.  Typing a 'q' in the window will terminate
 xosview.
 
 At the moment \fIxosview\fP runs on platforms including (Linux,
-NetBSD, FreeBSD, OpenBSD, solaris, cygwin, minix and GNU).
+NetBSD, FreeBSD, OpenBSD, dragonflyBSD, solaris, cygwin, minix and GNU).
 Not all of the meters described below are supported on all
 platforms.  Some of the meters may appear different depending upon the
 platform \fIxosview\fP is running on.  Note that *BSD is used as
-an abbreviation for all three of the free BSD operating systems
-(NetBSD, FreeBSD, OpenBSD).
+an abbreviation for all of the free BSD operating systems.
 
-\fBLoad\fP
-   all platforms  :  load
+.TS
+box, tab(:);
+cssssss
+c|c|c|c|c|c|c
+l|c|c|c|c|c|c.
+Supported Meters
+_
+Meter:Linux:*BSD:Gnu:Minix:Solaris:Cygwin
+_
+Load Average:yes:yes:yes:yes:yes:yes
+CPU:yes:yes:yes:yes:yes:yes
+Memory:yes:yes:yes:yes:yes:yes
+Swap:yes:yes:yes:no:yes:yes
+Page xfer:yes:yes:yes:no:yes:yes
+Disk xfer:yes:yes:no:no:yes:yes
+Filesys:yes:yes:yes:yes:yes:yes
+Network:yes:yes:yes:no:yes:yes
+Wifi quality:yes:no:no:no:no:no
+Interrupt rate:yes:yes:no:no:yes:yes
+Interrupts:yes:yes:no:no:no:no
+Temperature:yes:yes:no:no:no:yes
+Serial:?:no:no:no:no:no
+Battery:yes:?:no:no:no:no
+RAID:?:no:no:no:no:no
+NFS:?:no:no:no:no:no
+.TE
 
-\fBCPU Usage\fP
-   Linux  : user | nice | system | iowat | irq | softirq |
-            stolen | guest | nice guest | idle
-   *BSD   : user | nice | system | interrupt | idle
-   CYGWIN : user | nice | system | iowat | irq | softirq |
-            stolen | guest | nice guest | idle
-   MINIX  : user | nice | kernel | system | idle
-
-
-\fBMemory Usage\fP
-   Linux  : used | buffers | cached | swap cache | free
-   NetBSD : active | inactive | wired | free
-   FreeBSD: active | inactive | wired | buffer | free
-   OpenBSD: active | inactive | wired | free
-   CYGWIN : used | free
-   MINIX  : used | cached | contfree | free
-   GNU    : active | inactive | wired | free
-
-\fBSwap Usage\fP
-   all platforms except minix: used | free
-
-\fBDisk Usage (bytes/sec)\fP
-   Linux  : in  |  out  | idle
-   CYGWIN : in  |  out  | idle
-   *BSD   : transferred | idle
-
-\fBPage Swapping from/to disk\fP
-   all platforms except minix  : in | out | idle
-
-\fBNET Usage\fP
-    bytes/sec
-    Linux  : in | out | idle
-    *BSD   : in | out | idle
-
-\fBGFX Usage\fP
-    swapbuffers/sec
-    IRIX   : number of swapbuffers
-
-\fBInterrupts\fP
-    "leds" which blink when an interrupt occurs.
-    Linux  : IRQs 0 - 64 (per cpu if configured)
-    *BSD   : IRQs 0 - 15 (or fewer, depending on architecture)
-
-\fBInterrupt rate\fP
-    interrupts per second
-    Linux  : interrupts | free
-    *BSD   : interrupts | free
-    CYGWIN : interrupts | free
-
-\fBSerial Port Status\fP
-    "leds" which show the serial port parameters.
-    Linux  : Both the Line Status Register
-             (LSR) and Modem Status Register
-             (MSR) are displayed.
-    *BSD   : < Not Supported >
-
-\fBBattery Level\fP
-    Shows the current condition of the
-    battery (for laptops).
-    Linux  : %left | %used
-    NetBSD : %left | %used
-    FreeBSD: < Not Supported >
-    OpenBSD: %left | %used
-
-\fBRAID status\fP
-    Shows the state of disks contained in your (software)
-    RAID1/4/5 array(s) and the rebuild state of the
-    array(s).
-    Linux  : Disk0 Disk1 Disk2 .. DiskN | Rebuild Progress
+\fBNote:\fP A marker of ? indicates an untested meter.  Reports on the
+status of these are welcome!
 
 .SH OPTIONS
 
@@ -213,67 +90,69 @@ Almost all of these command line options are just a convenient way to set one or
 more of xosview's resources.  All resouces set on the command line will override
 those specified anywhere else.  Please see the \fBRESOURCES\fP section for
 more details on what the resource is for and for the overall scheme of how
-resource values are found.
+resource values are used.
 
---help, -h
-.RS
+.TS
+tab(:);
+llx.
+--help:T{
 Displays usage information to stdout and exits.
-.RE
+T}
+ -h:\^
 
---version, -v
-.RS
+--version:T{
 Displays the version information and exits.
-.RE
+T}
+ -v:\^
 
---display, -display \fIname\fP
-.RS
+--display \fIname\fP:T{
 Sets the X display to \fIname\fP.
-.RE
+T}
+ -display:\^
 
---title, -title \fIname\fP
-.RS
+--title \fIname\fP:T{
 This option sets the name xosview will tell the window manager to use for
 the X window and icon.  This option overrides the xosview*title resource.
-.RE
+T}
+ -title:\^
 
--geometry, -g \fIgeometry\fP
-.RS
+-geometry \fIgeometry\fP:T{
 Sets the X geometry to \fIgeometry_string\fP.  This option overrides the
 xosview*geometry resource.
-.RE
+T}
+-g:\^
 
---foreground, -fg \fIcolor\fP
-.RS
+--foreground \fIcolor\fP:T{
 The \fIcolor\fP to use for the foreground.
-.RE
+T}
+ -fg:\^
 
---background, -bg \fIcolor\fP
-.RS
+--background \fIcolor\fP:T{
 The \fIcolor\fP to use for the background.
-.RE
+T}
+ -bg:\^
 
--font, -fn \fIfontName\fP
-.RS
+-font \fIfontName\fP:T{
 Specifies the \fIfontName\fP xosview will use for labels.  This option
 overrides the xosview*font resource.  Not all fonts currently work well
 with xosview.  For more details see the \fBRESOURCES\fP section.
-.RE
+T}
+-fn:\^
 
---iconic, -iconic
-.RS
+--iconic:T{
 Request to start in an iconic state.
-.RE
+T}
+ -iconic:\^
 
---name, -name \fIname\fP
-.RS
+--name \fIname\fP:T{
 Sets the Resource name xosview will use (same as the -name option
 for typical X applications like xterm).  When performing resource
 lookups, xosview will look under \fIname\fP, and then under
 ``xosview''.
-.RE
+T}
+ -name:\^
 
--xrm, -x \fIspec\fP
-.RS
+-xrm \fIspec\fP:T{
 This switch allows any of xosview's resources to be set on the command line.
 An example of how the xosview*memFreeColor could be set using this option is
 shown below (Note the use of \(dq to prevent the shell from expanding
@@ -282,31 +161,31 @@ and \'purple\'):
 .RS
 -xrm "xosview*memFreeColor: purple"
 .RE
-.RE
+T}
+-x:\^
 
---option, -o \fIspec\fP
-.RS
+--option \fIspec\fP:T{
 This option is exactly the same as -xrm except that you do not need to
 specify an instance name (such as xosview*).  It will be prepended for you.
 So, this will also set the xosview*memFreeColor to purple:
 .RS
 -o "memFreeColor: purple"
 .RE
-.RE
+T}
+ -o:\^
 
---config, -c \fIfileName\fP
-.RS
+--config \fIfileName\fP:T{
 Load an XResource file.  This file will override (not replace) any previous
 resources.  See the \fBRESOURCES\fP section for more details.
-.RE
+T}
+ -c:\^
 
---xrm-dump, -xrmd
-.RS
+--xrm-dump:T{
 Dump the X resouces seen by xosview to stdout and exit.  This will show a
 final list of all resources seen after loading and merging is finished.
-.RE
-
-
+T}
+ -xrmd:\^
+.TE
 
 .SH X RESOURCES
 
@@ -320,6 +199,8 @@ It should be noted that it is OK to have a resource defined for a port of
 xosview that does not support the feature the resource configures.  Xosview
 will simply ignore the resources that are set for it but not supported on
 a given platform.
+
+.SS Loading X Resources
 
 The resouces used by xosview are located and loaded in the following order.
 Each layer overrides the previous.  And, of course, the best match is used.
@@ -358,13 +239,12 @@ Command line options (such as -display) that set resources.
 .RE
 
   Note that since xosview always starts off with a complete set of resources
-it needs then you only need specify those options you would like to change from
-their default values.  For example your .Xdefaults file could simply contain
-the line "xosview*background: blue" if all you wish is an "stock" xosview
-with a blue background.
+it requires then you only need specify those options you would like to change
+from their default values.  For example your .Xdefaults file could simply
+contain the line "xosview*background: blue" if all you wish is an "stock"
+xosview with a blue background.
 
-\fBGeneral Resources\fP
-
+.SS General Resources
 
 xosview*title: \fIname\fP
 .RS
@@ -381,8 +261,8 @@ the X window used by xosview.
 
 xosview*display: \fIname\fP
 .RS
-The name of the display where xosview will contact the X server for drawing
-its window.
+The name of the display which xosview will use to contact the X server for
+creating it's window.
 .RE
 
 xosview*pixmapName: \fIname\fP
@@ -393,7 +273,9 @@ image.
 
 xosview*transparent: (True or False)
 .RS
-If True set the window background to transparent.  EXPERIMENTAL.
+If True set the window background to transparent.  Xosview will attempt to
+locate and use a 32 bit ARGB visual.  If the server does not support one then
+the background will not be transparent.
 .RE
 
 xosview*captions: (True or False)
@@ -457,42 +339,83 @@ graph mode. This also has the side-effect of defining the width of the
 graph columns. This is only used by meters which have graph mode enabled.
 .RE
 
+.SS General Meter Resources
+.RS
+Meters that display their values as scalar fields generally support the
+following options.  Every meter has a \fIprefix\fP name.  For example the
+CPU meter's prefix is cpu.  So, you would specify the resources for it
+by using cpu instead of prefix.  For example cpuPriority instead of
+prefixPriority.
+.RE
 
-\fBLoad Meter Resources\fP
+xosview*prefixPriority: \fIvalue\fP
+.RS
+This number (which must be an integer >= 1) sets the number of tenths of
+a second that the meter waits between updates.  A value of 1 has xosview
+update the meter 10 times per second (the fastest).  A value of 600 would
+cause xosview to update the meter once a minute.
+.RE
 
+xosview*prefixUsedFormat: (float, percent or autoscale)
+.RS
+This resource tells xosview how to display "used" labels.  The formats work
+as follows:
+.TS
+tab(:);
+lbl.
+float:Display the value as a floating point number.
 
-.\"  Do the load: True resource.
+percent:Display the value as a percentage of the total.
+
+autoscale:T{
+Display the absolute value and automatically print the units (K, M, or G) as
+appropriate.
+T}
+.TE
+.RE
+
+prefixDecay: (True or False)
+.RS
+If True then the meter will be split vertically in two.  The top
+half will show the instantaneous state, while the bottom half will
+display a decaying average of the state.
+.RE
+
+xosview*prefixUsedDecay: (True or False)
+.RS
+If True then xosview will display the used labels as an average
+over the last N samples.  N is a vague number set at the
+factory.  It reduces the text drawing load on the X server.
+.RE
+
+xosview*prefixGraph: (True or False)
+.RS
+If this is set to True then the meter will be drawn as a horizontally
+scrolling bargraph showing the state value verses time.
+.RE
+
+.SS Load Meter Resources
+
 .xt load
 
-xosview*loadWarnColor: \fIcolor\fP
-.RS
-This is the color that the load meter will use once the load average is
-greater than the loadWarnThreshold.
-.RE
+.cc load Proc load
 
-xosview*loadCritColor: \fIcolor\fP
-.RS
-This is the color that the load meter will use once the load average is
-greater than the loadCritThreshold (peaked).
-.RE
-
-xosview*loadProcColor: \fIcolor\fP
-.RS
-This is the color that the load meter will use to display the load average
-when it is less than the loadWarnThreshold.
-.RE
-
-.\"  loadIdleColor
 .cc load Idle idle
 
-.\"  Do the priority resource
-.pp load
+.cc load Warn load
+.RS
+This color is used when the load exceeds the loadWarnThreshold.
+.RE
+
+.cc load Crit load
+.RS
+This color is used when the load exceeds the loadCritThreshold.
+.RE
 
 xosview*loadWarnThreshold: \fIint\fP
 .RS
 This number (which must be an integer >= 1) sets the value at which
 the loadmeter changes its status and color from "normal" to "alarm".
-The default value is 2.
 .RE
 
 xosview*loadCritThreshold: \fIint\fP
@@ -503,193 +426,111 @@ It is also the value that will be used for the peak of the meter.  The
 meter will still show the total load in the used level when peaked.
 .RE
 
-xosview*loadDecay: (True or False)
-.RS
-You should probably leave this at the default value (False).  The load
-is already a time-averaged value!
-.RE
-
-.dg load
-
-.\"  loadUsedFormat resource
-.uf load
-
 xosview*loadCpuSpeed:   (True or False)
 .RS
 Display the current CPU speed in the load meter.
 .RE
 
-\fBCPU Meter Resources\fP
+.SS CPU Meter Resources
 
+.xt cpu
 
-xosview*cpu: (True or False)
+xosview*cpuFormat: (auto, single, all or both)
 .RS
-If True then xosview will display a cpu meter.  On linux or IRIX 6.5
-SMP machines, the resource cpuFormat decides which meters are
-created for multiple CPUs.
+Controls the number and type of cpu meters for SMP systems.
+.TS
+tab(:);
+llx.
+single:one meter which combines all cores.
+all:seperate meter for each core.  No combined meter.
+both:seperate meters for each core plus a combined meter.
+auto:a single meter on single core systems else both.
+.TE
 .RE
 
-.\"  cpuUserColor, cpuNiceColor, cpuSystemColor, cpuWaitColor, cpuInterruptColor, cpuSoftIntColor, cpuStolenColor, cpuGuestColor, cpuNiceGuestColor, cpuFreeColor
 .cc cpu User "cpu user time"
+
 .cc cpu Nice "cpu nice time"
+
 .cc cpu System "cpu system time"
+
 .cc cpu Wait "cpu IO wait time"
+
 .cc cpu Interrupt "cpu IRQ time"
+
 .cc cpu SoftInt   "cpu soft IRQ time"
+
 .cc cpu Stolen    "cpu time spent in host OS"
+
 .cc cpu Guest     "cpu time spent on guest cpu"
+
 .cc cpu NiceGuest  "cpu time spent on niced guest cpu"
+
 .cc cpu Free "cpu idle time"
 
-.\"  Priority, decay, usedFormat resources:
-.pp cpu
-.dc cpu
-.dg cpu
-.uf cpu
-.ud cpu
+.SS Memory Meter Resources
 
-\fBMemory Meter Resources\fP
-
-
-.\"  Do the mem: True resource.
 .xt mem
 
-.\"  mem{Used,Cache,Buffer,...}Color resources
 .cc mem Used "used memory"
+
 .cc mem Buffer "buffer memory"
+
 .cc mem Cache "cache memory"
+
 .cc mem SwapCache "cache memory that has been swaped once"
+
 .cc mem Free "free memory"
+
 .cc mem Text "HP text memory"
+
 .cc mem Other "HP ``other'' memory"
+
 .cc mem Active "NetBSD active memory"
+
 .cc mem Inactive "NetBSD inactive memory"
 
-.\"  Priority, decay, usedFormat resources:
-.pp mem
-.dc mem
-.dg mem
-.uf mem
+.SS Swap Meter Resources
 
-
-\fBSwap Meter Resources\fP
-
-.\"  Do the swap: True resource.
 .xt swap
 
-.\"  swap{Used,Free}Color resources.
 .cc swap Used "used swap"
+
 .cc swap Free "free swap"
 
-.\"  Priority, decay, usedFormat resources:
-.pp swap
-.dc swap
-.dg swap
-.uf swap
-.ud swap
-
-\fBIRQ rate Meter Resources\fP
+.SS IRQ rate Meter Resources
 
 .xt irqrate
+
 .cc irqrate Used "used irq rate"
+
 .cc irqrate Free "free irq rate"
-.pp irqrate
+
 xosview*irqratePeak: \fIpeakIRQRate\fP
 .RS
   This number is the peak value for the field meter in irq/sec.  The used
 label will still report values over this peak.
 .RE
-.uf irqrate
-.ud irqrate
-.dc irqrate
-.dg irqrate
 
-\fBPage Swapping Meter Resources\fP
+.SS Page Meter Resources
 
-.\"  Do the page: True resource.
 .xt page
 
-xosview*pageBandWidth: \fImaxEvents\fP
+xosview*pageBandWidth: \fIpeakVal\fP
 .RS
-This number is used to specify the expected maximum bandwidth (in events /
+This number is used to specify the expected maximum bandwidth (in bytes /
 sec) for the page meter.  When the expected maximum bandwidth
-(\fImaxEvents\fP) is exceeded then the page meter will display the relative
+(\fIpeakValue\fP) is exceeded then the page meter will display the relative
 percentage of page swapping (25% in, 75% out).
 .RE
 
-.\"  page{In,Out,Idle}Color:
 .cc page In page-in
+
 .cc page Out page-out
+
 .cc page Idle idle
 
-.\"  Priority, decay, usedFormat resources:
-.pp page
-.dc page
-.dg page
-.uf page
-.ud page
-
-
-\fBGfx Meter Resources\fP
-
-
-xosview*gfx:	(True or False)
-.RS
-If True xosview will display the GfxMeter. The value is sampled once per
-second, due to the usage of sadc to sample data.
-.RE
-
-xosview*gfxWarnColor: \fIcolor\fP
-.RS
-This is the color that the gfx meter will use once the warn state is
-reached.
-.RE
-
-xosview*gfxAlarmColor: \fIcolor\fP
-.RS
-This is the color that the gfx meter will use once the alarm state is
-reached.
-.RE
-
-xosview*gfxSwapColor: \fIcolor\fP
-.RS
-This is the color that the gfx meter will use in normal state
-.RE
-
-.\"  gfxIdleColor
-.cc gfx Idle idle
-
-.\"  Do the priority resource
-.pp gfx
-
-xosview*gfxWarnThreshold: \fIint\fP
-.RS
-This number (which must be an integer >= 1) of swapbuffers per second
-and pipe at which the gfxmeter changes its status and color from
-"normal" to "warn". The default value is 60.
-.RE
-
-xosview*gfxAlarmThreshold: \fIint\fP
-.RS
-This number (which must be an integer >= gfxWarnThreshold) of
-swapbuffers per second and pipe at which the gfxmeter changes its status
-and color from "warn" to "alarm". The default value is 120.
-.RE
-
-xosview*gfxDecay: (True or False)
-.RS
-You should probably leave this at the default value (False).  The gfx
-does not work in decay mode.
-.RE
-
-.dg gfx
-
-.\"  gfxUsedFormat resource
-.uf gfx
-
-\fBWireless Link Meter Resouces\fP
-
-.xt wlink
+.SS Wireless Link Meter Resouces
 .RS
 This meter shows wireless link quality.  What
 is quality you might ask?  It is a number between zero and 70.  Beyond that
@@ -697,40 +538,27 @@ you are on your own.  Anway Linux systems will display this value and let
 you set a warning threshold when it is "low".  If this meter is enabled
 and no wireless connections exists it will just sit there and display zero.
 .RE
+
+.xt wlink
+
 xosview*wlinkBackground: \fIcolor\fP
 .RS
   The \fIcolor\fP to use to display the background area of the meter.
 .RE
-xosview*wlinkGoodColor: \fIcolor\fP
-.RS
-The \fIcolor\fP to use for the display of the link value when it is
-above the \fIwlinkPoorValue\fP threshold.
-.RE
-xosview*wlinkPoorColor:  \fIcolor\fP
-.RS
-The \fIcolor\fP to use for the display of the link value when it is
-below the \fIlinkPoorValue\fP threshold.
-.RE
+
+.cc wlink Good "good wireless quality"
+
+.cc wlink Poor "poor wireless quality"
+
 xosview*wlinkPoorValue:  \fIvalue\fP
 .RS
 The threshold \fIvalue\fP to use to switch between wlinkGoodColor and
 wlinkPoorColor.
 .RE
-.pp wlink
-.dc wlink
-.dg wlink
-.uf wlink
-.ud wlink
 
-\fBNetwork Meter Resources\fP
+.SS Network Meter Resources
 
-
-xosview*net:	(True or False)
-.RS
-If True xosview will display the NetMeter.  Linux users will have to configure
-their kernels and setup some ip accounting rules to make this work.  See the
-file README.linux which comes with the xosview distribution for details.
-.RE
+.xt net
 
 xosview*netBandwidth: \fImaxBytes\fP
 .RS
@@ -745,152 +573,85 @@ xosview*netIface: \fIinterface\fP
 If False, xosview will display the data received/transmitted by any of
 the network interfaces. Otherwise, xosview will only display the data
 received/transmitted by the specified network interface.
+.RE
 
-.\"  net{In,Out}Color:
 .cc net In incoming
+
 .cc net Out outgoing
-.\"  FIXME XXX  Change the netBackground resource to be netIdleColor.
 
 xosview*netBackground: \fIcolor\fP
 .RS
 This is the color that the network meter will use for the "idle" field.
 .RE
 
-.\"  Priority, decay, usedFormat resources:
-.pp net
-.dc net
-.dg net
-.uf net
-.ud net
+.SS NFSStats (Client) Resources
 
-\fBNFSStats (Client) Resources\fP
+.xt NFSStats
 
+.cc NFSStat ReTrans "retransmit stats"
 
-xosview*NFSStats: (True or False)
+.cc NFSStat AuthRefrsh "auth refresh stats"
+
+.cc NFSStat Calls "call stats"
+
+.cc NFSStat Idle "idle stats"
+
+.SS NFSDStats (Server) Resources
+
+.xt NFSDStats
+
+.cc NFSDStat Calls "call stats"
+
+.cc NFSDStat BadCalls "bad stats"
+
+.cc NFSDStat UDP "UDP stats"
+
+.cc NFSDStat TCP "TCP stats"
+
+.cc NFSDStat Idle "idle stats"
+
+.SS Serial Meter Resources
 .RS
-If True then xosview will display a meter to monitor NFS client stats.
+For this to work on Linux xosview needs to be suid root in order to have
+access to the ports.  See the file README.linux which comes with the xosview
+distribution for more details.  Running xosview as root may not be a good idea
+and this meter is slated for a re-write or removal.
 .RE
 
-xosview*NFSStatReTransColor: \fIcolor\fP
+.xt serial(0-9)
 .RS
-The color to be used for retransmit stats.
-.RE
-
-xosview*NFSStatAuthRefrshColor:	\fIcolor\fP
-.RS
-The color to be used for auth refresh stats.
-.RE
-
-xosview*NFSStatCallsColor: \fIcolor\fP
-.RS
-The color to be used for call stats.
-.RE
-
-xosview*NFSStatIdleColor: \fIcolor\fP
-.RS
-The color to be used for idle stats.
-.RE
-
-
-\fBNFSDStats (Server) Resources\fP
-
-xosview*NFSDStats: (True or False)
-.RS
-If True xosview will display a meter for NFS server/daemon stats.
-.RE
-
-xosview*NFSDStatCallsColor: \fIcolor\fP
-.RS
-The color to be used for call stats.
-.RE
-
-xosview*NFSDStatBadCallsColor: \fIcolor\fP
-.RS
-The color to be used for bad stats.
-.RE
-
-xosview*NFSDStatUDPColor: \fIcolor\fP
-.RS
-The color to be used for UDP stats.
-.RE
-
-xosview*NFSDStatTCPColor: \fIcolor\fP
-.RS
-The color to be used for TCP stats.
-.RE
-
-xosview*NFSDStatIdleColor: \fIcolor\fP
-.RS
-The color to be used for idle stats.
-.RE
-.uf NFSDStat
-.ud NFSDStat
-
-
-\fBSerial Meter Resources\fP
-
-
-xosview*serial(0-9): (True, False, or portBase)
-.RS
-If True then xosview will display a serial meter for ttySx.  The
-portbase will be autodetected.  Because autodetection can fail, (if
+The ttySx portbase will be autodetected.  Because autodetection can fail, (if
 the port is locked by ppp/slip for example) you can specify the
 portbase instead of "True".  If a portBase is used then xosview will use
 it instead of trying to autodetect.
-
-For this to work on Linux xosview needs to be suid root in order to have
-access to the ports.  See the file README.linux which comes with the xosview
-distribution for more details.
 .RE
 
-xosview*serialOnColor: \fIcolor\fP
+.cc serial On "set bit"
+
+.cc serial Off "unset bit"
+
+.SS Interrupt Meter Resources
+
+.xt interrupts
+
+.cc int On "active interrupts"
+
+.cc int Off "inactive interrupts"
+
+xosview*intFormat: (auto, single, all or both)
 .RS
-This is the color the serial meter will use for bits that are set.
+Controls the number and type of int meters for SMP systems.
+.TS
+tab(:);
+llx.
+single:one meter which combines all cores.
+all:seperate meter for each core.  No combined meter.
+both:seperate meters for each core plus a combined meter.
+auto:a single meter on single core systems else both.
+.TE
 .RE
 
-xosview*serialOffColor: \fIcolor\fP
-.RS
-This is the color the serial meter will use for bits that are not set.
-.RE
-
-.\"  Do the priority resource
-.pp serial
-
-
-\fBInterrupt Meter Resources\fP
-
-
-xosview*interrupts: (True or False)
-.RS
-If True then xosview will display an interrupt meter.
-.RE
-
-xosview*intOnColor: \fIcolor\fP
-.RS
-This is the color that will be used to show "active" interrupts.
-.RE
-
-xosview*intOffColor: \fIcolor\fP
-.RS
-This is the color that will be used to show "inactive" interrupts.
-.RE
-
-xosview*intFormat: (single, all, both or auto)
-.RS
-Linux only.
-.RE
-.RS
-If single, only a cumulative meter for all CPU is created. All creates a
-meter for each CPU, but no cumulative meter. Both creates one cumulative
-meter and one per cpu. auto behaves like single on uniprocessor system,
-and like both on multiprocessor systems.
-.RE
-
-.\"  Do the priority resource
-.pp int
-
-\fBThermal Zone Resources\fP
-
+.SS Thermal Zone Resources
 .RS
 Linux supports WAY TOO MANY ways to read temperature.  This is yet
 another one.   It was my hope to read the hot and critical thermal trip
@@ -903,68 +664,54 @@ values that are shared by all thermal zones.
 .RS
 Enabling this creates a seperate meter for each thermal zone found.
 .RE
+
 xosview*tzoneForeGround: \fIcolor\fP
 .RS
 The foreground color for temperatues below the hotTrip point.
 .RE
+
 xosview*tzoneBackground: \fIcolor\fP
 .RS
 The background color.
 .RE
-xosview*tzoneHotColor: \fIcolor\fP
-.RS
-The foreground color for temperatues over the hotTrip point and under
-the critTrip point.
-.RE
-xosview*tzoneCritColor: \fIcolor\fP
-.RS
-The foreground color for temperatues over the critTrip point.
-.RE
+
+.cc tzone Hot "over hotTrip"
+
+.cc tzone Crit "over critTrip"
+
 xosview*tzoneHotTrip:          \fIvalue\fP
 .RS
   The temperature (in degrees C) to start displaying in the hot color.
 .RE
+
 xosview*tzoneCritTrip:          \fIvalue\fP
 .RS
   The temperature (in degrees C) to start displaying in the crit color.
 .RE
+
 xosview*tzonePeak:             \fIvalue\fP
 .RS
 The value to use as a max for the meters.  Note that the used legends will
 still report the value read from /sys even if the graphical display hits
 this peak.
 .RE
-.pp tzone
-.dc tzone
-.dg tzone
-.uf tzone
-.ud tzone
 
-\fBLm Sensors Temperature Resources\fP
+.SS Lm Sensors Temperature Resources
 
 .xt lmstemp
 
-xosview*lmstempHighest:	100
+xosview*lmstempHighest: value
 .RS
 Highest temp value displayed, default 100.
 .RE
 
-xosview*lmstempActColor:  \fIcolor\fP
-.RS
-Color of actual temperature.
-.RE
+.cc lmstemp Act "actual temperature"
 
-xosview*lmstempHighColor:  \fIcolor\fP
-.RS
-Color above alarm temperature, also used to indicate alarm.
-.RE
+.cc lmstemp High "alarm temperature"
 
-xosview*lmstempIdleColor:   \fIcolor\fP
-.RS
-Color between actual and alarm temperatures.
-.RE
+.cc lmstemp Idle "idle temperature"
 
-xosview*lmstemp\fIN\fP:	\fIfilename\fP
+xosview*lmstemp\fIN\fP: \fIfilename\fP
 .RS
 Name of temperature file from /proc/sys/dev/sensors/*/*, N=1..
 .br
@@ -974,20 +721,19 @@ currently no possiblity to configure equal named files on different busses
 .br
 eg.
 .br
-xosview*lmstemp1:	temp
-xosview*lmstemp2:	remote_temp
+xosview*lmstemp1:   temp
+xosview*lmstemp2:   remote_temp
 .RE
 
-xosview*lmstempLabel\fIN\fP:	\fILabelstring\fP
+xosview*lmstempLabel\fIN\fP: \fILabelstring\fP
 .RS
 N-th label for above temperatures, default is TMP.
 .RE
 
-.pp lmstemp
-.uf lmstemp
-
-
-\fBIntel Core / AMD K8+ / VIA C7 Temperature Sensor Resources\fP
+.SS Coretemp Meter Resources
+.RS
+Intel Core / AMD K8+ / VIA C7 Temperature Sensor Resources.
+.RE
 
 .xt coretemp
 
@@ -1004,48 +750,34 @@ value, such as the temperature for which maximum cooling is required, is
 supplied by the operating system, it is used instead.
 .RE
 
-xosview*coretempActColor:  \fIcolor\fP
-.RS
-Color of actual temperature.
-.RE
+.cc coretemp Act "actual temperature"
 
-xosview*coretempHighColor:  \fIcolor\fP
-.RS
-Color above alarm temperature, also used to indicate alarm.
-.RE
+.cc coretemp High "alarm temperature"
 
-xosview*coretempIdleColor:   \fIcolor\fP
-.RS
-Color between actual and alarm temperatures.
-.RE
+.cc coretemp Idle "idle temperature"
 
 xosview*coretempDisplayType: (separate, average or maximum)
 .RS
 This resource tells xosview how to display the CPU temperature. The formats
 work as follows:
-
-\fBseparate\fP:
-.RS
+.TS
+tab(:);
+lblx.
+separate:T{
 Display one meter for each CPU core of a multi-core CPU. This is the default.
-.RE
-\fBaverage\fP:
-.RS
+T}
+average:T{
 Display the average of core temperatures of a multi-core CPU. On multi-socket
 machines, one meter per physical CPU is displayed.
-.RE
-\fBmaximum\fP:
-.RS
+T}
+maximum:T{
 Display the highest core temperature of a multi-core CPU. On multi-socket
 machines, one meter per physical CPU is displayed.
+T}
+.TE
 .RE
-.RE
 
-.pp coretemp
-
-.uf coretemp
-
-
-\fB*BSD Sensor Resources\fP
+.SS BSD Sensor Resources
 
 .xt bsdsensor
 
@@ -1056,25 +788,13 @@ to fit actual and alarm values. Can be overridden for any meter with
 bsdsensorHighest\fIN\fP.
 .RE
 
-xosview*bsdsensorActColor: \fIcolor\fP
-.RS
-Color of actual value.
-.RE
+.cc bsdsensor Act "actual value"
 
-xosview*bsdsensorHighColor: \fIcolor\fP
-.RS
-Color above high alarm value, also used to indicate alarm.
-.RE
+.cc bsdsensor High "alarm value"
 
-xosview*bsdsensorLowColor: \fIcolor\fP
-.RS
-Color of actual value, when it is below low alarm value.
-.RE
+.cc bsdsensor Low "below low alarm value"
 
-xosview*bsdsensorIdleColor: \fIcolor\fP
-.RS
-Color between actual and high alarm values.
-.RE
+.cc bsdsensor Idle "idle values"
 
 xosview*bsdsensor\fIN\fP:     \fIname.type\fP
 .br
@@ -1126,80 +846,35 @@ xosview*bsdsensorHighest\fIN\fP: \fInumber\fP
 Override default bsdsensorHighest for meter N.
 .RE
 
-xosview*bsdsensorUsedFormat\fIN\fP: (float, percent or autoscale)
-.RS
-Override default bsdsensorUsedFormat for meter N.
-.RE
+.SS Battery Meter Resources
 
-.pp bsdsensor
+.xt battery
 
-.uf bsdsensor
+.cc battery Left "available capacity"
 
+.cc battery Used "capacity used"
 
-\fBBattery Meter Resources\fP
+.cc battery Charge "time left"
 
-xosview*battery: (True or False)
-.RS
-If True then xosview will display a battery meter.  Linux users will need
-to have APM or ACPI support in their kernels for this to work.
-For both, APM and ACPI xosview shows the status/sum of all batteries.
-Additionally - the legend text gets changed/adjusted to reflect the
-current state (charging/low/critical/etc.) of the battery/batteries.
-.RE
+.cc battery Full "full charge"
 
-xosview*batteryLeftColor: \fIcolor\fP
-.RS
-This is the color that will be used to show the amount of battery power left.
-.RE
+.cc battery Low "below 25% capacity"
 
-xosview*batteryUsedColor: \fIcolor\fP
-.RS
-This is the color that will be used to show the amount of battery power used.
-.RE
+.cc battery Crit "below 5% capacity"
 
-xosview*batteryChargeColor: \fIcolor\fP
-.RS
-This is the color that will be used as 'left' - if the batteries get charged.
-.RE
+.cc battery None "no battery"
 
-xosview*batteryFullColor: \fIcolor\fP
-.RS
-This is the color that will be used as 'left' - if the batteries are fully charged.
-APM and ACPI does provide this info, but not all machines actually do so.
-.RE
+.SS Disk Meter Resources
 
-xosview*batteryLowColor: \fIcolor\fP
-.RS
-APM only - the 'left' color that will indicate a low battery.
-Depends on the machine - e.g. below 25% remaining capacity.
-.RE
-
-xosview*batteryCritColor: \fIcolor\fP
-.RS
-APM case: the 'left' color if APM indicates 'critical' state. (less than 5%)
-
-ACPI case: the 'left' color if the remaining capacity is below the alarm value.
-(which can be set by the user in /proc/acpi/battery/BAT[01]/alarm )
-.RE
-
-xosview*batteryNoneColor: \fIcolor\fP
-.RS
-If no battery is present - or all batteries get removed (while on AC).
-.RE
-
-
-.\"  Do the priority resource
-.pp battery
-.uf battery
-
-\fBDisk Meter Resources\fP
-
-.\"  Do the disk: True resource.
 .xt disk
 
-.\"  disk colors
 .cc disk Used "bytes transferred (in or out)"
+
 .cc disk Idle idle
+
+.cc disk Write "write"
+
+.cc disk Read "read"
 
 xosview*diskBandwidth: \fIbandwidth\fP
 .RS
@@ -1207,26 +882,8 @@ This number is used to specify the expected maximum bandwidth in bytes
 per second for the disk meter.
 .RE
 
-xosview*diskWriteColor: \fIcolor\fP
-.RS
-This color will be used for the linux meter to show writes.
-.RE
+.SS File System Meter Resources
 
-xosview*diskReadColor: \fIcolor\fP
-.RS
-This color will be used for the linux meter to show reads.
-.RE
-
-.\"  Priority, decay, usedFormat resources:
-.pp disk
-.dc disk
-.dg disk
-.uf disk
-.ud disk
-
-\fBFile System Meter Resources\fP
-
-.\"  Do the filesys: True resource.
 .xt filesys
 
 xosview*filesysMounts: \fIlist\fP
@@ -1240,25 +897,14 @@ filesystem that has an absolute path as a source.  For example
 "/dev/sda1 -> /" would be monitored but "tmpfs -> /tmp" would not be.
 .RE
 
-.\"  filesys colors
 .cc filesys FG "used space"
 
 .cc filesys BG "free space"
 
 .cc filesys None "bg color when path is unmounted"
 
-.pp filesys
+.SS RAID Meter Resources
 
-.dc filesys
-
-.dg filesys
-
-.uf filesys
-
-
-\fBRAID Meter Resources\fP
-
-.\"  Do the RAID: True resource.
 .xt RAID
 
 xosview*RAIDdevicecount: \fIint\fP
@@ -1267,30 +913,15 @@ Please enter your RAID device count (n) here or 0 if you don't have any
 supported RAID devices. xosview then will display n RAID state displays.
 .RE
 
-xosview*RAIDdiskOnlineColor: \fIcolor\fP
+.cc RAIDdisk Online "online"
 
-xosview*RAIDdiskFailureColor: \fIcolor\fP
-.RS
-These colors will be used for indicating working/online or failed/offline
-disks. The order (from left to right) is the same as in /proc/mdstat.
-.RE
+.cc RAIDdisk Failure "failure"
 
-xosview*RAIDresyncdoneColor: \fIcolor\fP
+.cc RAIDresyncdone "resync done"
 
-xosview*RAIDresynctodoColor: \fIcolor\fP
+.cc RAIDresynctodo "resync todo"
 
-xosview*RAIDresynccompleteColor: \fIcolor\fP
-.RS
-If a resync/rebuild of the RAID array is in progress, the "done" and "todo"
-colors will be used. If no rebuild/resync is running, then the "complete"
-color will be shown.
-.RE
-
-.\"  RAIDpriority resource
-.pp RAID
-
-.\"  RAIDUsedFormat resource
-.uf RAID
+.cc RAIDresynccomplete "resync complete"
 
 .SH OBTAINING
 
@@ -1318,7 +949,7 @@ Bug tracking system.
 
 Mike Romberg  (mike-romberg@comcast.net)
 .RS
-Original author, Linux and HPUX ports.
+Original author, Linux, HPUX, minix and cygwin ports.
 .RE
 
 Brian Grayson (bgrayson@netbsd.org)

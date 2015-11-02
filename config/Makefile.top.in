@@ -90,7 +90,7 @@ maintainer-clean: distclean
 	rm -f configure config.h.in xosview.spec
 
 xosview.html: xosview.1
-	groff -mandoc -Thtml xosview.1 > xosview.html
+	groff -mandoc -t -Txhtml -P -l -P -Ixosv xosview.1 > xosview.html
 
 # For updating configure.in's checks for C++ header files.
 # This finds all uses of '#include <.*>'
