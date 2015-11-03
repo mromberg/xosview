@@ -1,5 +1,5 @@
 #!/bin/bash
-AC_INIT([xosview],[2.1.1],
+AC_INIT([xosview],[2.1.2],
         [https://sourceforge.net/p/xosview/_list/tickets],
         [xosview2],
         [http://sourceforge.net/projects/xosview/])
@@ -208,6 +208,7 @@ AC_DEFINE_UNQUOTED([PACKAGE_CLASSNAME],["$PACKAGE_CLASSNAME"],dnl
 # are exported by AC_OUTPUT.
 #
 AC_SUBST(PACKAGE_CLASSNAME)
+AC_SUBST(xapploaddir)
 AC_SUBST(XFT_OBJS)
 AC_SUBST(XOSV_FONT)
 AC_SUBST(BTRYMETER)
