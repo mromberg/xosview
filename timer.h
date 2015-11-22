@@ -16,8 +16,15 @@
 //
 //   Author : Mike Romberg
 
+#include <iostream>
 
-#include "timeval.h"
+#include <sys/time.h>
+
+
+inline std::ostream &operator<<(std::ostream &os, const struct timeval &tv) {
+    return os << "(" << tv.tv_sec << ", " << tv.tv_usec << ")";
+}
+
 
 class Timer {
 public:
@@ -43,10 +50,10 @@ public:
     double report(void) const { return report_usecs() / 1000000.0; } // sec
 
     std::ostream &printOn(std::ostream &os) const {
-        return os <<"Timer : ["
-                  <<"starttime_ = " <<TimeVal(starttime_)
-                  <<", stoptime_ = " <<TimeVal(stoptime_)
-                  <<", duration = " <<report_usecs() <<" usecs]";
+        return os << "Timer : ["
+                  << "starttime_ = " << starttime_ << ", "
+                  << "stoptime_ = " << stoptime_ << ", "
+                  << "duration = " << report_usecs() <<" usecs]";
     }
 
 protected:
