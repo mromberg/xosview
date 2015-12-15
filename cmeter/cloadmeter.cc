@@ -66,15 +66,13 @@ void ComLoadMeter::checkevent( void ){
 
 
 void ComLoadMeter::setLoadInfo(float load){
-    fields_[0] = load;
 
-    if ( fields_[0] <  _warnThreshold )
+    if ( load <  _warnThreshold )
         _alarmstate = NORM;
     else
-        if ( fields_[0] >= _critThreshold )
+        if ( load >= _critThreshold )
             _alarmstate = CRIT;
-        else
-            /* if fields_[0] >= warnThreshold */
+        else // load >= warnThreshold
             _alarmstate = WARN;
 
     if ( _alarmstate != _lastalarmstate ){
@@ -95,10 +93,14 @@ void ComLoadMeter::setLoadInfo(float load){
         _lastalarmstate = _alarmstate;
     }
 
-    fields_[1] = (float) (total_ - fields_[0]);
+    // total_ set to _critThreshold in ctor
+    fields_[0] = std::min(load, total_);
+    fields_[1] = total_ - fields_[0];
     if (fields_[1] < 0) // peaked the meter
         fields_[1] = 0.0;
+
     logDebug << "loadMeter: " << fields_[0] << ", " << fields_[1] << ", "
              << total_ << std::endl;
-    setUsed(fields_[0], (float) 1.0);
+
+    setUsed(load, 1.0);
 }
