@@ -26,7 +26,7 @@
 
   - Solaris (tested on OpenIndiana)
 
-  - NetBSD (6.1.5)
+  - NetBSD
 
   - FreeBSD
 
@@ -46,12 +46,6 @@
     ./configure
     make
     make install    
-
-    To successfully build xosview you will most certainly need to
-    use the Gnu C++ compiler and make.  There is no gcc specific
-    code in xosview but that is the only compiler it has been tested
-    with.  There probably are Gnu make specific things in the makefiles.
-    Interest in support for other flavors of make is low. :)
 
     There are a few optional features you may be interested in.  So,
     you may want to checkout 'configure --help' as it will show you
@@ -77,7 +71,8 @@
     should run right out of the box from anywhere.  But, it does
     search for other options in standard locations.  See the man page
     for full details.  Note: you can read the man page without installing
-    it by running 'zcat xosview.1 | groff -lascii -mandoc - | less -R'
+    it by running 'zcat xosview.1 | groff -lascii -mandoc - | less -R' or
+    'man ./xosview.1'.
 
     Please see the README file for your platform for any special 
     instructions for running xosview on that platform.
@@ -89,9 +84,11 @@
 
   - slightly longer version:
 
-    The xosview configure script and makefile support Gnu conventions.
-    https://www.gnu.org/prep/standards/html_node/Directory-Variables.html
-    So, controlling exactly where the 'make install' will put things.
+    The xosview configure script and makefile support Gnu conventions
+    (https://www.gnu.org/prep/standards/html_node/Directory-Variables.html).
+    So, controlling exactly where the 'make install' will put things can be
+    done by using any one of those methods.
+    
     By default configure will use a prefix of /usr/local  you may want
     to change this by adding a --prefix argument when you run the script.
     One can run 'make -n install' to get a quick priview of what files
