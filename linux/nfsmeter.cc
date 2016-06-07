@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006, 2015
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  Modifications to support dynamic addresses by:
@@ -155,7 +155,7 @@ void NFSStats::checkResources(const ResDB &rdb){
 
 void NFSStats::checkevent(void) {
     std::string buf, name;
-    unsigned long calls, retrns, authrefresh, maxpackets_;
+    unsigned long calls = 0, retrns = 0, authrefresh = 0, maxpackets_ = 0;
 
     std::ifstream ifs(_statfile.c_str());
 
