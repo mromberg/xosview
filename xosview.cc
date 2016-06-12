@@ -468,17 +468,28 @@ std::string XOSView::winname( void ){
 
 
 void  XOSView::resize( void ){
-    int spacing = vspacing_+1;
-    int topmargin = vmargin_;
-    int rightmargin = hmargin_;
-    int newwidth = width() - xoff_ - rightmargin;
-    size_t nmeters = _meters.size();
-    nmeters = nmeters ? nmeters : 1; // don't divide by zero
-    int newheight =
-        (height() -
-          (topmargin + topmargin + (nmeters-1)*spacing + nmeters*yoff_)
-            ) / nmeters;
-    newheight = (newheight >= 2) ? newheight : 2;
+    //-----------------------------------
+    // Width
+    //-----------------------------------
+    unsigned int rightmargin = hmargin_;
+    unsigned int xpad = xoff_ + rightmargin; // reserved for padding.
+    xpad = xpad > width() ? width() : xpad;  // clamp to width().
+
+    int newwidth = width() - xpad;
+    newwidth = (newwidth >= 2) ? newwidth : 2; // clamp to 2.
+
+    //-----------------------------------
+    // Height
+    //-----------------------------------
+    unsigned int spacing = vspacing_ + 1;
+    unsigned int topmargin = vmargin_;
+    size_t nmeters = _meters.size() ? _meters.size() : 1; // don't divide by 0.
+    unsigned int ypad = 2 * topmargin + (nmeters - 1) * spacing
+        + nmeters * yoff_; // size reserved for padding.
+    ypad = ypad > height() ? height() : ypad; // clamp to height.
+
+    int newheight = (height() - ypad) / nmeters;
+    newheight = (newheight >= 2) ? newheight : 2; // min clamp to 2.
 
     for (size_t i = 0 ; i < _meters.size() ; i++) {
         _meters[i]->resize(xoff_,
