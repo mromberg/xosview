@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1997, 2005, 2006, 2015
+//  Copyright (c) 1997, 2005, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -38,8 +38,9 @@ private:
 
     bool has_sys(void);
     bool getsysinfo(void);
-    float getHoursLeft(const std::string &batDir,
-      const std::vector<std::string> &dir) const;
+    bool getcapacity(const std::string &batDir, unsigned int &capacity) const;
+    float getHoursLeft(const std::string &batDir) const;
+
     std::string getBatDir(void) const;
     std::string timeStr(float &hours) const;
 

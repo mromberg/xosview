@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1997, 2006, 2015
+//  Copyright (c) 1997, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -105,6 +105,44 @@ bool BtryMeter::has_sys(void) {
     return util::fs::isdir(SYSDIRNAME);
 }
 
+
+bool BtryMeter::getcapacity(const std::string &batDir,
+  unsigned int &capacity) const {
+
+    capacity = 0;
+
+    // The star of the show (capacity).
+    // Apparently the star can be a bit of a drama queen and sometimes
+    // does not make an appearance.  Check for her backup files
+    // charge_full and charge_now.
+    std::string capFile = batDir + "capacity";
+    std::string cfFile = batDir + "charge_full";
+    std::string cnFile = batDir + "charge_now";
+    if (util::fs::isfile(capFile)) {
+        if (!util::fs::readFirst(capFile, capacity)) {
+            logProblem << "error reading : " << capFile << std::endl;
+            return false;
+        }
+    }
+    else if (util::fs::isfile(cfFile) && util::fs::isfile(cnFile)) {
+        unsigned long charge_full = 0, charge_now = 0;
+        if (!util::fs::readFirst(cfFile, charge_full)
+          || !util::fs::readFirst(cnFile, charge_now)) {
+            logProblem << "error reading : "
+                       << cfFile << " and/or " << cnFile << std::endl;
+            return false;
+        }
+        capacity = (100 * charge_now) / charge_full;
+    }
+    else {
+        logProblem << "Can't find a way to read capacity." << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+
 // More words of wisdom from the interwebs:
 // current_now: uA
 // voltage_now: uV
@@ -119,14 +157,9 @@ bool BtryMeter::getsysinfo(void) {
     if (batDir == "") // have sys but no bat dirs
         return false;
 
-    std::vector<std::string> dir = util::fs::listdir(batDir);
-
-    // The star of the show (capacity)
-    unsigned int capacity;
-    if (!util::fs::readFirst(batDir + "capacity", capacity)) {
-        logProblem << "error reading : " << batDir + "capacity\n";
+    unsigned int capacity = 0;
+    if (!getcapacity(batDir, capacity))
         return false;
-    }
 
     std::string status;
     if (!util::fs::readFirst(batDir + "status", status)) {
@@ -136,7 +169,7 @@ bool BtryMeter::getsysinfo(void) {
     // The hours left looks off when charging and nearing full charge
     std::string timeLeft;
     if (status == "Discharging") {
-        float hl = getHoursLeft(batDir, dir);
+        float hl = getHoursLeft(batDir);
         timeLeft = timeStr(hl);
     }
 
@@ -187,8 +220,9 @@ bool BtryMeter::getsysinfo(void) {
 // > If you have 'charge_now', remaining time is charge_now/current_now
 // > without any complications.
 //
-float BtryMeter::getHoursLeft(const std::string &batDir,
-  const std::vector<std::string> &dir) const {
+float BtryMeter::getHoursLeft(const std::string &batDir) const {
+
+    std::vector<std::string> dir = util::fs::listdir(batDir);
 
     if (std::find(dir.begin(), dir.end(), "energy_now") != dir.end()) {
         unsigned long long energy_now;
