@@ -57,7 +57,7 @@ template <class X>
 inline static bool fstr(const std::string &s, X &x) {
     std::stringstream os(s);
     os >> x;
-    return os;
+    return !os.fail();
 }
 
 // Deal with those goofy forign characters

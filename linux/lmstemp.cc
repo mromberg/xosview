@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2000, 2006, 2012, 2015
+//  Copyright (c) 2000, 2006, 2012, 2015, 2016
 //  by Leopold Toetsch <lt@toetsch.at>
 //
 //  Read temperature entries from /proc/sys/dev/sensors/*/*
@@ -148,7 +148,7 @@ void LmsTemp::getlmstemp( void ){
         std::ifstream file( _filename.c_str() );
 
         if ( !file )
-            logFatal << "Can not open file : " << file << std::endl;
+            logFatal << "Can not open file : " << _filename << std::endl;
 
         file >> high >> dummy >> fields_[0];
   }
@@ -156,14 +156,14 @@ void LmsTemp::getlmstemp( void ){
         std::string f = _filename + "_input";
         std::ifstream file1(f.c_str());
         if ( !file1 )
-            logFatal << "Can not open file : " << file1 << std::endl;
+            logFatal << "Can not open file : " << f << std::endl;
 
         file1 >> fields_[0];
 
         f = _filename + "_max";
         std::ifstream file2(f.c_str());
         if ( !file2 )
-            logFatal << "Can not open file : " << file2 << std::endl;
+            logFatal << "Can not open file : " << f << std::endl;
 
         file2 >> high;
         high /= 1000; fields_[0] /= 1000;
