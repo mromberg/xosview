@@ -1,3 +1,11 @@
+Changes since xosview-2.1.2
+
+  - fix issue with using c++11 compilers.
+
+  - fix width/height calculations.
+
+  - address clang warnings on Linux.
+
 Changes since xosview-2.1.1
 
   - fix the loadmeter where it failed to "peak" at the critical threshold.
