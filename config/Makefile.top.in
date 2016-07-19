@@ -21,6 +21,7 @@ xwin.o \
 x11graphics.o \
 x11font.o \
 x11pixmap.o \
+xsc.o \
 Xrm.o \
 rdb.o \
 defaultstring.o \

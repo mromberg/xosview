@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -13,9 +13,9 @@
 #include <string>
 
 
-
 class Meter;
 class XOSVFont;
+class XSessionClient;
 namespace util { class CLOpts; }
 
 
@@ -78,8 +78,9 @@ protected:
     void unmapEvent(XUnmapEvent &event);
 
 private:
-    double _sampleRate; // samples/sec
-    bool _doFullDraw;   // schedule full clear/draw
+    double _sampleRate;   // samples/sec
+    bool _doFullDraw;     // schedule full clear/draw
+    XSessionClient *_xsc; // session management client.
 
     void scheduleDraw(bool full) { _doFullDraw = full; }
     void slumber(void) const;
