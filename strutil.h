@@ -78,7 +78,9 @@ inline std::string tolower(const std::string &str) {
     return rval;
 }
 
+
 std::string strerror(int error);
+std::string strerror(void);
 
 
 class Glob {
