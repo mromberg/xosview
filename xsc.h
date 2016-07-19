@@ -45,18 +45,6 @@ private:
 
     static std::string getuser(void);
 
-
-    //---- from fsutil.h --
-    static std::string cwd(void);
-    static std::string abspath(const std::string &path);
-    static std::string normpath(const std::string &path);
-    static std::vector<std::string> split(const std::string& s,
-      const std::string& delim, const bool keep_empty = true);
-    static std::string join(const std::vector<std::string> &v,
-      const std::string &sep);
-    //---- from fsutil.h --
-
-
     // xsl protocol callbacks.
     static void saveCB(SmcConn smc_conn, void *client_data,
       int save_type, Bool shutdown, int interact_style, Bool fast);

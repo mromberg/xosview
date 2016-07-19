@@ -5,6 +5,7 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "xsc.h"
+#include "fsutil.h"
 
 #include <iostream>
 #include <cstring>
@@ -73,7 +74,7 @@ XSessionClient::XSessionClient(int argc, char * const *argv,
         std::string sv(argv[i]);
 
         if (i == 0)
-            sv = normpath(abspath(sv));
+            sv = util::fs::normpath(util::fs::abspath(sv));
 
         if (sv == _sessionArg) {
             if (i + 1 >= argc)
@@ -213,9 +214,10 @@ void XSessionClient::saveCB(SmcConn smc_conn, void *client_data,
     resvar.addVal(xsc->_sessionID);
     xsvars.push_back(resvar);
     xsvars.push_back(XSVar(SmUserID, getuser()));
-    xsvars.push_back(XSVar(SmProgram, normpath(abspath(xsc->_argv[0]))));
+    xsvars.push_back(XSVar(SmProgram,
+        util::fs::normpath(util::fs::abspath(xsc->_argv[0]))));
     // Optional.
-    xsvars.push_back(XSVar(SmCurrentDirectory, cwd()));
+    xsvars.push_back(XSVar(SmCurrentDirectory, util::fs::cwd()));
 
     std::vector<SmProp *> propsp(xsvars.size(), 0);
     for (size_t i = 0 ; i < xsvars.size() ; i++)
@@ -266,118 +268,6 @@ std::string XSessionClient::getuser(void) {
     std::ostringstream os;
     os << uid;
     return os.str();
-}
-
-
-std::string XSessionClient::cwd(void) {
-    std::string result(1024,'\0');
-    while( getcwd(&result[0], result.size()) == 0) {
-        if( errno != ERANGE ) {
-            std::cerr << "getcwd() failed: " << strerror(errno) << std::endl;
-            return ".";
-        }
-        result.resize(result.size()*2);
-    }
-    result.resize(result.find('\0'));
-    return result;
-}
-
-
-std::string XSessionClient::abspath(const std::string &path) {
-    if (path.size()) {
-        if (path[0] == '/')
-            return path;
-
-        size_t fpos = path.find('/');
-        if (fpos != std::string::npos)
-            return cwd() + '/' + path;
-    }
-
-    return path;
-}
-
-std::string XSessionClient::normpath(const std::string &path) {
-    std::vector<std::string> comps = XSessionClient::split(path, "/");
-
-    // remember if this is an absolute path for later
-    // when we collapase ".."
-    bool isabspath = false;
-    if (comps.size() && comps[0] == "")
-        isabspath = true;
-
-    // First, remove all "" entries (which result from //)
-    // and any "." entries.
-    std::vector<std::string> filtered;
-    for (size_t i = 0 ; i < comps.size() ; i++)
-        if (comps[i] != "" && comps[i] != ".")
-            filtered.push_back(comps[i]);
-
-    // Now collapse the ".." items.
-    comps.resize(0);
-    for (size_t i = 0 ; i < filtered.size() ; i++) {
-        if (filtered[i] != "..")
-            comps.push_back(filtered[i]);
-        else {
-            // maybe collapse it
-            if (comps.empty()) {
-                // the root dir has a .. that points at /
-                // If we don't know for sure we are at / (isabspath)
-                // then keep the "..".  We don't use cwd() here.
-                if (!isabspath)
-                    comps.push_back(filtered[i]);
-
-            }
-            else {
-                // There is something before the current ".." see if it
-                // can be collapsed.
-                if (comps.back() != "..") { // it got there for a reason
-                    comps.pop_back();
-                }
-            }
-        }
-    }
-
-    std::string rval = XSessionClient::join(comps, "/");
-    if (isabspath)
-        rval = "/" + rval;
-
-    return rval;
-}
-
-#include <algorithm>
-std::vector<std::string> XSessionClient::split(const std::string& s,
-  const std::string& delim, const bool keep_empty) {
-    std::vector<std::string> result;
-    if (delim.empty()) {
-        result.push_back(s);
-        return result;
-    }
-    std::string::const_iterator substart = s.begin(), subend;
-    while (true) {
-        subend = std::search(substart, s.end(), delim.begin(), delim.end());
-        std::string temp(substart, subend);
-        if (keep_empty || !temp.empty())
-            result.push_back(temp);
-        if (subend == s.end())
-            break;
-
-        substart = subend + delim.size();
-    }
-
-    return result;
-}
-
-
-std::string XSessionClient::join(const std::vector<std::string> &v,
-  const std::string &sep) {
-    std::string rval;
-    for (size_t i = 0 ; i < v.size() ; i ++) {
-        rval += v[i];
-        if (i + 1 < v.size())
-            rval += sep;
-    }
-
-    return rval;
 }
 
 //-------------------------------------------------------------------
