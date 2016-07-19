@@ -6,6 +6,8 @@
 //
 #include "xsc.h"
 #include "fsutil.h"
+#include "log.h"
+#include "strutil.h"
 
 #include <iostream>
 #include <cstring>
@@ -77,9 +79,10 @@ XSessionClient::XSessionClient(int argc, char * const *argv,
             sv = util::fs::normpath(util::fs::abspath(sv));
 
         if (sv == _sessionArg) {
-            if (i + 1 >= argc)
-                std::cerr << "missing " << _sessionArg << " argument."
-                          << std::endl;
+            if (i + 1 >= argc) {
+                logProblem << "missing " << _sessionArg << " argument."
+                           << std::endl;
+            }
             else {
                 _lastSessionID = std::string(argv[i + 1]);
                 i++;
@@ -95,14 +98,17 @@ XSessionClient::~XSessionClient(void) {
 
     if (_smcConn) {
         SmcCloseStatus status = SmcCloseConnection(_smcConn, 0, NULL);
-        if (status == SmcClosedNow)
-            ; // std::cerr << "SmcClosedNow\n";
-        else if (status == SmcClosedASAP)
-            std::cerr << "SmcClosedASAP\n";
-        else if (status == SmcConnectionInUse)
-            std::cerr << "SmcConnectionInUse\n";
+        if (status == SmcClosedNow) {
+            logDebug << "SmcClosedNow" << std::endl;
+        }
+        else if (status == SmcClosedASAP) {
+            logDebug << "SmcClosedASAP" << std::endl;
+        }
+        else if (status == SmcConnectionInUse) {
+            logDebug << "SmcConnectionInUse" << std::endl;
+        }
         else
-            std::cerr << "Unknown status: " << status << std::endl;
+            logProblem << "Unknown status: " << status << std::endl;
     }
 
     delete _iceClient;
@@ -202,7 +208,7 @@ void XSessionClient::saveCB(SmcConn smc_conn, void *client_data,
     (void)interact_style;
     (void)fast;
 
-    std::cout << "saveCB()\n";
+    logDebug << "saveCB()" << std::endl;
 
     XSessionClient *xsc = static_cast<XSessionClient *>(client_data);
 
@@ -232,7 +238,7 @@ void XSessionClient::dieCB(SmcConn smc_conn, void *client_data) {
 
     (void)smc_conn;
 
-    std::cout << "dieCB()\n";
+    logDebug << "dieCB()" << std::endl;
 
     XSessionClient *xsc = static_cast<XSessionClient *>(client_data);
     xsc->_die = true;
@@ -244,7 +250,7 @@ void XSessionClient::saveCompleteCB(SmcConn smc_conn, void *client_data) {
     (void)smc_conn;
     (void)client_data;
 
-    std::cout << "saveCompleteCB()\n";
+    logDebug << "saveCompleteCB()" << std::endl;
 }
 
 
@@ -254,7 +260,7 @@ void XSessionClient::shutdownCancelledCB(SmcConn smc_conn,
     (void)smc_conn;
     (void)client_data;
 
-    std::cout << "shutdownCancelledCB()\n";
+    logDebug << "shutdownCancelledCB()" << std::endl;
 }
 
 
@@ -314,7 +320,7 @@ bool IceClient::ready(int waitMsec) {
     }
     else {
         // error (errno set).
-        std::cerr << "poll() failed\n";
+        logFatal << "poll() failed: " << util::strerror() << std::endl;
     }
 
     return false;
@@ -341,12 +347,12 @@ void IceClient::process(void) {
     if (status == IceProcessMessagesSuccess)
         ; // it worked.
     else if (status == IceProcessMessagesIOError) {
-        std::cerr << "IceProcessMessagesIOError\n";
+        logProblem << "IceProcessMessagesIOError" << std::endl;
         IceCloseConnection(_iceConn);
         _iceConn = 0;
     }
     else if (status == IceProcessMessagesConnectionClosed) {
-        std::cerr << "IceProcessMessagesConnectionClosed\n";
+        logProblem << "IceProcessMessagesConnectionClosed" << std::endl;
         _iceConn = 0;
     }
 }
