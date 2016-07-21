@@ -16,9 +16,9 @@
 #include <unistd.h>
 #include <pwd.h>
 #include <poll.h>
-#include <X11/SM/SMlib.h>
 
 
+#ifdef HAVE_LIB_SM
 class IceClient {
 public:
     IceClient(void);
@@ -64,6 +64,7 @@ private:
     SmProp _prop;
     std::vector<SmPropValue> _pvals;
 };
+#endif
 
 
 XSessionClient::XSessionClient(int argc, char * const *argv,
