@@ -68,8 +68,11 @@ private:
 
 XSessionClient::XSessionClient(int argc, char * const *argv,
   const std::string &sessionArg)
-    : _die(false), _sessionArg(sessionArg),
-    _iceClient(0), _smcConn(0) {
+    : _die(false), _sessionArg(sessionArg)
+#ifdef HAVE_LIB_SM
+    ,_iceClient(0), _smcConn(0)
+#endif
+    {
 
     _argv.reserve(argc);
     for (int i = 0 ; i < argc ; i++) {
@@ -95,7 +98,7 @@ XSessionClient::XSessionClient(int argc, char * const *argv,
 
 
 XSessionClient::~XSessionClient(void) {
-
+#if HAVE_LIB_SM
     if (_smcConn) {
         SmcCloseStatus status = SmcCloseConnection(_smcConn, 0, NULL);
         if (status == SmcClosedNow) {
@@ -112,11 +115,14 @@ XSessionClient::~XSessionClient(void) {
     }
 
     delete _iceClient;
+#endif
 }
 
 
 bool XSessionClient::init(void) {
-
+#ifndef HAVE_LIB_SM
+    return false;
+#else
     _iceClient = new IceClient();
     if (!_iceClient->init())
         return false;
@@ -154,19 +160,27 @@ bool XSessionClient::init(void) {
     free(clientID);
 
     return true;
+#endif
 }
 
 
 bool XSessionClient::check(int waitMsec, bool all) {
+#ifndef HAVE_LIB_SM
+    (void) waitMsec;
+    (void) all;
+
+    return false;
+#else
     if (!_iceClient)
         return die();
 
     _iceClient->check(waitMsec, all);
 
     return die();
+#endif
 }
 
-
+#ifdef HAVE_LIB_SM
 void XSessionClient::getProperties(void) {
     if (_smcConn)
         SmcGetProperties(_smcConn, propReplyCB, this);
@@ -406,3 +420,4 @@ SmProp *XSVar::prop(void) {
 
     return &_prop;
 }
+#endif

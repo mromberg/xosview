@@ -7,10 +7,14 @@
 #ifndef xsc_h
 #define xsc_h
 
+#include "configxosv.h"
+
 #include <string>
 #include <vector>
 
+#ifdef HAVE_LIB_SM
 #include <X11/SM/SMlib.h>
+#endif
 
 class IceClient;
 
@@ -37,6 +41,7 @@ private:
     const std::string _sessionArg;
     std::string _lastSessionID;
     std::string _sessionID;
+#ifdef HAVE_LIB_SM
     IceClient *_iceClient;
     SmcConn _smcConn;
 
@@ -54,6 +59,7 @@ private:
     // For debug.  getProperties requests them.
     // A callback prints to logDebug.
     void getProperties(void);
+#endif
 
     // Not implemented.
     XSessionClient(const XSessionClient &xsc);
