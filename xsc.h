@@ -31,9 +31,6 @@ public:
 
     const std::string &sessionID(void) const { return _sessionID; }
 
-    // For debug.  getProperties requests them.  A callback prints to cout.
-    void getProperties(void);
-
 private:
     bool _die;
     std::vector<std::string> _argv;
@@ -53,6 +50,10 @@ private:
     static void shutdownCancelledCB(SmcConn smc_conn, SmPointer client_data);
     static void propReplyCB(SmcConn smc_conn, SmPointer client_data,
       int num_props, SmProp **props);
+
+    // For debug.  getProperties requests them.
+    // A callback prints to logDebug.
+    void getProperties(void);
 
     // Not implemented.
     XSessionClient(const XSessionClient &xsc);

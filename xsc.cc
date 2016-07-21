@@ -179,21 +179,24 @@ void XSessionClient::propReplyCB(SmcConn smc_conn, SmPointer client_data,
 
     XSessionClient *xsc = static_cast<XSessionClient *>(client_data);
 
-    std::cout << "=== Properties stored in session manager ===" << std::endl
-              << "clientID: " << xsc->sessionID() << std::endl;
+    logDebug << "=== Properties stored in session manager ===" << std::endl;
+    logDebug << "clientID: " << xsc->sessionID() << std::endl;
 
     for (int i = 0 ; i < num_props ; i++) {
         SmProp *p = props[i];
-        std::cout << p->name
-                  << " (" << p->type << "):"
-                  << std::endl
-                  << "    ";
 
+        std::ostringstream os;
         for (int j = 0 ; j < p->num_vals ; j++) {
             SmPropValue *v = &(p->vals[j]);
             std::string sv((char *)v->value, v->length);
-            std::cout << sv << ((j != p->num_vals - 1) ? ", " : "\n");
+            os << sv << ((j != p->num_vals - 1) ? ", " : "");
         }
+
+        logDebug << p->name
+                 << " (" << p->type << "):"
+                 << std::endl;
+        logDebug << "    " << os.str() << std::endl;
+
         SmFreeProperty(p);
     }
     free(props);
@@ -251,6 +254,11 @@ void XSessionClient::saveCompleteCB(SmcConn smc_conn, void *client_data) {
     (void)client_data;
 
     logDebug << "saveCompleteCB()" << std::endl;
+
+#ifdef XOSVDEBUG
+    XSessionClient *xsc = static_cast<XSessionClient *>(client_data);
+    xsc->getProperties();
+#endif
 }
 
 
