@@ -123,8 +123,10 @@ bool XSessionClient::init(void) {
 
     // Setup params for SmcOpenConnection()
     std::vector<char> errorBuf(256, 0);
-    char *clientID = 0;
-    const char *prevID = _lastSessionID.size() ? _lastSessionID.c_str() : NULL;
+    char *clientID = NULL;
+    char *prevID = NULL;
+    if (_lastSessionID.size())
+        prevID = const_cast<char *>(_lastSessionID.c_str());
 
     SmcCallbacks callbacks;
     callbacks.save_yourself.callback = saveCB;
