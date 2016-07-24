@@ -572,7 +572,7 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
 
     // X Session Managment ID.
     o.add("sessionID",
-      "-smid", "--smid",
+      "-smid", "--smid", "sessionID",
       "Session management ID.");
 
     //-----------------------------------------------------
