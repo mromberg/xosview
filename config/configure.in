@@ -67,7 +67,7 @@ XO_GCC_CXXFLAGS
 
 # Give AC_ thing a shot (for the user to supply paths if nothing else)
 AC_PATH_XTRA
-XO_CHECK_SM_LIBS
+
 # First add what comes from AC_PATH_XTRA
 XO_CONCAT(CPPFLAGS,$CPPFLAGS,"$X_CFLAGS")
 XO_CONCAT(LDFLAGS,$LDFLAGS,"$X_LIBS")
@@ -104,6 +104,11 @@ XO_MIN_CXX_CHECK
 
 #  Check for usleep().  Currently, only HP-UX doesn't have it.
 AC_CHECK_FUNCS(usleep)
+
+#------------------------------------------------
+# Session management library support.
+#------------------------------------------------
+XO_CHECK_SM_LIBS
 
 #------------------------------------------------
 # Used for pixmap backgrounds.
