@@ -10,7 +10,7 @@ echo "     strncmp, snprintf, strncat,strncmp, strncasecmp...."
 
 egrep "strcmp|sprintf|strcat|strcmp|strcasecmp" \
 		`echo *.cc *.h */*.cc */*.h`;
-if [ $? == 0 ]; then
+if test $? -eq 0; then
     echo "***  Bad functions found -- error!";
     exit 1;
 fi
@@ -18,7 +18,7 @@ fi
 echo "Depricated string functions used in:"
 egrep -l "strncmp|snprintf|strncat|strncmp|strncasecmp" \
       `echo *.cc *.h */*.cc */*.h`;
-if [ $? == 0 ]; then
+if test $? -eq 0; then
     echo "Convert to std::string"
 fi
 

@@ -3,7 +3,7 @@
 
 //
 //  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002, 2015
+//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016
 //  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -44,20 +44,20 @@ void BSDCPUInit();
 
 void BSDGetCPUTimes(std::vector<uint64_t> &timesArray, unsigned int cpu = 0);
 
-int BSDNetInit();
+bool BSDNetInit();
 
 void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
   const std::string &netIface, bool ignored);
 
-int BSDSwapInit();
+bool BSDSwapInit();
 
 void BSDGetSwapInfo(uint64_t &total, uint64_t &free);
 
-int BSDDiskInit();
+bool BSDDiskInit();
 
 uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes);
 
-int BSDIntrInit();
+bool BSDIntrInit();
 
 int BSDNumInts();
 

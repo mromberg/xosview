@@ -217,7 +217,7 @@ static inline void safe_kvm_read_symbol(int nlstOffset, void* user_addr,
 }
 
 
-int ValidSymbol(int index) {
+bool ValidSymbol(int index) {
     return ( (nlst[index].n_value & 0xffffff00) != 0 );
 }
 
@@ -500,12 +500,12 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 
 
 // ------------------------  NetMeter functions  -------------------------------
-int BSDNetInit() {
+bool BSDNetInit() {
     OpenKDIfNeeded();
 #if defined(XOSVIEW_NETBSD) && !defined(XOSV_NETBSD_NET_IOCTL)
     return ValidSymbol(IFNET_SYM_INDEX);
 #else
-    return 1;
+    return true;
 #endif
 }
 
@@ -524,7 +524,8 @@ static void NetBSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
     for (struct if_nameindex *p = iflist; p->if_index > 0; p++) {
         struct ifdatareq ifdr;
         memset(&ifdr, 0, sizeof(ifdr));
-        strcpy(ifdr.ifdr_name, p->if_name);
+        std::string p_if_name(p->if_name);
+        memcpy(ifdr.ifdr_name, p_if_name.c_str(), p_if_name.length());
         if (ioctl(s, SIOCGIFDATA, &ifdr) == -1) {
             logFatal << "ioctl(SIOCGIFDATA) failed for: " << p->if_name
                      << std::endl;
@@ -662,9 +663,9 @@ void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
 //  ---------------------- Swap Meter stuff  -----------------------------------
 
-int BSDSwapInit() {
+bool BSDSwapInit() {
     OpenKDIfNeeded();
-    return 1;
+    return true;
 }
 
 
@@ -930,12 +931,12 @@ uint64_t DevStat_Get(uint64_t &read_bytes, uint64_t &write_bytes) {
 #endif
 
 
-int BSDDiskInit() {
+bool BSDDiskInit() {
     OpenKDIfNeeded();
 #if defined(HAVE_DEVSTAT)
     DevStat_Init();
 #endif
-    return 1;
+    return true;
 }
 
 
@@ -993,7 +994,7 @@ uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes) {
 
 //  ---------------------- Interrupt Meter stuff  ------------------------------
 
-int BSDIntrInit() {
+bool BSDIntrInit() {
     OpenKDIfNeeded();
     // Make sure the intr counter array is nonzero in size.
 #if defined(XOSVIEW_FREEBSD)
@@ -1011,7 +1012,7 @@ int BSDIntrInit() {
 #elif defined(XOSVIEW_NETBSD)
     return ValidSymbol(ALLEVENTS_SYM_INDEX);
 #endif
-    return 1;
+    return true;
 }
 
 
