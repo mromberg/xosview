@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
@@ -12,9 +12,11 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-
 #include "cpumeter.h"
 #include "kernel.h"
+
+#include <sys/param.h>
+#include <sys/sysctl.h>
 
 // for CPUSTATES
 #if defined(XOSVIEW_NETBSD)
@@ -28,8 +30,6 @@
 #else
 #include <sys/resource.h>
 #endif
-
-
 
 
 CPUMeter::CPUMeter( unsigned int nbr )
@@ -79,4 +79,16 @@ void CPUMeter::getcputime( void ) {
         setUsed(total_ - fields_[4], total_);
         cpuindex_ = (cpuindex_ + 1) % 2;
     }
+}
+
+
+size_t CPUMeter::countCPUs(void) {
+    const int mib_cpu[2] = { CTL_HW, HW_NCPU };
+    size_t cpus = 0;
+    size_t size = sizeof(cpus);
+
+    if ( sysctl(mib_cpu, 2, &cpus, &size, NULL, 0) < 0 )
+        logProblem << "sysctl hw.ncpu failed." << std::endl;
+
+    return cpus;
 }

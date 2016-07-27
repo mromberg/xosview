@@ -414,6 +414,24 @@ void BSDCPUInit() {
 }
 
 
+static size_t BSDCountCpus(void) {
+
+    static bool first = true;
+    static size_t cpus = 0;
+
+    if (first) {
+        first = false;
+        size_t size = sizeof(cpus);
+        const int mib_cpu[2] = { CTL_HW, HW_NCPU };
+
+        if ( sysctl(mib_cpu, 2, &cpus, &size, NULL, 0) < 0 )
+            logProblem << "sysctl hw.ncpu failed." << std::endl;
+    }
+
+    return cpus;
+}
+
+
 void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
     // timeArray is CPUSTATES long.
     // cpu is the number of CPU to return, starting from 1. If cpu == 0,
@@ -1267,17 +1285,6 @@ void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
 
 
 //  ---------------------- Sensor Meter stuff  ---------------------------------
-
-static int mib_cpu[2] = { CTL_HW, HW_NCPU };
-
-int BSDCountCpus(void) {
-    int cpus = 0;
-    size_t size = sizeof(cpus);
-    if ( sysctl(mib_cpu, 2, &cpus, &size, NULL, 0) < 0 )
-        logProblem << "sysctl hw.ncpu failed." << std::endl;
-    return cpus;
-}
-
 
 #if defined(__i386__) || defined(__x86_64__)
 static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,

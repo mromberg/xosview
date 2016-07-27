@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
@@ -28,6 +28,8 @@ public:
     virtual std::string resName( void ) const { return "cpu"; }
     void checkevent( void );
     void checkResources(const ResDB &rdb);
+
+    static size_t countCPUs(void);
 
 protected:
     void getcputime( void );

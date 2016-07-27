@@ -69,8 +69,6 @@ inline void BSDGetIntrCount(std::vector<uint64_t> &intrCount) {
     BSDGetIntrStats(intrCount, notUsed);
 }
 
-int BSDCountCpus(void);
-
 #if defined(__i386__) || defined(__x86_64)
 unsigned int BSDGetCPUTemperature(std::vector<float> &temps,
   std::vector<float> &tjmax);
