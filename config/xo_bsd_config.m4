@@ -28,7 +28,22 @@ AC_CHECK_LIB(devstat, main,[dnl
 AC_CHECK_LIB(kinfo, kinfo_get_cpus,[dnl
     AC_DEFINE(HAVE_KINFO,[1],[Have libkinfo])
     XO_CONCAT([LIBS],$LIBS,[-lkinfo])])
+])
 
+
+dnl Check to see if the SIOCGIFDATA ioctl seems to be supported.
+dnl This new method of getting network stats appears in netbsd 7.0.0.
+dnl Here we check for some headers, functions and symbols rather than
+dnl using a version number.  Define XOSV_NETBSD_NET_IOCTL if supported.
+AC_DEFUN([XO_NETBSD_NET_IOCTL],[dnl
+    AC_CHECK_HEADER([net/if.h],[dnl
+        AC_CHECK_FUNC(if_nameindex,xo_have_if_name_index="yes")])
+    AC_CHECK_HEADER([sys/ioctl.h],[dnl
+        AC_CHECK_DECL(SIOCGIFDATA,xo_have_SIOCGIFDATA="yes",[],[dnl
+            AC_INCLUDES_DEFAULT([#include <sys/ioctl.h>])])])
+    if test -n "$xo_have_if_name_index" -a -n "$xo_have_SIOCGIFDATA"; then
+        AC_DEFINE(XOSV_NETBSD_NET_IOCTL,[1],[Use ioctl for net stats.])
+    fi
 ])
 
 
@@ -47,6 +62,7 @@ XO_BSD_KERNLIBS
 #-----------------------------------------
 case $host_os in
     netbsd*)
+        XO_NETBSD_NET_IOCTL
         ## We'll assume the existence of UVM now
         dnl AC_DEFINE(UVM,[1],[UVM exists])
         AC_DEFINE(XOSVIEW_NETBSD,[1],[xosview netbsd features])

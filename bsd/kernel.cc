@@ -1,6 +1,6 @@
 //
 //  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002, 2015
+//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016
 //  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -20,6 +20,8 @@
 #include "log.h"
 #include "strutil.h"
 #include "kernel.h"
+
+#include <cstring>
 
 #include <sys/param.h>
 #include <unistd.h>
@@ -60,6 +62,11 @@ static int maxcpus = 1;
 #include <sys/envsys.h>
 #include <prop/proplib.h>
 #include <paths.h>
+#if defined(XOSV_NETBSD_NET_IOCTL)
+#include <net/if.h>
+#include <sys/ioctl.h>
+#include <machine/int_fmtio.h>
+#endif
 #endif
 
 
@@ -121,7 +128,7 @@ static struct nlist nlst[] = {
     MK_NLIST(DUMMY_SYM),
 #define DUMMY_0
 #endif
-#if !defined(XOSVIEW_OPENBSD)
+#if !defined(XOSVIEW_OPENBSD) && !defined(XOSV_NETBSD_NET_IOCTL)
     MK_NLIST("_ifnet"),
 #define IFNET_SYM_INDEX      1
 #else
@@ -495,12 +502,53 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 // ------------------------  NetMeter functions  -------------------------------
 int BSDNetInit() {
     OpenKDIfNeeded();
-#if defined(XOSVIEW_NETBSD)
+#if defined(XOSVIEW_NETBSD) && !defined(XOSV_NETBSD_NET_IOCTL)
     return ValidSymbol(IFNET_SYM_INDEX);
 #else
     return 1;
 #endif
 }
+
+
+#if defined(XOSV_NETBSD_NET_IOCTL)
+// -----------------------------------------------------------
+// Based on a code snippet from Martin Husemann on the NetBSD
+// forums.
+// -----------------------------------------------------------
+static void NetBSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
+  const std::string &netIface, bool ignored) {
+
+    struct if_nameindex *iflist = if_nameindex();
+    int s = socket(AF_LOCAL, SOCK_DGRAM, 0);
+
+    for (struct if_nameindex *p = iflist; p->if_index > 0; p++) {
+        struct ifdatareq ifdr;
+        memset(&ifdr, 0, sizeof(ifdr));
+        strcpy(ifdr.ifdr_name, p->if_name);
+        if (ioctl(s, SIOCGIFDATA, &ifdr) == -1) {
+            logFatal << "ioctl(SIOCGIFDATA) failed for: " << p->if_name
+                     << std::endl;
+        }
+        std::string ifname(ifdr.ifdr_name);
+        if (netIface != "False") {
+            if ((!ignored && netIface != ifname)
+              || (ignored && netIface == ifname))
+                continue;
+        }
+        const struct if_data *ifi = &ifdr.ifdr_data;
+        inbytes += ifi->ifi_ibytes;
+        outbytes += ifi->ifi_obytes;
+
+        logDebug << ifname
+                 << " in: " << ifi->ifi_ibytes
+                 << " out: " << ifi->ifi_obytes << std::endl;
+    }
+
+    close(s);
+    if_freenameindex(iflist);
+}
+#endif
+
 
 #if defined(XOSVIEW_OPENBSD)
 static void OpenBSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
@@ -560,6 +608,8 @@ void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
 #if defined(XOSVIEW_OPENBSD)
     OpenBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
+#elif defined(XOSV_NETBSD_NET_IOCTL)
+    NetBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
 #else
     std::string ifname;
     struct ifnet *ifnetp;
