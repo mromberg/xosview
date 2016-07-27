@@ -12,10 +12,11 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-
 #include "loadmeter.h"
-#include "kernel.h"
+#include "cpumeter.h"
 
+#include <sys/param.h>
+#include <sys/sysctl.h>
 
 
 LoadMeter::LoadMeter( void )
@@ -31,6 +32,65 @@ float LoadMeter::getLoad(void) {
 }
 
 
-uint64_t LoadMeter::getCPUSpeed(void) {
-    return BSDGetCPUSpeed() * 1000000;
+#if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_DFBSD)
+
+static uint64_t GetCPUSpeed(const std::string &sysname) {
+    uint64_t speed = 0;
+    size_t size = sizeof(speed);
+
+    if (sysctlbyname(sysname.c_str(), &speed, &size, NULL, 0) < 0)
+        logFatal << "sysctl(" << sysname << ") failed" << std::endl;
+
+    return speed / 1000000;
 }
+
+#endif
+
+#if defined(XOSVIEW_NETBSD)
+
+uint64_t LoadMeter::getCPUSpeed(void) {
+    return GetCPUSpeed("machdep.tsc_freq");
+}
+
+#elif defined(XOSVIEW_DFBSD)
+
+uint64_t LoadMeter::getCPUSpeed(void) {
+    return GetCPUSpeed("hw.tsc_frequency");
+}
+
+#elif defined(XOSVIEW_OPENBSD)
+
+uint64_t LoadMeter::getCPUSpeed(void) {
+
+    const int mib_spd[] = { CTL_HW, HW_CPUSPEED };
+    size_t size = sizeof(cpu_speed);
+
+    if ( sysctl(mib_spd, ASIZE(mib_spd), &cpu_speed, &size, NULL, 0) < 0 )
+        logFatal << "syscl hw.cpuspeed failed" << std::endl;
+
+    return speed / 1000000;
+}
+
+#elif defined(XOSVIEW_FREEBSD)
+
+uint64_t LoadMeter::getCPUSpeed(void) {
+    static int cpus = CPUMeter::countCPUs();
+    int cpu_speed = 0;
+    int speed = 0, avail_cpus = 0;
+    size_t size = sizeof(speed);
+
+    for (int i = 0; i < cpus; i++) {
+        std::string name("dev.cpu." + util::repr(i) + ".freq");
+        if ( sysctlbyname(name.c_str(), &speed, &size, NULL, 0) == 0 ) {
+            // count only cpus with individual freq available
+            cpu_speed += speed;
+            avail_cpus++;
+        }
+    }
+    if (avail_cpus > 1)
+        cpu_speed /= avail_cpus;
+
+    return cpu_speed;
+}
+
+#endif

@@ -286,45 +286,6 @@ void OpenKDIfNeeded() {
 }
 
 
-int BSDGetCPUSpeed() {
-    size_t size;
-    int cpu_speed = 0;
-
-#if defined(XOSVIEW_FREEBSD)
-    std::string name;
-    int speed = 0, cpus = BSDCountCpus(), avail_cpus = 0;
-    size = sizeof(speed);
-    for (int i = 0; i < cpus; i++) {
-        name = "dev.cpu." + util::repr(i) + ".freq";
-        if ( sysctlbyname(name.c_str(), &speed, &size, NULL, 0) == 0 ) {
-            // count only cpus with individual freq available
-            cpu_speed += speed;
-            avail_cpus++;
-        }
-    }
-    if (avail_cpus > 1)
-        cpu_speed /= avail_cpus;
-#elif defined(XOSVIEW_OPENBSD)
-    const int mib_spd[] = { CTL_HW, HW_CPUSPEED };
-    size = sizeof(cpu_speed);
-    if ( sysctl(mib_spd, ASIZE(mib_spd), &cpu_speed, &size, NULL, 0) < 0 )
-        logFatal << "syscl hw.cpuspeed failed" << std::endl;
-#else  /* XOSVIEW_NETBSD || XOSVIEW_DFBSD */
-    uint64_t speed = 0;
-    size = sizeof(speed);
-#if defined(XOSVIEW_NETBSD)
-    if ( sysctlbyname("machdep.tsc_freq", &speed, &size, NULL, 0) < 0 )
-        logFatal << "sysctl machdep.tsc_freq failed" << std::endl;
-#else  /* XOSVIEW_DFBSD */
-    if ( sysctlbyname("hw.tsc_frequency", &speed, &size, NULL, 0) < 0 )
-        logFatal << "sysctl hw.tsc_frequency failed" << std::endl;
-#endif
-    cpu_speed = speed / 1000000;
-#endif
-    return cpu_speed;
-}
-
-
 // --------------------  PageMeter & MemMeter functions  -----------------------
 void BSDPageInit() {
     OpenKDIfNeeded();

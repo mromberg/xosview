@@ -23,8 +23,6 @@ void BSDInit();
 
 void SetKernelName(const std::string &kernelName);
 
-int BSDGetCPUSpeed();
-
 void BSDPageInit();
 
 void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
