@@ -62,13 +62,14 @@ uint64_t LoadMeter::getCPUSpeed(void) {
 
 uint64_t LoadMeter::getCPUSpeed(void) {
 
-    const int mib_spd[] = { CTL_HW, HW_CPUSPEED };
-    size_t size = sizeof(cpu_speed);
+    const int mib[] = { CTL_HW, HW_CPUSPEED };
+    int speed = 0;
+    size_t size = sizeof(speed);
 
-    if ( sysctl(mib_spd, ASIZE(mib_spd), &cpu_speed, &size, NULL, 0) < 0 )
+    if (sysctl(mib, sizeof(mib)/sizeof(int), &speed, &size, NULL, 0) < 0)
         logFatal << "syscl hw.cpuspeed failed" << std::endl;
 
-    return speed / 1000000;
+    return speed * 1000000;
 }
 
 #elif defined(XOSVIEW_FREEBSD)

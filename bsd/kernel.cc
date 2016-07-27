@@ -375,6 +375,7 @@ void BSDCPUInit() {
 }
 
 
+#if !defined(XOSVIEW_OPENBSD)
 static size_t BSDCountCpus(void) {
 
     static bool first = true;
@@ -391,6 +392,7 @@ static size_t BSDCountCpus(void) {
 
     return cpus;
 }
+#endif
 
 
 void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
