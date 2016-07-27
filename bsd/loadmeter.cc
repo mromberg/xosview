@@ -32,7 +32,8 @@ float LoadMeter::getLoad(void) {
 }
 
 
-#if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_DFBSD)
+#if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_DFBSD) || \
+    defined(XOSVIEW_FREEBSD)
 
 static uint64_t GetCPUSpeed(const std::string &sysname) {
     uint64_t speed = 0;
@@ -46,7 +47,7 @@ static uint64_t GetCPUSpeed(const std::string &sysname) {
 
 #endif
 
-#if defined(XOSVIEW_NETBSD)
+#if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD)
 
 uint64_t LoadMeter::getCPUSpeed(void) {
     return GetCPUSpeed("machdep.tsc_freq");
@@ -70,28 +71,6 @@ uint64_t LoadMeter::getCPUSpeed(void) {
         logFatal << "syscl hw.cpuspeed failed" << std::endl;
 
     return speed * 1000000;
-}
-
-#elif defined(XOSVIEW_FREEBSD)
-
-uint64_t LoadMeter::getCPUSpeed(void) {
-    static int cpus = CPUMeter::countCPUs();
-    int cpu_speed = 0;
-    int speed = 0, avail_cpus = 0;
-    size_t size = sizeof(speed);
-
-    for (int i = 0; i < cpus; i++) {
-        std::string name("dev.cpu." + util::repr(i) + ".freq");
-        if ( sysctlbyname(name.c_str(), &speed, &size, NULL, 0) == 0 ) {
-            // count only cpus with individual freq available
-            cpu_speed += speed;
-            avail_cpus++;
-        }
-    }
-    if (avail_cpus > 1)
-        cpu_speed /= avail_cpus;
-
-    return cpu_speed;
 }
 
 #endif
