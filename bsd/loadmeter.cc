@@ -41,7 +41,7 @@ static uint64_t GetCPUSpeed(const std::string &sysname) {
     if (sysctlbyname(sysname.c_str(), &speed, &size, NULL, 0) < 0)
         logFatal << "sysctl(" << sysname << ") failed" << std::endl;
 
-    return speed / 1000000;
+    return speed;
 }
 
 #endif
