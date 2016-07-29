@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -39,7 +39,6 @@ void BitMeter::drawIfNeeded(X11Graphics &g){
 
 
 void BitMeter::drawBits(X11Graphics &g, bool mandatory){
-    static int pass = 1;
 
     int x1 = x() + 0, x2;
 
@@ -50,7 +49,7 @@ void BitMeter::drawBits(X11Graphics &g, bool mandatory){
             x2 = x() + (width() + 1) - 1;
 
         if ( (bits_[i] != lastbits_[i]) || mandatory ){
-            if ( bits_[i] && pass )
+            if ( bits_[i] )
                 g.setFG( onColor_ );
             else
                 g.setFG( offColor_ );
