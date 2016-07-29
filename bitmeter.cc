@@ -40,7 +40,6 @@ void BitMeter::draw(X11Graphics &g){
     g.lineWidth( 1 );
     g.setFG( fgColor() );
     g.drawFilledRectangle( x() - 1, y() - 1, width() + 2, height() + 2 );
-
     g.lineWidth( 0 );
 
     drawLabels(g);
