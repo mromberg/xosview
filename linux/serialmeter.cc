@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -61,8 +61,8 @@ void SerialMeter::checkevent( void ){
 
 void SerialMeter::checkResources(const ResDB &rdb){
     BitMeter::checkResources(rdb);
-    onColor_ = rdb.getColor("serialOnColor");
-    offColor_ = rdb.getColor("serialOffColor");
+    _dbits.color(0, rdb.getColor("serialOffColor"));
+    _dbits.color(1, rdb.getColor("serialOnColor"));
 
     _port = getPortBase(rdb, _device);
     if (!getport(_port + UART_LSR) || !getport(_port + UART_MSR)){

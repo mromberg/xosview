@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -49,8 +49,8 @@ void IntMeter::checkevent( void ){
 
 void IntMeter::checkResources(const ResDB &rdb) {
     BitMeter::checkResources(rdb);
-    onColor_  = rdb.getColor("intOnColor");
-    offColor_ = rdb.getColor("intOffColor");
+    _dbits.color(0, rdb.getColor("intOffColor"));
+    _dbits.color(1, rdb.getColor("intOnColor"));
 }
 
 
