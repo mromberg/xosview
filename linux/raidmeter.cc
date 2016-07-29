@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006, 2015
+//  Copyright (c) 1999, 2006, 2015, 2016
 //  by Thomas Waldmann ( ThomasWaldmann@gmx.de )
 //  based on work of Mike Romberg ( mike-romberg@comcast.net )
 //
@@ -47,7 +47,7 @@ void RAIDMeter::checkevent( void ){
     getRAIDstate();
 
     for ( int i = 0 ; i < disknum ; i++ ){
-        bits_[i] = (working_map[i]=='+');
+        _bits[i] = (working_map[i]=='+');
     }
     fields_[0]=100.0;
     util::fstr(resync_state.substr(resync_state.find('=')+1), fields_[0]);

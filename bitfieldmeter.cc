@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006, 2015
+//  Copyright (c) 1999, 2006, 2015, 2016
 //  by Thomas Waldmann ( ThomasWaldmann@gmx.de )
 //  based on work of Mike Romberg ( mike-romberg@comcast.net )
 //
@@ -18,12 +18,11 @@ BitFieldMeter::BitFieldMeter(size_t numBits, size_t numfields,
   const std::string &title, const std::string &bitslegend,
   const std::string &fieldLegend)
     : Meter(title, bitslegend),
-      fields_(numfields, 0.0), total_(0.0), bits_(numBits, 0), used_(0),
+      fields_(numfields, 0.0), total_(0.0), _bits(numBits, 0), used_(0),
       lastused_(-1), lastvals_(numfields, 0), lastx_(numfields, 0),
       colors_(numfields, 0), usedcolor_(0),
       print_(PERCENT), printedZeroTotalMesg_(false), numWarnings_(0),
-      onColor_(0), offColor_(0), lastbits_(numBits, 0),
-      fieldLegend_(fieldLegend) {
+      onColor_(0), offColor_(0), fieldLegend_(fieldLegend) {
 }
 
 
@@ -41,11 +40,11 @@ void BitFieldMeter::checkResources(const ResDB &rdb){
 
 
 void BitFieldMeter::setNumBits(int n){
-    bits_.resize(n);
-    lastbits_.resize(n);
+    _dbits.resize(n);
+    _bits.resize(n);
 
     for ( unsigned int i = 0 ; i < numbits() ; i++ )
-        bits_[i] = lastbits_[i] = 0;
+        _bits[i] = 0;
 }
 
 void BitFieldMeter::setUsedFormat ( const std::string &fmt ) {
@@ -111,7 +110,7 @@ void BitFieldMeter::draw(X11Graphics &g) {
       width() / 2 - 2, height() + 2 );
 
     drawLabels(g);
-    drawBits(g, 1);
+    _dbits.draw(_bits, g, x(), y(), width() / 2, height(), true);
     drawfields(g, 1);
 }
 
@@ -216,29 +215,6 @@ void BitFieldMeter::drawused(X11Graphics &g, bool mandatory) {
 }
 
 
-void BitFieldMeter::drawBits(X11Graphics &g, bool mandatory){
-    static int pass = 1;
-
-    int x1 = x(), w;
-
-    w = (width() / 2 - (numbits() + 1)) / numbits();
-
-    for ( unsigned int i = 0 ; i < numbits() ; i++ ){
-        if ( (bits_[i] != lastbits_[i]) || mandatory ){
-            if ( bits_[i] && pass )
-                g.setFG( onColor_ );
-            else
-                g.setFG( offColor_ );
-            g.drawFilledRectangle( x1, y(), w, height());
-        }
-
-        lastbits_[i] = bits_[i];
-
-        x1 += (w + 2);
-    }
-}
-
-
 void BitFieldMeter::drawfields(X11Graphics &g, bool mandatory) {
     int twidth, x = Meter::x() + width() / 2 + 4;
 
@@ -281,7 +257,7 @@ void BitFieldMeter::drawfields(X11Graphics &g, bool mandatory) {
 
 
 void BitFieldMeter::drawIfNeeded( X11Graphics &g ) {
-    drawBits(g);
+    _dbits.draw(_bits, g, x(), y(), width() / 2, height());
     drawfields(g);
 }
 
@@ -289,7 +265,7 @@ void BitFieldMeter::drawIfNeeded( X11Graphics &g ) {
 void BitFieldMeter::setBits(int startbit, unsigned char values){
     unsigned char mask = 1;
     for (int i = startbit ; i < startbit + 8 ; i++){
-        bits_[i] = values & mask;
+        _bits[i] = values & mask;
         mask = mask << 1;
     }
 }

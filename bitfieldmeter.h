@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006, 2015 Thomas Waldmann (ThomasWaldmann@gmx.de)
+//  Copyright (c) 1999, 2006, 2015, 2016 Thomas Waldmann (ThomasWaldmann@gmx.de)
 //  based on work of Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -9,7 +9,7 @@
 
 #include "meter.h"
 #include "timer.h"
-
+#include "drawbits.h"
 
 
 class BitFieldMeter : public Meter {
@@ -28,14 +28,15 @@ public:
 protected:
     std::vector<float> fields_;
     float total_;
-    std::vector<char> bits_;
+    std::vector<char> _bits;
+    DrawBits<char> _dbits;
 
     size_t numfields(void) const { return fields_.size(); }
     void setfieldcolor( int field, unsigned long color);
     void reset( void );
     void setUsed (float val, float total);
     void setBits(int startbit, unsigned char values);
-    unsigned int numbits(void) const { return bits_.size(); }
+    unsigned int numbits(void) const { return _bits.size(); }
     virtual void drawfields(X11Graphics &g, bool mandatory=false);
     void setNumFields(int n);
     void setNumBits(int n);
@@ -61,12 +62,10 @@ private:
     bool printedZeroTotalMesg_;
     size_t numWarnings_;
     unsigned long onColor_, offColor_;
-    std::vector<char> lastbits_;
     std::string fieldLegend_;
     Timer _timer;
 
     void setUsedFormat ( const std::string &str );
-    void drawBits(X11Graphics &g, bool mandatory=false);
     void drawfieldlegend(X11Graphics &g);
     void drawused(X11Graphics &g, bool mandatory);
     bool checkX(int x, int width) const;
