@@ -1,5 +1,5 @@
 //
-//  The original FieldMeter class is Copyright (c) 1994, 2006, 2015
+//  The original FieldMeter class is Copyright (c) 1994, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  Modifications from FieldMeter class done in Oct. 1995
@@ -62,6 +62,9 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
     if ( total_ == 0.0 )
         return;
 
+    const int fx = fldx();
+    const int fwidth = fldwidth();
+
     //  This code is supposed to make the average display look just like
     //  the ordinary display for the first drawfields, but it doesn't seem
     //  to work too well.  But it's better than setting all decay_ fields
@@ -93,37 +96,37 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
      *  our problems with rounding that before we tackled at a whole
      *  lot of places.  BCG */
     const int halfheight = height() / 2;
-    int decayx = Meter::x();
-    int x = Meter::x();
+    int decayx = fx;
+    int x = fx;
     for ( size_t i = 0 ; i < numfields() ; i++ ){
 
         decay_[i] = ALPHA * decay_[i] + (1.0 - ALPHA) * (fields_[i] / total_);
 
         //  We want to round the widths, rather than truncate.
-        int twidth = (int) (0.5 + (width() * (float) fields_[i]) / total_);
-        int decaytwidth = (int) (0.5 + width() * decay_[i]);
+        int twidth = (int) (0.5 + (fwidth * (float) fields_[i]) / total_);
+        int decaytwidth = (int) (0.5 + fwidth * decay_[i]);
         logAssert(decaytwidth >= 0.0)
             << "FieldMeterDecay " << name()
             << ":  decaytwidth of " << std::endl
-            << decaytwidth << ", width of " << width()
+            << decaytwidth << ", width of " << fwidth
             << ", decay_[" << i << std::endl
             << "] of " << decay_[i] << std::endl;
 
         //  However, due to rounding, we may have gone one
         //  pixel too far by the time we get to the later fields...
-        if (x + twidth > Meter::x() + width())
-            twidth = width() + Meter::x() - x;
-        if (decayx + decaytwidth > Meter::x() + width())
-            decaytwidth = width() + Meter::x() - decayx;
+        if (x + twidth > fx + fwidth)
+            twidth = fwidth + fx - x;
+        if (decayx + decaytwidth > fx + fwidth)
+            decaytwidth = fwidth + fx - decayx;
 
         //  Also, due to rounding error, the last field may not go far
         //  enough...
         if ( (i == numfields() - 1)
-          && ((x + twidth) != (Meter::x() + width())) )
-            twidth = width() + Meter::x() - x;
+          && ((x + twidth) != (fx + fwidth)) )
+            twidth = fwidth + fx - x;
         if ( (i == numfields() - 1)
-          && ((decayx + decaytwidth) != (Meter::x() + width())))
-            decaytwidth = width() + Meter::x() - decayx;
+          && ((decayx + decaytwidth) != (fx + fwidth)))
+            decaytwidth = fwidth + fx - decayx;
 
         //  drawFilledRectangle() adds one to its width and height.
         //    Let's correct for that here.
