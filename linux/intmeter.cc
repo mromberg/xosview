@@ -41,7 +41,7 @@ IntMeter::~IntMeter( void ){
 void IntMeter::checkevent( void ){
     std::vector<unsigned long long> newc = readCounts();
     for (size_t i = 0 ; i < numBits() ; i++) {
-        bits_[i] = newc[i] - _last[i];
+        _bits[i] = newc[i] - _last[i];
     }
     _last = newc;
 }

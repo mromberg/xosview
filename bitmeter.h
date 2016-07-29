@@ -26,14 +26,14 @@ public:
     virtual void drawIfNeeded(X11Graphics &g);
     virtual void checkResources(const ResDB &rdb);
 
-    size_t numBits(void) const { return bits_.size(); }
+    size_t numBits(void) const { return _bits.size(); }
     void setNumBits(size_t n);
 
 protected:
-    std::vector<bool> bits_;
+    std::vector<bool> _bits;
     DrawBits<bool> _dbits;
 
-    size_t numbits(void) const { return bits_.size(); }
+    size_t numbits(void) const { return _bits.size(); }
     void setBits(int startbit, unsigned char values);
 };
 

@@ -10,7 +10,7 @@
 
 BitMeter::BitMeter(const std::string &title, const std::string &legend,
   size_t numBits)
-    : Meter( title, legend ), bits_(numBits, 0) {
+    : Meter( title, legend ), _bits(numBits, 0) {
 }
 
 
@@ -19,10 +19,10 @@ BitMeter::~BitMeter( void ){
 
 
 void BitMeter::setNumBits(size_t n){
-    bits_.resize(n);
+    _bits.resize(n);
 
     for ( unsigned int i = 0 ; i < numbits() ; i++ )
-        bits_[i] = 0;
+        _bits[i] = false;
 }
 
 
@@ -32,7 +32,7 @@ void BitMeter::checkResources(const ResDB &rdb){
 
 
 void BitMeter::drawIfNeeded(X11Graphics &g){
-    _dbits.draw(bits_, g, x(), y(), width(), height());
+    _dbits.draw(_bits, g, x(), y(), width(), height());
 }
 
 
@@ -45,14 +45,14 @@ void BitMeter::draw(X11Graphics &g){
 
     drawLabels(g);
 
-    _dbits.draw(bits_, g, x(), y(), width(), height(), true);
+    _dbits.draw(_bits, g, x(), y(), width(), height(), true);
 }
 
 
 void BitMeter::setBits(int startbit, unsigned char values){
     unsigned char mask = 1;
     for (int i = startbit ; i < startbit + 8 ; i++){
-        bits_[i] = values & mask;
+        _bits[i] = values & mask;
         mask = mask << 1;
     }
 }
