@@ -126,6 +126,11 @@ std::string strerror(int error) {
 }
 
 
+std::string strerror(void) {
+    return strerror(errno);
+}
+
+
 template <class X>
 inline std::ostream &operator<<(std::ostream &os, const std::set<X> &s) {
     os << "(";

@@ -20,23 +20,23 @@
 
 * Current known working platforms:
    
-  - Linux (tested on fedora-22 but almost anything should work)
+  - Linux (tested on fedora-24 but almost anything should work)
 
-  - Gnu Hurd (debian-hurd)
+  - Gnu Hurd (debian 3-25-2016 snapshot)
 
-  - Solaris (tested on OpenIndiana)
+  - Solaris (tested on OpenIndiana hipster 2016.04)
 
-  - NetBSD
+  - NetBSD  (7.0.1)
 
-  - FreeBSD
+  - FreeBSD (10.3)
 
-  - OpenBSD
+  - OpenBSD (5.9)
 
-  - Dragonfly BSD
+  - Dragonfly BSD (4.4.3)
 
   - cygwin (displayed stats are for windows)
 
-  - minix (dev snapshot with X11)
+  - minix (3.3.0 dev snapshot with X11)
 
 * To build xosview:
 
@@ -52,6 +52,14 @@
     options you can change such as the install prefix.  These switches
     may be used to help locate optional (or required) libraries
     if the configure script is unable to do so by itself.
+
+    The configure script will attempt to look for the xpm library to load
+    background images with.  It will also look for the Xft library for freetype2
+    font support.  If it finds the SM/ICE libraries it will configure support
+    for working as a session client.  If configure fails to find any of these
+    libraries and you wish to have the xosview features they depend on you may
+    need to use your systems package manager to install "dev" packages for these
+    libraries.
 
     Please see the README file for the platform you are building on for
     further details.

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006, 2015
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -10,6 +10,7 @@
 #include "MeterMaker.h"
 #include "strutil.h"
 #include "x11font.h"
+#include "xsc.h"
 #ifdef HAVE_XFT
 #include "xftfont.h"
 #endif
@@ -34,7 +35,7 @@ XOSView::XOSView(void)
       hmargin_(0), vmargin_(0), vspacing_(0),
       sleeptime_(1), usleeptime_(1000),
       _isvisible(false), _ispartiallyvisible(false), _sampleRate(10),
-      _doFullDraw(true) {
+      _doFullDraw(true), _xsc(0) {
 }
 
 
@@ -44,11 +45,15 @@ XOSView::~XOSView( void ){
         delete _meters[i];
     _meters.resize(0);
     delete _xrm;
+    delete _xsc;
 }
 
 
 void XOSView::run(int argc, char **argv) {
 
+    _xsc = new XSessionClient(argc, argv);
+    if (_xsc->init())
+        logDebug << "session ID: " << _xsc->sessionID() << std::endl;
     loadConfiguration(argc, argv);
     checkResources();      // initialize from our resources
     setEvents();           //  set up the X events
@@ -71,6 +76,8 @@ void XOSView::loop(void) {
     drawv.reserve(_meters.size());
 
     while( !done() ){
+        if (_xsc->check())
+            break;
         drawv.clear();
         _doFullDraw = false;
         checkevent();
@@ -562,6 +569,11 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
     o.add("xrmdump",
       "-xrmd", "--xrm-dump",
       "Dump the X resouces seen by xosview to stdout and exit.");
+
+    // X Session Managment ID.
+    o.add("sessionID",
+      "-smid", "--smid", "sessionID",
+      "Session management ID.");
 
     //-----------------------------------------------------
     // No other options that override X resources are needed

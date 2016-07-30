@@ -17,6 +17,7 @@ m4_include([xo_linux_config.m4])
 m4_include([xo_bsd_config.m4])
 m4_include([xo_xft_support.m4])
 m4_include([xo_define_dir.m4])
+m4_include([xo_smlibs.m4])
 
 AC_CANONICAL_HOST
 
@@ -66,6 +67,7 @@ XO_GCC_CXXFLAGS
 
 # Give AC_ thing a shot (for the user to supply paths if nothing else)
 AC_PATH_XTRA
+
 # First add what comes from AC_PATH_XTRA
 XO_CONCAT(CPPFLAGS,$CPPFLAGS,"$X_CFLAGS")
 XO_CONCAT(LDFLAGS,$LDFLAGS,"$X_LIBS")
@@ -73,8 +75,7 @@ XO_CONCAT(LDFLAGS,$LDFLAGS,"$X_LIBS")
 # This takes care of the paths.  The libraries themselves (like -lX11)
 # will be added later.  First need to check for Xpm, Xft etc.
 # Any checks for X11 depended LIBS will need to add
-# $X_PRE_LIBS -lX11 $X_EXTRA_LIBS to thier checks.  In reality
-# I've never seen a case where anything but -lX11 is needed.
+# $X_PRE_LIBS -lX11 $X_EXTRA_LIBS to thier checks.
 
 # Let the user have a stab at app-defaults if they don't
 # like the default (${datarootdir}/X11/app-defaults)
@@ -103,6 +104,11 @@ XO_MIN_CXX_CHECK
 
 #  Check for usleep().  Currently, only HP-UX doesn't have it.
 AC_CHECK_FUNCS(usleep)
+
+#------------------------------------------------
+# Session management library support.
+#------------------------------------------------
+XO_CHECK_SM_LIBS
 
 #------------------------------------------------
 # Used for pixmap backgrounds.
@@ -226,7 +232,7 @@ AC_CONFIG_FILES([xosview.1:xosview.1.in])
 #-----------------------------------------------
 # Finalize LIBS
 #-----------------------------------------------
-dnl XO_CONCAT(LIBS,$LIBS,$X_PRE_LIBS)
+XO_CONCAT(LIBS,$LIBS,$X_PRE_LIBS)
 XO_CONCAT(LIBS,$LIBS,-lX11)
 XO_CONCAT(LIBS,$LIBS,$X_EXTRA_LIBS)
 
