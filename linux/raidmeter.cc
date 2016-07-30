@@ -31,7 +31,7 @@ RAIDMeter::RAIDMeter( int raiddev)
 
     legend("MD" + util::repr(raiddev));
     if(disknum>=1){
-        setfieldlegend("Done/ToDo");
+        legend("Done/ToDo");
         setNumBits(disknum);
     }
     total_ = 100.0;
