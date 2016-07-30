@@ -8,32 +8,14 @@
 
 #include "raidmeter.h"
 
-#include <fstream>
-
-
-static const char * const RAIDFILE = "/proc/mdstat";
-
 
 RAIDMeter::RAIDMeter( int raiddev)
     : BitFieldMeter( 1, 2, "RAID"),
       _raiddev(raiddev),
-      mdnum(0),
-      state(),
-      type(),
-      working_map(),
-      resync_state(),
-      disknum(0),
-      doneColor_(0), todoColor_(0), completeColor_(0) {
-
-    getRAIDstate();
-    if(disknum<1)
-        logFatal << "No raid disks found." << std::endl;
+      _doneColor(0), _todoColor(0) {
 
     legend("MD" + util::repr(raiddev));
-    if(disknum>=1){
-        legend("Done/ToDo");
-        setNumBits(disknum);
-    }
+    setNumBits(3);
     total_ = 100.0;
 }
 
@@ -43,104 +25,15 @@ RAIDMeter::~RAIDMeter( void ){
 
 
 void RAIDMeter::checkevent( void ){
-
-    getRAIDstate();
-
-    for ( int i = 0 ; i < disknum ; i++ ){
-        _bits[i] = (working_map[i]=='+');
-    }
-    fields_[0]=100.0;
-    util::fstr(resync_state.substr(resync_state.find('=')+1), fields_[0]);
-    fields_[1] = total_ - fields_[1];
-    if(fields_[0]<100.0){
-        setfieldcolor(0,doneColor_);
-        setfieldcolor(1,todoColor_);
-    }else{
-        setfieldcolor(0,completeColor_);
-    }
-    setUsed(fields_[0], total_);
 }
 
 
 void RAIDMeter::checkResources(const ResDB &rdb){
     BitFieldMeter::checkResources(rdb);
 
-    doneColor_ = rdb.getColor("RAIDresyncdoneColor");
-    todoColor_ = rdb.getColor("RAIDresynctodoColor");
-    completeColor_= rdb.getColor("RAIDresynccompleteColor");
+    _doneColor = rdb.getColor("RAIDresyncdoneColor");
+    _todoColor = rdb.getColor("RAIDresynctodoColor");
 
-    setfieldcolor( 0, doneColor_ );
-    setfieldcolor( 1, todoColor_ );
-}
-
-
-// parser for /proc/mdstat
-int RAIDMeter::find1(const std::string &key, const std::string &findwhat,
-  int num1){
-    std::string buf;
-    std::ostringstream os;
-    os << findwhat << "." << num1 << std::ends;
-
-    return os.str() == key;
-}
-
-
-int RAIDMeter::find2(const std::string &key, const std::string &findwhat,
-  int num1, int num2){
-    std::string buf;
-    std::ostringstream os;
-    os << findwhat << "." << num1 << "." << num2 << std::ends;
-
-    return os.str() == key;
-}
-
-
-int RAIDMeter::raidparse(const std::string &cp){
-    std::vector<std::string> tokens = util::split(cp, " \n");
-    if(tokens.size() == 0)
-        return 1;
-    bool bval = (tokens.size() >= 2);
-    std::string key = tokens[0];
-    std::string val;
-    if (bval)
-        val = tokens[1];
-
-    if(find1(key,"md_state",_raiddev)){
-        if(bval)
-            state = val;
-    }
-    else if(find1(key,"md_type",_raiddev)){
-        if(bval)
-            type = val;
-    }
-    else if(find1(key,"md_disk_count",_raiddev)){
-        if(bval)
-            disknum=util::stoi(val);
-    }
-    else if(find1(key,"md_working_disk_map",_raiddev)){
-        if(bval)
-            working_map = val;
-    }
-    else if(find1(key,"md_resync_status",_raiddev)){
-        if(bval)
-            resync_state = val;
-    }
-    return 0;
-}
-
-
-void RAIDMeter::getRAIDstate( void ){
-    std::ifstream raidfile( RAIDFILE );
-    std::string l;
-
-    if ( !raidfile ){
-        logFatal << "Can not open file : " <<RAIDFILE << std::endl;
-    }
-
-    do{
-        std::getline(raidfile, l);
-    } while((raidparse(l)==0) && (!raidfile.eof()));
-
-    logDebug << "md0 " << type << " " << state << " " << working_map << " "
-             << "resync: " << resync_state << std::endl;
+    setfieldcolor( 0, _doneColor );
+    setfieldcolor( 1, _todoColor );
 }

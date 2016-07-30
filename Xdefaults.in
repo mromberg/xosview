@@ -47,6 +47,9 @@ xosview*foreground:         #FFFFFF
 xosview*enableStipple:	    False ! Change to true to try beta stipple support.
 xosview*samplesPerSec:      10    ! not yet supported
 xosview*graphNumCols:       128   ! number of samples shown in a graph
+xosview*horizontalMargin:   5
+xosview*verticalMargin:     5
+xosview*verticalSpacing:    5
 
 
 ! ** Load Meter Resources
@@ -263,19 +266,16 @@ xosview*serialOffColor:     aquamarine
 xosview*serialPriority:     1
 
 
-! ** RAID
-xosview*RAID:                 False
-xosview*RAIDdevicecount:      1
-xosview*RAIDdiskonColor:      green
-xosview*RAIDoffColor:         red
-xosview*RAIDresyncdoneColor:  yellow
-xosview*RAIDresynctodoColor:  red
-xosview*RAIDresynccompleteColor:  green
-xosview*RAIDPriority:         20
-xosview*RAIDUsedFormat:       percent
-xosview*horizontalMargin:      5  !
-xosview*verticalMargin:        5  ! FIXME: no meter in name
-xosview*verticalSpacing:       5  !
+! RAID
+xosview*RAID:                True
+xosview*RAIDdevicecount:     1
+xosview*RAIDresyncdoneColor: #56E67B
+xosview*RAIDresynctodoColor: #03315E
+xosview*RAIDPriority:        30
+xosview*RAIDGraph:           False
+xosview*RAIDUsedFormat:      percent
+xosview*RAIDUsedDecay:       False
+
 
 ! Thermal Zone
 xosview*tzone:                 True
