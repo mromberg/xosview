@@ -185,7 +185,20 @@ Dump the X resouces seen by xosview to stdout and exit.  This will show a
 final list of all resources seen after loading and merging is finished.
 T}
  -xrmd:\^
+
+
+--smid \fIsessionID\fP:T{
+Starts xosview with the provided sessionID.  This option will allow
+xosview to work with window managers that find the simple XSetWMProperties()
+method of saving session information uninteresting (looks at KDE).  If
+configured with libSM/libICE xosview will arrange for it's
+restart in a new session with this argument.  There should be no need for a
+user to use this option.  It is documented here for completeness.
+T}
+ -smid:\^
+
 .TE
+
 
 .SH X RESOURCES
 
