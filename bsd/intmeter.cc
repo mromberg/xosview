@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -38,7 +38,7 @@ void IntMeter::checkevent( void ) {
                 updateirqcount();
                 return;
             }
-            bits_[realintnum_[i]] = ((irqs_[i] - lastirqs_[i]) != 0);
+            _bits[realintnum_[i]] = ((irqs_[i] - lastirqs_[i]) != 0);
             lastirqs_[i] = irqs_[i];
         }
     }
@@ -51,8 +51,8 @@ void IntMeter::checkevent( void ) {
 
 void IntMeter::checkResources(const ResDB &rdb) {
     BitMeter::checkResources(rdb);
-    onColor_  = rdb.getColor("intOnColor");
-    offColor_ = rdb.getColor("intOffColor");
+    _dbits.color(true, rdb.getColor("intOnColor"));
+    _dbits.color(false, rdb.getColor("intOffColor"));
 }
 
 

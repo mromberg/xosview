@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -46,8 +46,13 @@ protected:
     double IntervalTimeInMicrosecs() { return _timer.report_usecs(); }
     double IntervalTimeInSecs() { return _timer.report_usecs()/1e6; }
 
-    virtual void drawfields(X11Graphics &g, bool mandatory=false);
     bool checkX(int x, int width) const;
+
+    virtual void drawfields(X11Graphics &g, bool mandatory=false);
+
+    // Values used to draw the fields only.
+    virtual int fldx(void) const { return x(); }
+    virtual int fldwidth(void) const { return width(); }
 
 private:
     enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };

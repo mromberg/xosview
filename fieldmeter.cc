@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -103,7 +103,7 @@ void FieldMeter::draw(X11Graphics &g) {
 
     /*  Draw the outline for the fieldmeter.  */
     g.setFG( fgColor() );
-    g.drawRectangle( x() - 1, y() - 1, width() + 2, height() + 2 );
+    g.drawRectangle( fldx() - 1, y() - 1, fldwidth() + 2, height() + 2 );
 
     drawLabels(g);
     _used.draw(g);
@@ -200,7 +200,9 @@ void FieldMeter::updateUsed() {
 
 
 void FieldMeter::drawfields(X11Graphics &g, bool mandatory) {
-    int twidth, x = Meter::x();
+    const int fx = fldx();
+    const int fwidth = fldwidth();
+    int twidth, x = fx;
 
     if ( total_ == 0 )
         return;
@@ -213,11 +215,10 @@ void FieldMeter::drawfields(X11Graphics &g, bool mandatory) {
             << " for field " << i << "\n"
             << "fields_: " << fields_ << std::endl;
 
-        twidth = (int) ((width() * (float) fields_[i]) / total_);
-//    twidth = (int)((fields_[i] * width_) / total_);
+        twidth = (int) ((fwidth * (float) fields_[i]) / total_);
         if ( (i == numfields() - 1)
-          && ((x + twidth) != (Meter::x() + width())) )
-            twidth = width() + Meter::x() - x;
+          && ((x + twidth) != (fx + fwidth)) )
+            twidth = fwidth + fx - x;
 
         if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
             g.setFG( colors_[i] );
