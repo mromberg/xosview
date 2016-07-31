@@ -269,8 +269,20 @@ xosview*serialPriority:     1
 ! RAID
 xosview*RAID:                True
 xosview*RAIDdevicecount:     1
-xosview*RAIDresyncdoneColor: #56E67B
-xosview*RAIDresynctodoColor: #03315E
+! sync_action state colors
+xosview*RAIDidleColor:       #03315E
+xosview*RAIDresyncColor:     yellow
+xosview*RAIDrecoverColor:    yellow
+xosview*RAIDcheckColor:      #56E67B
+xosview*RAIDrepairColor:     yellow
+! device state colors
+xosview*RAIDfaultyColor:     red
+xosview*RAIDin_syncColor:    green
+xosview*RAIDwritemostlyColor: #005500
+xosview*RAIDspareColor:      blue
+xosview*RAIDwrite_errorColor: yellow
+xosview*RAIDwant_replacementColor: cyan
+xosview*RAIDreplacementColor: #FFFF00
 xosview*RAIDPriority:        30
 xosview*RAIDGraph:           False
 xosview*RAIDUsedFormat:      percent

@@ -25,8 +25,8 @@ public:
     virtual void checkResources(const ResDB &rdb);
 
 protected:
-    std::vector<char> _bits;
-    DrawBits<char> _dbits;
+    std::vector<unsigned char> _bits;
+    DrawBits<unsigned char> _dbits;
 
     void setBits(int startbit, unsigned char values);
     unsigned int numbits(void) const { return _bits.size(); }

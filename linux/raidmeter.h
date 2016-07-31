@@ -26,7 +26,10 @@ public:
 
 private:
     int _raiddev;
-    unsigned long _doneColor, _todoColor;
+    std::map<std::string, unsigned long> _actionColors;
+    std::map<std::string, unsigned long> _driveColors;
+
+    void scan(void);
 };
 
 
