@@ -277,11 +277,11 @@ xosview*RAIDrecoverColor:      #F2EF44
 xosview*RAIDrepairColor:       #FC842B
 ! device state colors
 xosview*RAIDin_syncColor:      #56E67B
-xosview*RAIDwritemostlyColor:  #FFE67B
-xosview*RAIDreplacementColor:  #66F68B
+xosview*RAIDwritemostlyColor:  #A6E67B
+xosview*RAIDreplacementColor:  #16A64B
 xosview*RAIDspareColor:        #0ABBDA
 xosview*RAIDwrite_errorColor:  #AF0BEB
-xosview*RAIDwant_replaceColor: #FC842B
+xosview*RAIDwant_replaceColor: #DCA42B
 xosview*RAIDblockedColor:      #FF741B
 xosview*RAIDfaultyColor:       #FF0000
 xosview*RAIDPriority:          30

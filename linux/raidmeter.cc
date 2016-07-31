@@ -20,6 +20,9 @@ RAIDMeter::RAIDMeter( int raiddev)
     fields_[0] = 0.0;  // Always 0.0 (used for legend color).
     fields_[1] = 1.0;
     fields_[2] = 0.0;
+
+    _bits[0] = 1;
+    _bits[1] = 1;
 }
 
 
@@ -63,7 +66,7 @@ void RAIDMeter::checkResources(const ResDB &rdb){
     _dbits.color(3, _driveColors["replacement"]);
     _dbits.color(4, _driveColors["spare"]);
     _dbits.color(5, _driveColors["write_error"]);
-    _dbits.color(6, _driveColors["want_replacement"]);
+    _dbits.color(6, _driveColors["want_replace"]);
     _dbits.color(7, _driveColors["blocked"]);
     _dbits.color(8, _driveColors["faulty"]);
 }
