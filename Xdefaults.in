@@ -267,26 +267,27 @@ xosview*serialPriority:     1
 
 
 ! RAID
-xosview*RAID:                True
-xosview*RAIDdevicecount:     1
+xosview*RAID:                  True
+xosview*RAIDdevicecount:       1
 ! sync_action state colors
-xosview*RAIDidleColor:       #03315E
-xosview*RAIDresyncColor:     yellow
-xosview*RAIDrecoverColor:    yellow
-xosview*RAIDcheckColor:      #56E67B
-xosview*RAIDrepairColor:     yellow
+xosview*RAIDidleColor:         #03315E
+xosview*RAIDcheckColor:        #56E67B
+xosview*RAIDresyncColor:       #F2EF44
+xosview*RAIDrecoverColor:      #F2EF44
+xosview*RAIDrepairColor:       #FC842B
 ! device state colors
-xosview*RAIDfaultyColor:     red
-xosview*RAIDin_syncColor:    green
-xosview*RAIDwritemostlyColor: #005500
-xosview*RAIDspareColor:      blue
-xosview*RAIDwrite_errorColor: yellow
-xosview*RAIDwant_replacementColor: cyan
-xosview*RAIDreplacementColor: #FFFF00
-xosview*RAIDPriority:        30
-xosview*RAIDGraph:           False
-xosview*RAIDUsedFormat:      percent
-xosview*RAIDUsedDecay:       False
+xosview*RAIDin_syncColor:      #56E67B
+xosview*RAIDwritemostlyColor:  #FFE67B
+xosview*RAIDreplacementColor:  #66F68B
+xosview*RAIDspareColor:        #0ABBDA
+xosview*RAIDwrite_errorColor:  #AF0BEB
+xosview*RAIDwant_replaceColor: #FC842B
+xosview*RAIDblockedColor:      #FF741B
+xosview*RAIDfaultyColor:       #FF0000
+xosview*RAIDPriority:          30
+xosview*RAIDGraph:             False
+xosview*RAIDUsedFormat:        percent
+xosview*RAIDUsedDecay:         False
 
 
 ! Thermal Zone

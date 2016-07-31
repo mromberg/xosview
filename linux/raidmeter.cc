@@ -10,15 +10,16 @@
 
 
 RAIDMeter::RAIDMeter( int raiddev)
-    : BitFieldMeter( 1, 2), _raiddev(raiddev) {
+    : BitFieldMeter( 1, 3), _raiddev(raiddev) {
 
     scan();
     title("md127");
-    legend("raid1 clean 2/2 idle:TODO", ":");
+    legend("raid1 clean 2/2 - idle - TODO", "-");
     setNumBits(2);
     total_ = 1.0;
-    fields_[0] = 1.0;
-    fields_[1] = 0.0;
+    fields_[0] = 0.0;  // Always 0.0 (used for legend color).
+    fields_[1] = 1.0;
+    fields_[2] = 0.0;
 }
 
 
@@ -33,22 +34,38 @@ void RAIDMeter::checkevent( void ){
 void RAIDMeter::checkResources(const ResDB &rdb){
     BitFieldMeter::checkResources(rdb);
 
+    // Colors for the fieldmeter (action progress).
     _actionColors["idle"] = rdb.getColor("RAIDidleColor");
+    _actionColors["check"] = rdb.getColor("RAIDcheckColor");
     _actionColors["resync"] = rdb.getColor("RAIDresyncColor");
     _actionColors["recover"] = rdb.getColor("RAIDrecoverColor");
-    _actionColors["check"] = rdb.getColor("RAIDcheckColor");
     _actionColors["repair"] = rdb.getColor("RAIDrepairColor");
 
-    _driveColors["faulty"] = rdb.getColor("RAIDfaultyColor");
+    // Colors of the bit meter (drive status).
     _driveColors["in_sync"] = rdb.getColor("RAIDin_syncColor");
     _driveColors["writemostly"] = rdb.getColor("RAIDwritemostlyColor");
+    _driveColors["replacement"] = rdb.getColor("RAIDreplacementColor");
     _driveColors["spare"] = rdb.getColor("RAIDspareColor");
     _driveColors["write_error"] = rdb.getColor("RAIDwrite_errorColor");
-    _driveColors["want_replacement"] = rdb.getColor("RAIDwant_replacementColor");
-    _driveColors["replacement"] = rdb.getColor("RAIDreplacementColor");
+    _driveColors["want_replace"] = rdb.getColor("RAIDwant_replaceColor");
+    _driveColors["blocked"] = rdb.getColor("RAIDblockedColor");
+    _driveColors["faulty"] = rdb.getColor("RAIDfaultyColor");
 
-    setfieldcolor( 0, _actionColors["check"] );
-    setfieldcolor( 1, _actionColors["idle"] );
+    // Set field colors.
+    setfieldcolor(0, _actionColors["check"]);
+    setfieldcolor(1, _actionColors["idle"]);
+    setfieldcolor(2, _actionColors["idle"]);
+
+    // Set bit colors.
+    _dbits.color(0, _actionColors["idle"]);
+    _dbits.color(1, _driveColors["in_sync"]);
+    _dbits.color(2, _driveColors["writemostly"]);
+    _dbits.color(3, _driveColors["replacement"]);
+    _dbits.color(4, _driveColors["spare"]);
+    _dbits.color(5, _driveColors["write_error"]);
+    _dbits.color(6, _driveColors["want_replacement"]);
+    _dbits.color(7, _driveColors["blocked"]);
+    _dbits.color(8, _driveColors["faulty"]);
 }
 
 
