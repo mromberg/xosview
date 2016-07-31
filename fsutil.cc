@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -91,6 +91,23 @@ bool fs::readAll(const std::string &file, std::string &str) {
     str = iss.str();
     return true;
 }
+
+
+std::string fs::readAll(const std::string &file, bool fatal) {
+    std::string rval;
+
+    if (!readAll(file, rval)) {
+        if (fatal) {
+            logFatal << "failed to read: " << file << std::endl;
+        }
+        else {
+            logBug << "failed to read: " << file << std::endl;
+        }
+    }
+
+    return rval;
+}
+
 
 std::string fs::cwd(void) {
     std::string result(1024,'\0');
