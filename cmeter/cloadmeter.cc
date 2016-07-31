@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2008, 2015
+//  Copyright (c) 1994, 1995, 2006, 2008, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -35,6 +35,7 @@ void ComLoadMeter::checkResources(const ResDB &rdb){
 
     setfieldcolor( 0, _procloadcol );
     setfieldcolor( 1, rdb.getColor( "loadIdleColor" ) );
+    setLegendColor( 1, _procloadcol ); // so cpu speed uses same color.
 
     _warnThreshold = util::stoi (rdb.getResource("loadWarnThreshold"));
     _critThreshold = util::stoi (rdb.getResource("loadCritThreshold"));
