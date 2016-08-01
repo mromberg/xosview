@@ -72,8 +72,36 @@ void RAIDMeter::checkevent( void ) {
 
     std::string state(util::strip(util::fs::readAll(_dir + "array_state")));
 
-    legend(_level + " " + state + " " + util::repr(active) + "/" + util::repr(_ffsize)
-      + " - none - TODO", "-");
+    fields_[1] = 0.0;
+    fields_[2] = 1.0;
+    std::string sync_action;
+    if (util::fs::readAll(_dir + "sync_action", sync_action)) {
+        sync_action = util::strip(sync_action);
+        std::string compstr(util::fs::readAll(_dir + "sync_completed"));
+        if (util::strip(compstr) == "none")
+            ; // Not currently syncing.
+        else {
+            std::istringstream is(compstr);
+            float done = 0.0, total = 1.0;
+            std::string buff;
+            is >> done >> buff >> total;
+            if (is.fail() || buff != "/") {
+                logProblem << "failed to parse: " << _dir + "sync_completed"
+                           << std::endl;
+            }
+            else {
+                fields_[1] = done / total;
+                fields_[2] = 1.0 - fields_[1];
+            }
+        }
+    }
+    else
+        sync_action = "idle";
+
+    setfieldcolor(1, _actionColors[sync_action]);
+    legend(_level + " " + state + " "
+      + util::repr(active) + "/" + util::repr(_ffsize)
+      + " - " + sync_action + " - TODO", "-");
 }
 
 
