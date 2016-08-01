@@ -13,23 +13,29 @@
 
 class RAIDMeter : public BitFieldMeter {
 public:
-    RAIDMeter( int raiddev = 0 );
-    ~RAIDMeter( void );
+    RAIDMeter(const std::string &device);
+    ~RAIDMeter(void);
 
-    void checkevent( void );
+    void checkevent(void);
 
     virtual std::string resName(void) const { return "RAID"; }
 
     void checkResources(const ResDB &rdb);
 
-    static int countRAIDs( void );
+    static std::vector<std::string> devices(const ResDB &rdb);
 
 private:
-    int _raiddev;
+    std::string _device;
+    std::string _dir;
+    std::string _level;
+    size_t _ffsize;
+    std::vector<std::string> _devs;
     std::map<std::string, unsigned long> _actionColors;
     std::map<std::string, unsigned long> _driveColors;
 
+
     void scan(void);
+    static std::vector<std::string> scanDevs(void);
 };
 
 

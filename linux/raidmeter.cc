@@ -8,21 +8,28 @@
 #include "raidmeter.h"
 #include "fsutil.h"
 
+#include <algorithm>
 
-RAIDMeter::RAIDMeter( int raiddev)
-    : BitFieldMeter( 1, 3), _raiddev(raiddev) {
 
-    scan();
-    title("md127");
-    legend("raid1 clean 2/2 - idle - TODO", "-");
-    setNumBits(2);
-    total_ = 1.0;
-    fields_[0] = 0.0;  // Always 0.0 (used for legend color).
-    fields_[1] = 1.0;
-    fields_[2] = 0.0;
+RAIDMeter::RAIDMeter(const std::string &device)
+    : BitFieldMeter( 1, 3, device), _device(device),
+      _dir("/sys/block/" + _device + "/md/"), _ffsize(0) {
 
-    _bits[0] = 1;
-    _bits[1] = 1;
+    _level = util::strip(util::fs::readAll(_dir + "level"));
+    if (!util::fs::readFirst(_dir + "raid_disks", _ffsize))
+        logProblem << "reading " << _dir + "raid_disks  failed." << std::endl;
+
+    std::vector<std::string> mddir(util::fs::listdir(_dir));
+    for (size_t i = 0 ; i < mddir.size() ; i++)
+        if (mddir[i].substr(0, 4) == "dev-")
+            _devs.push_back(mddir[i]);
+
+    legend(_level + " none ?/" + util::repr(_ffsize) + " - none - TODO", "-");
+    setNumBits(_devs.size());
+    total_ = 1.0;         // All fields 0.0 - 1.0
+    // fields_[0] = 0.0;  // Always 0.0 (used for legend color).
+    // fields_[1] = 0.0;  // sync_action progress.
+    // fields_[2] = 0.0;  // todo
 }
 
 
@@ -30,7 +37,43 @@ RAIDMeter::~RAIDMeter( void ){
 }
 
 
-void RAIDMeter::checkevent( void ){
+void RAIDMeter::checkevent( void ) {
+
+    size_t active = 0;
+    for (size_t i = 0 ; i < _devs.size() ; i++) {
+        std::string devdir(_dir + _devs[i] + "/");
+        if (util::fs::isfile(devdir + "slot")) {
+            std::string slot(util::strip(util::fs::readAll(devdir + "slot")));
+            if (slot != "none")
+                active++;
+        }
+
+        std::string state(util::strip(util::fs::readAll(devdir + "state")));
+        unsigned char bstate = 0;
+        if (state == "in_sync")
+            bstate = 1;
+        else if (state == "writemostly")
+            bstate = 2;
+        else if (state == "replacement")
+            bstate = 3;
+        else if (state == "spare")
+            bstate = 4;
+        else if (state == "write_error")
+            bstate = 5;
+        else if (state == "want_replacement")
+            bstate = 6;
+        else if (state == "blocked")
+            bstate = 7;
+        else if (state == "faulty")
+            bstate = 8;
+
+        _bits[i] = bstate;
+    }
+
+    std::string state(util::strip(util::fs::readAll(_dir + "array_state")));
+
+    legend(_level + " " + state + " " + util::repr(active) + "/" + util::repr(_ffsize)
+      + " - none - TODO", "-");
 }
 
 
@@ -73,13 +116,7 @@ void RAIDMeter::checkResources(const ResDB &rdb){
 
 
 void RAIDMeter::scan(void) {
-    std::vector<std::string> mddevs;
-    std::vector<std::string> bdevs(util::fs::listdir("/sys/block"));
-    for (size_t i = 0 ; i < bdevs.size() ; i++) {
-        if (bdevs[i].substr(0, 2) == "md"
-          && util::fs::isdir("/sys/block/" + bdevs[i] + "/md"))
-            mddevs.push_back(bdevs[i]);
-    }
+    std::vector<std::string> mddevs(scanDevs());
 
     for (size_t i = 0 ; i < mddevs.size() ; i++) {
         std::string bdir("/sys/block/" + mddevs[i] + "/md/");
@@ -144,4 +181,41 @@ void RAIDMeter::scan(void) {
                   << "devs: " << devs
                   << std::endl;
     }
+}
+
+
+std::vector<std::string> RAIDMeter::scanDevs(void) {
+    std::vector<std::string> rval;
+    std::vector<std::string> bdevs(util::fs::listdir("/sys/block"));
+
+    for (size_t i = 0 ; i < bdevs.size() ; i++) {
+        if (bdevs[i].substr(0, 2) == "md"
+          && util::fs::isdir("/sys/block/" + bdevs[i] + "/md"))
+            rval.push_back(bdevs[i]);
+    }
+
+    return rval;
+}
+
+
+std::vector<std::string> RAIDMeter::devices(const ResDB &rdb) {
+    std::vector<std::string> rval;
+
+    std::string devices = rdb.getResourceOrUseDefault("RAIDdevices", "auto");
+    logDebug << "devices: " << devices << std::endl;
+
+    std::vector<std::string> devs(scanDevs());
+    if (devices == "auto") {
+        rval = devs;
+    }
+    else {
+        std::vector<std::string> usrDevs = util::split(devices, ",");
+        for (size_t i = 0 ; i < usrDevs.size() ; i++) {
+            std::string udev(util::strip(usrDevs[i]));
+            if (std::find(devs.begin(), devs.end(), udev) != devs.end())
+                rval.push_back(udev);
+        }
+    }
+
+    return rval;
 }
