@@ -29,8 +29,8 @@ protected:
     DrawBits<unsigned char> _dbits;
 
     void setBits(int startbit, unsigned char values);
-    unsigned int numbits(void) const { return _bits.size(); }
-    void setNumBits(int n);
+    size_t numbits(void) const { return _bits.size(); }
+    void setNumBits(size_t n);
 
     // Values used to draw the fields only.
     virtual int fldx(void) const { return x() + width() * 2 / 6 + 4; }

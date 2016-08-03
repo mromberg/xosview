@@ -10,10 +10,11 @@
 template<class X>
 class DrawBits {
 public:
-    DrawBits(void) {}
+    DrawBits(void) : _bdColor(0) {}
 
     void color(const X &val, unsigned long color) { _cmap[val] = color; }
     void colorMap(const std::map<X, unsigned long> &cmap) { _cmap = cmap; }
+    void borderColor(unsigned long c) { _bdColor = c; }
 
     void draw(const std::vector<X> &bits, X11Graphics &g,
       int x, int y, int width, int height,
@@ -24,6 +25,7 @@ public:
 private:
     std::vector<X> _lastbits;
     std::map<X, unsigned long> _cmap;
+    unsigned long _bdColor;
 
     unsigned long getColor(const X &val);
 };
@@ -49,6 +51,12 @@ void DrawBits<X>::draw(const std::vector<X> &bits, X11Graphics &g,
     if (_lastbits.size() != bits.size()) {
         resize(bits.size());
         mandatory = true;
+    }
+
+    // Borders.
+    if (mandatory) {
+        g.setFG(_bdColor);
+        g.drawFilledRectangle( x - 1, y - 1, width + 2, height + 2 );
     }
 
     int x1 = x, x2 = 0;
