@@ -60,6 +60,17 @@ inline static bool fstr(const std::string &s, X &x) {
     return !os.fail();
 }
 
+
+template <class K, class V>
+const V &get(const std::map<K, V> &m, const K &k,
+  const V &defVal=V()) {
+    typename std::map<K, V>::const_iterator it = m.find(k);
+    if (it == m.end())
+        return defVal;
+    return it->second;
+}
+
+
 // Deal with those goofy forign characters
 std::wstring s2ws(const std::string& s);
 std::string ws2s(const std::wstring &s);
