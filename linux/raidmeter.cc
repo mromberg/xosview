@@ -172,7 +172,9 @@ size_t RAIDMeter::setDevBits(void) {
 
         // set the bit based on the device state.
         std::string state(util::strip(util::fs::readAll(devdir + "state")));
-        _bits[i] = util::get(devState(), state);
+        logDebug << _device << ", " << _devs[i] << ",  state: "
+                 << state << " : " << filterState(state) << std::endl;
+        _bits[i] = util::get(devState(), filterState(state));
     }
 
     return active;
@@ -211,4 +213,44 @@ std::string RAIDMeter::setSyncAction(void) {
     setfieldcolor(1, _actionColors[sync_action]);
 
     return sync_action;
+}
+
+
+std::string RAIDMeter::filterState(const std::string &state) const {
+    // Contents of the device state file is a ',' separated list of states.
+    // Try and pick the most relevant one.
+    std::vector<std::string> states(util::split(state, ","));
+    for (size_t i = 0 ; i < states.size() ; i++)
+        states[i] = util::strip(states[i]);
+
+    if (std::find(states.begin(), states.end(), "faulty") != states.end())
+        return "faulty";
+
+    if (std::find(states.begin(), states.end(), "spare") != states.end())
+        return "spare";
+
+    if (std::find(states.begin(), states.end(), "in_sync") != states.end()) {
+        if (std::find(states.begin(), states.end(), "blocked") != states.end())
+            return "blocked";
+        if (std::find(states.begin(), states.end(), "want_replacement")
+          != states.end())
+            return "want_replacement";
+        if (std::find(states.begin(), states.end(), "write_error")
+          != states.end())
+            return "write_error";
+        if (std::find(states.begin(), states.end(), "write_mostly")
+          != states.end())
+            return "writemostly";
+        if (std::find(states.begin(), states.end(), "replacement")
+          != states.end())
+            return "replacement";
+
+        return "in_sync";
+    }
+
+    // If we get here then pick something.
+    if (!states.empty())
+        return states[0];
+
+    return "none";
 }

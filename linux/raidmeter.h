@@ -36,6 +36,7 @@ private:
     void scanDevs(void);
     size_t setDevBits(void);         // returns number of active devices.
     std::string setSyncAction(void); // returns current sync_action.
+    std::string filterState(const std::string &state) const;
     static std::vector<std::string> scanMDDevs(void);
     static const std::map<std::string, unsigned char> &devState(void);
 };
