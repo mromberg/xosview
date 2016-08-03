@@ -223,26 +223,22 @@ std::string RAIDMeter::filterState(const std::string &state) const {
     for (size_t i = 0 ; i < states.size() ; i++)
         states[i] = util::strip(states[i]);
 
-    if (std::find(states.begin(), states.end(), "faulty") != states.end())
+    if (util::find(states, std::string("faulty")))
         return "faulty";
 
-    if (std::find(states.begin(), states.end(), "spare") != states.end())
+    if (util::find(states, std::string("spare")))
         return "spare";
 
-    if (std::find(states.begin(), states.end(), "in_sync") != states.end()) {
-        if (std::find(states.begin(), states.end(), "blocked") != states.end())
+    if (util::find(states, std::string("in_sync"))) {
+        if (util::find(states, std::string("blocked")))
             return "blocked";
-        if (std::find(states.begin(), states.end(), "want_replacement")
-          != states.end())
+        if (util::find(states, std::string("want_replacement")))
             return "want_replacement";
-        if (std::find(states.begin(), states.end(), "write_error")
-          != states.end())
+        if (util::find(states, std::string("write_error")))
             return "write_error";
-        if (std::find(states.begin(), states.end(), "write_mostly")
-          != states.end())
+        if (util::find(states, std::string("write_mostly")))
             return "writemostly";
-        if (std::find(states.begin(), states.end(), "replacement")
-          != states.end())
+        if (util::find(states, std::string("replacement")))
             return "replacement";
 
         return "in_sync";

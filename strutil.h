@@ -9,6 +9,8 @@
 #include <vector>
 #include <sstream>
 #include <map>
+#include <algorithm>
+
 
 namespace util {
 
@@ -68,6 +70,12 @@ const V &get(const std::map<K, V> &m, const K &k,
     if (it == m.end())
         return defVal;
     return it->second;
+}
+
+
+template <class X>
+inline bool find(const std::vector<X> &v, const X &x) {
+    return std::find(v.begin(), v.end(), x) != v.end();
 }
 
 
