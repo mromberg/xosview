@@ -33,9 +33,11 @@ private:
     std::map<std::string, unsigned long> _actionColors;
     std::map<std::string, unsigned long> _driveColors;
 
-
-    void scan(void);
-    static std::vector<std::string> scanDevs(void);
+    void scanDevs(void);
+    size_t setDevBits(void);         // returns number of active devices.
+    std::string setSyncAction(void); // returns current sync_action.
+    static std::vector<std::string> scanMDDevs(void);
+    static const std::map<std::string, unsigned char> &devState(void);
 };
 
 

@@ -15,17 +15,16 @@ RAIDMeter::RAIDMeter(const std::string &device)
     : BitFieldMeter( 1, 3, device), _device(device),
       _dir("/sys/block/" + _device + "/md/"), _ffsize(0) {
 
+    scanDevs();
+
     _level = util::strip(util::fs::readAll(_dir + "level"));
+
     if (!util::fs::readFirst(_dir + "raid_disks", _ffsize))
         logProblem << "reading " << _dir + "raid_disks  failed." << std::endl;
 
-    std::vector<std::string> mddir(util::fs::listdir(_dir));
-    for (size_t i = 0 ; i < mddir.size() ; i++)
-        if (mddir[i].substr(0, 4) == "dev-")
-            _devs.push_back(mddir[i]);
-
+    // legend format: level ndevs/ffsize - sync_action - TODO
     legend(_level + " none ?/" + util::repr(_ffsize) + " - none - TODO", "-");
-    setNumBits(_devs.size());
+
     total_ = 1.0;         // All fields 0.0 - 1.0
     // fields_[0] = 0.0;  // Always 0.0 (used for legend color).
     // fields_[1] = 0.0;  // sync_action progress.
@@ -39,66 +38,12 @@ RAIDMeter::~RAIDMeter( void ){
 
 void RAIDMeter::checkevent( void ) {
 
-    size_t active = 0;
-    for (size_t i = 0 ; i < _devs.size() ; i++) {
-        std::string devdir(_dir + _devs[i] + "/");
-        if (util::fs::isfile(devdir + "slot")) {
-            std::string slot(util::strip(util::fs::readAll(devdir + "slot")));
-            if (slot != "none")
-                active++;
-        }
-
-        std::string state(util::strip(util::fs::readAll(devdir + "state")));
-        unsigned char bstate = 0;
-        if (state == "in_sync")
-            bstate = 1;
-        else if (state == "writemostly")
-            bstate = 2;
-        else if (state == "replacement")
-            bstate = 3;
-        else if (state == "spare")
-            bstate = 4;
-        else if (state == "write_error")
-            bstate = 5;
-        else if (state == "want_replacement")
-            bstate = 6;
-        else if (state == "blocked")
-            bstate = 7;
-        else if (state == "faulty")
-            bstate = 8;
-
-        _bits[i] = bstate;
-    }
+    size_t active = setDevBits();
 
     std::string state(util::strip(util::fs::readAll(_dir + "array_state")));
 
-    fields_[1] = 0.0;
-    fields_[2] = 1.0;
-    std::string sync_action;
-    if (util::fs::readAll(_dir + "sync_action", sync_action)) {
-        sync_action = util::strip(sync_action);
-        std::string compstr(util::fs::readAll(_dir + "sync_completed"));
-        if (util::strip(compstr) == "none")
-            ; // Not currently syncing.
-        else {
-            std::istringstream is(compstr);
-            float done = 0.0, total = 1.0;
-            std::string buff;
-            is >> done >> buff >> total;
-            if (is.fail() || buff != "/") {
-                logProblem << "failed to parse: " << _dir + "sync_completed"
-                           << std::endl;
-            }
-            else {
-                fields_[1] = done / total;
-                fields_[2] = 1.0 - fields_[1];
-            }
-        }
-    }
-    else
-        sync_action = "idle";
+    std::string sync_action = setSyncAction();
 
-    setfieldcolor(1, _actionColors[sync_action]);
     legend(_level + " " + state + " "
       + util::repr(active) + "/" + util::repr(_ffsize)
       + " - " + sync_action + " - TODO", "-");
@@ -143,76 +88,7 @@ void RAIDMeter::checkResources(const ResDB &rdb){
 }
 
 
-void RAIDMeter::scan(void) {
-    std::vector<std::string> mddevs(scanDevs());
-
-    for (size_t i = 0 ; i < mddevs.size() ; i++) {
-        std::string bdir("/sys/block/" + mddevs[i] + "/md/");
-
-        //-------------------------------------------------
-        // level: raid0, raid1, raid5, linear, multipath, faulty
-        //        or a number 0, 5, etc.
-        //-------------------------------------------------
-        std::string level(util::strip(util::fs::readAll(bdir + "level")));
-
-        //-------------------------------------------------
-        // state: clear, inactive, suspended, readonly,
-        //        read-auto, clean, active, write-pending,
-        //        active-idle
-        //-------------------------------------------------
-        std::string state(util::strip(util::fs::readAll(bdir + "array_state")));
-
-        //-------------------------------------------------
-        // sync_action: resync, recover, idle, check,
-        //              repair,
-        //
-        // (only supported on raid levels with redundancy)
-        //-------------------------------------------------
-        std::string sync_action(util::strip(util::fs::readAll(bdir
-              + "sync_action")));
-
-        //-------------------------------------------------
-        // sync_completed: number / total
-        //                 OR none (none undocumented)
-        //-------------------------------------------------
-        std::string sync_completed(util::strip(util::fs::readAll(bdir
-              + "sync_completed")));
-
-        //-------------------------------------------------
-        // raid_disks: number in a fully functional array.
-        //-------------------------------------------------
-        std::string raid_disks(util::strip(util::fs::readAll(bdir
-              + "raid_disks")));
-
-        std::vector<std::string> mddir(util::fs::listdir(bdir));
-        std::map<std::string, std::string> devs;
-
-        for (size_t i = 0 ; i < mddir.size() ; i++) {
-            if (mddir[i].substr(0, 4) == "dev-") {
-                //------------------------------------------------------
-                // state: faulty, in_sync, writemostly, blocked, spare,
-                //        write_error, want_replacement, replacement
-                //------------------------------------------------------
-                std::string dev_state(util::strip(util::fs::readAll(bdir
-                      + mddir[i] + "/state")));
-                devs[mddir[i]] = dev_state;
-            }
-        }
-
-        std::cout << "--- " << mddevs[i] << " ---\n"
-                  << "dir: " << bdir << "\n"
-                  << "level: " << level << "\n"
-                  << "state: " << state << "\n"
-                  << "sync_action: " << sync_action << "\n"
-                  << "sync_completed: " << sync_completed << "\n"
-                  << "raid_disks: " << raid_disks << "\n"
-                  << "devs: " << devs
-                  << std::endl;
-    }
-}
-
-
-std::vector<std::string> RAIDMeter::scanDevs(void) {
+std::vector<std::string> RAIDMeter::scanMDDevs(void) {
     std::vector<std::string> rval;
     std::vector<std::string> bdevs(util::fs::listdir("/sys/block"));
 
@@ -232,7 +108,7 @@ std::vector<std::string> RAIDMeter::devices(const ResDB &rdb) {
     std::string devices = rdb.getResourceOrUseDefault("RAIDdevices", "auto");
     logDebug << "devices: " << devices << std::endl;
 
-    std::vector<std::string> devs(scanDevs());
+    std::vector<std::string> devs(scanMDDevs());
     if (devices == "auto") {
         rval = devs;
     }
@@ -246,4 +122,93 @@ std::vector<std::string> RAIDMeter::devices(const ResDB &rdb) {
     }
 
     return rval;
+}
+
+
+void RAIDMeter::scanDevs(void) {
+    _devs.clear();
+
+    std::vector<std::string> mddir(util::fs::listdir(_dir));
+    for (size_t i = 0 ; i < mddir.size() ; i++)
+        if (mddir[i].substr(0, 4) == "dev-")
+            _devs.push_back(mddir[i]);
+
+    setNumBits(_devs.size());
+}
+
+
+const std::map<std::string, unsigned char> &RAIDMeter::devState(void) {
+    static std::map<std::string, unsigned char> m;
+    static bool first = true;
+
+    if (first) {
+        first = false;
+        m["in_sync"]          = 1;
+        m["writemostly"]      = 2;
+        m["replacement"]      = 3;
+        m["spare"]            = 4;
+        m["write_error"]      = 5;
+        m["want_replacement"] = 6;
+        m["blocked"]          = 7;
+        m["faulty"]           = 8;
+    }
+
+    return m;
+}
+
+
+size_t RAIDMeter::setDevBits(void) {
+    size_t active = 0;
+
+    for (size_t i = 0 ; i < _devs.size() ; i++) {
+        std::string devdir(_dir + _devs[i] + "/");
+
+        // if the file slot exists and does not contain "none" it is active.
+        if (util::fs::isfile(devdir + "slot")) {
+            std::string slot(util::strip(util::fs::readAll(devdir + "slot")));
+            if (slot != "none")
+                active++;
+        }
+
+        // set the bit based on the device state.
+        std::string state(util::strip(util::fs::readAll(devdir + "state")));
+        _bits[i] = util::get(devState(), state);
+    }
+
+    return active;
+}
+
+
+std::string RAIDMeter::setSyncAction(void) {
+
+    std::string sync_action("idle");
+
+    fields_[1] = 0.0;
+    fields_[2] = 1.0;
+
+    // Not all raid levels have a sync_action.  If missing use idle.
+    if (util::fs::readAll(_dir + "sync_action", sync_action)) {
+        sync_action = util::strip(sync_action);
+
+        // The sync_completed file is number / number (or none).
+        std::string compstr(util::fs::readAll(_dir + "sync_completed"));
+        if (util::strip(compstr) != "none") {
+            std::istringstream is(compstr);
+            float done = 0.0, total = 1.0;
+            std::string buff;
+            is >> done >> buff >> total;
+            if (is.fail() || buff != "/") {
+                logProblem << "failed to parse: " << _dir + "sync_completed"
+                           << std::endl;
+            }
+            else {
+                fields_[1] = done / total;
+                fields_[2] = 1.0 - fields_[1];
+            }
+        }
+    }
+
+    setfieldcolor(1, _actionColors[sync_action]);
+
+    return sync_action;
 }
