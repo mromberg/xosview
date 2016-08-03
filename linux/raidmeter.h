@@ -29,11 +29,10 @@ private:
     std::string _dir;
     std::string _level;
     size_t _ffsize;
-    std::vector<std::string> _devs;
     std::map<std::string, unsigned long> _actionColors;
     std::map<std::string, unsigned long> _driveColors;
 
-    void scanDevs(void);
+    std::vector<std::string> scanDevs(void); // list of devices found in _dir.
     size_t setDevBits(void);         // returns number of active devices.
     std::string setSyncAction(void); // returns current sync_action.
     std::string filterState(const std::string &state) const;

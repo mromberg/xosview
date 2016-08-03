@@ -15,8 +15,6 @@ RAIDMeter::RAIDMeter(const std::string &device)
     : BitFieldMeter( 1, 3, device), _device(device),
       _dir("/sys/block/" + _device + "/md/"), _ffsize(0) {
 
-    scanDevs();
-
     _level = util::strip(util::fs::readAll(_dir + "level"));
 
     if (!util::fs::readFirst(_dir + "raid_disks", _ffsize))
@@ -125,15 +123,15 @@ std::vector<std::string> RAIDMeter::devices(const ResDB &rdb) {
 }
 
 
-void RAIDMeter::scanDevs(void) {
-    _devs.clear();
+std::vector<std::string> RAIDMeter::scanDevs(void) {
+    std::vector<std::string> devs;
 
     std::vector<std::string> mddir(util::fs::listdir(_dir));
     for (size_t i = 0 ; i < mddir.size() ; i++)
         if (mddir[i].substr(0, 4) == "dev-")
-            _devs.push_back(mddir[i]);
+            devs.push_back(mddir[i]);
 
-    setNumBits(_devs.size());
+    return devs;
 }
 
 
@@ -160,8 +158,12 @@ const std::map<std::string, unsigned char> &RAIDMeter::devState(void) {
 size_t RAIDMeter::setDevBits(void) {
     size_t active = 0;
 
-    for (size_t i = 0 ; i < _devs.size() ; i++) {
-        std::string devdir(_dir + _devs[i] + "/");
+    std::vector<std::string> devs(scanDevs());
+    if (devs.size() != numbits())
+        setNumBits(devs.size());
+
+    for (size_t i = 0 ; i < devs.size() ; i++) {
+        std::string devdir(_dir + devs[i] + "/");
 
         // if the file slot exists and does not contain "none" it is active.
         if (util::fs::isfile(devdir + "slot")) {
@@ -172,7 +174,7 @@ size_t RAIDMeter::setDevBits(void) {
 
         // set the bit based on the device state.
         std::string state(util::strip(util::fs::readAll(devdir + "state")));
-        logDebug << _device << ", " << _devs[i] << ",  state: "
+        logDebug << _device << ", " << devs[i] << ",  state: "
                  << state << " : " << filterState(state) << std::endl;
         _bits[i] = util::get(devState(), filterState(state));
     }
