@@ -74,6 +74,7 @@ void XOSView::loop(void) {
 
     std::vector<Meter *> drawv;
     drawv.reserve(_meters.size());
+    bool firstPass = true;  // checkevent and draw all meters on first pass.
 
     while( !done() ){
         if (_xsc->check())
@@ -89,11 +90,13 @@ void XOSView::loop(void) {
 
         if (_isvisible){
             for (size_t i = 0 ; i < _meters.size() ; i++) {
-                if ( _meters[i]->requestevent() ) {
+                if (_meters[i]->requestevent() || firstPass) {
                     _meters[i]->checkevent();
                     drawv.push_back(_meters[i]);
                 }
             }
+            if (firstPass)
+                firstPass = false;
         }
 
         if (_doFullDraw)
