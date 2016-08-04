@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -38,6 +38,9 @@ public:
 
     // reads the entire file into str.  Returns false on failure.
     static bool readAll(const std::string &file, std::string &str);
+
+    // errors to logBug or logFatal.
+    static std::string readAll(const std::string &file, bool fatal=false);
 
     // reads the first X from file.  returns false on failure.
     template<class X>

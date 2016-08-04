@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006, 2015
+//  Copyright (c) 1999, 2006, 2015, 2016
 //  by Thomas Waldmann ( ThomasWaldmann@gmx.de )
 //  based on work of Mike Romberg ( mike-romberg@comcast.net )
 //
@@ -11,36 +11,35 @@
 #include "bitfieldmeter.h"
 
 
-
 class RAIDMeter : public BitFieldMeter {
 public:
-    RAIDMeter( int raiddev = 0 );
-    ~RAIDMeter( void );
+    RAIDMeter(const std::string &device);
+    ~RAIDMeter(void);
 
-    void checkevent( void );
+    void checkevent(void);
 
     virtual std::string resName(void) const { return "RAID"; }
 
     void checkResources(const ResDB &rdb);
 
-    static int countRAIDs( void );
+    static std::vector<std::string> devices(const ResDB &rdb);
 
 private:
-    int _raiddev;
-    int mdnum;
+    std::string _device;
+    std::string _dir;
+    std::string _level;
+    size_t _ffsize;
+    unsigned long _ffColor;
+    unsigned long _degradedColor;
+    std::map<std::string, unsigned long> _actionColors;
+    std::map<std::string, unsigned long> _driveColors;
 
-    std::string state;
-    std::string type;
-    std::string working_map;
-    std::string resync_state;
-    int  disknum;
-    unsigned long doneColor_, todoColor_, completeColor_;
-
-    int find1(const std::string &key, const std::string &findwhat, int num1);
-    int find2(const std::string &key, const std::string &findwhat, int num1,
-      int num2);
-    int raidparse(const std::string &cp);
-    void getRAIDstate( void );
+    std::vector<std::string> scanDevs(void); // list of devices found in _dir.
+    size_t setDevBits(void);         // returns number of active devices.
+    std::string setSyncAction(void); // returns current sync_action.
+    std::string filterState(const std::string &state) const;
+    static std::vector<std::string> scanMDDevs(void);
+    static const std::map<std::string, unsigned char> &devState(void);
 };
 
 

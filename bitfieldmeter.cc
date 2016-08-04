@@ -23,34 +23,26 @@ BitFieldMeter::~BitFieldMeter( void ){
 
 void BitFieldMeter::checkResources(const ResDB &rdb){
     FieldMeter::checkResources(rdb);
+    _dbits.borderColor(fgColor());
 }
 
 
-void BitFieldMeter::setNumBits(int n){
-    _dbits.resize(n);
+void BitFieldMeter::setNumBits(size_t n){
     _bits.resize(n);
 
-    for ( unsigned int i = 0 ; i < numbits() ; i++ )
+    for (size_t i = 0 ; i < _bits.size() ; i++)
         _bits[i] = 0;
 }
 
 
 void BitFieldMeter::draw(X11Graphics &g) {
-    g.lineWidth( 1 );
-    g.setFG( fgColor() );
-    g.drawFilledRectangle( x() - 1, y() - 1,
-      width() * 2 / 6 + 2, height() + 2 );
-    g.lineWidth( 0 );
-
     _dbits.draw(_bits, g, x(), y(), width() * 2 / 6, height(), true);
     FieldMeter::draw(g);
 }
 
 
 void BitFieldMeter::drawIfNeeded( X11Graphics &g ) {
-
     _dbits.draw(_bits, g, x(), y(), width() * 2 / 6, height());
-
     FieldMeter::drawIfNeeded(g);
 }
 

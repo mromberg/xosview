@@ -9,6 +9,8 @@
 #include <vector>
 #include <sstream>
 #include <map>
+#include <algorithm>
+
 
 namespace util {
 
@@ -59,6 +61,23 @@ inline static bool fstr(const std::string &s, X &x) {
     os >> x;
     return !os.fail();
 }
+
+
+template <class K, class V>
+const V &get(const std::map<K, V> &m, const K &k,
+  const V &defVal=V()) {
+    typename std::map<K, V>::const_iterator it = m.find(k);
+    if (it == m.end())
+        return defVal;
+    return it->second;
+}
+
+
+template <class X>
+inline bool find(const std::vector<X> &v, const X &x) {
+    return std::find(v.begin(), v.end(), x) != v.end();
+}
+
 
 // Deal with those goofy forign characters
 std::wstring s2ws(const std::string& s);

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006, 2015
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -49,9 +49,9 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
         _meters.push_back(new PrcDiskMeter());
 
     if (rdb.isResourceTrue("RAID")){
-        int RAIDCount = util::stoi(rdb.getResource("RAIDdevicecount"));
-        for (int i = 0 ; i < RAIDCount ; i++)
-            _meters.push_back(new RAIDMeter(i));
+        std::vector<std::string> devices(RAIDMeter::devices(rdb));
+        for (size_t i = 0 ; i < devices.size() ; i ++)
+            _meters.push_back(new RAIDMeter(devices[i]));
     }
 
     if (rdb.isResourceTrue("filesys"))

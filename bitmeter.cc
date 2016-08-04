@@ -28,6 +28,7 @@ void BitMeter::setNumBits(size_t n){
 
 void BitMeter::checkResources(const ResDB &rdb){
     Meter::checkResources(rdb);
+    _dbits.borderColor(fgColor());
 }
 
 
@@ -37,14 +38,8 @@ void BitMeter::drawIfNeeded(X11Graphics &g){
 
 
 void BitMeter::draw(X11Graphics &g){
-    g.lineWidth( 1 );
-    g.setFG( fgColor() );
-    g.drawFilledRectangle( x() - 1, y() - 1, width() + 2, height() + 2 );
-    g.lineWidth( 0 );
-
-    drawLabels(g);
-
     _dbits.draw(_bits, g, x(), y(), width(), height(), true);
+    drawLabels(g);
 }
 
 
