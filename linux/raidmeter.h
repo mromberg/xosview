@@ -29,6 +29,8 @@ private:
     std::string _dir;
     std::string _level;
     size_t _ffsize;
+    unsigned long _ffColor;
+    unsigned long _degradedColor;
     std::map<std::string, unsigned long> _actionColors;
     std::map<std::string, unsigned long> _driveColors;
 

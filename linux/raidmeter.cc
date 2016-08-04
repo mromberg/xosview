@@ -13,7 +13,8 @@
 
 RAIDMeter::RAIDMeter(const std::string &device)
     : BitFieldMeter( 1, 3, device), _device(device),
-      _dir("/sys/block/" + _device + "/md/"), _ffsize(0) {
+      _dir("/sys/block/" + _device + "/md/"),
+      _ffsize(0), _ffColor(0), _degradedColor(0) {
 
     _level = util::strip(util::fs::readAll(_dir + "level"));
 
@@ -36,12 +37,16 @@ RAIDMeter::~RAIDMeter( void ){
 
 void RAIDMeter::checkevent( void ) {
 
+    // Set the bits and count active devices.
     size_t active = setDevBits();
+
+    // Set the fieldmeter based on the current sync_action (if any).
+    std::string sync_action = setSyncAction();
 
     std::string state(util::strip(util::fs::readAll(_dir + "array_state")));
 
-    std::string sync_action = setSyncAction();
-
+    // Set the color of field 0 (used for legend color) and set the legend.
+    setfieldcolor(0, active >= _ffsize ? _ffColor : _degradedColor);
     legend(_level + " " + state + " "
       + util::repr(active) + "/" + util::repr(_ffsize)
       + " - " + sync_action + " - TODO", "-");
@@ -50,6 +55,10 @@ void RAIDMeter::checkevent( void ) {
 
 void RAIDMeter::checkResources(const ResDB &rdb){
     BitFieldMeter::checkResources(rdb);
+
+    // fully functional and degraded colors.
+    _ffColor = rdb.getColor("RAIDfullColor");
+    _degradedColor = rdb.getColor("RAIDdegradedColor");
 
     // Colors for the fieldmeter (action progress).
     _actionColors["idle"] = rdb.getColor("RAIDidleColor");
@@ -69,7 +78,7 @@ void RAIDMeter::checkResources(const ResDB &rdb){
     _driveColors["faulty"] = rdb.getColor("RAIDfaultyColor");
 
     // Set field colors.
-    setfieldcolor(0, _actionColors["check"]);
+    setfieldcolor(0, _ffColor);
     setfieldcolor(1, _actionColors["idle"]);
     setfieldcolor(2, _actionColors["idle"]);
 
@@ -174,9 +183,11 @@ size_t RAIDMeter::setDevBits(void) {
 
         // set the bit based on the device state.
         std::string state(util::strip(util::fs::readAll(devdir + "state")));
+        std::string fstate(filterState(state));
         logDebug << _device << ", " << devs[i] << ",  state: "
-                 << state << " : " << filterState(state) << std::endl;
-        _bits[i] = util::get(devState(), filterState(state));
+                 << state << " : " << fstate << std::endl;
+
+        _bits[i] = util::get(devState(), fstate);
     }
 
     return active;

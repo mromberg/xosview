@@ -269,6 +269,8 @@ xosview*serialPriority:     1
 ! RAID
 xosview*RAID:                  True
 xosview*RAIDdevices:           auto    ! auto OR md1, md3, md127,...
+xosview*RAIDfullColor:         #56E67B
+xosview*RAIDdegradedColor:     #FC842B
 ! sync_action state colors
 xosview*RAIDidleColor:         #03315E
 xosview*RAIDcheckColor:        #56E67B
