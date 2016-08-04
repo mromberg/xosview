@@ -77,7 +77,7 @@ Interrupts:yes:yes:no:no:no:no
 Temperature:yes:yes:no:no:no:yes
 Serial:?:no:no:no:no:no
 Battery:yes:?:no:no:no:no
-RAID:?:no:no:no:no:no
+RAID:yes:no:no:no:no:no
 NFS:?:no:no:no:no:no
 .TE
 
@@ -917,24 +917,82 @@ filesystem that has an absolute path as a source.  For example
 .cc filesys None "bg color when path is unmounted"
 
 .SS RAID Meter Resources
+.RS
+  The RAID meter monitors software raid devices provided by the linux kernel.
+These devices have names such as md0, md1, md127 and so on.  Xosview uses
+stats provided by the md driver in the sysfs (mounted as /sys).  See the md.txt
+file that is part of the linux kernel documentation for more details.
+
+  The raid meter displays information for each raid device using a row for
+each md device it is monitoring.  Each row consists of two side by side
+meters.  The first meter displays a multi-colored bit for each device that is
+part of the raid.  The second meter shows the progress of any active sync
+action the raid may have underway.  The legend for the raid meter shows
+information such as the raid level, current active device count, fully
+functional device count and current sync_action.
+
+  The number of devices that are part of each md device are updated as xosview
+watches the raid's status.  So the number of bits will change as drives are
+added and removed from the md device.  The color of each bit reflects the
+state of each device (found in the sysfs).  Since a md device can have multiple
+states (for example in_sync + write_error), xosview attempts to show the
+configured color of the most relevant state.
+
+  When a sync action is active on the md device the field meter on the right
+side of the bit meter shows the progres.   It is a percentage of the total
+operation and colors are configurable.
+
+  The raid meter is configured using the following resources:
+.RE
 
 .xt RAID
 
-xosview*RAIDdevicecount: \fIint\fP
+xosview*RAIDdevices: \fIauto OR list\fP
 .RS
-Please enter your RAID device count (n) here or 0 if you don't have any
-supported RAID devices. xosview then will display n RAID state displays.
+If this resource is set to auto then xosview will search for and display a
+meter for every md device it finds.  Otherwise this value is a comma delimited
+list of md device names (such as md127, md125).
 .RE
 
-.cc RAIDdisk Online "online"
+xosview*RAIDfullColor:
+.RS
+The color used to indicate a fully functional raid device (number of in_sync
+devices >= fully functional count).
+.RE
 
-.cc RAIDdisk Failure "failure"
+xosview*RAIDdegradedColor:
+.RS
+The color used to indicate a degraded array (number of in_sync devices < fully
+functional count).
+.RE
 
-.cc RAIDresyncdone "resync done"
 
-.cc RAIDresynctodo "resync todo"
+  The following colors are using for the various sync sync actions.  They
+are used by the legend and field meter when a sync action is underway.
 
-.cc RAIDresynccomplete "resync complete"
+.RS
+.IP\[bu] xosview*RAIDidleColor
+.IP\[bu] xosview*RAIDcheckColor
+.IP\[bu] xosview*RAIDresyncColor
+.IP\[bu] xosview*RAIDrecoverColor
+.IP\[bu] xosview*RAIDrepairColor
+.RE
+
+  These colors are used for the multi-color bit meter display.  Each
+color indicates a device state flag.  If a device has more than one
+flag set, then xosview chooses the most relevant color.
+
+.RS
+.IP\[bu] xosview*RAIDin_syncColor
+.IP\[bu] xosview*RAIDwritemostlyColor
+.IP\[bu] xosview*RAIDreplacementColor
+.IP\[bu] xosview*RAIDspareColor
+.IP\[bu] xosview*RAIDwrite_errorColor
+.IP\[bu] xosview*RAIDwant_replaceColor
+.IP\[bu] xosview*RAIDblockedColor
+.IP\[bu] xosview*RAIDfaultyColor
+.RE
+
 
 .SH OBTAINING
 
