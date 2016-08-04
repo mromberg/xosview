@@ -28,10 +28,9 @@ void BitFieldMeter::checkResources(const ResDB &rdb){
 
 
 void BitFieldMeter::setNumBits(size_t n){
-    _dbits.resize(n);
     _bits.resize(n);
 
-    for ( unsigned int i = 0 ; i < numbits() ; i++ )
+    for (size_t i = 0 ; i < _bits.size() ; i++)
         _bits[i] = 0;
 }
 

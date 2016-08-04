@@ -20,13 +20,12 @@ public:
       int x, int y, int width, int height,
       bool mandatory=false);
 
-    void resize(size_t n);
-
 private:
     std::vector<X> _lastbits;
     std::map<X, unsigned long> _cmap;
     unsigned long _bdColor;
 
+    void resize(size_t n);
     unsigned long getColor(const X &val);
 };
 
