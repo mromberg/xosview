@@ -64,8 +64,7 @@ inline static bool fstr(const std::string &s, X &x) {
 
 
 template <class K, class V>
-const V &get(const std::map<K, V> &m, const K &k,
-  const V &defVal=V()) {
+V get(const std::map<K, V> &m, const K &k, V defVal=V()) {
     typename std::map<K, V>::const_iterator it = m.find(k);
     if (it == m.end())
         return defVal;
