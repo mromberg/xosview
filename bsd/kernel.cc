@@ -208,17 +208,6 @@ static inline void safe_kvm_read(unsigned long kernel_addr, void* user_addr,
 }
 
 
-//  This version uses the symbol offset in the nlst variable, to make it
-//  a little more convenient.  BCG
-#if !defined(XOSVIEW_FREEBSD)
-static inline void safe_kvm_read_symbol(int nlstOffset, void* user_addr,
-  size_t nbytes) {
-
-    safe_kvm_read(nlst[nlstOffset].n_value, user_addr, nbytes);
-}
-#endif
-
-
 bool ValidSymbol(int index) {
     return ( (nlst[index].n_value & 0xffffff00) != 0 );
 }
@@ -966,25 +955,24 @@ uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes) {
         write_bytes += drive_stats[i].wbytes;
     }
 # else  /* XOSVIEW_OPENBSD */
-    /*  This function is a little tricky -- we have to iterate over a
-     *  list in kernel land.  To make things simpler, data structures
-     *  and pointers for objects in kernel-land have kvm tacked on front
-     *  of their names.  Thus, kvmdiskptr points to a disk struct in
-     *  kernel memory.  kvmcurrdisk is a copy of the kernel's struct,
-     *  and it has pointers in it to other structs, so it also is
-     *  prefixed with kvm.
-     */
-    struct disklist_head kvmdisklist;
-    struct disk *kvmdiskptr;
-    struct disk kvmcurrdisk;
-    safe_kvm_read_symbol(DISKLIST_SYM_INDEX, &kvmdisklist, sizeof(kvmdisklist));
-    kvmdiskptr = TAILQ_FIRST(&kvmdisklist);
-    while (kvmdiskptr != NULL) {
-        safe_kvm_read((unsigned long)kvmdiskptr, &kvmcurrdisk,
-          sizeof(kvmcurrdisk));
-        read_bytes += kvmcurrdisk.dk_rbytes;
-        write_bytes += kvmcurrdisk.dk_wbytes;
-        kvmdiskptr = TAILQ_NEXT(&kvmcurrdisk, dk_link);
+
+    const int mib1[] = {CTL_HW, HW_DISKCOUNT};
+    int ndisks = 0;
+    size_t dcsize = sizeof(ndisks);
+    if (sysctl(mib1, 2, &ndisks, &dcsize, NULL, 0) < 0) {
+        logFatal << "sysctl(CTL_HW, HW_DISKCOUNT) failed.\n";
+    }
+
+    const int mib2[] = {CTL_HW, HW_DISKSTATS};
+    std::vector<struct diskstats> dstats(ndisks);
+    size_t size = sizeof(struct diskstats) * dstats.size();
+    if (sysctl(mib2, 2, dstats.data(), &size, NULL, 0) < 0) {
+        logFatal << "sysctl(CTL_HW, HW_DISKSTATS) failed.\n";
+    }
+
+    for (size_t i = 0 ; i < dstats.size() ; i++) {
+        read_bytes += dstats[i].ds_rbytes;
+        write_bytes += dstats[i].ds_wbytes;
     }
 # endif
 #endif
