@@ -3,7 +3,13 @@ README file for xosview BSD
   In the past xosview has run on several variants of BSD.
 
 
-NetBSD-specific:
+FreeBSD specific:
+
+  The interrupt and irqrate meters function.  But the performance is poor
+(xosview itself uses 10-15% of one cpu).  They are enabled by default but
+should probably be disabled in Xdefaults.
+
+NetBSD specific:
 
   These notes mainly apply to the files found in the netbsd subdirectory.
 It was an experiment in using the /proc filesystem so as to eliminate

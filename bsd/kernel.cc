@@ -327,7 +327,24 @@ void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
 #else  /* HAVE_UVM */
     struct vmmeter vm;
 #if defined(XOSVIEW_FREEBSD)
-    safe_kvm_read_symbol(VMMETER_SYM_INDEX, &vm, sizeof(vm));
+    size_t size = 0;
+#define	GET_VM_STATS(name)                                                \
+    size = sizeof(vm.name);                                               \
+    if (sysctlbyname("vm.stats.vm." #name, &vm.name, &size, NULL, 0) < 0) \
+        logFatal << "sysctlbyname(vm.stats.vm." #name << ") failed.\n";
+
+    GET_VM_STATS(v_active_count);
+    GET_VM_STATS(v_inactive_count);
+    GET_VM_STATS(v_wire_count);
+    GET_VM_STATS(v_cache_count);
+    GET_VM_STATS(v_free_count);
+    GET_VM_STATS(v_page_size);
+    GET_VM_STATS(v_vnodepgsin);
+    GET_VM_STATS(v_vnodepgsout);
+    GET_VM_STATS(v_swappgsin);
+    GET_VM_STATS(v_swappgsout);
+#undef GET_VM_STATS
+
 #else  /* XOSVIEW_DFBSD */
     struct vmstats vms;
     size_t size = sizeof(vms);
