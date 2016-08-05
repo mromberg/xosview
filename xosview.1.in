@@ -917,7 +917,7 @@ filesystem that has an absolute path as a source.  For example
 .cc filesys None "bg color when path is unmounted"
 
 .SS RAID Meter Resources
-.RS
+
   The RAID meter monitors software raid devices provided by the linux kernel.
 These devices have names such as md0, md1, md127 and so on.  Xosview uses
 stats provided by the md driver in the sysfs (mounted as /sys).  See the md.txt
@@ -943,7 +943,6 @@ side of the bit meter shows the progres.   It is a percentage of the total
 operation and colors are configurable.
 
   The raid meter is configured using the following resources:
-.RE
 
 .xt RAID
 
@@ -971,28 +970,28 @@ functional count).
 are used by the legend and field meter when a sync action is underway.
 
 .RS
-.IP\[bu] xosview*RAIDidleColor
-.IP\[bu] xosview*RAIDcheckColor
-.IP\[bu] xosview*RAIDresyncColor
-.IP\[bu] xosview*RAIDrecoverColor
-.IP\[bu] xosview*RAIDrepairColor
+.IP xosview*RAIDidleColor
+.IP xosview*RAIDcheckColor
+.IP xosview*RAIDresyncColor
+.IP xosview*RAIDrecoverColor
+.IP xosview*RAIDrepairColor
 .RE
 
-  These colors are used for the multi-color bit meter display.  Each
+
+  The colors below are used for the multi-color bit meter display.  Each
 color indicates a device state flag.  If a device has more than one
 flag set, then xosview chooses the most relevant color.
 
 .RS
-.IP\[bu] xosview*RAIDin_syncColor
-.IP\[bu] xosview*RAIDwritemostlyColor
-.IP\[bu] xosview*RAIDreplacementColor
-.IP\[bu] xosview*RAIDspareColor
-.IP\[bu] xosview*RAIDwrite_errorColor
-.IP\[bu] xosview*RAIDwant_replaceColor
-.IP\[bu] xosview*RAIDblockedColor
-.IP\[bu] xosview*RAIDfaultyColor
+.IP xosview*RAIDin_syncColor
+.IP xosview*RAIDwritemostlyColor
+.IP xosview*RAIDreplacementColor
+.IP xosview*RAIDspareColor
+.IP xosview*RAIDwrite_errorColor
+.IP xosview*RAIDwant_replaceColor
+.IP xosview*RAIDblockedColor
+.IP xosview*RAIDfaultyColor
 .RE
-
 
 .SH OBTAINING
 
