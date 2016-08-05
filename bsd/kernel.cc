@@ -598,30 +598,23 @@ void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
 #if defined(XOSVIEW_OPENBSD)
     OpenBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
-#elif defined(XOSV_NETBSD_NET_IOCTL)
+#elif defined(XOSVIEW_NETBSD)
     NetBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
 #else
     std::string ifname;
     struct ifnet *ifnetp;
     struct ifnet ifnet;
-#if defined (XOSVIEW_NETBSD)
-    struct ifnet_head ifnethd;
-#else
     struct ifnethead ifnethd;
-#endif
+
     safe_kvm_read(nlst[IFNET_SYM_INDEX].n_value, &ifnethd, sizeof(ifnethd));
     ifnetp = TAILQ_FIRST(&ifnethd);
 
     while (ifnetp) {
-
         //  Now, dereference the pointer to get the ifnet struct.
         safe_kvm_read((unsigned long)ifnetp, &ifnet, sizeof(ifnet));
         ifname = std::string(ifnet.if_xname, 0, sizeof(ifname));
-#if defined(XOSVIEW_NETBSD)
-        ifnetp = TAILQ_NEXT(&ifnet, if_list);
-#else
         ifnetp = TAILQ_NEXT(&ifnet, if_link);
-#endif
+
         if (!(ifnet.if_flags & IFF_UP))
             continue;
 
