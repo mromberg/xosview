@@ -210,11 +210,13 @@ static inline void safe_kvm_read(unsigned long kernel_addr, void* user_addr,
 
 //  This version uses the symbol offset in the nlst variable, to make it
 //  a little more convenient.  BCG
+#if !defined(XOSVIEW_FREEBSD)
 static inline void safe_kvm_read_symbol(int nlstOffset, void* user_addr,
   size_t nbytes) {
 
     safe_kvm_read(nlst[nlstOffset].n_value, user_addr, nbytes);
 }
+#endif
 
 
 bool ValidSymbol(int index) {
