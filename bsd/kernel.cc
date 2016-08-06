@@ -53,6 +53,7 @@ static int maxcpus = 1;
 #include <sys/resource.h>
 #include <dev/acpica/acpiio.h>
 #include <machine/apm_bios.h>
+#include <net/if_mib.h>
 #endif
 
 
@@ -383,7 +384,7 @@ void BSDCPUInit() {
 }
 
 
-#if !defined(XOSVIEW_OPENBSD)
+#if !defined(XOSVIEW_OPENBSD) && !defined(XOSVIEW_DFBSD)
 static size_t BSDCountCpus(void) {
 
     static bool first = true;
@@ -590,6 +591,50 @@ static void OpenBSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 #endif
 
 
+#if defined(XOSVIEW_DFBSD)
+static void DFBSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
+  const std::string &netIface, bool ignored) {
+
+    int ifcount = 0;
+    size_t ifcsize = sizeof(ifcount);
+    if (sysctlbyname("net.link.generic.system.ifcount", &ifcount, &ifcsize,
+        NULL, 0) < 0) {
+        logFatal << "sysctlbyname(net.link.generic.system.ifcount) failed.\n";
+    }
+
+    // rows start with index == 1 not 0!
+    int mib[] = {CTL_NET, PF_LINK, NETLINK_GENERIC, IFMIB_IFDATA,
+                 1, IFDATA_GENERAL};
+    struct ifmibdata ifmd;
+    size_t size = sizeof(ifmd);
+
+    for (int i = 1 ; i <= ifcount ; i++) {
+        mib[4] = i;
+        if (sysctl(mib, 6, &ifmd, &size, NULL, 0) < 0) {
+            logFatal << "sysctl(CTL_NET) failed.\n";
+        }
+        if (!(ifmd.ifmd_flags & IFF_UP))
+            continue;
+
+        std::string ifname(ifmd.ifmd_name);
+        if (netIface != "False") {
+            if ( (!ignored && netIface != ifname)
+              || (ignored && netIface == ifname) )
+                continue;
+        }
+
+        inbytes  += ifmd.ifmd_data.ifi_ibytes;
+        outbytes += ifmd.ifmd_data.ifi_obytes;
+
+        logDebug << "name: " << ifname << " - "
+                 << "out: " << ifmd.ifmd_data.ifi_obytes << ", "
+                 << "in: " << ifmd.ifmd_data.ifi_ibytes << std::endl;
+    }
+}
+#endif
+
+
+
 void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
   const std::string &netIface, bool ignored) {
 
@@ -600,7 +645,7 @@ void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
     OpenBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
 #elif defined(XOSVIEW_NETBSD)
     NetBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
-#else
+#elif defined(XOSVIEW_FREEBSD)
     std::string ifname;
     struct ifnet *ifnetp;
     struct ifnet ifnet;
@@ -624,22 +669,12 @@ void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
                 continue;
         }
 
-#if defined(XOSVIEW_DFBSD) && __DragonFly_version > 300304
-        struct ifdata_pcpu *ifdatap = ifnet.if_data_pcpu;
-        struct ifdata_pcpu ifdata;
-        int ncpus = BSDCountCpus();
-        for (int cpu = 0; cpu < ncpus; cpu++) {
-            safe_kvm_read((unsigned long)ifdatap + cpu * sizeof(ifdata),
-              &ifdata, sizeof(ifdata));
-            inbytes  += ifdata.ifd_ibytes;
-            outbytes += ifdata.ifd_obytes;
-        }
-#else
         inbytes  += ifnet.if_ibytes;
         outbytes += ifnet.if_obytes;
-#endif
     }
-#endif  /* XOSVIEW_OPENBSD */
+#elif defined(XOSVIEW_DFBSD)
+    DFBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
+#endif
 }
 
 
