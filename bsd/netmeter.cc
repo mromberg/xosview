@@ -21,6 +21,14 @@
 #include <net/if_mib.h>
 #endif
 
+#if defined(XOSVIEW_NETBSD)
+#include <cstring>
+#include <unistd.h>
+#include <net/if.h>
+#include <sys/ioctl.h>
+#include <machine/int_fmtio.h>
+#endif
+
 
 NetMeter::NetMeter( void )
     : ComNetMeter(),
