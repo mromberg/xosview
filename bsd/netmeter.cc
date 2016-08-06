@@ -17,6 +17,7 @@
 
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 #include <sys/sysctl.h>
+#include <net/if.h>
 #include <net/if_mib.h>
 #endif
 
