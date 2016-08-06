@@ -42,11 +42,6 @@ void BSDCPUInit();
 
 void BSDGetCPUTimes(std::vector<uint64_t> &timesArray, unsigned int cpu = 0);
 
-bool BSDNetInit();
-
-void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
-  const std::string &netIface, bool ignored);
-
 bool BSDSwapInit();
 
 void BSDGetSwapInfo(uint64_t &total, uint64_t &free);
