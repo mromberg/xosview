@@ -591,7 +591,7 @@ static void OpenBSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 #endif
 
 
-#if defined(XOSVIEW_DFBSD)
+#if defined(XOSVIEW_DFBSD) || defined(XOSVIEW_FREEBSD)
 static void DFBSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
   const std::string &netIface, bool ignored) {
 
@@ -645,35 +645,9 @@ void BSDGetNetInOut(uint64_t &inbytes, uint64_t &outbytes,
     OpenBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
 #elif defined(XOSVIEW_NETBSD)
     NetBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
-#elif defined(XOSVIEW_FREEBSD)
-    std::string ifname;
-    struct ifnet *ifnetp;
-    struct ifnet ifnet;
-    struct ifnethead ifnethd;
-
-    safe_kvm_read(nlst[IFNET_SYM_INDEX].n_value, &ifnethd, sizeof(ifnethd));
-    ifnetp = TAILQ_FIRST(&ifnethd);
-
-    while (ifnetp) {
-        //  Now, dereference the pointer to get the ifnet struct.
-        safe_kvm_read((unsigned long)ifnetp, &ifnet, sizeof(ifnet));
-        ifname = std::string(ifnet.if_xname, 0, sizeof(ifname));
-        ifnetp = TAILQ_NEXT(&ifnet, if_link);
-
-        if (!(ifnet.if_flags & IFF_UP))
-            continue;
-
-        if (netIface != "False") {
-            if ( (!ignored && netIface != ifname)
-              || (ignored && netIface == ifname) )
-                continue;
-        }
-
-        inbytes  += ifnet.if_ibytes;
-        outbytes += ifnet.if_obytes;
-    }
-#elif defined(XOSVIEW_DFBSD)
+#elif defined(XOSVIEW_DFBSD) || defined(XOSVIEW_FREEBSD)
     DFBSDGetNetInOut(inbytes, outbytes, netIface, ignored);
+#else
 #endif
 }
 
