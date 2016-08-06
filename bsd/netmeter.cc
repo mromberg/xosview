@@ -29,6 +29,14 @@
 #include <machine/int_fmtio.h>
 #endif
 
+#if defined(XOSVIEW_OPENBSD)
+#include <sys/sysctl.h>
+#include <sys/socket.h>
+#include <net/if.h>
+#include <net/route.h>
+#include <net/if_dl.h>
+#endif
+
 
 NetMeter::NetMeter( void )
     : ComNetMeter(),
@@ -122,13 +130,14 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
     inbytes = outbytes = 0;
     const int mib_ifl[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
+    size_t mibsize = sizeof(mib_ifl) / sizeof(mib_ifl[0]);
 
     size_t size;
-    if ( sysctl(mib_ifl, ASIZE(mib_ifl), NULL, &size, NULL, 0) < 0 )
+    if ( sysctl(mib_ifl, mibsize, NULL, &size, NULL, 0) < 0 )
         logFatal << "BSDGetNetInOut(): sysctl 1 failed" << std::endl;
 
     std::vector<char> bufv(size, 0);
-    if ( sysctl(mib_ifl, ASIZE(mib_ifl), bufv.data(), &size, NULL, 0) < 0 )
+    if ( sysctl(mib_ifl, mibsize, bufv.data(), &size, NULL, 0) < 0 )
         logFatal << "BSDGetNetInOut(): sysctl 2 failed" << std::endl;
 
     struct if_msghdr *ifm = (struct if_msghdr *)bufv.data();
