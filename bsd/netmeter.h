@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
@@ -30,9 +31,12 @@ protected:
     virtual std::pair<float, float> getRates(void);
 
 private:
-    uint64_t lastBytesIn_, lastBytesOut_;
-    std::string netIface_;
-    bool ignored_;
+    uint64_t _lastBytesIn, _lastBytesOut;
+    std::string _netIface;
+    bool _ignored;
+
+    void getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
+      const std::string &netIface, bool ignored) const;
 };
 
 
