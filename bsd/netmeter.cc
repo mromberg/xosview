@@ -142,40 +142,38 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
   const std::string &netIface, bool ignored) const {
 
     inbytes = outbytes = 0;
+
     const int mib_ifl[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
     const size_t mibsize = sizeof(mib_ifl) / sizeof(mib_ifl[0]);
 
     size_t size;
     if ( sysctl(mib_ifl, mibsize, NULL, &size, NULL, 0) < 0 )
-        logFatal << "sysctl() failed" << std::endl;
+        logFatal << "sysctl() failed." << std::endl;
 
     std::vector<char> bufv(size, 0);
     if ( sysctl(mib_ifl, mibsize, bufv.data(), &size, NULL, 0) < 0 )
-        logFatal << "sysctl() failed" << std::endl;
+        logFatal << "sysctl() failed." << std::endl;
 
     const char *bufp = bufv.data();
-    const struct if_msghdr *ifm = reinterpret_cast<const struct if_msghdr *>(
-        bufp);
-    const struct rt_msghdr *rtm = reinterpret_cast<const struct rt_msghdr *>(
-        bufp);
+    const struct rt_msghdr *rtm =
+        reinterpret_cast<const struct rt_msghdr *>(bufp);
 
-    for ( ; bufp < bufv.data() + bufv.size() ; bufp += rtm->rtm_msglen) {
+    for ( ; bufp < bufv.data() + size ; bufp += rtm->rtm_msglen) {
 
         rtm = reinterpret_cast<const struct rt_msghdr *>(bufp);
-
         if (rtm->rtm_version != RTM_VERSION)
             continue;
 
         if (rtm->rtm_type == RTM_IFINFO) {
-            ifm = reinterpret_cast<const struct if_msghdr *>(bufp);
+            const struct if_msghdr *ifm =
+                reinterpret_cast<const struct if_msghdr *>(bufp);
             const struct sockaddr_dl *sdl =
-                reinterpret_cast<const struct sockaddr_dl *>(ifm + 1); // voodoo
+                reinterpret_cast<const struct sockaddr_dl *>(ifm + 1); // voodoo?
 
             if (sdl->sdl_family != AF_LINK)
                 continue;
 
             std::string ifname(sdl->sdl_data, 0, sdl->sdl_nlen);
-
             if (ifskip(ifname, netIface, ignored))
                 continue;
 
