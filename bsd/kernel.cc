@@ -20,6 +20,7 @@
 #include "log.h"
 #include "strutil.h"
 #include "kernel.h"
+#include "sctl.h"
 
 #include <cstring>
 
@@ -843,9 +844,42 @@ bool BSDIntrInit() {
 }
 
 
+#if defined(XOSVIEW_DFBSD)
+static int DFBSDNumInts(void) {
+
+    static SysCtl intrnames_sc("hw.intrnames");
+
+    size_t bytes = 0;
+    if (!intrnames_sc.getsize(bytes))
+        logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
+
+    std::vector<char> nbuf(bytes, 0);
+    if (!intrnames_sc.get(nbuf))
+        logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
+
+    size_t i = 0, maxirq = 0, offset = 0;
+    while (offset < nbuf.size()) {
+        // unused ints are named irqn where
+        // 0<=n<=255, used ones have device name
+        std::string tstr(nbuf.data() + offset);
+        if (tstr.substr(0, 3) != "irq")
+            maxirq = i;
+        offset += tstr.size() + 1;
+        i++;
+    }
+
+    return maxirq;
+}
+#endif
+
+
 int BSDNumInts() {
     /* This code is stolen from vmstat. */
-    int count = 0, nbr = 0;
+    int count = 0;
+#if !defined(XOSVIEW_DFBSD)
+    int nbr = 0;
+#endif
+
 #if defined(XOSVIEW_FREEBSD)
     size_t inamlen, nintr;
 
@@ -919,37 +953,59 @@ int BSDNumInts() {
                 count = nbr;
     }
 #else  // XOSVIEW_DFBSD
+    count = DFBSDNumInts();
+#endif
+    return count;  // this is the highest numbered interrupt
+}
+
+
+#if defined(XOSVIEW_DFBSD)
+static void DFBSDGetIntrStats(std::vector<uint64_t> &intrCount,
+  std::vector<unsigned int> &intrNbrs) {
+
+    int nbr = 0;
     int nintr = 0;
     size_t inamlen;
+    char *intrs;
 
     if ( sysctlbyname("hw.intrnames", NULL, &inamlen, NULL, 0) != 0 ) {
         logProblem << "sysctl hw.intrnames failed" << std::endl;
-        return 0;
+        return;
     }
 
     std::vector<char> inamev(inamlen);
     if ( sysctlbyname("hw.intrnames", inamev.data(), &inamlen,
         NULL, 0) < 0 ) {
         logProblem << "sysctl hw.intrnames failed" << std::endl;
-        return 0;
+        return;
     }
     for (size_t i = 0; i < inamev.size(); i++) {
         if (inamev[i] == '\0')  // count end-of-strings
             nintr++;
     }
-    char *intrname = inamev.data();
+
+    std::vector<char *> inames(nintr, (char *)0);
+    intrs = inamev.data();
     for (int i = 0; i < nintr; i++) {
-        std::istringstream is(intrname);
-        is >> util::sink("irq") >> nbr;
-        if (is.fail()) {
-            if ( ++nbr > count )  // unused ints are named irqn where
-                count = nbr;      // 0<=n<=255, used ones have device name
-        }
-        intrname += is.str().size() + 1;
+        inames[i] = intrs;
+        intrs += std::string(intrs).size() + 1;
     }
-#endif
-    return count;  // this is the highest numbered interrupt
+    std::vector<unsigned long> intrcnt(nintr, 0);
+    inamlen = nintr * sizeof(long);
+    if ( sysctlbyname("hw.intrcnt", intrcnt.data(), &inamlen, NULL, 0) < 0 )
+        logFatal << "sysctl hw.intrcnt failed" << std::endl;
+
+    for (int i = 0; i < nintr; i++) {
+        std::istringstream is(inames[i]);
+        is >> util::sink("irq") >> nbr;
+        if (!is) {
+            nbr++;
+            intrCount[nbr] += intrcnt[i];
+            intrNbrs[nbr] = 1;
+        }
+    }
 }
+#endif
 
 
 void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
@@ -959,7 +1015,10 @@ void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
     intrNbrs.resize(intVectorLen);
 
     /* This code is stolen from vmstat */
+#if !defined(XOSVIEW_DFBSD)
     int nbr = 0;
+#endif
+
 #if defined(XOSVIEW_FREEBSD)
     size_t inamlen, nintr;
 
@@ -1049,46 +1108,7 @@ void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
         intrNbrs[nbr] = 1;
     }
 #else  // XOSVIEW_DFBSD
-    int nintr = 0;
-    size_t inamlen;
-    char *intrs;
-
-    if ( sysctlbyname("hw.intrnames", NULL, &inamlen, NULL, 0) != 0 ) {
-        logProblem << "sysctl hw.intrnames failed" << std::endl;
-        return;
-    }
-
-    std::vector<char> inamev(inamlen);
-    if ( sysctlbyname("hw.intrnames", inamev.data(), &inamlen,
-        NULL, 0) < 0 ) {
-        logProblem << "sysctl hw.intrnames failed" << std::endl;
-        return;
-    }
-    for (size_t i = 0; i < inamev.size(); i++) {
-        if (inamev[i] == '\0')  // count end-of-strings
-            nintr++;
-    }
-
-    std::vector<char *> inames(nintr, (char *)0);
-    intrs = inamev.data();
-    for (int i = 0; i < nintr; i++) {
-        inames[i] = intrs;
-        intrs += std::string(intrs).size() + 1;
-    }
-    std::vector<unsigned long> intrcnt(nintr, 0);
-    inamlen = nintr * sizeof(long);
-    if ( sysctlbyname("hw.intrcnt", intrcnt.data(), &inamlen, NULL, 0) < 0 )
-        logFatal << "sysctl hw.intrcnt failed" << std::endl;
-
-    for (int i = 0; i < nintr; i++) {
-        std::istringstream is(inames[i]);
-        is >> util::sink("irq") >> nbr;
-        if (!is) {
-            nbr++;
-            intrCount[nbr] += intrcnt[i];
-            intrNbrs[nbr] = 1;
-        }
-    }
+    DFBSDGetIntrStats(intrCount, intrNbrs);
 #endif
 }
 

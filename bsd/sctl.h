@@ -31,6 +31,13 @@ public:
         return true;
     }
 
+    bool getsize(size_t &size) const {
+        if (sysctl(_mib.data(), _mib.size(), NULL, &size, NULL, 0) < 0)
+            return false;
+
+        return true;
+    }
+
     template <class X>
     bool get(X &x) const {
         size_t size = sizeof(X);
