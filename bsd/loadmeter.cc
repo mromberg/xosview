@@ -14,9 +14,11 @@
 //
 #include "loadmeter.h"
 #include "cpumeter.h"
+#include "sctl.h"
 
+#if defined(XOSVIEW_OPENBSD)
 #include <sys/param.h>
-#include <sys/sysctl.h>
+#endif
 
 
 LoadMeter::LoadMeter( void )
@@ -32,20 +34,19 @@ float LoadMeter::getLoad(void) {
 }
 
 
-#if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_DFBSD) || \
-    defined(XOSVIEW_FREEBSD)
-
+#if !defined(XOSVIEW_OPENBSD)
 static uint64_t GetCPUSpeed(const std::string &sysname) {
-    uint64_t speed = 0;
-    size_t size = sizeof(speed);
 
-    if (sysctlbyname(sysname.c_str(), &speed, &size, NULL, 0) < 0)
-        logFatal << "sysctl(" << sysname << ") failed" << std::endl;
+    static SysCtl speed_sc(sysname); // caches the mib.
+
+    uint64_t speed = 0;
+    if (!speed_sc.get(speed))
+        logFatal << "sysctl(" << speed_sc.id() << ") failed." << std::endl;
 
     return speed;
 }
-
 #endif
+
 
 #if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD)
 
@@ -64,11 +65,10 @@ uint64_t LoadMeter::getCPUSpeed(void) {
 uint64_t LoadMeter::getCPUSpeed(void) {
 
     const int mib[] = { CTL_HW, HW_CPUSPEED };
+    static SysCtl speed_sc(mib);
     int speed = 0;
-    size_t size = sizeof(speed);
-
-    if (sysctl(mib, sizeof(mib)/sizeof(int), &speed, &size, NULL, 0) < 0)
-        logFatal << "syscl hw.cpuspeed failed" << std::endl;
+    if (!speed_sc.get(speed))
+        logFatal << "sysctl(hw.cpuspeed) failed." << std::endl;
 
     return speed * 1000000;
 }
