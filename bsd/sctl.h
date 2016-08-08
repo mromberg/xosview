@@ -16,7 +16,10 @@
 
 class SysCtl {
 public:
+#if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
     SysCtl(const std::string &id) : _id(id) { init(); }
+#endif
+    SysCtl(const std::vector<int> &mib) : _mib(mib) {}
 
     const std::string &id(void) const { return _id; }
 
@@ -46,6 +49,7 @@ private:
     std::vector<int> _mib;
 
     void init(void) {
+#if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
         size_t sizep = 0;
         if (sysctlnametomib(_id.c_str(), NULL, &sizep) < 0) {
             std::cerr << "sysctlnametomib(" << _id << ") failed." << std::endl;
@@ -56,6 +60,7 @@ private:
         if (sysctlnametomib(_id.c_str(), _mib.data(), &sizep) < 0) {
             std::cerr << "sysctlnametomib(" << _id << ") failed." << std::endl;
         }
+#endif
     }
 };
 
