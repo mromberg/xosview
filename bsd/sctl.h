@@ -16,10 +16,11 @@
 
 class SysCtl {
 public:
+    SysCtl(void) {}
+    SysCtl(const std::vector<int> &mib) : _mib(mib) {}
 #if !defined(XOSVIEW_OPENBSD)
     SysCtl(const std::string &id) : _id(id) { init(); }
 #endif
-    SysCtl(const std::vector<int> &mib) : _mib(mib) {}
 
     const std::string &id(void) const { return _id; }
 

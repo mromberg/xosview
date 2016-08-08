@@ -64,8 +64,12 @@ uint64_t LoadMeter::getCPUSpeed(void) {
 
 uint64_t LoadMeter::getCPUSpeed(void) {
 
-    const int mib[] = { CTL_HW, HW_CPUSPEED };
-    static SysCtl speed_sc(mib);
+    static SysCtl speed_sc;
+    if (speed_sc.mib().empty()) {
+        speed_sc.mib().push_back(CTL_HW);
+        speed_sc.mib().push_back(HW_CPUSPEED);
+    }
+
     int speed = 0;
     if (!speed_sc.get(speed))
         logFatal << "sysctl(hw.cpuspeed) failed." << std::endl;
