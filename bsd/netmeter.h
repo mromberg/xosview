@@ -13,12 +13,10 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-
 #ifndef NETMETER_H
 #define NETMETER_H
 
 #include "cnetmeter.h"
-
 
 
 class NetMeter : public ComNetMeter {
@@ -35,9 +33,19 @@ private:
     std::string _netIface;
     bool _ignored;
 
+    bool ifskip(const std::string &ifname, const std::string &netIface,
+      bool ignored) const;
     void getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
       const std::string &netIface, bool ignored) const;
 };
+
+
+inline bool NetMeter::ifskip(const std::string &ifname,
+  const std::string &netIface, bool ignored) const {
+
+    return (netIface != "False") &&
+        ((!ignored && netIface != ifname) || (ignored && netIface == ifname));
+}
 
 
 #endif

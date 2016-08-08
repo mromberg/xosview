@@ -105,11 +105,10 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
                      << std::endl;
         }
         std::string ifname(ifdr.ifdr_name);
-        if (netIface != "False") {
-            if ((!ignored && netIface != ifname)
-              || (ignored && netIface == ifname))
-                continue;
-        }
+
+        if (ifskip(ifname, netIface, ignored))
+            continue;
+
         const struct if_data *ifi = &ifdr.ifdr_data;
         inbytes += ifi->ifi_ibytes;
         outbytes += ifi->ifi_obytes;
@@ -135,11 +134,11 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
     size_t size;
     if ( sysctl(mib_ifl, mibsize, NULL, &size, NULL, 0) < 0 )
-        logFatal << "BSDGetNetInOut(): sysctl 1 failed" << std::endl;
+        logFatal << "sysctl() failed" << std::endl;
 
     std::vector<char> bufv(size, 0);
     if ( sysctl(mib_ifl, mibsize, bufv.data(), &size, NULL, 0) < 0 )
-        logFatal << "BSDGetNetInOut(): sysctl 2 failed" << std::endl;
+        logFatal << "sysctl() failed" << std::endl;
 
     struct if_msghdr *ifm = (struct if_msghdr *)bufv.data();
 
@@ -159,11 +158,8 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
                 continue;
             std::string ifname(sdl->sdl_data, 0, sdl->sdl_nlen);
 
-            if (netIface != "False") {
-                if ( (!ignored && netIface != ifname)
-                  || (ignored && netIface == ifname) )
-                    continue;
-            }
+            if (ifskip(ifname, netIface, ignored))
+                continue;
 
             inbytes += ifm->ifm_data.ifi_ibytes;;
             outbytes += ifm->ifm_data.ifi_obytes;
@@ -210,11 +206,8 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
             continue;
 
         std::string ifname(ifmd.ifmd_name);
-        if (netIface != "False") {
-            if ( (!ignored && netIface != ifname)
-              || (ignored && netIface == ifname) )
-                continue;
-        }
+        if (ifskip(ifname, netIface, ignored))
+            continue;
 
         inbytes  += ifmd.ifmd_data.ifi_ibytes;
         outbytes += ifmd.ifmd_data.ifi_obytes;
