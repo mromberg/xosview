@@ -16,7 +16,8 @@
 #include "netmeter.h"
 
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
-#include <sys/sysctl.h>
+#include "sctl.h"
+
 #include <net/if.h>
 #include <net/if_mib.h>
 #endif
@@ -180,24 +181,30 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
   const std::string &netIface, bool ignored) const {
 
-    inbytes = outbytes = 0;
-    int ifcount = 0;
-    size_t ifcsize = sizeof(ifcount);
-    if (sysctlbyname("net.link.generic.system.ifcount", &ifcount, &ifcsize,
-        NULL, 0) < 0) {
-        logFatal << "sysctlbyname(net.link.generic.system.ifcount) failed.\n";
+    // Lookup the mib for sysctl only once.
+    static SysCtl ifcount_sc("net.link.generic.system.ifcount");
+    // net.link.generic.ifdata.N.general
+    // Can't look this one up by name.  So, directly monkey with the mib.
+    static SysCtl ifdata_sc("net.link.generic.ifdata");
+    static bool first = true;
+    if (first) {
+        first = false;
+        ifdata_sc.mib().push_back(1);  // Place holder for N (first == 1).
+        ifdata_sc.mib().push_back(IFDATA_GENERAL);
     }
 
-    // rows start with index == 1 not 0!
-    int mib[] = {CTL_NET, PF_LINK, NETLINK_GENERIC, IFMIB_IFDATA,
-                 1, IFDATA_GENERAL};
-    struct ifmibdata ifmd;
-    size_t size = sizeof(ifmd);
+    inbytes = outbytes = 0;
 
+    int ifcount = 0;
+    if (!ifcount_sc.get(ifcount))
+        logFatal << "sysctl " << ifcount_sc.id() << " failed." << std::endl;
+
+    // rows start with index == 1 not 0!
     for (int i = 1 ; i <= ifcount ; i++) {
-        mib[4] = i;
-        if (sysctl(mib, 6, &ifmd, &size, NULL, 0) < 0) {
-            logFatal << "sysctl(CTL_NET) failed.\n";
+        struct ifmibdata ifmd;
+        ifdata_sc.mib()[4] = i; // Set N in the mib
+        if (!ifdata_sc.get(ifmd)) {
+            logFatal << "sysctl(" << ifdata_sc.id() << ") failed." << std::endl;
         }
         if (!(ifmd.ifmd_flags & IFF_UP))
             continue;
