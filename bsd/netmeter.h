@@ -21,7 +21,8 @@
 
 class NetMeter : public ComNetMeter {
 public:
-    NetMeter( void );
+    NetMeter(void);
+    ~NetMeter(void);
 
     void checkResources(const ResDB &rdb);
 
@@ -32,6 +33,9 @@ private:
     uint64_t _lastBytesIn, _lastBytesOut;
     std::string _netIface;
     bool _ignored;
+#if defined(XOSVIEW_NETBSD)
+    int _socket;
+#endif
 
     bool ifskip(const std::string &ifname, const std::string &netIface,
       bool ignored) const;

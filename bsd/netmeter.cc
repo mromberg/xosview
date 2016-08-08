@@ -43,6 +43,19 @@ NetMeter::NetMeter( void )
     : ComNetMeter(),
       _lastBytesIn(0), _lastBytesOut(0),
       _netIface("False"), _ignored(false) {
+#if defined(XOSVIEW_NETBSD)
+    if ((_socket = socket(AF_LOCAL, SOCK_DGRAM, 0)) == -1)
+        logFatal << "socket(AF_LOCAL, SOCK_DGRAM, 0) failed: "
+                 << util::strerror() << std::endl;
+#endif
+}
+
+
+NetMeter::~NetMeter(void) {
+#if defined(XOSVIEW_NETBSD)
+    if (_socket != -1)
+        close(_socket);
+#endif
 }
 
 
@@ -93,14 +106,14 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
     inbytes = outbytes = 0;
     struct if_nameindex *iflist = if_nameindex();
-    int s = socket(AF_LOCAL, SOCK_DGRAM, 0);
+//    int s = socket(AF_LOCAL, SOCK_DGRAM, 0);
 
-    for (struct if_nameindex *p = iflist; p->if_index > 0; p++) {
+    for (const struct if_nameindex *p = iflist; p->if_index > 0; p++) {
         struct ifdatareq ifdr;
         memset(&ifdr, 0, sizeof(ifdr));
         std::string p_if_name(p->if_name);
         memcpy(ifdr.ifdr_name, p_if_name.c_str(), p_if_name.length());
-        if (ioctl(s, SIOCGIFDATA, &ifdr) == -1) {
+        if (ioctl(_socket, SIOCGIFDATA, &ifdr) == -1) {
             logFatal << "ioctl(SIOCGIFDATA) failed for: " << p->if_name
                      << std::endl;
         }
@@ -118,7 +131,7 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
                  << " out: " << ifi->ifi_obytes << std::endl;
     }
 
-    close(s);
+//    close(s);
     if_freenameindex(iflist);
 }
 #endif
