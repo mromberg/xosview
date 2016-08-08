@@ -83,7 +83,7 @@ std::pair<float, float> NetMeter::getRates(void) {
 }
 
 
-#if defined(XOSV_NETBSD_NET_IOCTL)
+#if defined(XOSVIEW_NETBSD)
 // -----------------------------------------------------------
 // Based on a code snippet from Martin Husemann on the NetBSD
 // forums.
@@ -130,7 +130,7 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
     inbytes = outbytes = 0;
     const int mib_ifl[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
-    size_t mibsize = sizeof(mib_ifl) / sizeof(mib_ifl[0]);
+    const size_t mibsize = sizeof(mib_ifl) / sizeof(mib_ifl[0]);
 
     size_t size;
     if ( sysctl(mib_ifl, mibsize, NULL, &size, NULL, 0) < 0 )
@@ -140,22 +140,27 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
     if ( sysctl(mib_ifl, mibsize, bufv.data(), &size, NULL, 0) < 0 )
         logFatal << "sysctl() failed" << std::endl;
 
-    struct if_msghdr *ifm = (struct if_msghdr *)bufv.data();
+    const char *bufp = bufv.data();
+    const struct if_msghdr *ifm = reinterpret_cast<const struct if_msghdr *>(
+        bufp);
+    const struct rt_msghdr *rtm = reinterpret_cast<const struct rt_msghdr *>(
+        bufp);
 
-    char *bufp = bufv.data();
-    struct rt_msghdr *rtm = (struct rt_msghdr *)bufp;
+    for ( ; bufp < bufv.data() + bufv.size() ; bufp += rtm->rtm_msglen) {
 
-    for ( ; bufp < bufv.data() + size ; bufp += rtm->rtm_msglen) {
+        rtm = reinterpret_cast<const struct rt_msghdr *>(bufp);
 
-        rtm = (struct rt_msghdr *)bufp;
         if (rtm->rtm_version != RTM_VERSION)
             continue;
 
         if (rtm->rtm_type == RTM_IFINFO) {
-            ifm = (struct if_msghdr *)bufp;
-            struct sockaddr_dl *sdl = (struct sockaddr_dl *)(ifm + 1); // vodoo?
+            ifm = reinterpret_cast<const struct if_msghdr *>(bufp);
+            const struct sockaddr_dl *sdl =
+                reinterpret_cast<const struct sockaddr_dl *>(ifm + 1); // voodoo
+
             if (sdl->sdl_family != AF_LINK)
                 continue;
+
             std::string ifname(sdl->sdl_data, 0, sdl->sdl_nlen);
 
             if (ifskip(ifname, netIface, ignored))
