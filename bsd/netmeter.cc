@@ -168,7 +168,7 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
             const struct if_msghdr *ifm =
                 reinterpret_cast<const struct if_msghdr *>(bufp);
             const struct sockaddr_dl *sdl =
-                reinterpret_cast<const struct sockaddr_dl *>(ifm + 1); // voodoo?
+                reinterpret_cast<const struct sockaddr_dl *>(ifm + 1); // voodoo
 
             if (sdl->sdl_family != AF_LINK)
                 continue;
