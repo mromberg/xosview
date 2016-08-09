@@ -906,16 +906,41 @@ static int FBSDNumInts(void) {
 #endif
 
 
+#if defined(XOSVIEW_OPENBSD)
+static int OBSDNumInts() {
+    int count = 0;
+    int nbr = 0;
+    int nintr = 0;
+    int mib_int[4] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
+    size_t size = sizeof(nintr);
+    if ( sysctl(mib_int, 3, &nintr, &size, NULL, 0) < 0 ) {
+        logProblem << "Could not get interrupt count" << std::endl;
+        return 0;
+    }
+    for (int i = 0; i < nintr; i++) {
+        mib_int[2] = KERN_INTRCNT_VECTOR;
+        mib_int[3] = i;
+        size = sizeof(nbr);
+        if ( sysctl(mib_int, 4, &nbr, &size, NULL, 0) < 0 ) {
+            logProblem << "Could not get name of interrupt " << i << std::endl;
+        }
+        else
+            if ( nbr > count )
+                count = nbr;
+    }
+    return count;
+}
+#endif
+
+
 int BSDNumInts() {
     /* This code is stolen from vmstat. */
     int count = 0;
-#if !defined(XOSVIEW_DFBSD) && !defined(XOSVIEW_FREEBSD)
-    int nbr = 0;
-#endif
 
 #if defined(XOSVIEW_FREEBSD)
     count = FBSDNumInts();
 #elif defined(XOSVIEW_NETBSD)
+    int nbr = 0;
     struct evcntlist events;
     struct evcnt evcnt, *evptr;
     std::string dummy;
@@ -938,24 +963,7 @@ int BSDNumInts() {
         evptr = TAILQ_NEXT(&evcnt, ev_list);
     }
 #elif defined(XOSVIEW_OPENBSD)
-    int nintr = 0;
-    int mib_int[4] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
-    size_t size = sizeof(nintr);
-    if ( sysctl(mib_int, 3, &nintr, &size, NULL, 0) < 0 ) {
-        logProblem << "Could not get interrupt count" << std::endl;
-        return 0;
-    }
-    for (int i = 0; i < nintr; i++) {
-        mib_int[2] = KERN_INTRCNT_VECTOR;
-        mib_int[3] = i;
-        size = sizeof(nbr);
-        if ( sysctl(mib_int, 4, &nbr, &size, NULL, 0) < 0 ) {
-            logProblem << "Could not get name of interrupt " << i << std::endl;
-        }
-        else
-            if ( nbr > count )
-                count = nbr;
-    }
+    count = OBSDNumInts();
 #else  // XOSVIEW_DFBSD
     count = DFBSDNumInts();
 #endif
@@ -1054,22 +1062,50 @@ static void FBSDGetIntrStats(std::vector<uint64_t> &intrCount,
 #endif
 
 
+#if defined(XOSVIEW_OPENBSD)
+static void OBSDGetIntrStats(std::vector<uint64_t> &intrCount,
+  std::vector<unsigned int> &intrNbrs) {
+    int nbr = 0;
+    int nintr = 0;
+    uint64_t count = 0;
+    size_t size = sizeof(nintr);
+    int mib_int[4] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
+    if ( sysctl(mib_int, 3, &nintr, &size, NULL, 0) < 0 ) {
+        logProblem << "Could not get interrupt count" << std::endl;
+        return;
+    }
+    for (int i = 0; i < nintr; i++) {
+        mib_int[2] = KERN_INTRCNT_VECTOR;
+        mib_int[3] = i;
+        size = sizeof(nbr);
+        if ( sysctl(mib_int, 4, &nbr, &size, NULL, 0) < 0 )
+            continue;  // not active
+        mib_int[2] = KERN_INTRCNT_CNT;
+        size = sizeof(count);
+        if ( sysctl(mib_int, 4, &count, &size, NULL, 0) < 0 ) {
+            logProblem << "sysctl kern.intrcnt.cnt." << i << " failed\n";
+            count = 0;
+        }
+        intrCount[nbr] += count;  // += because ints can share number
+        intrNbrs[nbr] = 1;
+    }
+}
+#endif
+
+
 void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
   std::vector<unsigned int> &intrNbrs) {
+
     size_t intVectorLen = BSDNumInts() + 1;
     intrCount.resize(intVectorLen);
     intrNbrs.resize(intVectorLen);
-
-    /* This code is stolen from vmstat */
-#if !defined(XOSVIEW_DFBSD) && !defined(XOSVIEW_FREEBSD)
-    int nbr = 0;
-#endif
 
 #if defined(XOSVIEW_FREEBSD)
     FBSDGetIntrStats(intrCount, intrNbrs);
 #elif defined(XOSVIEW_DFBSD)
     DFBSDGetIntrStats(intrCount, intrNbrs);
 #elif defined(XOSVIEW_NETBSD)
+    int nbr = 0;
     struct evcntlist events;
     struct evcnt evcnt, *evptr;
 
@@ -1094,29 +1130,7 @@ void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
         evptr = TAILQ_NEXT(&evcnt, ev_list);
     }
 #elif defined(XOSVIEW_OPENBSD)
-    int nintr = 0;
-    uint64_t count = 0;
-    size_t size = sizeof(nintr);
-    int mib_int[4] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
-    if ( sysctl(mib_int, 3, &nintr, &size, NULL, 0) < 0 ) {
-        logProblem << "Could not get interrupt count" << std::endl;
-        return;
-    }
-    for (int i = 0; i < nintr; i++) {
-        mib_int[2] = KERN_INTRCNT_VECTOR;
-        mib_int[3] = i;
-        size = sizeof(nbr);
-        if ( sysctl(mib_int, 4, &nbr, &size, NULL, 0) < 0 )
-            continue;  // not active
-        mib_int[2] = KERN_INTRCNT_CNT;
-        size = sizeof(count);
-        if ( sysctl(mib_int, 4, &count, &size, NULL, 0) < 0 ) {
-            logProblem << "sysctl kern.intrcnt.cnt." << i << " failed\n";
-            count = 0;
-        }
-        intrCount[nbr] += count;  // += because ints can share number
-        intrNbrs[nbr] = 1;
-    }
+    OBSDGetIntrStats(intrCount, intrNbrs);
 #endif
 }
 
