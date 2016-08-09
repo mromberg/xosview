@@ -963,46 +963,40 @@ int BSDNumInts() {
 static void DFBSDGetIntrStats(std::vector<uint64_t> &intrCount,
   std::vector<unsigned int> &intrNbrs) {
 
-    int nbr = 0;
-    int nintr = 0;
-    size_t inamlen;
-    char *intrs;
+    static SysCtl intrnames_sc("hw.intrnames");
+    static SysCtl intrcnt_sc("hw.intrcnt");
 
-    if ( sysctlbyname("hw.intrnames", NULL, &inamlen, NULL, 0) != 0 ) {
-        logProblem << "sysctl hw.intrnames failed" << std::endl;
-        return;
-    }
+    size_t bytes = 0;
+    if (!intrnames_sc.getsize(bytes))
+        logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
 
-    std::vector<char> inamev(inamlen);
-    if ( sysctlbyname("hw.intrnames", inamev.data(), &inamlen,
-        NULL, 0) < 0 ) {
-        logProblem << "sysctl hw.intrnames failed" << std::endl;
-        return;
-    }
-    for (size_t i = 0; i < inamev.size(); i++) {
-        if (inamev[i] == '\0')  // count end-of-strings
-            nintr++;
-    }
+    std::vector<char> nbuf(bytes, 0);
+    if (!intrnames_sc.get(nbuf))
+        logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
 
-    std::vector<char *> inames(nintr, (char *)0);
-    intrs = inamev.data();
-    for (int i = 0; i < nintr; i++) {
-        inames[i] = intrs;
-        intrs += std::string(intrs).size() + 1;
-    }
-    std::vector<unsigned long> intrcnt(nintr, 0);
-    inamlen = nintr * sizeof(long);
-    if ( sysctlbyname("hw.intrcnt", intrcnt.data(), &inamlen, NULL, 0) < 0 )
-        logFatal << "sysctl hw.intrcnt failed" << std::endl;
+    size_t csize = 0;
+    if (!intrcnt_sc.getsize(csize))
+        logFatal << "sysctl(" << intrcnt_sc.id() << ") failed." << std::endl;
 
-    for (int i = 0; i < nintr; i++) {
-        std::istringstream is(inames[i]);
-        is >> util::sink("irq") >> nbr;
-        if (!is) {
-            nbr++;
-            intrCount[nbr] += intrcnt[i];
-            intrNbrs[nbr] = 1;
+    std::vector<unsigned long> intrcnt(csize / sizeof(unsigned long));
+    if (!intrcnt_sc.get(intrcnt))
+        logFatal << "sysctl(" << intrcnt_sc.id() << ") failed." << std::endl;
+
+    size_t i = 0, offset = 0;
+    while (i < intrCount.size() && offset < nbuf.size()) {
+        // unused ints are named irqn where
+        // 0<=n<=255, used ones have device name
+        std::string tstr(nbuf.data() + offset);
+        if (tstr.substr(0, 3) != "irq") {
+            intrCount[i] += intrcnt[i];
+            intrNbrs[i] = 1;
         }
+        else {
+            intrCount[i] = 0;
+            intrNbrs[i] = 0;
+        }
+        offset += tstr.size() + 1;
+        i++;
     }
 }
 #endif
