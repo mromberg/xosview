@@ -933,40 +933,64 @@ static int OBSDNumInts() {
 #endif
 
 
+#if defined(XOSVIEW_NETBSD)
+static int NBSDNumInts() {
+
+    const int Mib[] = { CTL_KERN, KERN_EVCNT, EVCNT_TYPE_INTR,
+                        KERN_EVCNT_COUNT_ANY };
+    static SysCtl evcnt_sc(Mib, sizeof(Mib) / sizeof(int));
+
+    int count = 0;
+
+    size_t evsize = 0;
+    if (!evcnt_sc.getsize(evsize))
+        logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
+
+    std::vector<char> buf(evsize, 0);
+    if (!evcnt_sc.get(buf))
+        logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
+
+    const struct evcnt_sysctl *evs =
+        reinterpret_cast<const struct evcnt_sysctl *>(buf.data());
+    const struct evcnt_sysctl *evsend =
+        reinterpret_cast<const struct evcnt_sysctl *>(buf.data() + buf.size());
+
+    while (evs->ev_len && evs < evsend &&
+      reinterpret_cast<const struct evcnt_sysctl *>(
+          (char *)evs + evs->ev_len * 8) < evsend ) {
+
+        // extract the "pin" number from the name.
+        std::string name(evs->ev_strings + evs->ev_grouplen + 1);
+        int nbr = 0;
+        std::string dummy;
+        std::istringstream is(name);
+        is >> dummy >> nbr;
+
+        if (is && nbr > count)
+            count = nbr;
+
+        evs = reinterpret_cast<const struct evcnt_sysctl *>((const char *)evs
+          + 8 * evs->ev_len);
+    }
+
+    return count;
+}
+#endif
+
+
 int BSDNumInts() {
-    /* This code is stolen from vmstat. */
     int count = 0;
 
 #if defined(XOSVIEW_FREEBSD)
     count = FBSDNumInts();
 #elif defined(XOSVIEW_NETBSD)
-    int nbr = 0;
-    struct evcntlist events;
-    struct evcnt evcnt, *evptr;
-    std::string dummy;
-    //char *name;
-
-    safe_kvm_read(nlst[ALLEVENTS_SYM_INDEX].n_value, &events,
-      sizeof(events));
-    evptr = TAILQ_FIRST(&events);
-    while (evptr) {
-        safe_kvm_read((unsigned long)evptr, &evcnt, sizeof(evcnt));
-        if (evcnt.ev_type == EVCNT_TYPE_INTR) {
-            std::vector<char> name(evcnt.ev_namelen + 1);
-            safe_kvm_read((unsigned long)evcnt.ev_name,
-              name.data(), name.size());
-            std::istringstream is(name.data());
-            is >> dummy >> nbr;
-            if ( is && nbr > count )
-                count = nbr;
-        }
-        evptr = TAILQ_NEXT(&evcnt, ev_list);
-    }
+    count = NBSDNumInts();
 #elif defined(XOSVIEW_OPENBSD)
     count = OBSDNumInts();
-#else  // XOSVIEW_DFBSD
+#elif defined(XOSVIEW_DFBSD)
     count = DFBSDNumInts();
 #endif
+
     return count;  // this is the highest numbered interrupt
 }
 
