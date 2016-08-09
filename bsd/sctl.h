@@ -18,6 +18,7 @@ class SysCtl {
 public:
     SysCtl(void) {}
     SysCtl(const std::vector<int> &mib) : _mib(mib) {}
+    SysCtl(const int *mib, size_t mibsize) : _mib(mib, mib + mibsize) {}
 #if !defined(XOSVIEW_OPENBSD)
     SysCtl(const std::string &id) : _id(id) { init(); }
 #endif
