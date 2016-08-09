@@ -876,37 +876,29 @@ static int DFBSDNumInts(void) {
 #if defined(XOSVIEW_FREEBSD)
 static int FBSDNumInts(void) {
 
+    static SysCtl intrnames_sc("hw.intrnames");
+
     int count = 0;
-    int nbr = 0;
-    size_t inamlen, nintr;
 
-# if __FreeBSD_version >= 900040
-    safe_kvm_read(nlst[EINTRCNT_SYM_INDEX].n_value, &nintr, sizeof(nintr));
-    safe_kvm_read(nlst[EINTRNAMES_SYM_INDEX].n_value, &inamlen,
-      sizeof(inamlen));
-# else
-    nintr = nlst[EINTRCNT_SYM_INDEX].n_value - nlst[INTRCNT_SYM_INDEX].n_value;
-    inamlen = nlst[EINTRNAMES_SYM_INDEX].n_value
-        - nlst[INTRNAMES_SYM_INDEX].n_value;
-#  endif
-    if (nintr == 0 || inamlen == 0) {
-        logProblem << "Could not get interrupt numbers." << std::endl;
-        return 0;
-    }
+    size_t nsize = 0;
+    if (!intrnames_sc.getsize(nsize))
+        logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
 
-    std::vector<char> intrvec(inamlen);
-    safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value,
-      intrvec.data(), intrvec.size());
-    nintr /= sizeof(long);
-    char *iname = intrvec.data();
-    for (uint i = 0; i < nintr; i++) {
-        if (iname) {
-            std::istringstream is(iname);
-            is >> util::sink("irq") >> nbr;
-            if (is && nbr > count)
-                count = nbr;
-            iname += is.str().size() + 1;
-        }
+    std::vector<char> nbuf(nsize, 0);  // this thing will be 200kb or more!
+    if (!intrnames_sc.get(nbuf))
+        logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
+
+    const char *p = nbuf.data();
+    // executive decision.  Stop at first null string
+    // so we don't check 200k empty ones.
+    while (*p && p < nbuf.data() + nbuf.size()) {
+        std::string iname(p);
+        std::istringstream is(iname);
+        int nbr = 0;
+        is >> util::sink("irq") >> nbr;
+        if (is && nbr > count)
+            count = nbr;
+        p += iname.size() + 1;
     }
 
     return count;
@@ -1018,45 +1010,45 @@ static void DFBSDGetIntrStats(std::vector<uint64_t> &intrCount,
 static void FBSDGetIntrStats(std::vector<uint64_t> &intrCount,
   std::vector<unsigned int> &intrNbrs) {
 
+    static SysCtl intrcnt_sc("hw.intrcnt");
+    static SysCtl intrnames_sc("hw.intrnames");
+
     int nbr = 0;
-    size_t inamlen, nintr;
 
-# if __FreeBSD_version >= 900040
-    safe_kvm_read(nlst[EINTRCNT_SYM_INDEX].n_value, &nintr, sizeof(nintr));
-    safe_kvm_read(nlst[EINTRNAMES_SYM_INDEX].n_value,
-      &inamlen, sizeof(inamlen));
-# else
-    nintr = nlst[EINTRCNT_SYM_INDEX].n_value - nlst[INTRCNT_SYM_INDEX].n_value;
-    inamlen = nlst[EINTRNAMES_SYM_INDEX].n_value
-        - nlst[INTRNAMES_SYM_INDEX].n_value;
-# endif
-    if (nintr == 0 || inamlen == 0) {
-        logProblem << "Could not get interrupt numbers." << std::endl;
-        return;
-    }
+    size_t inamlen = 0;
+    if (!intrnames_sc.getsize(inamlen))
+        logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
+    std::vector<char> intrnames(inamlen);
+    if (!intrnames_sc.get(intrnames))
+        logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
 
-    std::vector<unsigned long> kvm_intrcnt(nintr / sizeof(unsigned long));
-    std::vector<char> kvm_intrnames(inamlen);
+    size_t nintr = 0;
+    if (!intrcnt_sc.getsize(nintr))
+        logFatal << "sysctl(" << intrcnt_sc.id() << ") failed." << std::endl;
+    std::vector<unsigned long> intrcnt(nintr / sizeof(unsigned long));
+    if (!intrcnt_sc.get(intrcnt))
+        logFatal << "sysctl(" << intrcnt_sc.id() << ") failed." << std::endl;
 
-    safe_kvm_read(nlst[INTRCNT_SYM_INDEX].n_value, kvm_intrcnt.data(), nintr);
-    safe_kvm_read(nlst[INTRNAMES_SYM_INDEX].n_value, kvm_intrnames.data(),
-      kvm_intrnames.size());
 
-    nintr /= sizeof(long);
-    /* kvm_intrname has the ASCII names of the IRQs, every null-terminated
-     * string corresponds to a value in the kvm_intrcnt array
-     * e.g. irq1: atkbd0
-     */
-    char *intrnames = kvm_intrnames.data();
-    for (uint i = 0; i < nintr; i++) {
+    nintr = intrcnt.size();
+    // intrname has the ASCII names of the IRQs, every null-terminated
+    // string corresponds to a value in the intrcnt array
+    // e.g. irq1: atkbd0
+    const char *p = intrnames.data();
+    for (size_t i = 0 ; i < nintr ; i++) {
+        // bail out on first null string as the list can be YUUUGE!
+        if (!*p)
+            break;
+
         /* Figure out which irq we have here */
-        std::istringstream is(intrnames);
+        std::istringstream is(p);
         is >> util::sink("irq") >> nbr;
         if (is) {
-            intrCount[nbr] = kvm_intrcnt[i];
+            intrCount[nbr] = intrcnt[i];
             intrNbrs[nbr] = 1;
         }
-        intrnames += is.str().size() + 1;
+
+        p += is.str().size() + 1;
     }
 }
 #endif
