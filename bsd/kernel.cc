@@ -873,14 +873,11 @@ static int DFBSDNumInts(void) {
 #endif
 
 
-int BSDNumInts() {
-    /* This code is stolen from vmstat. */
-    int count = 0;
-#if !defined(XOSVIEW_DFBSD)
-    int nbr = 0;
-#endif
-
 #if defined(XOSVIEW_FREEBSD)
+static int FBSDNumInts(void) {
+
+    int count = 0;
+    int nbr = 0;
     size_t inamlen, nintr;
 
 # if __FreeBSD_version >= 900040
@@ -911,6 +908,21 @@ int BSDNumInts() {
             iname += is.str().size() + 1;
         }
     }
+
+    return count;
+}
+#endif
+
+
+int BSDNumInts() {
+    /* This code is stolen from vmstat. */
+    int count = 0;
+#if !defined(XOSVIEW_DFBSD) && !defined(XOSVIEW_FREEBSD)
+    int nbr = 0;
+#endif
+
+#if defined(XOSVIEW_FREEBSD)
+    count = FBSDNumInts();
 #elif defined(XOSVIEW_NETBSD)
     struct evcntlist events;
     struct evcnt evcnt, *evptr;
@@ -1002,18 +1014,11 @@ static void DFBSDGetIntrStats(std::vector<uint64_t> &intrCount,
 #endif
 
 
-void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
-  std::vector<unsigned int> &intrNbrs) {
-    size_t intVectorLen = BSDNumInts() + 1;
-    intrCount.resize(intVectorLen);
-    intrNbrs.resize(intVectorLen);
-
-    /* This code is stolen from vmstat */
-#if !defined(XOSVIEW_DFBSD)
-    int nbr = 0;
-#endif
-
 #if defined(XOSVIEW_FREEBSD)
+static void FBSDGetIntrStats(std::vector<uint64_t> &intrCount,
+  std::vector<unsigned int> &intrNbrs) {
+
+    int nbr = 0;
     size_t inamlen, nintr;
 
 # if __FreeBSD_version >= 900040
@@ -1053,6 +1058,25 @@ void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
         }
         intrnames += is.str().size() + 1;
     }
+}
+#endif
+
+
+void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
+  std::vector<unsigned int> &intrNbrs) {
+    size_t intVectorLen = BSDNumInts() + 1;
+    intrCount.resize(intVectorLen);
+    intrNbrs.resize(intVectorLen);
+
+    /* This code is stolen from vmstat */
+#if !defined(XOSVIEW_DFBSD) && !defined(XOSVIEW_FREEBSD)
+    int nbr = 0;
+#endif
+
+#if defined(XOSVIEW_FREEBSD)
+    FBSDGetIntrStats(intrCount, intrNbrs);
+#elif defined(XOSVIEW_DFBSD)
+    DFBSDGetIntrStats(intrCount, intrNbrs);
 #elif defined(XOSVIEW_NETBSD)
     struct evcntlist events;
     struct evcnt evcnt, *evptr;
@@ -1101,8 +1125,6 @@ void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
         intrCount[nbr] += count;  // += because ints can share number
         intrNbrs[nbr] = 1;
     }
-#else  // XOSVIEW_DFBSD
-    DFBSDGetIntrStats(intrCount, intrNbrs);
 #endif
 }
 
