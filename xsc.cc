@@ -172,7 +172,8 @@ const std::string &XSessionClient::sessionID(void) const {
 #ifdef HAVE_LIB_SM
     return _imp->sessionID();
 #else
-    return "";
+    static std::string nullid;
+    return nullid;
 #endif
 }
 
