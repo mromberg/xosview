@@ -22,20 +22,17 @@
 #include "sctl.h"
 
 #include <cstring>
+#include <cerrno>
 
-#include <sys/param.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <kvm.h>
-#include <nlist.h>
 #include <limits.h>
-#include <errno.h>
+
+#include <sys/param.h>
 #include <sysexits.h>
 #include <sys/types.h>
 #include <sys/queue.h>
 #include <sys/socket.h>
-#include <sys/sysctl.h>
-#include <net/if.h>
 
 
 #if defined(XOSVIEW_DFBSD)
