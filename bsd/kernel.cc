@@ -376,15 +376,12 @@ void BSDGetSwapInfo(uint64_t &total, uint64_t &used) {
     static SysCtl swsize_sc("vm.swap_size");
     static SysCtl swanon_sc("vm.swap_anon_use");
     static SysCtl swcache_sc("vm.swap_cache_use");
-    static SysCtl pagesz_sc("hw.pagesize");
 
-    int pagesize = 0;
+    size_t pagesize = getpagesize();
     int ssize = 0;
     int anon = 0;
     int cache = 0;
 
-    if (!pagesz_sc.get(pagesize))
-        logFatal << "sysctl(" << pagesz_sc.id() << ") failed." << std::endl;
     if (!swsize_sc.get(ssize))
         logFatal << "sysctl(" << swsize_sc.id() << ") failed." << std::endl;
     if (!swanon_sc.get(anon))
@@ -392,11 +389,48 @@ void BSDGetSwapInfo(uint64_t &total, uint64_t &used) {
     if (!swcache_sc.get(cache))
         logFatal << "sysctl(" << swcache_sc.id() << ") failed." << std::endl;
 
-    total = ssize;
-    used = anon;
-    used += cache;
-    total *= pagesize;
-    used *= pagesize;
+    total = ssize * pagesize;
+    used = (anon + cache) * pagesize;
+
+#elif defined(XOSVIEW_FREEBSD)
+
+    static SysCtl nswaps_sc("vm.nswapdev");
+    static SysCtl swapinfo_sc("vm.swap_info");
+    if (swapinfo_sc.mib().size() == 2)
+        swapinfo_sc.mib().push_back(0);
+
+    int nswaps = 0;
+    if (!nswaps_sc.get(nswaps))
+        logFatal << "sysctl(" << nswaps_sc.id() << ") failed." << std::endl;
+
+    // This thing is neither documented or even defined in a system
+    // header.  We use it here because it is not KVM.  If it breaks then
+    // FreeBSD does not get a swap meter until it has some sane way
+    // to get the stats.
+    //
+    // Instead of the following an array of five ints will be used.
+    //
+    // struct xswdev {
+    //     u_int   xsw_version;
+    //     dev_t   xsw_dev;
+    //     int     xsw_flags;
+    //     int     xsw_nblks;
+    //     int     xsw_used;
+    // };
+
+    size_t psize = getpagesize();
+
+    std::vector<int> xswd(5, 0);
+    for (int i = 0 ; i < nswaps ; i++) {
+        swapinfo_sc.mib()[2] = i;
+        if (!swapinfo_sc.get(xswd))
+            logFatal << "sysctl(" << swapinfo_sc.id() << ") failed."
+                     << std::endl;
+
+        total += xswd[3] * psize;
+        used += xswd[4] * psize;
+    }
+
 #else
 #warning "swap stats method unknown."
     logBug << "swap stats unknown." << std::endl;
