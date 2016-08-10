@@ -372,20 +372,36 @@ void BSDGetSwapInfo(uint64_t &total, uint64_t &used) {
         total += (uint64_t)sep[i].se_nblks * bsize;
         used += (uint64_t)sep[i].se_inuse * bsize;
     }
+#elif defined(XOSVIEW_DFBSD)
+    static SysCtl swsize_sc("vm.swap_size");
+    static SysCtl swanon_sc("vm.swap_anon_use");
+    static SysCtl swcache_sc("vm.swap_cache_use");
+    static SysCtl pagesz_sc("hw.pagesize");
+
+    int pagesize = 0;
+    int ssize = 0;
+    int anon = 0;
+    int cache = 0;
+
+    if (!pagesz_sc.get(pagesize))
+        logFatal << "sysctl(" << pagesz_sc.id() << ") failed." << std::endl;
+    if (!swsize_sc.get(ssize))
+        logFatal << "sysctl(" << swsize_sc.id() << ") failed." << std::endl;
+    if (!swanon_sc.get(anon))
+        logFatal << "sysctl(" << swanon_sc.id() << ") failed." << std::endl;
+    if (!swcache_sc.get(cache))
+        logFatal << "sysctl(" << swcache_sc.id() << ") failed." << std::endl;
+
+    total = ssize;
+    used = anon;
+    used += cache;
+    total *= pagesize;
+    used *= pagesize;
 #else
-#warning FIXME
-    logBug << "FIXME.  find sysctl() or other non-kvm way for swap stats.\n";
+#warning "swap stats method unknown."
+    logBug << "swap stats unknown." << std::endl;
     total = 1;
     used = 0;
-#if 0
-    struct kvm_swap kswap;
-    int pgsize = getpagesize();
-    if ( kvm_getswapinfo(kd, &kswap, 1, 0) )
-        logFatal << "BSDGetSwapInfo(): kvm_getswapinfo failed" << std::endl;
-
-    total = (uint64_t)kswap.ksw_total * pgsize;
-    used = (uint64_t)kswap.ksw_used * pgsize;
-#endif
 #endif
 }
 
