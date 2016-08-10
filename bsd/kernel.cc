@@ -44,6 +44,8 @@
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 static const char * const ACPIDEV = "/dev/acpi";
 static const char * const APMDEV = "/dev/apm";
+
+#include <net/if.h>
 #include <net/if_var.h>
 #include <sys/ioctl.h>
 #include <sys/resource.h>
