@@ -823,6 +823,7 @@ uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes) {
 //  ---------------------- Interrupt Meter stuff  ------------------------------
 
 bool BSDIntrInit() {
+#if 0
     OpenKDIfNeeded();
     // Make sure the intr counter array is nonzero in size.
 #if defined(XOSVIEW_FREEBSD)
@@ -839,6 +840,7 @@ bool BSDIntrInit() {
 # endif
 #elif defined(XOSVIEW_NETBSD)
     return ValidSymbol(ALLEVENTS_SYM_INDEX);
+#endif
 #endif
     return true;
 }
