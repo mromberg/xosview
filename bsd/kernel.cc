@@ -197,7 +197,8 @@ void SetKernelName(const std::string &kernelName) {
 }
 
 
-void OpenKDIfNeeded() {
+static void OpenKDIfNeeded() {
+#if 0
     char errstring[_POSIX2_LINE_MAX];
 
     if (kd)
@@ -238,6 +239,7 @@ void OpenKDIfNeeded() {
         }
         nlp++;
     }
+#endif
 }
 
 
