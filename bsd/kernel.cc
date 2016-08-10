@@ -108,74 +108,11 @@ static int maxcpus = 1;
 
 // ------------------------  local variables  ----------------------------------
 
-//  This single kvm_t is shared by all of the kvm routines.
-static kvm_t* kd = NULL;
-
-// Macro for a struct nlist initializer
-#define MK_NLIST(name) \
-    { const_cast<char *>(name), 0, 0, 0, 0 }
-
 #define ASIZE(ar) (sizeof(ar) / sizeof(ar[0]))
 
 // We put a dummy symbol for a don't care, and ignore warnings about
 // this later on.  This keeps the indices within the nlist constant.
 static const char * const DUMMY_SYM = "dummy_sym";
-
-//  This struct has the list of all the symbols we want from the kernel.
-static struct nlist nlst[] = {
-#if defined(XOSVIEW_FREEBSD)
-    MK_NLIST("_cnt"),
-#define VMMETER_SYM_INDEX    0
-#else
-    MK_NLIST(DUMMY_SYM),
-#define DUMMY_0
-#endif
-#if !defined(XOSVIEW_OPENBSD) && !defined(XOSV_NETBSD_NET_IOCTL)
-    MK_NLIST("_ifnet"),
-#define IFNET_SYM_INDEX      1
-#else
-    MK_NLIST(DUMMY_SYM),
-#define DUMMY_1
-#endif
-
-#if defined(XOSVIEW_OPENBSD)
-    MK_NLIST("_disklist"),
-#define DISKLIST_SYM_INDEX   2
-#else
-    MK_NLIST(DUMMY_SYM),
-#define DUMMY_2
-#endif
-#if defined(XOSVIEW_NETBSD)
-    MK_NLIST("_allevents"),
-#define ALLEVENTS_SYM_INDEX  3
-    MK_NLIST("_bufmem"),
-#define BUFMEM_SYM_INDEX     4
-#else
-    MK_NLIST(DUMMY_SYM),
-#define DUMMY_3
-    MK_NLIST(DUMMY_SYM),
-#define DUMMY_4
-#endif
-#if defined(XOSVIEW_FREEBSD)
-    MK_NLIST("_intrnames"),
-#define INTRNAMES_SYM_INDEX  5
-# if __FreeBSD_version >= 900040
-    MK_NLIST("_sintrnames"),
-# else
-    MK_NLIST("_eintrnames"),
-# endif
-#define EINTRNAMES_SYM_INDEX 6
-    MK_NLIST("_intrcnt"),
-#define INTRCNT_SYM_INDEX    7
-# if __FreeBSD_version >= 900040
-    MK_NLIST("_sintrcnt"),
-# else
-    MK_NLIST("_eintrcnt"),
-# endif
-#define EINTRCNT_SYM_INDEX   8
-#endif
-    { NULL, 0, 0, 0, 0 }
-};
 
 static char kernelFileName[_POSIX2_LINE_MAX];
 
@@ -197,55 +134,8 @@ void SetKernelName(const std::string &kernelName) {
 }
 
 
-static void OpenKDIfNeeded() {
-#if 0
-    char errstring[_POSIX2_LINE_MAX];
-
-    if (kd)
-        return; //  kd is non-NULL, so it has been initialized.  BCG
-
-    /*  Open it read-only, for a little added safety.  */
-    /*  If the first character of kernelFileName is not '\0', then use
-     *  that kernel file.  Otherwise, use the default kernel, by
-     *  specifying NULL.
-     */
-    if ((kd = kvm_openfiles((kernelFileName[0] ? kernelFileName : NULL),
-          NULL, NULL, O_RDONLY, errstring)) == NULL)
-        logFatal << "OpenKDIfNeeded(): " << errstring << std::endl;
-
-    // Parenthetical note:  FreeBSD kvm_openfiles() uses getbootfile() to get
-    // the correct kernel file if the 1st arg is NULL.  As far as I can see,
-    // one should always use NULL in FreeBSD, but I suppose control is never a
-    // bad thing... (pavel 21-Jan-1998)
-
-    /*  Now grab the symbol offsets for the symbols that we want.  */
-    if (kvm_nlist(kd, nlst) < 0)
-        logFatal << "Could not get kvm symbols" << std::endl;
-
-    //  Look at all of the returned symbols, and check for bad lookups.
-    //  (This may be unnecessary, but better to check than not to...  )
-    struct nlist *nlp = nlst;
-    std::string sDUMMY_SYM(DUMMY_SYM);
-    while (nlp && nlp->n_name) {
-        if (std::string(nlp->n_name, 0, sDUMMY_SYM.size()) != sDUMMY_SYM) {
-            if ( nlp->n_type == 0 || nlp->n_value == 0 )
-#if defined(XOSVIEW_FREEBSD) && defined(__alpha__)
-                /* XXX: this should be properly fixed. */
-                ;
-#else
-            logProblem << "kvm_nlist() lookup failed for symbol '"
-                       << nlp->n_name << "'" << std::endl;
-#endif
-        }
-        nlp++;
-    }
-#endif
-}
-
-
 // --------------------  PageMeter & MemMeter functions  -----------------------
 void BSDPageInit() {
-    OpenKDIfNeeded();
 }
 
 
@@ -337,7 +227,6 @@ void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
 // ------------------------  CPUMeter functions  -------------------------------
 
 void BSDCPUInit() {
-    OpenKDIfNeeded();
 #if defined(XOSVIEW_FREEBSD)
     size_t size = sizeof(maxcpus);
     if ( sysctlbyname("kern.smp.maxcpus", &maxcpus, &size, NULL, 0) < 0 )
@@ -457,7 +346,6 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 //  ---------------------- Swap Meter stuff  -----------------------------------
 
 bool BSDSwapInit() {
-    OpenKDIfNeeded();
     return true;
 }
 
@@ -725,7 +613,6 @@ uint64_t DevStat_Get(uint64_t &read_bytes, uint64_t &write_bytes) {
 
 
 bool BSDDiskInit() {
-    OpenKDIfNeeded();
 #if defined(HAVE_DEVSTAT)
     DevStat_Init();
 #endif
