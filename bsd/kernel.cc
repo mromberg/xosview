@@ -181,44 +181,6 @@ static char kernelFileName[_POSIX2_LINE_MAX];
 
 
 // ------------------------  utility functions  --------------------------------
-//  The following is an error-checking form of kvm_read.  In addition
-//  it uses kd as the implicit kernel-file to read.  Saves typing.
-//  Since this is C++, it's an inline function rather than a macro.
-
-static inline void safe_kvm_read(unsigned long kernel_addr, void* user_addr,
-  size_t nbytes) {
-
-    /*  Check for obvious bad symbols (i.e., from /netbsd when we
-     *  booted off of /netbsd.old), such as symbols that reference
-     *  0x00000000 (or anywhere in the first 256 bytes of memory).  */
-    int retval = 0;
-
-    if ( (kernel_addr & 0xffffff00) == 0 )
-        logFatal << "safe_kvm_read() was attempted on EA "
-                 << std::hex << std::showbase << kernel_addr << std::endl;
-
-    if ( (retval = kvm_read(kd, kernel_addr, user_addr, nbytes)) == -1 )
-        logFatal << "kvm_read() of kernel address "
-                 << std::hex << std::showbase << kernel_addr << std::endl;
-
-    logAssert(retval == (int)nbytes) << "safe_kvm_read("
-                                     << std::hex << std::showbase
-                                     << kernel_addr << ") "
-                                     << "returned " << std::dec
-                                     << retval << " bytes, "
-                                     << "not " << (int)nbytes << std::endl;
-}
-
-
-bool ValidSymbol(int index) {
-    return ( (nlst[index].n_value & 0xffffff00) != 0 );
-}
-
-
-int SymbolValue(int index) {
-    return nlst[index].n_value;
-}
-
 
 void BSDInit() {
     kernelFileName[0] = '\0';
@@ -821,30 +783,6 @@ uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes) {
 
 
 //  ---------------------- Interrupt Meter stuff  ------------------------------
-
-bool BSDIntrInit() {
-#if 0
-    OpenKDIfNeeded();
-    // Make sure the intr counter array is nonzero in size.
-#if defined(XOSVIEW_FREEBSD)
-# if __FreeBSD_version >= 900040
-    size_t nintr;
-    safe_kvm_read(nlst[EINTRCNT_SYM_INDEX].n_value, &nintr, sizeof(nintr));
-    return ValidSymbol(INTRCNT_SYM_INDEX)
-        && ValidSymbol(EINTRCNT_SYM_INDEX) && (nintr > 0);
-# else
-    return ValidSymbol(INTRCNT_SYM_INDEX)
-        && ValidSymbol(EINTRCNT_SYM_INDEX)
-        && ((SymbolValue(EINTRCNT_SYM_INDEX)
-            - SymbolValue(INTRCNT_SYM_INDEX)) > 0);
-# endif
-#elif defined(XOSVIEW_NETBSD)
-    return ValidSymbol(ALLEVENTS_SYM_INDEX);
-#endif
-#endif
-    return true;
-}
-
 
 #if defined(XOSVIEW_DFBSD)
 static int DFBSDNumInts(void) {

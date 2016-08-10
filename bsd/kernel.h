@@ -50,8 +50,6 @@ bool BSDDiskInit();
 
 uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes);
 
-bool BSDIntrInit();
-
 int BSDNumInts();
 
 void BSDGetIntrStats(std::vector<uint64_t> &intrCount,

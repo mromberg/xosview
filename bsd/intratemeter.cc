@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2015 by Brian Grayson (bgrayson@netbsd.org)
+//  Copyright (c) 1999, 2015, 2016 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file may be distributed under terms of the GPL or of the BSD
 //    license, whichever you choose.  The full license notices are
@@ -12,14 +12,8 @@
 #include "kernel.h"
 
 
-
 IrqRateMeter::IrqRateMeter( void )
-    : ComIrqRateMeter(),
-      irqcount_(0) {
-
-    if (!BSDIntrInit())
-        logFatal << "The kernel does not seem to have the symbols needed "
-                 << "for the IrqRateMeter." << std::endl;
+    : ComIrqRateMeter(), irqcount_(0) {
 
     irqcount_ = BSDNumInts();
     irqs_.resize(irqcount_ + 1, 0);
