@@ -373,14 +373,19 @@ void BSDGetSwapInfo(uint64_t &total, uint64_t &used) {
         used += (uint64_t)sep[i].se_inuse * bsize;
     }
 #else
+#warning FIXME
+    logBug << "FIXME.  find sysctl() or other non-kvm way for swap stats.\n";
+    total = 1;
+    used = 0;
+#if 0
     struct kvm_swap kswap;
-    OpenKDIfNeeded();
     int pgsize = getpagesize();
     if ( kvm_getswapinfo(kd, &kswap, 1, 0) )
         logFatal << "BSDGetSwapInfo(): kvm_getswapinfo failed" << std::endl;
 
     total = (uint64_t)kswap.ksw_total * pgsize;
     used = (uint64_t)kswap.ksw_used * pgsize;
+#endif
 #endif
 }
 
