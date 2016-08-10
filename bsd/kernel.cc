@@ -110,10 +110,6 @@ static int maxcpus = 1;
 
 #define ASIZE(ar) (sizeof(ar) / sizeof(ar[0]))
 
-// We put a dummy symbol for a don't care, and ignore warnings about
-// this later on.  This keeps the indices within the nlist constant.
-static const char * const DUMMY_SYM = "dummy_sym";
-
 static char kernelFileName[_POSIX2_LINE_MAX];
 
 
