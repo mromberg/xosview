@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016 by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
@@ -25,7 +25,6 @@ PageMeter::PageMeter( void )
     : ComPageMeter(), _psize(sysconf(_SC_PAGESIZE)),
       previnfo_(2, 0) {
 
-    BSDPageInit();
     BSDGetPageStats(previnfo_);
     IntervalTimerStart();
 }

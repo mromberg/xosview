@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015
+//  Copyright (c) 1994, 1995, 2015, 2016
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -35,8 +35,6 @@ static size_t NFIELDS = 5;
 MemMeter::MemMeter( void )
     : FieldMeterGraph( NFIELDS, "MEM", LEGEND ),
       meminfo_(5, 0) {
-
-    BSDPageInit();
 }
 
 

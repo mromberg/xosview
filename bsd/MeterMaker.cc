@@ -40,11 +40,6 @@ MeterMaker::MeterMaker(void) {
 
 std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
-    // Check the kernelName resource
-    ResDB::opt kname(rdb.getOptResource("kernelName"));
-    if (kname.first)
-        SetKernelName(kname.second.c_str());
-
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015
+//  Copyright (c) 1994, 1995, 2015, 2016
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -21,8 +21,6 @@
 
 SwapMeter::SwapMeter( void )
     : ComSwapMeter() {
-
-    BSDSwapInit();
 }
 
 

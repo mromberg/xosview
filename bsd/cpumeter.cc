@@ -37,8 +37,6 @@ CPUMeter::CPUMeter( unsigned int nbr )
       cputime_(2, std::vector<uint64_t>(CPUSTATES, 0)),
       cpuindex_(0), nbr_(nbr) {
 
-    BSDCPUInit();
-
     title(std::string("CPU") + util::repr(nbr_ - 1));
 }
 

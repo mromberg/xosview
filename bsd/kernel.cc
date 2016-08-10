@@ -16,10 +16,9 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-
+#include "kernel.h"
 #include "log.h"
 #include "strutil.h"
-#include "kernel.h"
 #include "sctl.h"
 
 #include <cstring>
@@ -48,7 +47,6 @@
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 static const char * const ACPIDEV = "/dev/acpi";
 static const char * const APMDEV = "/dev/apm";
-static int maxcpus = 1;
 #include <net/if_var.h>
 #include <sys/ioctl.h>
 #include <sys/resource.h>
@@ -106,34 +104,11 @@ static int maxcpus = 1;
 #endif
 
 
-// ------------------------  local variables  ----------------------------------
-
+// Number of elements in a static array.
 #define ASIZE(ar) (sizeof(ar) / sizeof(ar[0]))
-
-static char kernelFileName[_POSIX2_LINE_MAX];
-
-
-// ------------------------  utility functions  --------------------------------
-
-void BSDInit() {
-    kernelFileName[0] = '\0';
-}
-
-
-void SetKernelName(const std::string &kernelName) {
-
-    if (kernelName.size() >= _POSIX2_LINE_MAX)
-        logFatal << "Kernel file name of '"
-                 << kernelName << "' is too long." << std::endl;
-
-    kernelName.copy(kernelFileName, _POSIX2_LINE_MAX);
-}
 
 
 // --------------------  PageMeter & MemMeter functions  -----------------------
-void BSDPageInit() {
-}
-
 
 /* meminfo[5]  = { active, inactive, wired, cached, free } */
 /* pageinfo[2] = { pages_in, pages_out }                   */
@@ -222,18 +197,6 @@ void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
 
 // ------------------------  CPUMeter functions  -------------------------------
 
-void BSDCPUInit() {
-#if defined(XOSVIEW_FREEBSD)
-    size_t size = sizeof(maxcpus);
-    if ( sysctlbyname("kern.smp.maxcpus", &maxcpus, &size, NULL, 0) < 0 )
-        logFatal << "sysctl kern.smp.maxcpus failed" << std::endl;
-#elif defined(XOSVIEW_DFBSD)
-    if ( kinfo_get_cpus(&maxcpus) )
-        logFatal << "kinfo_get_cpus() failed" << std::endl;
-#endif
-}
-
-
 #if !defined(XOSVIEW_OPENBSD) && !defined(XOSVIEW_DFBSD)
 static size_t BSDCountCpus(void) {
 
@@ -263,15 +226,22 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
     size_t size;
 
 #if defined(XOSVIEW_DFBSD)
+    int maxcpus = 1;
+    if ( kinfo_get_cpus(&maxcpus) )
+        logFatal << "kinfo_get_cpus() failed" << std::endl;
     size = sizeof(struct kinfo_cputime);
     std::vector<struct kinfo_cputime> times(maxcpus + 1, kinfo_cputime());
+#elif defined(XOSVIEW_FREEBSD)
+    int maxcpus = 1;
+    size = sizeof(maxcpus);
+    if ( sysctlbyname("kern.smp.maxcpus", &maxcpus, &size, NULL, 0) < 0 )
+        logFatal << "sysctl kern.smp.maxcpus failed" << std::endl;
+    size = CPUSTATES * sizeof(long);
+    std::vector<long> times(maxcpus + 1, 0);
 #elif defined(XOSVIEW_NETBSD)
     size = CPUSTATES * sizeof(uint64_t);
     std::vector<uint64_t> times((BSDCountCpus() + 1) * CPUSTATES, 0);
-#elif defined(XOSVIEW_FREEBSD)
-    size = CPUSTATES * sizeof(long);
-    std::vector<long> times(maxcpus + 1, 0);
-#else // XOSVIEW_OPENBSD
+#elif defined(XOSVIEW_OPENBSD)
     std::vector<uint64_t> times(CPUSTATES, 0);
 #endif
     // this array will have aggregate values at 0, then each CPU (except on
@@ -340,11 +310,6 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 
 
 //  ---------------------- Swap Meter stuff  -----------------------------------
-
-bool BSDSwapInit() {
-    return true;
-}
-
 
 void BSDGetSwapInfo(uint64_t &total, uint64_t &used) {
 #if defined(HAVE_SWAPCTL)
@@ -460,27 +425,31 @@ struct device_selection *dev_select;
 int nodisk = 0;
 
 
-void DevStat_Init(void) {
+static void DevStat_Init(void) {
     /*
      * Make sure that the userland devstat version matches the kernel
      * devstat version.
      */
+    if (
 #if defined(XOSVIEW_FREEBSD)
-    if (devstat_checkversion(NULL) < 0) {
+        devstat_checkversion(NULL)
 #else
-    if (checkversion() < 0) {
+        checkversion()
 #endif
+        < 0) {
         nodisk++;
         logProblem << devstat_errbuf << std::endl;
         return;
     }
 
     /* find out how many devices we have */
+    if ( (num_devices =
 #if defined(XOSVIEW_FREEBSD)
-    if ( (num_devices = devstat_getnumdevs(NULL)) < 0 ) {
+        devstat_getnumdevs(NULL)
 #else
-    if ( (num_devices = getnumdevs()) < 0 ) {
+        getnumdevs()
 #endif
+          ) < 0 ) {
         nodisk++;
         logProblem << devstat_errbuf << std::endl;
         return;
@@ -489,16 +458,16 @@ void DevStat_Init(void) {
     cur.dinfo = (struct devinfo *)calloc(1, sizeof(struct devinfo));
     last.dinfo = (struct devinfo *)calloc(1, sizeof(struct devinfo));
 
-    /*
-     * Grab all the devices.  We don't look to see if the list has
-     * changed here, since it almost certainly has.  We only look for
-     * errors.
-     */
+    // Grab all the devices.  We don't look to see if the list has
+    // changed here, since it almost certainly has.  We only look for
+    // errors.
+    if (
 #if defined(XOSVIEW_FREEBSD)
-    if (devstat_getdevs(NULL, &cur) == -1) {
+        devstat_getdevs(NULL, &cur)
 #else
-    if (getdevs(&cur) == -1) {
+        getdevs(&cur)
 #endif
+        == -1) {
         nodisk++;
         logProblem << devstat_errbuf << std::endl;
         return;
@@ -511,11 +480,13 @@ void DevStat_Init(void) {
     /* only interested in disks */
     matches = NULL;
     char da[3] = "da";
+    if (
 #if defined(XOSVIEW_FREEBSD)
-    if (devstat_buildmatch(da, &matches, &num_matches) != 0) {
+        devstat_buildmatch(da, &matches, &num_matches)
 #else
-    if (buildmatch(da, &matches, &num_matches) != 0) {
+        buildmatch(da, &matches, &num_matches)
 #endif
+        != 0) {
         nodisk++;
         logProblem << devstat_errbuf;
         return;
@@ -526,19 +497,19 @@ void DevStat_Init(void) {
     else
         select_mode = DS_SELECT_ONLY;
 
-    /*
-     * At this point, selectdevs will almost surely indicate that the
-     * device list has changed, so we don't look for return values of 0
-     * or 1.  If we get back -1, though, there is an error.
-     */
+    // At this point, selectdevs will almost surely indicate that the
+    // device list has changed, so we don't look for return values of 0
+    // or 1.  If we get back -1, though, there is an error.
+    if (
 #if defined(XOSVIEW_FREEBSD)
-    if (devstat_selectdevs(&dev_select, &num_selected,
+        devstat_selectdevs
 #else
-    if (selectdevs(&dev_select, &num_selected,
+        selectdevs
 #endif
-        &num_selections, &select_generation,
-        generation, cur.dinfo->devices, num_devices,
-        matches, num_matches, NULL, 0, select_mode, 10, 0) == -1) {
+        (&dev_select, &num_selected,
+          &num_selections, &select_generation,
+          generation, cur.dinfo->devices, num_devices,
+          matches, num_matches, NULL, 0, select_mode, 10, 0) == -1) {
         nodisk++;
         logProblem << devstat_errbuf << std::endl;
     }

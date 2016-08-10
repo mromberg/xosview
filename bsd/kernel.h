@@ -19,12 +19,6 @@
 #include <vector>
 
 
-void BSDInit();
-
-void SetKernelName(const std::string &kernelName);
-
-void BSDPageInit();
-
 void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
   std::vector<uint64_t> &pageinfo);
 
@@ -38,11 +32,7 @@ inline void BSDGetPageStats(std::vector<uint64_t> &pageinfo) {
     BSDGetMemPageStats(minfo, pageinfo);
 }
 
-void BSDCPUInit();
-
 void BSDGetCPUTimes(std::vector<uint64_t> &timesArray, unsigned int cpu = 0);
-
-bool BSDSwapInit();
 
 void BSDGetSwapInfo(uint64_t &total, uint64_t &free);
 
