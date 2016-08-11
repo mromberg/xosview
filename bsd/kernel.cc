@@ -42,9 +42,6 @@
 
 
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
-static const char * const ACPIDEV = "/dev/acpi";
-static const char * const APMDEV = "/dev/apm";
-
 #include <net/if.h>
 #include <net/if_var.h>
 #include <sys/ioctl.h>
@@ -61,11 +58,9 @@ static const char * const APMDEV = "/dev/apm";
 #include <sys/envsys.h>
 #include <prop/proplib.h>
 #include <paths.h>
-#if defined(XOSV_NETBSD_NET_IOCTL)
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <machine/int_fmtio.h>
-#endif
 #endif
 
 
@@ -106,6 +101,11 @@ static const char * const APMDEV = "/dev/apm";
 // Number of elements in a static array.
 #define ASIZE(ar) (sizeof(ar) / sizeof(ar[0]))
 
+
+#if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
+static const char * const ACPIDEV = "/dev/acpi";
+static const char * const APMDEV = "/dev/apm";
+#endif
 
 // --------------------  PageMeter & MemMeter functions  -----------------------
 
