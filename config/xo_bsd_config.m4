@@ -4,11 +4,6 @@ AC_DEFUN_ONCE([XO_BSD_KERNLIBS],[dnl
 #-----------------------------------------
 # Check for assorted BSD "kernel" libraries
 #-----------------------------------------
-dnl AC_CHECK_HEADER(kvm.h)
-dnl AC_CHECK_LIB(kvm, kvm_open,
-dnl   [AC_DEFINE(HAVE_KVM,[1],[Have libkvm])
-dnl   XO_CONCAT(LIBS,$LIBS,[-lkvm])])
-
 AC_CHECK_HEADER(uvm/uvm_extern.h,[dnl
     AC_DEFINE(HAVE_UVM,[1],[Have UVM headers])])
 
