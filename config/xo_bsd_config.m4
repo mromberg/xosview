@@ -41,8 +41,6 @@ XO_BSD_KERNLIBS
 #-----------------------------------------
 case $host_os in
     netbsd*)
-        ## We'll assume the existence of UVM now
-        dnl AC_DEFINE(UVM,[1],[UVM exists])
         AC_DEFINE(XOSVIEW_NETBSD,[1],[xosview netbsd features])
         host_dir=bsd
         ;;
