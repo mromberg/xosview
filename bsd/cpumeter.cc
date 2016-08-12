@@ -20,9 +20,7 @@
 #include <kinfo.h>
 #endif
 
-#if defined(XOSVIEW_FREEBSD)
 #include <sys/resource.h>
-#endif
 
 
 CPUMeter::CPUMeter( unsigned int nbr )
