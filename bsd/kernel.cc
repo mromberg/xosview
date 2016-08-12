@@ -294,18 +294,31 @@ static void OBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
     //    single CPU specified by the third level name given.
     //---- OpenBSD docs ----
 
+    const int mib_cpt[] = { CTL_KERN, KERN_CPTIME };
     const int mib_cpt2[] = { CTL_KERN, KERN_CPTIME2, 0 };
+    static SysCtl cp_time_sc(mib_cpt, 2);
     static SysCtl cp_time2_sc(mib_cpt2, 3);
 
-    cp_time2_sc.mib()[2] = cpu - 1; // cpu stats at 1, index stats at 0.
+    timeArray.resize(CPUSTATES);
 
-    std::vector<u_int64_t> times(CPUSTATES, 0);
-    if (!cp_time2_sc.get(times))
-        logFatal << "sysctl(" << cp_time2_sc.id() << ") failed." << std::endl;
+    if (cpu) {
+        cp_time2_sc.mib()[2] = cpu - 1; // cpu stats at 1, index stats at 0.
 
-    timeArray.resize(times.size());
-    for (size_t i = 0 ; i < times.size() ; i++)
-        timeArray[i] = times[i];
+        std::vector<u_int64_t> times(CPUSTATES, 0);
+        if (!cp_time2_sc.get(times))
+            logFatal << "sysctl(" << cp_time2_sc.id() << ") failed."
+                     << std::endl;
+
+        std::copy(times.begin(), times.end(), timeArray.begin());
+    }
+    else { // aggregate.
+        std::vector<long> times(CPUSTATES, 0);
+        if (!cp_time_sc.get(times))
+            logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
+                     << std::endl;
+
+        std::copy(times.begin(), times.end(), timeArray.begin());
+    }
 }
 
 #endif
