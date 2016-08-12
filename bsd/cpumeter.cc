@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
@@ -13,32 +14,20 @@
 //    authors for a copy.
 //
 #include "cpumeter.h"
-#include "kernel.h"
+#include "sctl.h"
 
-#include <sys/param.h>
-#include <sys/sysctl.h>
-
-// for CPUSTATES
-#if defined(XOSVIEW_NETBSD)
-#include <sys/sched.h>
-#elif defined(XOSVIEW_OPENBSD)
-#if defined(HAVE_SYS_DKSTAT_H)
-#include <sys/dkstat.h>
-#elif defined(HAVE_SYS_SCHED_H)
-#include <sys/sched.h>
-#endif
-#else
-#include <sys/resource.h>
+#if defined(XOSVIEW_DFBSD)
+#include <kinfo.h>
 #endif
 
 
 CPUMeter::CPUMeter( unsigned int nbr )
     : FieldMeterGraph( 5, "CPU", "USR/NICE/SYS/INT/FREE" ),
-      cputime_(2, std::vector<uint64_t>(CPUSTATES, 0)),
-      cpuindex_(0), nbr_(nbr) {
+      _cputime(2, std::vector<uint64_t>(5, 0)),
+      _cpuindex(0), _nbr(nbr) {
 
-    if (nbr_)
-        title(std::string("CPU") + util::repr(nbr_ - 1));
+    if (_nbr)
+        title(std::string("CPU") + util::repr(_nbr - 1));
 }
 
 
@@ -66,28 +55,66 @@ void CPUMeter::getcputime( void ) {
     std::vector<uint64_t> tempCPU;
     total_ = 0;
 
-    BSDGetCPUTimes(tempCPU, nbr_);
+    getCPUTimes(tempCPU, _nbr);
 
-    int oldindex = (cpuindex_ + 1) % 2;
-    for (int i = 0; i < CPUSTATES; i++) {
-        cputime_[cpuindex_][i] = tempCPU[i];
-        fields_[i] = cputime_[cpuindex_][i] - cputime_[oldindex][i];
+    int oldindex = (_cpuindex + 1) % 2;
+    for (size_t i = 0 ; i < _cputime[_cpuindex].size() ; i++) {
+        _cputime[_cpuindex][i] = tempCPU[i];
+        fields_[i] = _cputime[_cpuindex][i] - _cputime[oldindex][i];
         total_ += fields_[i];
     }
     if (total_) {
         setUsed(total_ - fields_[4], total_);
-        cpuindex_ = (cpuindex_ + 1) % 2;
+        _cpuindex = (_cpuindex + 1) % 2;
     }
 }
 
 
 size_t CPUMeter::countCPUs(void) {
-    const int mib_cpu[2] = { CTL_HW, HW_NCPU };
-    size_t cpus = 0;
-    size_t size = sizeof(cpus);
 
-    if ( sysctl(mib_cpu, 2, &cpus, &size, NULL, 0) < 0 )
-        logProblem << "sysctl hw.ncpu failed." << std::endl;
+    const int mib_cpu[2] = { CTL_HW, HW_NCPU };
+    static SysCtl ncpu_sc(mib_cpu, 2);
+    static int cpus = -1;
+
+    if (cpus == -1) {
+        if (!ncpu_sc.get(cpus))
+            logFatal << "sysctl(" << ncpu_sc.id() << "failed." << std::endl;
+    }
 
     return cpus;
 }
+
+
+#if defined(XOSVIEW_DFBSD)
+void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray,
+  size_t cpu) {
+
+    static SysCtl cputime_sc("kern.cputime");  // per-cpu.
+    static SysCtl cp_time_sc("kern.cp_time");  // aggregate.
+
+    timeArray.resize(CPUSTATES);
+
+    if (cpu) {
+        std::vector<struct kinfo_cputime> times(countCPUs(),
+          kinfo_cputime());
+        if (!cputime_sc.get(times))
+            logFatal << "sysctl(" << cputime_sc.id() << ") failed."
+                     << std::endl;
+
+        cpu -= 1;  // cpu starts at 1.  Stats start at 0.
+        timeArray[0] = times[cpu].cp_user;
+        timeArray[1] = times[cpu].cp_nice;
+        timeArray[2] = times[cpu].cp_sys;
+        timeArray[3] = times[cpu].cp_intr;
+        timeArray[4] = times[cpu].cp_idle;
+    }
+    else { // aggregate.
+        std::vector<long> times(CPUSTATES);
+        if (!cp_time_sc.get(times))
+            logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
+                     << std::endl;
+
+        std::copy(times.begin(), times.end(), timeArray.begin());
+    }
+}
+#endif
