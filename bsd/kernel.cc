@@ -280,6 +280,37 @@ static void NBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 #endif
 
 
+#if defined(XOSVIEW_OPENBSD)
+static void OBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
+
+    //---- OpenBSD docs ----
+    // KERN_CPTIME  long[CPUSTATES]
+    //    An array of longs of size CPUSTATES is returned, containing
+    //    statistics about the number of ticks spent by the system in
+    //    interrupt processing, user processes (nice(1) or normal), system
+    //    processing, or idling.
+    // KERN_CPTIME2  u_int64_t[CPUSTATES]
+    //    Similar to KERN_CPTIME, but obtains information from only the
+    //    single CPU specified by the third level name given.
+    //---- OpenBSD docs ----
+
+    const int mib_cpt2[] = { CTL_KERN, KERN_CPTIME2, 0 };
+    static SysCtl cp_time2_sc(mib_cpt2, 3);
+
+    cp_time2_sc.mib()[2] = cpu - 1; // cpu stats at 1, index stats at 0.
+
+    std::vector<u_int64_t> times(CPUSTATES, 0);
+    if (!cp_time2_sc.get(times))
+        logFatal << "sysctl(" << cp_time2_sc.id() << ") failed." << std::endl;
+
+    timeArray.resize(times.size());
+    for (size_t i = 0 ; i < times.size() ; i++)
+        timeArray[i] = times[i];
+}
+
+#endif
+
+
 void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 
     // timeArray is CPUSTATES long.
@@ -296,6 +327,9 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
     return;
 #elif defined(XOSVIEW_NETBSD)
     NBSDGetCPUTimes(timeArray, cpu);
+    return;
+#elif defined(XOSVIEW_OPENBSD)
+    OBSDGetCPUTimes(timeArray, cpu);
     return;
 #endif
 
