@@ -156,6 +156,37 @@ void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 #endif
 
 
+#if defined(XOSVIEW_NETBSD)
+void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
+
+    //------- NetBSD docs ------
+    // Returns an array of CPUSTATES uint64_ts.  This array contains the
+    // number of clock ticks spent in different CPU states.  On multi-
+    // processor systems, the sum across all CPUs is returned unless
+    // appropriate space is given for one data set for each CPU.  Data
+    // for a specific CPU can also be obtained by adding the number of
+    // the CPU at the end of the MIB, enlarging it by one.
+    //------- NetBSD docs ------
+
+    static SysCtl cp_time_sc("kern.cp_time");
+
+    if (cpu) {
+        cp_time_sc.mib().resize(3);
+        cp_time_sc.mib()[2] = cpu - 1;  // cpu starts at 1, index stats at 0.
+    }
+    else
+        cp_time_sc.mib().resize(2);
+
+    std::vector<uint64_t> times(CPUSTATES, 0);
+    if (!cp_time_sc.get(times))
+        logFatal << "sysctl(" << cp_time_sc.id() << ") failed." << std::endl;
+
+    timeArray.resize(CPUSTATES);
+    std::copy(times.begin(), times.end(), timeArray.begin());
+}
+#endif
+
+
 #if defined(XOSVIEW_OPENBSD)
 void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 
