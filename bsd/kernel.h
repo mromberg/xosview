@@ -32,8 +32,6 @@ inline void BSDGetPageStats(std::vector<uint64_t> &pageinfo) {
     BSDGetMemPageStats(minfo, pageinfo);
 }
 
-void BSDGetCPUTimes(std::vector<uint64_t> &timesArray, unsigned int cpu = 0);
-
 void BSDGetSwapInfo(uint64_t &total, uint64_t &free);
 
 bool BSDDiskInit();
