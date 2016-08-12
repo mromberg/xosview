@@ -21,6 +21,9 @@
 #endif
 
 #include <sys/resource.h>
+#if defined(HAVE_SYS_SCHED_H)
+#include <sys/sched.h>
+#endif
 
 
 CPUMeter::CPUMeter( unsigned int nbr )
@@ -142,6 +145,49 @@ void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
             timeArray[i] = times[cpu * CPUSTATES + i];
     }
     else {  // aggregate
+        std::vector<long> times(CPUSTATES, 0);
+        if (!cp_time_sc.get(times))
+            logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
+                     << std::endl;
+
+        std::copy(times.begin(), times.end(), timeArray.begin());
+    }
+}
+#endif
+
+
+#if defined(XOSVIEW_OPENBSD)
+void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
+
+    //---- OpenBSD docs ----
+    // KERN_CPTIME  long[CPUSTATES]
+    //    An array of longs of size CPUSTATES is returned, containing
+    //    statistics about the number of ticks spent by the system in
+    //    interrupt processing, user processes (nice(1) or normal), system
+    //    processing, or idling.
+    // KERN_CPTIME2  u_int64_t[CPUSTATES]
+    //    Similar to KERN_CPTIME, but obtains information from only the
+    //    single CPU specified by the third level name given.
+    //---- OpenBSD docs ----
+
+    const int mib_cpt[] = { CTL_KERN, KERN_CPTIME };
+    const int mib_cpt2[] = { CTL_KERN, KERN_CPTIME2, 0 };
+    static SysCtl cp_time_sc(mib_cpt, 2);
+    static SysCtl cp_time2_sc(mib_cpt2, 3);
+
+    timeArray.resize(CPUSTATES);
+
+    if (cpu) {
+        cp_time2_sc.mib()[2] = cpu - 1; // cpu stats at 1, index stats at 0.
+
+        std::vector<u_int64_t> times(CPUSTATES, 0);
+        if (!cp_time2_sc.get(times))
+            logFatal << "sysctl(" << cp_time2_sc.id() << ") failed."
+                     << std::endl;
+
+        std::copy(times.begin(), times.end(), timeArray.begin());
+    }
+    else { // aggregate.
         std::vector<long> times(CPUSTATES, 0);
         if (!cp_time_sc.get(times))
             logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
