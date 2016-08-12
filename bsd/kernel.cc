@@ -213,17 +213,18 @@ static size_t BSDCountCpus(void) {
 
 
 #if defined(XOSVIEW_DFBSD)
+#include <kinfo.h>
 static void DFBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 
     static SysCtl cputime_sc("kern.cputime");
 
-    std::vector<struct kinfo_cputime> times(BSDCountCpus(),
+    // inddex 0 is the aggregate of all. Per processor stats start at 1.
+    std::vector<struct kinfo_cputime> times(BSDCountCpus() + 1,
       kinfo_cputime());
     if (!cputime_sc.get(times))
         logFatal << "sysctl(" << cputime_sc.id() << ") failed." << std::endl;
 
-    timeArray.resize(5);
-    cpu -= 1;  // cpu starts at 1.  Adjust to 0.
+    timeArray.resize(CPUSTATES);
     timeArray[0] = times[cpu].cp_user;
     timeArray[1] = times[cpu].cp_nice;
     timeArray[2] = times[cpu].cp_sys;
@@ -233,10 +234,31 @@ static void DFBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 #endif
 
 
+#if defined(XOSVIEW_FREEBSD)
+static void FBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
+
+    static SysCtl cp_time_sc("kern.cp_times");
+
+    // per processor stats start at 0.
+    std::vector<long> times(BSDCountCpus() * CPUSTATES, 0);
+    if (!cp_time_sc.get(times))
+        logFatal << "sysctl(" << cp_time_sc.id() << ") failed." << std::endl;
+
+    cpu -= 1;  // cpu starts at 1 and index starts at 0.
+    timeArray.resize(CPUSTATES);
+    for (size_t i = 0 ; i < CPUSTATES ; i++)
+        timeArray[i] = times[cpu * CPUSTATES + i];
+}
+#endif
+
+
 void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 
 #if defined(XOSVIEW_DFBSD)
     DFBSDGetCPUTimes(timeArray, cpu);
+    return;
+#elif defined(XOSVIEW_FREEBSD)
+    FBSDGetCPUTimes(timeArray, cpu);
     return;
 #endif
 
