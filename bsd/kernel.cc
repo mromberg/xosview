@@ -236,17 +236,30 @@ static void DFBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 #if defined(XOSVIEW_FREEBSD)
 static void FBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 
-    static SysCtl cp_time_sc("kern.cp_times");
+    static SysCtl cp_time_sc("kern.cp_time");   // aggregate times.
+    static SysCtl cp_times_sc("kern.cp_times"); // per-cpu times.
 
-    // per processor stats start at 0.
-    std::vector<long> times(BSDCountCpus() * CPUSTATES, 0);
-    if (!cp_time_sc.get(times))
-        logFatal << "sysctl(" << cp_time_sc.id() << ") failed." << std::endl;
-
-    cpu -= 1;  // cpu starts at 1 and index starts at 0.
     timeArray.resize(CPUSTATES);
-    for (size_t i = 0 ; i < CPUSTATES ; i++)
-        timeArray[i] = times[cpu * CPUSTATES + i];
+
+    if (cpu) {
+        std::vector<long> times(BSDCountCpus() * CPUSTATES, 0);
+        if (!cp_times_sc.get(times))
+            logFatal << "sysctl(" << cp_times_sc.id() << ") failed."
+                     << std::endl;
+
+        cpu -= 1;  // cpu starts at 1 and index starts at 0.
+
+        for (size_t i = 0 ; i < timeArray.size() ; i++)
+            timeArray[i] = times[cpu * CPUSTATES + i];
+    }
+    else {  // aggregate
+        std::vector<long> times(CPUSTATES, 0);
+        if (!cp_time_sc.get(times))
+            logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
+                     << std::endl;
+
+        std::copy(times.begin(), times.end(), timeArray.begin());
+    }
 }
 #endif
 
