@@ -321,101 +321,12 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 
 #if defined(XOSVIEW_DFBSD)
     DFBSDGetCPUTimes(timeArray, cpu);
-    return;
 #elif defined(XOSVIEW_FREEBSD)
     FBSDGetCPUTimes(timeArray, cpu);
-    return;
 #elif defined(XOSVIEW_NETBSD)
     NBSDGetCPUTimes(timeArray, cpu);
-    return;
 #elif defined(XOSVIEW_OPENBSD)
     OBSDGetCPUTimes(timeArray, cpu);
-    return;
-#endif
-
-
-    size_t size;
-
-#if defined(XOSVIEW_DFBSD)
-    int maxcpus = 1;
-    if ( kinfo_get_cpus(&maxcpus) )
-        logFatal << "kinfo_get_cpus() failed" << std::endl;
-    size = sizeof(struct kinfo_cputime);
-    std::vector<struct kinfo_cputime> times(maxcpus + 1, kinfo_cputime());
-#elif defined(XOSVIEW_FREEBSD)
-    int maxcpus = 1;
-    size = sizeof(maxcpus);
-    if ( sysctlbyname("kern.smp.maxcpus", &maxcpus, &size, NULL, 0) < 0 )
-        logFatal << "sysctl kern.smp.maxcpus failed" << std::endl;
-    size = CPUSTATES * sizeof(long);
-    std::vector<long> times(maxcpus + 1, 0);
-#elif defined(XOSVIEW_NETBSD)
-    size = CPUSTATES * sizeof(uint64_t);
-    std::vector<uint64_t> times((BSDCountCpus() + 1) * CPUSTATES, 0);
-#elif defined(XOSVIEW_OPENBSD)
-    std::vector<uint64_t> times(CPUSTATES, 0);
-#endif
-    // this array will have aggregate values at 0, then each CPU (except on
-    // OpenBSD), so that cpu can be used as index
-
-#if defined(XOSVIEW_DFBSD)
-    if (cpu == 0) {
-        if (kinfo_get_sched_cputime(times.data()))
-            logFatal << "kinfo_get_sched_cputime() failed" << std::endl;
-    }
-    else {
-        size = maxcpus * sizeof(times[0]);
-        if ( sysctlbyname("kern.cputime", &times[1], &size, NULL, 0) < 0 )
-            logFatal << "sysctl kern.cputime failed" << std::endl;
-    }
-    timeArray.resize(5);
-    timeArray[0] = times[cpu].cp_user;
-    timeArray[1] = times[cpu].cp_nice;
-    timeArray[2] = times[cpu].cp_sys;
-    timeArray[3] = times[cpu].cp_intr;
-    timeArray[4] = times[cpu].cp_idle;
-#else  // !XOSVIEW_DFBSD
-    size = CPUSTATES * sizeof(times[0]);
-    if (cpu == 0) {  // aggregate times
-#if defined(XOSVIEW_FREEBSD)
-        if ( sysctlbyname("kern.cp_time", times.data(), &size, NULL, 0) < 0 )
-#else  // XOSVIEW_NETBSD || XOSVIEW_OPENBSD
-#if defined(XOSVIEW_NETBSD)
-        const int mib_cpt[] = { CTL_KERN, KERN_CP_TIME };
-#else
-        const int mib_cpt[] = { CTL_KERN, KERN_CPTIME };
-#endif
-        if ( sysctl(mib_cpt, ASIZE(mib_cpt), times.data(), &size, NULL, 0) < 0 )
-#endif
-            logFatal << "sysctl kern.cp_time failed" << std::endl;
-    }
-    else {  // separate times
-#if defined(XOSVIEW_FREEBSD)
-        size *= maxcpus;
-
-        if ( sysctlbyname("kern.cp_times", times.data() + CPUSTATES, &size,
-            NULL, 0) < 0 )
-            logFatal << "sysctl kern.cp_times failed" << std::endl;
-
-#elif defined(XOSVIEW_NETBSD)
-        size *= BSDCountCpus();
-        const int mib_cpt[] = { CTL_KERN, KERN_CP_TIME };
-        if ( sysctl(mib_cpt, ASIZE(mib_cpt), times.data() + CPUSTATES, &size,
-            NULL, 0) < 0 )
-            logFatal << "sysctl kern.cp_time failed" << std::endl;
-#else  // XOSVIEW_OPENBSD
-        int mib_cpt2[] = { CTL_KERN, KERN_CPTIME2, (int)cpu - 1 };
-        if (sysctl(mib_cpt2, ASIZE(mib_cpt2), times.data(), &size, NULL, 0) < 0)
-            logFatal << "sysctl kern.cp_time2 failed" << std::endl;
-#endif
-    }
-    timeArray.resize(CPUSTATES);
-    for (int i = 0; i < CPUSTATES; i++)
-#if defined(XOSVIEW_OPENBSD) // aggregates are long, singles uint64_t
-        timeArray[i] = ( cpu ? times[i] : ((long*)(times.data()))[i] );
-#else  // XOSVIEW_FREEBSD || XOSVIEW_NETBSD
-        timeArray[i] = times[cpu * CPUSTATES + i];
-#endif
 #endif
 }
 
