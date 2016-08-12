@@ -264,18 +264,20 @@ static void NBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
     //------- NetBSD docs ------
 
     static SysCtl cp_time_sc("kern.cp_time");
-    if (cp_time_sc.mib().size() == 2)
-        cp_time_sc.mib().push_back(0);  // For cpu specific stats.
 
-    cp_time_sc.mib()[2] = cpu - 1;  // cpu starts at 1, index stats at 0.
+    if (cpu) {
+        cp_time_sc.mib().resize(3);
+        cp_time_sc.mib()[2] = cpu - 1;  // cpu starts at 1, index stats at 0.
+    }
+    else
+        cp_time_sc.mib().resize(2);
 
     std::vector<uint64_t> times(CPUSTATES, 0);
     if (!cp_time_sc.get(times))
         logFatal << "sysctl(" << cp_time_sc.id() << ") failed." << std::endl;
 
     timeArray.resize(CPUSTATES);
-    for (size_t i = 0 ; i < CPUSTATES ; i++)
-        timeArray[i] = times[i];
+    std::copy(times.begin(), times.end(), timeArray.begin());
 }
 #endif
 
