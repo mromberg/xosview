@@ -196,19 +196,15 @@ void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
 
 // ------------------------  CPUMeter functions  -------------------------------
 
-#if !defined(XOSVIEW_OPENBSD) && !defined(XOSVIEW_DFBSD)
+#if !defined(XOSVIEW_OPENBSD)
 static size_t BSDCountCpus(void) {
 
-    static bool first = true;
-    static size_t cpus = 0;
+    static SysCtl ncpu_sc("hw.ncpu");
+    static int cpus = -1;
 
-    if (first) {
-        first = false;
-        size_t size = sizeof(cpus);
-        const int mib_cpu[2] = { CTL_HW, HW_NCPU };
-
-        if ( sysctl(mib_cpu, 2, &cpus, &size, NULL, 0) < 0 )
-            logProblem << "sysctl hw.ncpu failed." << std::endl;
+    if (cpus == -1) {
+        if (!ncpu_sc.get(cpus))
+            logFatal << "sysctl(" << ncpu_sc.id() << "failed." << std::endl;
     }
 
     return cpus;
@@ -216,7 +212,34 @@ static size_t BSDCountCpus(void) {
 #endif
 
 
+#if defined(XOSVIEW_DFBSD)
+static void DFBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
+
+    static SysCtl cputime_sc("kern.cputime");
+
+    std::vector<struct kinfo_cputime> times(BSDCountCpus(),
+      kinfo_cputime());
+    if (!cputime_sc.get(times))
+        logFatal << "sysctl(" << cputime_sc.id() << ") failed." << std::endl;
+
+    timeArray.resize(5);
+    cpu -= 1;  // cpu starts at 1.  Adjust to 0.
+    timeArray[0] = times[cpu].cp_user;
+    timeArray[1] = times[cpu].cp_nice;
+    timeArray[2] = times[cpu].cp_sys;
+    timeArray[3] = times[cpu].cp_intr;
+    timeArray[4] = times[cpu].cp_idle;
+}
+#endif
+
+
 void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
+
+#if defined(XOSVIEW_DFBSD)
+    DFBSDGetCPUTimes(timeArray, cpu);
+    return;
+#endif
+
     // timeArray is CPUSTATES long.
     // cpu is the number of CPU to return, starting from 1. If cpu == 0,
     // return aggregate times for all CPUs.
