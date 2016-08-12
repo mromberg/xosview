@@ -251,6 +251,35 @@ static void FBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 #endif
 
 
+#if defined(XOSVIEW_NETBSD)
+static void NBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
+
+    //------- NetBSD docs ------
+    // Returns an array of CPUSTATES uint64_ts.  This array contains the
+    // number of clock ticks spent in different CPU states.  On multi-
+    // processor systems, the sum across all CPUs is returned unless
+    // appropriate space is given for one data set for each CPU.  Data
+    // for a specific CPU can also be obtained by adding the number of
+    // the CPU at the end of the MIB, enlarging it by one.
+    //------- NetBSD docs ------
+
+    static SysCtl cp_time_sc("kern.cp_time");
+    if (cp_time_sc.mib().size() == 2)
+        cp_time_sc.mib().push_back(0);  // For cpu specific stats.
+
+    cp_time_sc.mib()[2] = cpu - 1;  // cpu starts at 1, index stats at 0.
+
+    std::vector<uint64_t> times(CPUSTATES, 0);
+    if (!cp_time_sc.get(times))
+        logFatal << "sysctl(" << cp_time_sc.id() << ") failed." << std::endl;
+
+    timeArray.resize(CPUSTATES);
+    for (size_t i = 0 ; i < CPUSTATES ; i++)
+        timeArray[i] = times[i];
+}
+#endif
+
+
 void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 
 #if defined(XOSVIEW_DFBSD)
@@ -258,6 +287,9 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
     return;
 #elif defined(XOSVIEW_FREEBSD)
     FBSDGetCPUTimes(timeArray, cpu);
+    return;
+#elif defined(XOSVIEW_NETBSD)
+    NBSDGetCPUTimes(timeArray, cpu);
     return;
 #endif
 
