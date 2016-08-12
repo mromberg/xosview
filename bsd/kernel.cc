@@ -282,6 +282,12 @@ static void NBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 
 void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
 
+    // timeArray is CPUSTATES long.
+    // cpu is the number of CPU to return, starting from 1. If cpu == 0,
+    // return aggregate times for all CPUs.
+    // All BSDs have separate calls for aggregate and separate times. Only
+    // OpenBSD returns one CPU per call, others return all at once.
+
 #if defined(XOSVIEW_DFBSD)
     DFBSDGetCPUTimes(timeArray, cpu);
     return;
@@ -293,11 +299,7 @@ void BSDGetCPUTimes(std::vector<uint64_t> &timeArray, unsigned int cpu) {
     return;
 #endif
 
-    // timeArray is CPUSTATES long.
-    // cpu is the number of CPU to return, starting from 1. If cpu == 0,
-    // return aggregate times for all CPUs.
-    // All BSDs have separate calls for aggregate and separate times. Only
-    // OpenBSD returns one CPU per call, others return all at once.
+
     size_t size;
 
 #if defined(XOSVIEW_DFBSD)
