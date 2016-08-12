@@ -218,12 +218,11 @@ static void DFBSDGetCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 
     static SysCtl cputime_sc("kern.cputime");
 
-    // inddex 0 is the aggregate of all. Per processor stats start at 1.
-    std::vector<struct kinfo_cputime> times(BSDCountCpus() + 1,
-      kinfo_cputime());
+    std::vector<struct kinfo_cputime> times(BSDCountCpus(), kinfo_cputime());
     if (!cputime_sc.get(times))
         logFatal << "sysctl(" << cputime_sc.id() << ") failed." << std::endl;
 
+    cpu -= 1;  // cpu starts at 1.  Stats start at 0.
     timeArray.resize(CPUSTATES);
     timeArray[0] = times[cpu].cp_user;
     timeArray[1] = times[cpu].cp_nice;
