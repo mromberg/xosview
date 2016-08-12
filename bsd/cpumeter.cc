@@ -20,6 +20,10 @@
 #include <kinfo.h>
 #endif
 
+#if defined(XOSVIEW_FREEBSD)
+#include <sys/resource.h>
+#endif
+
 
 CPUMeter::CPUMeter( unsigned int nbr )
     : FieldMeterGraph( 5, "CPU", "USR/NICE/SYS/INT/FREE" ),
@@ -110,6 +114,37 @@ void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray,
     }
     else { // aggregate.
         std::vector<long> times(CPUSTATES);
+        if (!cp_time_sc.get(times))
+            logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
+                     << std::endl;
+
+        std::copy(times.begin(), times.end(), timeArray.begin());
+    }
+}
+#endif
+
+
+#if defined(XOSVIEW_FREEBSD)
+void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
+
+    static SysCtl cp_time_sc("kern.cp_time");   // aggregate times.
+    static SysCtl cp_times_sc("kern.cp_times"); // per-cpu times.
+
+    timeArray.resize(CPUSTATES);
+
+    if (cpu) {
+        std::vector<long> times(countCPUs() * CPUSTATES, 0);
+        if (!cp_times_sc.get(times))
+            logFatal << "sysctl(" << cp_times_sc.id() << ") failed."
+                     << std::endl;
+
+        cpu -= 1;  // cpu starts at 1 and index starts at 0.
+
+        for (size_t i = 0 ; i < timeArray.size() ; i++)
+            timeArray[i] = times[cpu * CPUSTATES + i];
+    }
+    else {  // aggregate
+        std::vector<long> times(CPUSTATES, 0);
         if (!cp_time_sc.get(times))
             logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
                      << std::endl;
