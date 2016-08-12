@@ -107,6 +107,23 @@ static const char * const ACPIDEV = "/dev/acpi";
 static const char * const APMDEV = "/dev/apm";
 #endif
 
+
+#if defined(XOSVIEW_FREEBSD)
+static size_t BSDCountCpus(void) {
+
+    static SysCtl ncpu_sc("hw.ncpu");
+    static int cpus = -1;
+
+    if (cpus == -1) {
+        if (!ncpu_sc.get(cpus))
+            logFatal << "sysctl(" << ncpu_sc.id() << "failed." << std::endl;
+    }
+
+    return cpus;
+}
+#endif
+
+
 // --------------------  PageMeter & MemMeter functions  -----------------------
 
 /* meminfo[5]  = { active, inactive, wired, cached, free } */
