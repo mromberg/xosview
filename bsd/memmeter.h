@@ -35,6 +35,7 @@ private:
 
     void getmeminfo( void );
 
+    // layout: { active, inactive, wired, cached, free }
     static void getMemStats(std::vector<uint64_t> &meminfo);
 };
 

@@ -31,6 +31,7 @@ private:
     const size_t _psize;
     std::vector<uint64_t> _previnfo;
 
+    // layout: { pages_in, pages_out }
     static void getPageStats(std::vector<uint64_t> &pageinfo);
 };
 
