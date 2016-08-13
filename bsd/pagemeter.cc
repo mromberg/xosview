@@ -19,7 +19,7 @@
 
 #include <unistd.h>
 
-#if defined(XOSVIEW_DFBSD)
+#if defined(XOSVIEW_DFBSD) || defined(XOSVIEW_FREEBSD)
 #include <sys/vmmeter.h>
 #endif
 
