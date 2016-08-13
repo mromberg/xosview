@@ -204,6 +204,42 @@ static void FBSDGetPageStats(std::vector<uint64_t> &pageinfo) {
 #endif
 
 
+#if defined(XOSVIEW_NETBSD)
+static void NBSDGetMemStats(std::vector<uint64_t> &meminfo) {
+    static SysCtl uvmexp2_sc("vm.uvmexp2");
+
+    struct uvmexp_sysctl uvm;
+    if (!uvmexp2_sc.get(uvm))
+        logFatal << "sysctl(" << uvmexp2_sc.id() << ") failed." << std::endl;
+
+    meminfo.resize(5);
+    // UVM excludes kernel memory -> assume it is active mem
+    meminfo[0] = (uint64_t)(uvm.npages - uvm.inactive - uvm.wired
+      - uvm.free) * uvm.pagesize;
+    meminfo[1] = (uint64_t)uvm.inactive * uvm.pagesize;
+    meminfo[2] = (uint64_t)uvm.wired * uvm.pagesize;
+
+    // cache is already included in active and inactive memory and
+    // there's no way to know how much is in which -> disable cache
+    meminfo[3] = 0;
+    meminfo[4] = (uint64_t)uvm.free * uvm.pagesize;
+}
+
+
+static void NBSDGetPageStats(std::vector<uint64_t> &pageinfo) {
+    static SysCtl uvmexp2_sc("vm.uvmexp2");
+
+    struct uvmexp_sysctl uvm;
+    if (!uvmexp2_sc.get(uvm))
+        logFatal << "sysctl(" << uvmexp2_sc.id() << ") failed." << std::endl;
+
+    pageinfo.resize(2);
+    pageinfo[0] = (uint64_t)uvm.pgswapin;
+    pageinfo[1] = (uint64_t)uvm.pgswapout;
+}
+#endif
+
+
 void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
   std::vector<uint64_t> &pageinfo) {
 
@@ -221,6 +257,12 @@ void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
 #if defined(XOSVIEW_FREEBSD)
     FBSDGetMemStats(meminfo);
     FBSDGetPageStats(pageinfo);
+    return;
+#endif
+
+#if defined(XOSVIEW_NETBSD)
+    NBSDGetMemStats(meminfo);
+    NBSDGetPageStats(pageinfo);
     return;
 #endif
 
