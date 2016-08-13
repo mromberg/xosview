@@ -125,11 +125,54 @@ static size_t BSDCountCpus(void) {
 
 
 // --------------------  PageMeter & MemMeter functions  -----------------------
+#if defined(XOSVIEW_DFBSD)
+static void DFBSDGetMemStats(std::vector<uint64_t> &meminfo) {
 
-/* meminfo[5]  = { active, inactive, wired, cached, free } */
-/* pageinfo[2] = { pages_in, pages_out }                   */
+    static SysCtl vmstats_sc("vm.vmstats");
+
+    struct vmstats vms;
+    if (!vmstats_sc.get(vms))
+        logFatal << "sysctl(" << vmstats_sc.id() << ") failed." << std::endl;
+
+    meminfo.resize(5);
+    meminfo[0] = (uint64_t)vms.v_active_count * vms.v_page_size;
+    meminfo[1] = (uint64_t)vms.v_inactive_count * vms.v_page_size;
+    meminfo[2] = (uint64_t)vms.v_wire_count * vms.v_page_size;
+    meminfo[3] = (uint64_t)vms.v_cache_count * vms.v_page_size;
+    meminfo[4] = (uint64_t)vms.v_free_count * vms.v_page_size;
+}
+
+
+static void DFBSDGetPageStats(std::vector<uint64_t> &pageinfo) {
+
+    static SysCtl vmmeter_sc("vm.vmmeter");
+
+    struct vmmeter vm;
+    if (!vmmeter_sc.get(vm))
+        logFatal << "sysctl(" << vmmeter_sc.id() << "failed." << std::endl;
+
+    pageinfo.resize(2);
+    pageinfo[0] = (uint64_t)vm.v_vnodepgsin + (uint64_t)vm.v_swappgsin;
+    pageinfo[1] = (uint64_t)vm.v_vnodepgsout + (uint64_t)vm.v_swappgsout;
+}
+#endif
+
+
 void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
   std::vector<uint64_t> &pageinfo) {
+
+    // ------- layout -----------------------------------------
+    // meminfo[5]  = { active, inactive, wired, cached, free }
+    // pageinfo[2] = { pages_in, pages_out }
+    // --------------------------------------------------------
+
+#if defined(XOSVIEW_DFBSD)
+    DFBSDGetMemStats(meminfo);
+    DFBSDGetPageStats(pageinfo);
+    return;
+#endif
+
+
 #if defined(HAVE_UVM)
 #ifdef VM_UVMEXP2
     struct uvmexp_sysctl uvm;
