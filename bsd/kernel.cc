@@ -240,44 +240,14 @@ static void NBSDGetPageStats(std::vector<uint64_t> &pageinfo) {
 #endif
 
 
-void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
-  std::vector<uint64_t> &pageinfo) {
-
-    // ------- layout -----------------------------------------
-    // meminfo[5]  = { active, inactive, wired, cached, free }
-    // pageinfo[2] = { pages_in, pages_out }
-    // --------------------------------------------------------
-
-#if defined(XOSVIEW_DFBSD)
-    DFBSDGetMemStats(meminfo);
-    DFBSDGetPageStats(pageinfo);
-    return;
-#endif
-
-#if defined(XOSVIEW_FREEBSD)
-    FBSDGetMemStats(meminfo);
-    FBSDGetPageStats(pageinfo);
-    return;
-#endif
-
-#if defined(XOSVIEW_NETBSD)
-    NBSDGetMemStats(meminfo);
-    NBSDGetPageStats(pageinfo);
-    return;
-#endif
-
-
-#if defined(HAVE_UVM)
-#ifdef VM_UVMEXP2
-    struct uvmexp_sysctl uvm;
-    const int mib_uvm[] = { CTL_VM, VM_UVMEXP2 };
-#else
-    struct uvmexp uvm;
+#if defined(XOSVIEW_OPENBSD)
+static void OBSDGetMemStats(std::vector<uint64_t> &meminfo) {
     const int mib_uvm[] = { CTL_VM, VM_UVMEXP };
-#endif
-    size_t size = sizeof(uvm);
-    if ( sysctl(mib_uvm, ASIZE(mib_uvm), &uvm, &size, NULL, 0) < 0 )
-        logFatal << "sysctl vm.uvmexp failed" << std::endl;
+    static SysCtl uvmexp_sc(mib_uvm, 2);
+
+    struct uvmexp uvm;
+    if (!uvmexp_sc.get(uvm))
+        logFatal << "sysctl(" << uvmexp_sc.id() << ") failed." << std::endl;
 
     meminfo.resize(5);
     // UVM excludes kernel memory -> assume it is active mem
@@ -290,60 +260,44 @@ void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
     // there's no way to know how much is in which -> disable cache
     meminfo[3] = 0;
     meminfo[4] = (uint64_t)uvm.free * uvm.pagesize;
+}
+
+
+static void OBSDGetPageStats(std::vector<uint64_t> &pageinfo) {
+    const int mib_uvm[] = { CTL_VM, VM_UVMEXP };
+    static SysCtl uvmexp_sc(mib_uvm, 2);
+
+    struct uvmexp uvm;
+    if (!uvmexp_sc.get(uvm))
+        logFatal << "sysctl(" << uvmexp_sc.id() << ") failed." << std::endl;
 
     pageinfo.resize(2);
     pageinfo[0] = (uint64_t)uvm.pgswapin;
     pageinfo[1] = (uint64_t)uvm.pgswapout;
-
-#else  /* HAVE_UVM */
-    struct vmmeter vm;
-#if defined(XOSVIEW_FREEBSD)
-    size_t size = 0;
-#define	GET_VM_STATS(name)                                                \
-    size = sizeof(vm.name);                                               \
-    if (sysctlbyname("vm.stats.vm." #name, &vm.name, &size, NULL, 0) < 0) \
-        logFatal << "sysctlbyname(vm.stats.vm." #name << ") failed.\n";
-
-    GET_VM_STATS(v_active_count);
-    GET_VM_STATS(v_inactive_count);
-    GET_VM_STATS(v_wire_count);
-    GET_VM_STATS(v_cache_count);
-    GET_VM_STATS(v_free_count);
-    GET_VM_STATS(v_page_size);
-    GET_VM_STATS(v_vnodepgsin);
-    GET_VM_STATS(v_vnodepgsout);
-    GET_VM_STATS(v_swappgsin);
-    GET_VM_STATS(v_swappgsout);
-#undef GET_VM_STATS
-
-#else  /* XOSVIEW_DFBSD */
-    struct vmstats vms;
-    size_t size = sizeof(vms);
-    if ( sysctlbyname("vm.vmstats", &vms, &size, NULL, 0) < 0 )
-        logFatal << "sysctl vm.vmstats failed" << std::endl;
-    size = sizeof(vm);
-    if ( sysctlbyname("vm.vmmeter", &vm, &size, NULL, 0) < 0 )
-        logFatal << "sysctl vm.vmmeter failed" << std::endl;
+}
 #endif
 
-    meminfo.resize(5);
-#if defined(XOSVIEW_FREEBSD)
-    meminfo[0] = (uint64_t)vm.v_active_count * vm.v_page_size;
-    meminfo[1] = (uint64_t)vm.v_inactive_count * vm.v_page_size;
-    meminfo[2] = (uint64_t)vm.v_wire_count * vm.v_page_size;
-    meminfo[3] = (uint64_t)vm.v_cache_count * vm.v_page_size;
-    meminfo[4] = (uint64_t)vm.v_free_count * vm.v_page_size;
-#else  /* XOSVIEW_DFBSD */
-    meminfo[0] = (uint64_t)vms.v_active_count * vms.v_page_size;
-    meminfo[1] = (uint64_t)vms.v_inactive_count * vms.v_page_size;
-    meminfo[2] = (uint64_t)vms.v_wire_count * vms.v_page_size;
-    meminfo[3] = (uint64_t)vms.v_cache_count * vms.v_page_size;
-    meminfo[4] = (uint64_t)vms.v_free_count * vms.v_page_size;
-#endif
 
-    pageinfo.resize(2);
-    pageinfo[0] = (uint64_t)vm.v_vnodepgsin + (uint64_t)vm.v_swappgsin;
-    pageinfo[1] = (uint64_t)vm.v_vnodepgsout + (uint64_t)vm.v_swappgsout;
+void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
+  std::vector<uint64_t> &pageinfo) {
+
+    // ------- layout -----------------------------------------
+    // meminfo[5]  = { active, inactive, wired, cached, free }
+    // pageinfo[2] = { pages_in, pages_out }
+    // --------------------------------------------------------
+
+#if defined(XOSVIEW_DFBSD)
+    DFBSDGetMemStats(meminfo);
+    DFBSDGetPageStats(pageinfo);
+#elif defined(XOSVIEW_FREEBSD)
+    FBSDGetMemStats(meminfo);
+    FBSDGetPageStats(pageinfo);
+#elif defined(XOSVIEW_NETBSD)
+    NBSDGetMemStats(meminfo);
+    NBSDGetPageStats(pageinfo);
+#elif defined(XOSVIEW_OPENBSD)
+    OBSDGetMemStats(meminfo);
+    OBSDGetPageStats(pageinfo);
 #endif
 }
 
