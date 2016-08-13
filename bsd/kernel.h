@@ -19,19 +19,6 @@
 #include <vector>
 
 
-void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
-  std::vector<uint64_t> &pageinfo);
-
-inline void BSDGetMemStats(std::vector<uint64_t> &meminfo) {
-    std::vector<uint64_t> pinfo;
-    BSDGetMemPageStats(meminfo, pinfo);
-}
-
-inline void BSDGetPageStats(std::vector<uint64_t> &pageinfo) {
-    std::vector<uint64_t> minfo;
-    BSDGetMemPageStats(minfo, pageinfo);
-}
-
 void BSDGetSwapInfo(uint64_t &total, uint64_t &free);
 
 bool BSDDiskInit();
