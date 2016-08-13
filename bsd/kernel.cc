@@ -158,6 +158,52 @@ static void DFBSDGetPageStats(std::vector<uint64_t> &pageinfo) {
 #endif
 
 
+#if defined(XOSVIEW_FREEBSD)
+
+// For whatever reason the idea of one sysctl to return the
+// whole vmmeter struct was not appealing.  So...
+#define GET_VM_STAT(vmmeter, name)                                            \
+    static SysCtl stats_vm_ ## name ## _sc("vm.stats.vm." #name);             \
+    if (!stats_vm_ ## name ## _sc.get(vmmeter.name))                          \
+        logFatal << "sysctl(" << stats_vm_ ## name ## _sc.id() << ") failed." \
+                 << std::endl
+
+static void FBSDGetMemStats(std::vector<uint64_t> &meminfo) {
+
+    struct vmmeter vm;
+
+    GET_VM_STAT(vm, v_active_count);
+    GET_VM_STAT(vm, v_inactive_count);
+    GET_VM_STAT(vm, v_wire_count);
+    GET_VM_STAT(vm, v_cache_count);
+    GET_VM_STAT(vm, v_free_count);
+    GET_VM_STAT(vm, v_page_size);
+
+    meminfo.resize(5);
+    meminfo[0] = (uint64_t)vm.v_active_count * vm.v_page_size;
+    meminfo[1] = (uint64_t)vm.v_inactive_count * vm.v_page_size;
+    meminfo[2] = (uint64_t)vm.v_wire_count * vm.v_page_size;
+    meminfo[3] = (uint64_t)vm.v_cache_count * vm.v_page_size;
+    meminfo[4] = (uint64_t)vm.v_free_count * vm.v_page_size;
+}
+
+
+static void FBSDGetPageStats(std::vector<uint64_t> &pageinfo) {
+
+    struct vmmeter vm;
+
+    GET_VM_STAT(vm, v_vnodepgsin);
+    GET_VM_STAT(vm, v_vnodepgsout);
+    GET_VM_STAT(vm, v_swappgsin);
+    GET_VM_STAT(vm, v_swappgsout);
+
+    pageinfo.resize(2);
+    pageinfo[0] = (uint64_t)vm.v_vnodepgsin + (uint64_t)vm.v_swappgsin;
+    pageinfo[1] = (uint64_t)vm.v_vnodepgsout + (uint64_t)vm.v_swappgsout;
+}
+#endif
+
+
 void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
   std::vector<uint64_t> &pageinfo) {
 
@@ -169,6 +215,12 @@ void BSDGetMemPageStats(std::vector<uint64_t> &meminfo,
 #if defined(XOSVIEW_DFBSD)
     DFBSDGetMemStats(meminfo);
     DFBSDGetPageStats(pageinfo);
+    return;
+#endif
+
+#if defined(XOSVIEW_FREEBSD)
+    FBSDGetMemStats(meminfo);
+    FBSDGetPageStats(pageinfo);
     return;
 #endif
 
