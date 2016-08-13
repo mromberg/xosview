@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
@@ -19,7 +20,6 @@
 #include "cpagemeter.h"
 
 
-
 class PageMeter : public ComPageMeter {
 public:
     PageMeter( void );
@@ -29,7 +29,9 @@ protected:
 
 private:
     const size_t _psize;
-    std::vector<uint64_t> previnfo_;
+    std::vector<uint64_t> _previnfo;
+
+    static void getPageStats(std::vector<uint64_t> &pageinfo);
 };
 
 

@@ -73,4 +73,15 @@ private:
     }
 };
 
+
+#if defined(XOSVIEW_FREEBSD)
+// For whatever reason the idea of one sysctl to return the
+// whole vmmeter struct was not appealing.  So...
+#define GET_VM_STAT(vmmeter, name)                                            \
+    static SysCtl stats_vm_ ## name ## _sc("vm.stats.vm." #name);             \
+    if (!stats_vm_ ## name ## _sc.get(vmmeter.name))                          \
+        logFatal << "sysctl(" << stats_vm_ ## name ## _sc.id() << ") failed." \
+                 << std::endl
+#endif
+
 #endif
