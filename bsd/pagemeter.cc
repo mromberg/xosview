@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
@@ -23,6 +24,10 @@
 #include <sys/vmmeter.h>
 #endif
 
+#if defined(HAVE_UVM)
+#include <sys/device.h>
+#include <uvm/uvm_extern.h>
+#endif
 
 
 PageMeter::PageMeter( void )
