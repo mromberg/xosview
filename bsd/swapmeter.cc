@@ -17,9 +17,10 @@
 #include "swapmeter.h"
 #include "sctl.h"
 
+#include <unistd.h>
+
 #if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_OPENBSD)
 #include <sys/swap.h>
-#include <unistd.h>
 #endif
 
 
