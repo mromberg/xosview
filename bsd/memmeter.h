@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015
+//  Copyright (c) 1994, 1995, 2015, 2016
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -31,9 +31,11 @@ public:
     void checkResources(const ResDB &rdb);
 
 private:
-    std::vector<uint64_t> meminfo_;
+    std::vector<uint64_t> _meminfo;
 
     void getmeminfo( void );
+
+    static void getMemStats(std::vector<uint64_t> &meminfo);
 };
 
 
