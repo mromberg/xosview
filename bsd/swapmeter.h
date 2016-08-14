@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1995, 1996, 1997-2002, 2015
+//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016
 //  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -24,6 +24,9 @@ public:
 
 protected:
     virtual std::pair<uint64_t, uint64_t> getswapinfo( void );
+
+private:
+    static void getSwapInfo(uint64_t &total, uint64_t &used);
 };
 
 
