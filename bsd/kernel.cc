@@ -192,20 +192,8 @@ static void FBSDGetSwapInfo(uint64_t &total, uint64_t &used) {
 }
 #endif
 
-
-void BSDGetSwapInfo(uint64_t &total, uint64_t &used) {
-#if defined(XOSVIEW_DFBSD)
-    DFBSDGetSwapInfo(total, used);
-    return;
-#endif
-
-#if defined(XOSVIEW_FREEBSD)
-    FBSDGetSwapInfo(total, used);
-    return;
-#endif
-
-
-#if defined(HAVE_SWAPCTL)
+#if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_OPENBSD)
+static void NOBSDGetSwapInfo(uint64_t &total, uint64_t &used) {
     //  This code is based on a patch sent in by Scott Stevens
     //  (s.k.stevens@ic.ac.uk, at the time).
     int rnswap, nswap = swapctl(SWAP_NSWAP, 0, 0);
@@ -230,70 +218,24 @@ void BSDGetSwapInfo(uint64_t &total, uint64_t &used) {
         total += (uint64_t)sep[i].se_nblks * bsize;
         used += (uint64_t)sep[i].se_inuse * bsize;
     }
-#elif defined(XOSVIEW_DFBSD)
-    static SysCtl swsize_sc("vm.swap_size");
-    static SysCtl swanon_sc("vm.swap_anon_use");
-    static SysCtl swcache_sc("vm.swap_cache_use");
+}
+#endif
 
-    size_t pagesize = getpagesize();
-    int ssize = 0;
-    int anon = 0;
-    int cache = 0;
+void BSDGetSwapInfo(uint64_t &total, uint64_t &used) {
+#if defined(XOSVIEW_DFBSD)
+    DFBSDGetSwapInfo(total, used);
+    return;
+#endif
 
-    if (!swsize_sc.get(ssize))
-        logFatal << "sysctl(" << swsize_sc.id() << ") failed." << std::endl;
-    if (!swanon_sc.get(anon))
-        logFatal << "sysctl(" << swanon_sc.id() << ") failed." << std::endl;
-    if (!swcache_sc.get(cache))
-        logFatal << "sysctl(" << swcache_sc.id() << ") failed." << std::endl;
+#if defined(XOSVIEW_FREEBSD)
+    FBSDGetSwapInfo(total, used);
+    return;
+#endif
 
-    total = ssize * pagesize;
-    used = (anon + cache) * pagesize;
 
-#elif defined(XOSVIEW_FREEBSD)
-
-    static SysCtl nswaps_sc("vm.nswapdev");
-    static SysCtl swapinfo_sc("vm.swap_info");
-    if (swapinfo_sc.mib().size() == 2)
-        swapinfo_sc.mib().push_back(0);
-
-    int nswaps = 0;
-    if (!nswaps_sc.get(nswaps))
-        logFatal << "sysctl(" << nswaps_sc.id() << ") failed." << std::endl;
-
-    // This thing is neither documented or even defined in a system
-    // header.  We use it here because it is not KVM.  If it breaks then
-    // FreeBSD does not get a swap meter until it has some sane way
-    // to get the stats.
-    //
-    // Instead of the following an array of five ints will be used.
-    //
-    // struct xswdev {
-    //     u_int   xsw_version;
-    //     dev_t   xsw_dev;
-    //     int     xsw_flags;
-    //     int     xsw_nblks;
-    //     int     xsw_used;
-    // };
-
-    size_t psize = getpagesize();
-
-    std::vector<int> xswd(5, 0);
-    for (int i = 0 ; i < nswaps ; i++) {
-        swapinfo_sc.mib()[2] = i;
-        if (!swapinfo_sc.get(xswd))
-            logFatal << "sysctl(" << swapinfo_sc.id() << ") failed."
-                     << std::endl;
-
-        total += xswd[3] * psize;
-        used += xswd[4] * psize;
-    }
-
-#else
-#warning "swap stats method unknown."
-    logBug << "swap stats unknown." << std::endl;
-    total = 1;
-    used = 0;
+#if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_OPENBSD)
+    NOBSDGetSwapInfo(total, used);
+    return;
 #endif
 }
 
