@@ -56,6 +56,54 @@ std::ostream &IntrStats::printOn(std::ostream &os) const {
 }
 
 
+#if defined(XOSVIEW_OPENBSD)
+void IntrStats::scan(void) {
+    const int mib_nint[] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
+    static SysCtl nintr_sc(mib_nint, 3);
+    const int mib_intc[] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_CNT, 0 };
+    static SysCtl intrcnt_sc(mib_intc, 4);
+    //const int mib_intn[] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NAME, 0 };
+    //static SysCtl intrnam_sc(mib_intn, 4);
+
+    int nintr = 0;
+    if (!nintr_sc.get(nintr))
+        logFatal << "sysctl(" << nintr_sc.id() << ") failed." << std::endl;
+
+    for (int i = 0 ; i < nintr ; i++) {
+        intrcnt_sc.mib()[3] = i;
+
+        uint64_t count = 0;
+        if (!intrcnt_sc.get(count))
+            continue;  // not active.
+
+        _irqMap[i] = i;
+    }
+}
+#endif
+
+
+#if defined(XOSVIEW_OPENBSD)
+std::map<size_t, uint64_t> IntrStats::counts(void) const {
+    const int mib_intc[] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_CNT, 0 };
+    static SysCtl intrcnt_sc(mib_intc, 4);
+
+    std::map<size_t, uint64_t> rval;
+
+    std::map<size_t, size_t>::const_iterator it;
+    for (it = _irqMap.begin() ; it != _irqMap.end() ; ++it) {
+        intrcnt_sc.mib()[3] = it->second;
+        uint64_t count = 0;
+        if (!intrcnt_sc.get(count))
+            logFatal << "sysctl(" << intrcnt_sc.id() << ") failed."
+                     << std::endl;
+        rval[it->first] = count;
+    }
+
+    return rval;
+}
+#endif
+
+
 // Note: combine scan() and counts() using lambdas when C++11 support
 //       can be assumed to be widely supported.
 #if defined(XOSVIEW_NETBSD)
