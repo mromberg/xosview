@@ -9,6 +9,10 @@
 #include "sctl.h"
 #include "strutil.h"
 
+#if defined(XOSVIEW_NETBSD)
+#include <sys/evcnt.h>
+#endif
+
 
 IntrStats::IntrStats(void) {
 }
@@ -50,6 +54,93 @@ void IntrStats::stats(std::vector<uint64_t> &intrCount,
 std::ostream &IntrStats::printOn(std::ostream &os) const {
     return os << "irqMap=" << _irqMap;
 }
+
+
+// Note: combine scan() and counts() using lambdas when C++11 support
+//       can be assumed to be widely supported.
+#if defined(XOSVIEW_NETBSD)
+void IntrStats::scan(void) {
+    const int Mib[] = { CTL_KERN, KERN_EVCNT, EVCNT_TYPE_INTR,
+                        KERN_EVCNT_COUNT_ANY };
+    static SysCtl evcnt_sc(Mib, sizeof(Mib) / sizeof(int));
+
+    size_t evsize = 0;
+    if (!evcnt_sc.getsize(evsize))
+        logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
+
+    std::vector<char> buf(evsize, 0);
+    if (!evcnt_sc.get(buf))
+        logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
+
+    const struct evcnt_sysctl *evs =
+        reinterpret_cast<const struct evcnt_sysctl *>(buf.data());
+    const struct evcnt_sysctl *evsend =
+        reinterpret_cast<const struct evcnt_sysctl *>(buf.data() + buf.size());
+
+    size_t i = 0;
+    while (evs->ev_len && evs < evsend &&
+      reinterpret_cast<const struct evcnt_sysctl *>(
+          (char *)evs + evs->ev_len * 8) < evsend ) {
+
+        // ------- lambda -----
+        // extract the "pin" number from the name.
+        std::string name(evs->ev_strings + evs->ev_grouplen + 1);
+        size_t nbr = 0;
+        std::string dummy;
+        std::istringstream is(name);
+        is >> dummy >> nbr;
+
+        if (is)
+            _irqMap[nbr] = i;
+        // ------- lambda -----
+
+        evs = reinterpret_cast<const struct evcnt_sysctl *>((const char *)evs
+          + 8 * evs->ev_len);
+        i++;
+    }
+}
+#endif
+
+
+#if defined(XOSVIEW_NETBSD)
+std::map<size_t, uint64_t> IntrStats::counts(void) const {
+    const int Mib[] = { CTL_KERN, KERN_EVCNT, EVCNT_TYPE_INTR,
+                        KERN_EVCNT_COUNT_ANY };
+    static SysCtl evcnt_sc(Mib, sizeof(Mib) / sizeof(int));
+
+    size_t evsize = 0;
+    if (!evcnt_sc.getsize(evsize))
+        logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
+
+    std::vector<char> buf(evsize, 0);
+    if (!evcnt_sc.get(buf))
+        logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
+
+    const struct evcnt_sysctl *evs =
+        reinterpret_cast<const struct evcnt_sysctl *>(buf.data());
+    const struct evcnt_sysctl *evsend =
+        reinterpret_cast<const struct evcnt_sysctl *>(buf.data() + buf.size());
+
+    std::map<size_t, uint64_t> rval;
+    size_t i = 0;
+    while (evs->ev_len && evs < evsend &&
+      reinterpret_cast<const struct evcnt_sysctl *>(
+          (char *)evs + evs->ev_len * 8) < evsend ) {
+
+        // ------- lambda -----
+        std::map<size_t, size_t>::const_iterator it = _irqMap.find(i);
+        if (it != _irqMap.end())
+            rval[i] = evs->ev_count;
+        // ------- lambda -----
+
+        evs = reinterpret_cast<const struct evcnt_sysctl *>((const char *)evs
+          + 8 * evs->ev_len);
+        i++;
+    }
+
+    return rval;
+}
+#endif
 
 
 #if defined(XOSVIEW_DFBSD)
