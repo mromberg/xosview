@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -8,8 +9,7 @@
 #define INTMETER_H
 
 #include "bitmeter.h"
-
-#include <map>
+#include "intrstats.h"
 
 
 class IntMeter : public BitMeter {
@@ -22,10 +22,12 @@ public:
     void checkResources(const ResDB &rdb);
 
 private:
-    unsigned int irqcount_;
-    std::vector<uint64_t> irqs_, lastirqs_;
-    std::vector<unsigned int> inbrs_;
-    std::map<int,int> realintnum_;
+    size_t _irqcount;
+    std::vector<uint64_t> _irqs, _lastirqs;
+    std::vector<unsigned int> _inbrs;
+    std::map<int,int> _realintnum;
+    IntrStats _istats;
+
     void getirqs( void );
     void updateirqcount( bool init = false );
 };

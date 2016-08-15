@@ -20,6 +20,7 @@ cpumeter.o \
 diskmeter.o \
 intmeter.o \
 intratemeter.o \
+intrstats.o \
 kernel.o \
 loadmeter.o \
 memmeter.o \

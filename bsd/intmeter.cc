@@ -1,24 +1,28 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  This file may be distributed under terms of the GPL
 //
 
 #include "intmeter.h"
-#include "kernel.h"
+#include "intrstats.h"
 
 
 
 IntMeter::IntMeter(void)
-    : BitMeter( "INTS", "IRQs" ),
-      irqcount_(0) {
+    : BitMeter( "INTS", "IRQs" ), _irqcount(0) {
 
-    irqcount_ = BSDNumInts();
-    irqs_.resize(irqcount_ + 1, 0);
-    lastirqs_.resize(irqcount_ + 1, 0);
-    inbrs_.resize(irqcount_ + 1, 0);
+    _istats.scan();
+    _irqcount = _istats.maxirq();
+    _irqs.resize(_irqcount + 1, 0);
+    _lastirqs.resize(_irqcount + 1, 0);
+    _inbrs.resize(_irqcount + 1, 0);
 
     updateirqcount(true);
+
+    logDebug << "_istats: " << _istats << "\n"
+             << "maxirq: " << _istats.maxirq() << std::endl;
 }
 
 
@@ -29,20 +33,20 @@ IntMeter::~IntMeter( void ) {
 void IntMeter::checkevent( void ) {
     getirqs();
 
-    for (uint i = 0 ; i <= irqcount_ ; i++) {
-        if (inbrs_[i] != 0) {
+    for (size_t i = 0 ; i <= _irqcount ; i++) {
+        if (_inbrs[i] != 0) {
             // new interrupt number
-            if (realintnum_.find(i) == realintnum_.end()) {
+            if (_realintnum.find(i) == _realintnum.end()) {
                 updateirqcount();
                 return;
             }
-            _bits[realintnum_[i]] = ((irqs_[i] - lastirqs_[i]) != 0);
-            lastirqs_[i] = irqs_[i];
+            _bits[_realintnum[i]] = ((_irqs[i] - _lastirqs[i]) != 0);
+            _lastirqs[i] = _irqs[i];
         }
     }
-    for (size_t i = 0 ; i < irqcount_ + 1 ; i++) {
-        inbrs_[i] = 0;
-        irqs_[i] = 0;
+    for (size_t i = 0 ; i < _irqcount + 1 ; i++) {
+        _inbrs[i] = 0;
+        _irqs[i] = 0;
     }
 }
 
@@ -55,7 +59,7 @@ void IntMeter::checkResources(const ResDB &rdb) {
 
 
 void IntMeter::getirqs( void ) {
-    BSDGetIntrStats(irqs_, inbrs_);
+    _istats.stats(_irqs, _inbrs);
 }
 
 
@@ -65,12 +69,12 @@ void IntMeter::updateirqcount( bool init ) {
     if (init) {
         getirqs();
         for (int i = 0; i < 16; i++)
-            realintnum_[i] = i;
+            _realintnum[i] = i;
     }
-    for (uint i = 16; i <= irqcount_; i++) {
-        if (inbrs_[i] != 0) {
-            realintnum_[i] = count++;
-            inbrs_[i] = 0;
+    for (size_t i = 16; i <= _irqcount; i++) {
+        if (_inbrs[i] != 0) {
+            _realintnum[i] = count++;
+            _inbrs[i] = 0;
         }
     }
     setNumBits(count);
@@ -78,13 +82,13 @@ void IntMeter::updateirqcount( bool init ) {
     // Build the legend.
     std::ostringstream os;
     os << "0";
-    if (realintnum_.upper_bound(15) == realintnum_.end()) // only 16 ints
+    if (_realintnum.upper_bound(15) == _realintnum.end()) // only 16 ints
         os << "-15";
     else {
         int prev = 15, prev2 = 14;
-        for (std::map<int,int>::const_iterator it = realintnum_.upper_bound(15),
-                 end = realintnum_.end(); it != end; ++it) {
-            if ( &*it == &*realintnum_.rbegin() ) { // last element
+        for (std::map<int,int>::const_iterator it = _realintnum.upper_bound(15),
+                 end = _realintnum.end(); it != end; ++it) {
+            if ( &*it == &*_realintnum.rbegin() ) { // last element
                 if (it->first == prev + 1)
                     os << "-" ;
                 else {
