@@ -23,16 +23,6 @@ bool BSDDiskInit();
 
 uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes);
 
-int BSDNumInts();
-
-void BSDGetIntrStats(std::vector<uint64_t> &intrCount,
-  std::vector<unsigned int> &intrNbrs);
-
-inline void BSDGetIntrCount(std::vector<uint64_t> &intrCount) {
-    std::vector<unsigned int> notUsed;
-    BSDGetIntrStats(intrCount, notUsed);
-}
-
 #if defined(__i386__) || defined(__x86_64)
 unsigned int BSDGetCPUTemperature(std::vector<float> &temps,
   std::vector<float> &tjmax);
