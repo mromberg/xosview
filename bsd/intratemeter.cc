@@ -12,14 +12,14 @@
 
 
 IrqRateMeter::IrqRateMeter( void )
-    : ComIrqRateMeter(), irqcount_(0) {
+    : ComIrqRateMeter(), _irqcount(0) {
 
     _istats.scan();
-    irqcount_ = _istats.maxirq();
-    irqs_.resize(irqcount_ + 1, 0);
-    lastirqs_.resize(irqcount_ + 1, 0);
+    _irqcount = _istats.maxirq();
+    _irqs.resize(_irqcount + 1, 0);
+    _lastirqs.resize(_irqcount + 1, 0);
 
-    _istats.counts(lastirqs_);
+    _istats.counts(_lastirqs);
     IntervalTimerStart();
 }
 
@@ -27,14 +27,14 @@ IrqRateMeter::IrqRateMeter( void )
 float IrqRateMeter::getIrqRate(void) {
     IntervalTimerStop();
     double t = IntervalTimeInSecs();
-    _istats.counts(irqs_);
+    _istats.counts(_irqs);
     IntervalTimerStart();
 
     long int delta = 0;
-    for (size_t i = 0; i <= irqcount_; i++) {
-        delta += irqs_[i] - lastirqs_[i];
-        lastirqs_[i] = irqs_[i];
-        irqs_[i] = 0;
+    for (size_t i = 0 ; i <= _irqcount ; i++) {
+        delta += _irqs[i] - _lastirqs[i];
+        _lastirqs[i] = _irqs[i];
+        _irqs[i] = 0;
     }
 
     return (float)delta / t;
