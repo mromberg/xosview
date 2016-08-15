@@ -3,13 +3,6 @@ README file for xosview BSD
 
 NetBSD specific:
 
-*****************************************************************************
-  Note:  xosview needs to run 'setgid kmem' in order to access some of the
-    kernel information (at least until some more statistics are added to
-    the /kern or /proc file systems).  If you do not have root or kmem
-    permission on the machine, xosview will not run.
-*****************************************************************************
-
   To make xosview:
 
   Only interesting thing I found was that NetBSD can contain two (possibly
