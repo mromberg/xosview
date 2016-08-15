@@ -454,7 +454,12 @@ static int FBSDNumInts(void) {
     if (!intrnames_sc.getsize(nsize))
         logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
 
-    std::vector<char> nbuf(nsize, 0);  // this thing will be 200kb or more!
+    // this thing will be 200kb or more!
+    // So, make it static and grow it if needed.
+    static std::vector<char> nbuf(nsize, 0);
+    if (nbuf.size() < nsize)
+        nbuf.resize(nsize);
+
     if (!intrnames_sc.get(nbuf))
         logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
 
@@ -463,11 +468,12 @@ static int FBSDNumInts(void) {
     // so we don't check 200k empty ones.
     while (*p && p < nbuf.data() + nbuf.size()) {
         std::string iname(p);
-        std::istringstream is(iname);
         int nbr = 0;
-        is >> util::sink("irq") >> nbr;
-        if (is && nbr > count)
+        if (iname.substr(0, 3) == "irq" && util::fstr(iname.substr(3), nbr) &&
+          nbr > count) {
             count = nbr;
+        }
+
         p += iname.size() + 1;
     }
 
@@ -620,13 +626,20 @@ static void FBSDGetIntrStats(std::vector<uint64_t> &intrCount,
     size_t inamlen = 0;
     if (!intrnames_sc.getsize(inamlen))
         logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
+
+    // This is static and resized if needed because it is 200k+ in size.
     std::vector<char> intrnames(inamlen);
+    if (intrnames.size() < inamlen)
+        intrnames.resize(inamlen);
+
     if (!intrnames_sc.get(intrnames))
         logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
 
     size_t nintr = 0;
     if (!intrcnt_sc.getsize(nintr))
         logFatal << "sysctl(" << intrcnt_sc.id() << ") failed." << std::endl;
+
+
     std::vector<unsigned long> intrcnt(nintr / sizeof(unsigned long));
     if (!intrcnt_sc.get(intrcnt))
         logFatal << "sysctl(" << intrcnt_sc.id() << ") failed." << std::endl;
@@ -642,15 +655,14 @@ static void FBSDGetIntrStats(std::vector<uint64_t> &intrCount,
         if (!*p)
             break;
 
-        /* Figure out which irq we have here */
-        std::istringstream is(p);
-        is >> util::sink("irq") >> nbr;
-        if (is) {
+        // Figure out which irq we have here.
+        std::string tstr(p);
+        if (tstr.substr(0, 3) == "irq" && util::fstr(tstr.substr(3), nbr)) {
             intrCount[nbr] = intrcnt[i];
             intrNbrs[nbr] = 1;
         }
 
-        p += is.str().size() + 1;
+        p += tstr.size() + 1;
     }
 }
 #endif
