@@ -22,6 +22,10 @@ public:
     size_t maxirq(void) const; // highest irq number.
     void stats(std::vector<uint64_t> &intrCount,
       std::vector<unsigned int> &intrNbrs) const;
+    void counts(std::vector<uint64_t> &intrCount) const {
+        std::vector<unsigned int> notUsed;
+        stats(intrCount, notUsed);
+    }
     // ----- old API -------
 
     void scan(void); // find and cache "active" irqs.  somewhat expensive.

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1999, 2015 by Brian Grayson (bgrayson@netbsd.org)
+//  Copyright (c) 1999, 2015, 2016
+//  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file may be distributed under terms of the GPL or of the BSD
 //    license, whichever you choose.  The full license notices are
@@ -12,6 +13,7 @@
 #define IRQRATEMETER_H
 
 #include "cintratemeter.h"
+#include "intrstats.h"
 
 
 
@@ -25,6 +27,7 @@ protected:
 private:
     unsigned int irqcount_;
     std::vector<uint64_t> irqs_, lastirqs_;
+    IntrStats _istats;
 };
 
 

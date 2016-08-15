@@ -9,17 +9,17 @@
 //
 
 #include "intratemeter.h"
-#include "kernel.h"
 
 
 IrqRateMeter::IrqRateMeter( void )
     : ComIrqRateMeter(), irqcount_(0) {
 
-    irqcount_ = BSDNumInts();
+    _istats.scan();
+    irqcount_ = _istats.maxirq();
     irqs_.resize(irqcount_ + 1, 0);
     lastirqs_.resize(irqcount_ + 1, 0);
 
-    BSDGetIntrCount(lastirqs_);
+    _istats.counts(lastirqs_);
     IntervalTimerStart();
 }
 
@@ -27,7 +27,7 @@ IrqRateMeter::IrqRateMeter( void )
 float IrqRateMeter::getIrqRate(void) {
     IntervalTimerStop();
     double t = IntervalTimeInSecs();
-    BSDGetIntrCount(irqs_);
+    _istats.counts(irqs_);
     IntervalTimerStart();
 
     long int delta = 0;
