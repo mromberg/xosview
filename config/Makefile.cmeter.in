@@ -27,7 +27,9 @@ cpagemeter.o \
 ppagemeter.o \
 ctzonemeter.o \
 cdiskmeter.o \
-pdiskmeter.o
+pdiskmeter.o \
+cmetermaker.o
+
 
 CFILES := $(OBJS:.o=.cc)
 DEPFILES := $(OBJS:%=.%.d)
