@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -14,24 +15,18 @@
 #ifndef METERMAKER_H
 #define METERMAKER_H
 
-#include "rdb.h"
+#include "cmetermaker.h"
 
-#include <vector>
-
-
-class Meter;
+class ResDB;
 
 
-
-class MeterMaker {
+class MeterMaker : public ComMeterMaker {
 public:
     MeterMaker(void);
 
     std::vector<Meter *> makeMeters(const ResDB &rdb);
 
 private:
-    std::vector<Meter *> _meters;
-
     void cpuFactory(const ResDB &rdb);
     void coreTempFactory(const ResDB &rdb);
     void sensorFactory(const ResDB &rdb);

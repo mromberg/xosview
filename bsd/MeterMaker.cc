@@ -90,27 +90,13 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
 
 void MeterMaker::cpuFactory(const ResDB &rdb) {
-    bool single, both, all;
-    size_t cpuCount = CPUMeter::countCPUs();
+    size_t start = 0, end = 0;
+    getRange(rdb.getResource("cpuFormat"), CPUMeter::countCPUs(), start, end);
 
-    single = rdb.getResource("cpuFormat") == "single";
-    both = rdb.getResource("cpuFormat") == "both";
-    all = rdb.getResource("cpuFormat") == "all";
+    logDebug << "start=" << start << ", end=" << end << std::endl;
 
-    if (rdb.getResource("cpuFormat") == "auto") {
-        if (cpuCount == 1 || cpuCount > 4)
-            single = true;
-        else
-            all = true;
-    }
-
-    if (single || both)
-        _meters.push_back(new CPUMeter(0));
-
-    if (all || both) {
-        for (unsigned int i = 1; i <= cpuCount; i++)
-            _meters.push_back(new CPUMeter(i));
-    }
+    for (size_t i = start ; i <= end ; i++)
+        _meters.push_back(new CPUMeter(i));
 }
 
 
