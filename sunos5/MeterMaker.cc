@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2015
+//  Copyright (c) 1999, 2015, 2016
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
@@ -75,27 +75,16 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
 
 void MeterMaker::cpuFactory(const ResDB &rdb, kstat_ctl_t *kc) {
-    bool single, both, all;
     int cpuCount = sysconf(_SC_NPROCESSORS_ONLN);
 
-    single = rdb.getResource("cpuFormat") == "single";
-    both = rdb.getResource("cpuFormat") == "both";
-    all = rdb.getResource("cpuFormat") == "all";
+    size_t start = 0, end = 0;
+    getRange(rdb.getResource("cpuFormat"), cpuCount, start, end);
 
-    if (rdb.getResource("cpuFormat") == "auto") {
-        if (cpuCount == 1 || cpuCount > 4)
-            single = true;
+    KStatList *cpulist = KStatList::getList(kc, KStatList::CPU_STAT);
+    for (size_t i = start ; i <= end ; i++)
+        if (i == 0)
+            _meters.push_back(new CPUMeter(kc, -1));
         else
-            all = true;
-    }
-
-    if (single || both)
-        _meters.push_back(new CPUMeter(kc, -1));
-
-    if (all || both) {
-        KStatList *cpulist = KStatList::getList(kc, KStatList::CPU_STAT);
-        for (unsigned int i = 0; i < cpulist->count(); i++)
             _meters.push_back(new CPUMeter(kc,
-                (*cpulist)[i]->ks_instance));
-    }
+                (*cpulist)[i - 1]->ks_instance));
 }
