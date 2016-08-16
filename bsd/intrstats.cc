@@ -52,6 +52,52 @@ std::ostream &IntrStats::printOn(std::ostream &os) const {
 }
 
 
+#if defined(XOSVIEW_DFBSD)
+void IntrStats::scan(void) {
+
+    static SysCtl intrnames_sc("hw.intrnames");
+
+    size_t bytes = 0;
+    if (!intrnames_sc.getsize(bytes))
+        logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
+
+    std::vector<char> nbuf(bytes, 0);
+    if (!intrnames_sc.get(nbuf))
+        logFatal << "sysctl(" << intrnames_sc.id() << ") failed." << std::endl;
+
+    size_t i = 0, offset = 0;
+    while (offset < nbuf.size()) {
+        // unused ints are named irqn where
+        // 0<=n<=255, used ones have device name
+        std::string tstr(nbuf.data() + offset);
+        if (tstr.substr(0, 3) != "irq")
+            _irqMap[i] = i;
+
+        offset += tstr.size() + 1;
+        i++;
+    }
+}
+#endif
+
+
+#if defined(XOSVIEW_DFBSD) || defined(XOSVIEW_FREEBSD)
+std::map<size_t, uint64_t> IntrStats::counts(void) const {
+
+    static SysCtl intrcnt_sc("hw.intrcnt");
+
+    size_t csize = 0;
+    if (!intrcnt_sc.getsize(csize))
+        logFatal << "sysctl(" << intrcnt_sc.id() << ") failed." << std::endl;
+
+    std::vector<unsigned long> intrcnt(csize / sizeof(unsigned long));
+    if (!intrcnt_sc.get(intrcnt))
+        logFatal << "sysctl(" << intrcnt_sc.id() << ") failed." << std::endl;
+
+    return getCounts(intrcnt);
+}
+#endif
+
+
 #if defined(XOSVIEW_FREEBSD)
 void IntrStats::scan(void) {
     static SysCtl intrnames_sc("hw.intrnames");
@@ -82,29 +128,5 @@ void IntrStats::scan(void) {
         p += iname.size() + 1;
         index++;
     }
-}
-#endif
-
-
-#if defined(XOSVIEW_FREEBSD)
-std::map<size_t, uint64_t> IntrStats::counts(void) const {
-
-    static SysCtl intrcnt_sc("hw.intrcnt");
-
-    std::map<size_t, uint64_t> rval;
-
-    size_t nintr = 0;
-    if (!intrcnt_sc.getsize(nintr))
-        logFatal << "sysctl(" << intrcnt_sc.id() << ") failed." << std::endl;
-
-    std::vector<unsigned long> intrcnt(nintr / sizeof(unsigned long));
-    if (!intrcnt_sc.get(intrcnt))
-        logFatal << "sysctl(" << intrcnt_sc.id() << ") failed." << std::endl;
-
-    std::map<size_t, uint64_t>::const_iterator it;
-    for (it = _irqMap.begin() ; it != _irqMap.end() ; ++it)
-        rval[it->first] = intrcnt[it->second];
-
-    return rval;
 }
 #endif
