@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -75,32 +75,6 @@ void MeterMaker::cpuFactory(const ResDB &rdb) {
 
     for (size_t i = start ; i <= end ; i++)
         _meters.push_back(new CPUMeter(i));
-}
-
-
-void MeterMaker::getRange(const std::string &format,
-  size_t cpuCount, size_t &start, size_t &end) const {
-
-    // check the *Format resource if multi-procesor system
-    start = end = 0;
-
-    if (cpuCount > 1) {
-        if (format == "single") // single meter for all cpus
-            end = 0;
-        else if (format == "all"){ // seperate but no cumulative
-            start = 1;
-            end = cpuCount;
-        }
-        else if (format == "both") // seperate + cumulative
-            end = cpuCount;
-        else if (format == "auto") // if(cpuCount==1) single else both
-            end = cpuCount;
-        else {
-            logProblem << "Unknown format: " << format << ".  "
-                       << "Using auto" << std::endl;
-            end = cpuCount;
-        }
-    }
 }
 
 
