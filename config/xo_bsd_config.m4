@@ -16,10 +16,6 @@ AC_CHECK_HEADER(prop/proplib.h,[dnl
         AC_DEFINE(HAVE_PROP,[1],[Have libprop])
         XO_CONCAT(LIBS,$LIBS,[-lprop])])])
 
-AC_CHECK_LIB(devstat, main,[dnl
-    AC_DEFINE(HAVE_DEVSTAT,[1],[Have libdevstat])
-    XO_CONCAT([LIBS],$LIBS,[-ldevstat])])
-
 AC_CHECK_LIB(kinfo, kinfo_get_cpus,[dnl
     AC_DEFINE(HAVE_KINFO,[1],[Have libkinfo])
     XO_CONCAT([LIBS],$LIBS,[-lkinfo])])
