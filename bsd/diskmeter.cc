@@ -18,6 +18,8 @@
 #include <devstat.h>
 #elif defined(XOSVIEW_DFBSD)
 #include <sys/devicestat.h>
+#elif defined(XOSVIEW_NETBSD)
+#include <sys/iostat.h>
 #endif
 
 
@@ -90,5 +92,34 @@ void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
 
     logDebug << "disk read/write: " << (rbytes / 1024) << "k/"
              << (wbytes / 1024) << "k" << std::endl;
+}
+#endif
+
+
+#if defined(XOSVIEW_NETBSD)
+void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
+  uint64_t &wbytes) {
+
+    const int mib_dsk[] = { CTL_HW, HW_IOSTATS, sizeof(struct io_sysctl) };
+    static SysCtl iostats_sc(mib_dsk, 3);
+
+    rbytes = wbytes = 0;
+
+    size_t size;
+    if (!iostats_sc.getsize(size))
+        logFatal << "sysctl(" << iostats_sc.id() << ") failed." << std::endl;
+
+    size_t ndrives = size / sizeof(struct io_sysctl);
+    std::vector<struct io_sysctl> drive_stats(ndrives);
+
+    // Get the stats.
+    if (!iostats_sc.get(drive_stats))
+        logFatal << "sysctl(" << iostats_sc.id() << ") failed." << std::endl;
+
+    // Now accumulate the total.
+    for (size_t i = 0 ; i < ndrives ; i++) {
+        rbytes += drive_stats[i].rbytes;
+        wbytes += drive_stats[i].wbytes;
+    }
 }
 #endif
