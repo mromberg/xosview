@@ -41,14 +41,9 @@
 
 
 #if defined(XOSVIEW_NETBSD)
-#include <sys/sched.h>
-#include <sys/iostat.h>
 #include <sys/envsys.h>
 #include <prop/proplib.h>
 #include <paths.h>
-#include <net/if.h>
-#include <sys/ioctl.h>
-#include <machine/int_fmtio.h>
 #endif
 
 #if defined(XOSVIEW_OPENBSD) || defined(XOSVIEW_DFBSD)
