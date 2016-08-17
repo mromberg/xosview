@@ -35,12 +35,6 @@
 #include <sys/socket.h>
 
 
-#if defined(XOSVIEW_DFBSD)
-#define _KERNEL_STRUCTURES
-#include <kinfo.h>
-#endif
-
-
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 #include <net/if.h>
 #include <net/if_var.h>
