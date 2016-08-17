@@ -126,7 +126,7 @@ static size_t BSDCountCpus(void) {
 
 // ----------------------- Disk Meter stuff  -----------------------------------
 
-#ifdef HAVE_DEVSTAT
+#ifdef HAVE_DEVSTAT_NOT_HERE
 /*
  * Make use of the new FreeBSD kernel device statistics library using
  * code shamelessly borrowed from xsysinfo, which borrowed shamelessly
@@ -144,6 +144,7 @@ struct device_selection *dev_select;
 int nodisk = 0;
 
 
+#if 0
 static void DevStat_Init(void) {
     /*
      * Make sure that the userland devstat version matches the kernel
@@ -233,9 +234,11 @@ static void DevStat_Init(void) {
         logProblem << devstat_errbuf << std::endl;
     }
 }
+#endif
 
 
-uint64_t DevStat_Get(uint64_t &read_bytes, uint64_t &write_bytes) {
+#if 0
+static uint64_t DevStat_Get(uint64_t &read_bytes, uint64_t &write_bytes) {
     register int dn;
     long double busy_seconds;
     uint64_t reads, writes, total_bytes = 0;
@@ -351,17 +354,23 @@ uint64_t DevStat_Get(uint64_t &read_bytes, uint64_t &write_bytes) {
     return total_bytes;
 }
 #endif
+#endif
 
 
 bool BSDDiskInit() {
-#if defined(HAVE_DEVSTAT)
-    DevStat_Init();
-#endif
+//#if defined(HAVE_DEVSTAT)
+//    DevStat_Init();
+//#endif
     return true;
 }
 
-
 #if defined(XOSVIEW_FREEBSD)
+#include <devstat.h>
+#elif defined(XOSVIEW_DFBSD)
+#include <sys/devicestat.h>
+#endif
+
+#if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 static uint64_t FBSDGetDiskXFerBytes(uint64_t &read_bytes,
   uint64_t &write_bytes) {
 
@@ -382,38 +391,23 @@ static uint64_t FBSDGetDiskXFerBytes(uint64_t &read_bytes,
     if (!numdevs_sc.get(ndevs))
         logProblem << "sysctl(" << numdevs_sc.id() << ") failed." << std::endl;
 
-    // size_t dssize = 0;
-    // if (!devstat_sc.getsize(dssize))
-    //     logProblem << "sysctl(" << devstat_sc.id() << ") failed." << std::endl;
-
-    // std::cout << "ndevs: " << ndevs << std::endl;
-    // std::cout << "dssize: " << dssize << std::endl;
-    // std::cout << "sizeof(long): " << sizeof(long) << std::endl;
-    // std::cout << "sizeof(struct devstat): " << sizeof(struct devstat)
-    //           << std::endl;
-
     std::vector<char> buf(sizeof(long) + ndevs * sizeof(struct devstat));
     if (!devstat_sc.get(buf))
         logProblem << "sysctl(" << devstat_sc.id() << ") failed." << std::endl;
 
+    // The list of struct devstat is preceeded by a generation number.
     const long *generation = reinterpret_cast<const long *>(buf.data());
-//    std::cout << "generation: " << *generation << std::endl;
     const struct devstat *ds = reinterpret_cast<const struct devstat *>(
         generation + 1);
 
     for (int i = 0 ; i < ndevs ; i++) {
-        //std::string name(ds->device_name, ds->device_name + DEVSTAT_NAME_LEN);
-        // std::cout << "name: " << name << std::endl;
-        // std::cout << "device_number: " << ds->device_number << std::endl;
-        // std::cout << "unit_number: " << ds->unit_number << std::endl;
-        // std::cout << "flags: " << ds->flags << std::endl;
-        // std::cout << "priority: " << ds->priority << std::endl;
-        // std::cout << "block size: " << ds->block_size << std::endl;
-        // std::cout << "read: " << ds->bytes[DEVSTAT_READ] << std::endl;
-        // std::cout << "write: " << ds->bytes[DEVSTAT_WRITE] << std::endl;
-
+#if defined(XOSVIEW_FREEBSD)
         read_bytes += ds->bytes[DEVSTAT_READ];
         write_bytes += ds->bytes[DEVSTAT_WRITE];
+#elif defined(XOSVIEW_DFBSD)
+        read_bytes += ds->bytes_read;
+        write_bytes += ds->bytes_written;
+#endif
 
         ds++;
     }
@@ -426,10 +420,8 @@ static uint64_t FBSDGetDiskXFerBytes(uint64_t &read_bytes,
 
 
 uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes) {
-#if defined(XOSVIEW_FREEBSD)
+#if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
     return FBSDGetDiskXFerBytes(read_bytes, write_bytes);
-#elif defined(HAVE_DEVSTAT)
-    return DevStat_Get(read_bytes, write_bytes);
 #else
     read_bytes = write_bytes = 0;
 # if defined(XOSVIEW_NETBSD)
