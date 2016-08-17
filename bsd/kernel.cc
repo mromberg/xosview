@@ -26,7 +26,6 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-//#include <limits.h>
 
 #include <sys/param.h>
 #include <sysexits.h>
@@ -36,13 +35,8 @@
 
 
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
-//#include <net/if.h>
-//#include <net/if_var.h>
-//#include <sys/ioctl.h>
-//#include <sys/resource.h>
 #include <dev/acpica/acpiio.h>
 #include <machine/apm_bios.h>
-//#include <net/if_mib.h>
 #endif
 
 
@@ -57,39 +51,9 @@
 #include <machine/int_fmtio.h>
 #endif
 
-
-#if defined(XOSVIEW_OPENBSD)
-#include <sys/sched.h>
-#include <sys/disk.h>
-#if defined(HAVE_SYS_DKSTAT_H)
-#include <sys/dkstat.h>
-#elif defined(HAVE_SYS_SCHED_H)
-#include <sys/sched.h>
-#endif
-#include <sys/mount.h>
-#include <net/route.h>
-#include <net/if_dl.h>
-#endif
-
-
 #if defined(XOSVIEW_OPENBSD) || defined(XOSVIEW_DFBSD)
 #include <sys/sensors.h>
 #endif
-
-//#if defined(HAVE_DEVSTAT)
-//#include <devstat.h>
-//#endif
-
-//#if defined(HAVE_UVM)
-//#include <sys/device.h>
-//#include <uvm/uvm_extern.h>
-//#else
-//#include <sys/vmmeter.h>
-//#endif
-
-//#if defined(HAVE_SWAPCTL)
-//#include <sys/swap.h>
-//#endif
 
 
 // Number of elements in a static array.
