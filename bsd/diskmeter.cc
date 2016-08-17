@@ -20,6 +20,8 @@
 #include <sys/devicestat.h>
 #elif defined(XOSVIEW_NETBSD)
 #include <sys/iostat.h>
+#elif defined(XOSVIEW_OPENBSD)
+#include <sys/disk.h>
 #endif
 
 
@@ -120,6 +122,33 @@ void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
     for (size_t i = 0 ; i < ndrives ; i++) {
         rbytes += drive_stats[i].rbytes;
         wbytes += drive_stats[i].wbytes;
+    }
+}
+#endif
+
+
+#if defined(XOSVIEW_OPENBSD)
+void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
+  uint64_t &wbytes) {
+
+    const int mib1[] = {CTL_HW, HW_DISKCOUNT};
+    static SysCtl dskcount_sc(mib1, 2);
+    const int mib2[] = {CTL_HW, HW_DISKSTATS};
+    static SysCtl dskstats_sc(mib2, 2);
+
+    rbytes = wbytes = 0;
+
+    int ndisks = 0;
+    if (!dskcount_sc.get(ndisks))
+        logFatal << "sysctl(" << dskcount_sc.id() << ") failed." << std::endl;
+
+    std::vector<struct diskstats> dstats(ndisks);
+    if (!dskstats_sc.get(dstats))
+        logFatal << "sysctl(" << dskstats_sc.id() << ") failed." << std::endl;
+
+    for (size_t i = 0 ; i < dstats.size() ; i++) {
+        rbytes += dstats[i].ds_rbytes;
+        wbytes += dstats[i].ds_wbytes;
     }
 }
 #endif
