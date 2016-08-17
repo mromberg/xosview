@@ -361,8 +361,74 @@ bool BSDDiskInit() {
 }
 
 
+#if defined(XOSVIEW_FREEBSD)
+static uint64_t FBSDGetDiskXFerBytes(uint64_t &read_bytes,
+  uint64_t &write_bytes) {
+
+    static SysCtl numdevs_sc("kern.devstat.numdevs");
+    static SysCtl devstat_sc("kern.devstat.all");
+    static SysCtl version_sc("kern.devstat.version");
+
+    read_bytes = write_bytes = 0;
+
+    int dsvers = 0;
+    if (!version_sc.get(dsvers))
+        logFatal << "sysctl(" << version_sc.id() << ") failed." << std::endl;
+    if (dsvers != DEVSTAT_VERSION)
+        logFatal << "DEVSTAT_VERSION (compiled: " << DEVSTAT_VERSION << ") != "
+                 << dsvers << " (in kernel)." << std::endl;
+
+    int ndevs = 0;
+    if (!numdevs_sc.get(ndevs))
+        logProblem << "sysctl(" << numdevs_sc.id() << ") failed." << std::endl;
+
+    // size_t dssize = 0;
+    // if (!devstat_sc.getsize(dssize))
+    //     logProblem << "sysctl(" << devstat_sc.id() << ") failed." << std::endl;
+
+    // std::cout << "ndevs: " << ndevs << std::endl;
+    // std::cout << "dssize: " << dssize << std::endl;
+    // std::cout << "sizeof(long): " << sizeof(long) << std::endl;
+    // std::cout << "sizeof(struct devstat): " << sizeof(struct devstat)
+    //           << std::endl;
+
+    std::vector<char> buf(sizeof(long) + ndevs * sizeof(struct devstat));
+    if (!devstat_sc.get(buf))
+        logProblem << "sysctl(" << devstat_sc.id() << ") failed." << std::endl;
+
+    const long *generation = reinterpret_cast<const long *>(buf.data());
+//    std::cout << "generation: " << *generation << std::endl;
+    const struct devstat *ds = reinterpret_cast<const struct devstat *>(
+        generation + 1);
+
+    for (int i = 0 ; i < ndevs ; i++) {
+        //std::string name(ds->device_name, ds->device_name + DEVSTAT_NAME_LEN);
+        // std::cout << "name: " << name << std::endl;
+        // std::cout << "device_number: " << ds->device_number << std::endl;
+        // std::cout << "unit_number: " << ds->unit_number << std::endl;
+        // std::cout << "flags: " << ds->flags << std::endl;
+        // std::cout << "priority: " << ds->priority << std::endl;
+        // std::cout << "block size: " << ds->block_size << std::endl;
+        // std::cout << "read: " << ds->bytes[DEVSTAT_READ] << std::endl;
+        // std::cout << "write: " << ds->bytes[DEVSTAT_WRITE] << std::endl;
+
+        read_bytes += ds->bytes[DEVSTAT_READ];
+        write_bytes += ds->bytes[DEVSTAT_WRITE];
+
+        ds++;
+    }
+
+    logDebug << "disk read/write: " << (read_bytes / 1024) << "k/"
+             << (write_bytes / 1024) << "k" << std::endl;
+    return read_bytes + write_bytes;
+}
+#endif
+
+
 uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes) {
-#if defined(HAVE_DEVSTAT)
+#if defined(XOSVIEW_FREEBSD)
+    return FBSDGetDiskXFerBytes(read_bytes, write_bytes);
+#elif defined(HAVE_DEVSTAT)
     return DevStat_Get(read_bytes, write_bytes);
 #else
     read_bytes = write_bytes = 0;

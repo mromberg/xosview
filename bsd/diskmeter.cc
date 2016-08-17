@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1995, 1996, 1997-2002, 2015
+//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016
 //  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -34,14 +34,10 @@ std::pair<double, double> DiskMeter::getRate(void) {
     BSDGetDiskXFerBytes(reads, writes);
     IntervalTimerStart();
 
-#if defined(HAVE_DEVSTAT)
-    std::pair<double, double> rval(reads / t, writes / t);
-#else
     std::pair<double, double> rval((reads - prevreads_) / t,
       (writes - prevwrites_) / t);
     prevreads_ = reads;
     prevwrites_ = writes;
-#endif
 
     return rval;
 }
