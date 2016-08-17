@@ -19,10 +19,6 @@
 #include <vector>
 
 
-bool BSDDiskInit();
-
-uint64_t BSDGetDiskXFerBytes(uint64_t &read_bytes, uint64_t &write_bytes);
-
 #if defined(__i386__) || defined(__x86_64)
 unsigned int BSDGetCPUTemperature(std::vector<float> &temps,
   std::vector<float> &tjmax);
