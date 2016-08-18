@@ -1,6 +1,7 @@
 //
 //  NetBSD port:
-//  Copyright (c) 1995,1996,1997,2015 Brian Grayson(bgrayson@netbsd.org)
+//  Copyright (c) 1995,1996,1997,2015,2016
+//  by Brian Grayson(bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
 //    projects.
@@ -27,6 +28,9 @@ protected:
 
 private:
     uint64_t prevreads_, prevwrites_;
+
+    static void getDiskXFerBytes(uint64_t &rbytes,
+      uint64_t &wbytes);
 };
 
 
