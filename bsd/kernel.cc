@@ -21,17 +21,17 @@
 #include "strutil.h"
 #include "sctl.h"
 
-#include <cstring>
+//#include <cstring>
 #include <cerrno>
 
 #include <unistd.h>
 #include <fcntl.h>
 
-#include <sys/param.h>
-#include <sysexits.h>
-#include <sys/types.h>
-#include <sys/queue.h>
-#include <sys/socket.h>
+//#include <sys/param.h>
+//#include <sysexits.h>
+//#include <sys/types.h>
+//#include <sys/queue.h>
+//#include <sys/socket.h>
 
 
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
