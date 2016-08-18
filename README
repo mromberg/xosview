@@ -99,7 +99,7 @@
     
     By default configure will use a prefix of /usr/local  you may want
     to change this by adding a --prefix argument when you run the script.
-    One can run 'make -n install' to get a quick priview of what files
+    One can run 'make -n install' to get a quick preview of what files
     will be installed and where.  There are not many of them.
 
     Note: xosview will hard code a path to an app-defaults directory into
@@ -111,7 +111,7 @@
 * To configure xosview
 
   Out of the box xosview will start up using it's default configuration
-  of meters colors, fonts and values.   It will also look for X resource
+  of meter colors, fonts and values.   It will also look for X resource
   values to override these defaults in the normal X locations.  There are
   at least ten of these places and xosview checks them all (see the man
   page).
@@ -130,23 +130,14 @@
 
   Stipple support:
     Also, NetBSD-mac68k people (and others) that have monochrome systems
-      may want to try out the new stipple code -- set the enableStipple
+      may want to try out the stipple code -- set the enableStipple
       resource to true, and choose black and white for the various
       fields.  The fields are automatically stippled 100%, 75%, 50%, and
       25% in a fixed fashion (future versions may allow the user to
       specify the stipple percentage).
 
-    Some resources were included with the xosview source code to allow
-      an easy example.  Type 'xrdb -merge Xdefaults.stipple', followed
-      by 'xosview -name xosvstipple &' and 'xosview -name xosvstipplebw &'.
-      This will bring up two xosview windows, one using stippling with
-      color (xosvstipple) and one using only black and white
-      (xosvstipplebw).
-
-    The stipple support is fairly experimental, so provide any
-      feedback you can -- positive, negative, etc.
-
 * To work with the source code as developer:
 
   See the file README.devel which contains details about git, autoconf
-  gcc, makefiles and code internal workings of the code.
+  gcc, makefiles and internal workings of the code.
+  
