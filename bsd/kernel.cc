@@ -21,18 +21,10 @@
 #include "strutil.h"
 #include "sctl.h"
 
-//#include <cstring>
 #include <cerrno>
 
 #include <unistd.h>
 #include <fcntl.h>
-
-//#include <sys/param.h>
-//#include <sysexits.h>
-//#include <sys/types.h>
-//#include <sys/queue.h>
-//#include <sys/socket.h>
-
 
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 #include <dev/acpica/acpiio.h>
@@ -77,7 +69,7 @@ static size_t BSDCountCpus(void) {
 #endif
 
 
-//  ---------------------- Sensor Meter stuff  ---------------------------------
+//  ---------------------- Sensor Meter stuff  -------------------------------
 
 #if defined(__i386__) || defined(__x86_64__)
 static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,
