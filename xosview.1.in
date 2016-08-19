@@ -39,13 +39,16 @@ The \\$1 meter will use this color to display the \\$3 field.
 ..
 .\"  ================  End of Macros  =============================
 .SH DESCRIPTION
-\fIxosview\fP is a program which displays the status of several system based
-parameters.  These include CPU usage, load average, memory usage, swap
-space usage, network usage, interrupts, file system capacity and more.
-Each of these is displayed as a horizontal bar which is separated into color
-coded regions.  Each region represents a percentage of the resource which is
-being put to a particular use.  Typing a 'q' in the window will terminate
-xosview.
+\fIxosview\fP is a program which displays system based parameters.
+These include CPU usage, load average, memory usage, swap space usage,
+network usage, interrupts, file system capacity and more.  Each parameter
+is displayed in an X11 window as a horizontal bar graph, scrolling chart
+or an array of colored bits.  The type of graph depends on the nature of the
+data being displayed and the configuration of xosview.
+
+Typing a 'q' in the window will terminate xosview.  If xosview was built with
+the SM and ICE libraries, then it will communicate with the session manager when
+asked to do so.
 
 At the moment \fIxosview\fP runs on platforms including (Linux,
 NetBSD, FreeBSD, OpenBSD, dragonflyBSD, solaris, cygwin, minix and GNU).
@@ -204,9 +207,20 @@ T}
 
 The following is a list of X resources supported by \fIxosview\fP.  Each has
 a default value assigned to it.  These values can be found in the file
-Xdefaults which can be obtained in the source distribution of xosview.
-They can be overridden in the usual places (/usr/lib/X11/app-defaults/XOsview,
-$HOME/.Xdefaults, etc.).
+Xdefaults which can be obtained in the source distribution of xosview.  This
+file is installed in the XAPPLOADDIR ($prefix/share/X11/app-defaults) when
+xosview is installed.
+
+The resources can be overridden in the usual places used by X applications
+(XAPPLOADDIR, $HOME/.Xdefaults, etc.).  Individual options can  be set on
+the command line of xosview with options such as -xrm and -o and files
+containing multiple options can be specified with the -c switch.
+
+The default values of many resources are set to enable many of the exsisting
+features.  This allows new users to see that these features exist without
+having to read the documentation.   Most users will probably want to
+customize the defaults to their own taste by adding a few lines to their
+.Xdefaults file.
 
 It should be noted that it is OK to have a resource defined for a port of
 xosview that does not support the feature the resource configures.  Xosview
