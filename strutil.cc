@@ -8,6 +8,7 @@
 #include <cassert>
 #include <stdexcept>
 #include <set>
+#include <cctype>
 
 #include <locale.h>
 
@@ -29,26 +30,47 @@ std::string join(const std::vector<std::string> &v,
 }
 
 std::vector<std::string> split(const std::string& s,
-  const std::string& delim, const bool keep_empty) {
+  const std::string& delim, size_t maxsplit) {
     std::vector<std::string> result;
-    if (delim.empty()) {
-        result.push_back(s);
-        return result;
+    if (delim.size() == 0) {
+        std::string wsdelim(WHITE_SPACE);
+        size_t pos = 0;
+        while (pos < s.size() && result.size() < maxsplit) {
+            if (wsdelim.find(s[pos]) != std::string::npos) {
+                size_t epos = s.find_first_not_of(wsdelim, pos);
+                pos = epos;
+            }
+            else {
+                size_t epos = s.find_first_of(wsdelim, pos);
+                if (epos == std::string::npos)
+                    result.push_back(s.substr(pos));
+                else
+                    result.push_back(s.substr(pos, epos - pos));
+                pos = epos;
+            }
+        }
+        if (pos < s.size())
+            result.push_back(lstrip(s.substr(pos)));
     }
-    std::string::const_iterator substart = s.begin(), subend;
-    while (true) {
-        subend = std::search(substart, s.end(), delim.begin(), delim.end());
-        std::string temp(substart, subend);
-        if (keep_empty || !temp.empty())
-            result.push_back(temp);
-        if (subend == s.end())
-            break;
-
-        substart = subend + delim.size();
+    else {
+        size_t pos = 0;
+        while (pos < s.size() && result.size() < maxsplit) {
+            size_t epos = s.find(delim, pos);
+            if (epos != std::string::npos) {
+                result.push_back(s.substr(pos, epos - pos));
+                pos = epos + delim.size();
+            }
+            else {
+                result.push_back(s.substr(pos));
+                pos = epos;
+            }
+        }
+        if (pos < s.size())
+            result.push_back(s.substr(pos));
     }
-
     return result;
 }
+
 
 static void setLocale(void) {
     static bool first = true;
@@ -57,6 +79,7 @@ static void setLocale(void) {
         first = false;
     }
 }
+
 
 std::wstring s2ws(const std::string& s) {
     setLocale();
@@ -82,6 +105,7 @@ std::wstring s2ws(const std::string& s) {
 
     return std::wstring(buf.data(), wn);
 }
+
 
 std::string ws2s(const std::wstring &s) {
     setLocale();

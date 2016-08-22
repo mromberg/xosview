@@ -48,9 +48,8 @@ inline std::string repr(const X &x) {
 int stoi(const std::string &str, size_t *idx = 0, int base = 10);
 float stof(const std::string &str, size_t *idx = 0);
 
-
 extern std::vector<std::string> split(const std::string& s,
-  const std::string& delim, const bool keep_empty = true);
+  const std::string& delim="", size_t maxsplit=std::string::npos);
 
 extern std::string join(const std::vector<std::string> &v,
   const std::string &sep);
