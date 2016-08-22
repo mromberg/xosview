@@ -26,6 +26,7 @@ Xrm.o \
 rdb.o \
 defaultstring.o \
 label.o \
+scache.o \
 meter.o \
 fieldmeter.o \
 sensorfieldmeter.o \
