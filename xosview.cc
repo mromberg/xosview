@@ -11,6 +11,7 @@
 #include "strutil.h"
 #include "x11font.h"
 #include "xsc.h"
+#include "scache.h"
 #ifdef HAVE_XFT
 #include "xftfont.h"
 #endif
@@ -107,6 +108,7 @@ void XOSView::loop(void) {
         swapBB();
         g().flush();
         slumber();
+        LoopCounter::increment(); // invalidates cached stats.
     }
     logDebug << "leaving run()..." << std::endl;
 }
