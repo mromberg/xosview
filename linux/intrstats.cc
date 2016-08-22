@@ -66,3 +66,37 @@ std::vector<std::map<size_t, uint64_t> > IntrStats::read(void) {
 
     return rval;
 }
+
+
+std::vector<uint64_t> IntrStats::readCounts(size_t cpu) {
+
+    std::vector<uint64_t> rval;
+    const std::vector<std::map<size_t, uint64_t> > &idata = get();
+
+    if (cpu == 0) {  // acculumate all cpu counts.
+        size_t rvsize = 0;
+        for (size_t i = 0 ; i < idata.size() ; i++) {
+            if (!idata[i].empty())
+                rvsize = std::max(rvsize, idata[i].rbegin()->first);
+        }
+        rval.resize(rvsize + 1);
+        std::map<size_t, uint64_t>::const_iterator it;
+        for (size_t i = 0 ; i < idata.size() ; i++) {
+            std::map<size_t, uint64_t>::const_iterator it;
+            for (it = idata[i].begin() ; it != idata[i].end() ; ++it) {
+                rval[it->first] += it->second;
+            }
+        }
+    }
+    else {
+        const std::map<size_t, uint64_t> &imap = idata[cpu - 1];
+        if (!imap.empty())
+            rval.resize(imap.rbegin()->first + 1);
+        std::map<size_t, uint64_t>::const_iterator it;
+        for (it = imap.begin() ; it != imap.end() ; ++it) {
+            rval[it->first] = it->second;
+        }
+    }
+
+    return rval;
+}

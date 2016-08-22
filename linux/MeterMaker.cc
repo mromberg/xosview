@@ -140,7 +140,7 @@ void MeterMaker::intFactory(const ResDB &rdb) {
     logDebug << "int range: " << start << ", " << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
-        _meters.push_back(new IntMeter(i, cpuCount));
+        _meters.push_back(new IntMeter(i));
 }
 
 

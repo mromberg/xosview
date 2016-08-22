@@ -16,6 +16,10 @@ class IntrStats {
 public:
     const std::vector<std::map<size_t, uint64_t> > &get(void);
 
+    // ---- old API -----
+    std::vector<uint64_t> readCounts(size_t cpu);
+    // ---- old API -----
+
 private:
     std::vector<std::map<size_t, uint64_t> > read(void);
 };
