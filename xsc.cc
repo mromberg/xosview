@@ -222,10 +222,11 @@ bool IceClient::ready(int waitMsec) {
     else if (presult == 0) {
         // timeout.
     }
-    else {
-        // error (errno set).
+    // presult < 0 error occurred.
+    else if (errno == EINTR)  // interrupted system call.
+        return false;
+    else
         logFatal << "poll() failed: " << util::strerror() << std::endl;
-    }
 
     return false;
 }
