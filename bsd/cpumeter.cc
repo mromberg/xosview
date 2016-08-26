@@ -170,7 +170,7 @@ std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
 
 
 #if defined(XOSVIEW_NETBSD)
-void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
+std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
 
     //------- NetBSD docs ------
     // Returns an array of CPUSTATES uint64_ts.  This array contains the
@@ -183,19 +183,26 @@ void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
 
     static SysCtl cp_time_sc("kern.cp_time");
 
-    if (cpu) {
-        cp_time_sc.mib().resize(3);
-        cp_time_sc.mib()[2] = cpu - 1;  // cpu starts at 1, index stats at 0.
+    const size_t ncpus = countCPUs();
+    // index0 = aggregate, index1 = first cpu, ...
+    std::vector<std::vector<uint64_t> > rval(ncpus + 1,
+      std::vector<uint64_t>(CPUSTATES));
+
+    cp_time_sc.mib().resize(3);
+    for (size_t cpu = 0 ; cpu < ncpus ; cpu++) {
+        cp_time_sc.mib()[2] = cpu;
+        if (!cp_time_sc.get(rval[cpu + 1]))
+            logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
+                     << std::endl;
     }
-    else
-        cp_time_sc.mib().resize(2);
 
-    std::vector<uint64_t> times(CPUSTATES, 0);
-    if (!cp_time_sc.get(times))
-        logFatal << "sysctl(" << cp_time_sc.id() << ") failed." << std::endl;
+    // aggregate.
+    cp_time_sc.mib().resize(2);
+    if (!cp_time_sc.get(rval[0]))
+        logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
+                 << std::endl;
 
-    timeArray.resize(CPUSTATES);
-    std::copy(times.begin(), times.end(), timeArray.begin());
+    return rval;
 }
 #endif
 
