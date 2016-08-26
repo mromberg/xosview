@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006, 2015
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -31,6 +31,7 @@
 //                  operating systems under the control of the Linux kernel).
 
 #include "cpumeter.h"
+#include "scache.h"
 
 #include <fstream>
 #include <string>
@@ -41,10 +42,11 @@
 static const char * const STATFILENAME = "/proc/stat";
 
 
-CPUMeter::CPUMeter(unsigned int cpu)
+
+CPUMeter::CPUMeter(size_t cpu)
     : FieldMeterGraph( 10, util::toupper(CPUMeter::cpuStr(cpu)),
       "USR/NI/SYS/IO/I/SI/ST/GST/NGST/IDL"),
-      _cpu(cpu), _oldStats(numfields(), 0), _lineNum(findLine()) {
+      _cpu(cpu), _oldStats(numfields(), 0) {
 
     getStats(_oldStats);
 }
@@ -70,13 +72,8 @@ void CPUMeter::checkResources(const ResDB &rdb){
 }
 
 
-void CPUMeter::checkevent( void ){
-    getcputime();
-}
-
-
-void CPUMeter::getcputime( void ){
-    std::vector<unsigned long long> cstats(numfields(), 0);
+void CPUMeter::checkevent( void ) {
+    std::vector<uint64_t> cstats(numfields(), 0);
     getStats(cstats);
 
     total_ = 0;
@@ -112,30 +109,6 @@ void CPUMeter::getcputime( void ){
     setUsed(used, total_);
 }
 
-size_t CPUMeter::findLine(void) {
-    std::ifstream stats(STATFILENAME);
-
-    if ( !stats )
-        logFatal << "Can not open file : " << STATFILENAME << std::endl;
-
-    std::string cpuID(CPUMeter::cpuStr(_cpu));
-    // make the ws part of the id to tell cpu1 from cpu11
-    cpuID += " ";
-    size_t line = 0;
-    std::string buf;
-    while (!stats.eof()){
-        getline(stats, buf);
-        if (!stats.eof()){
-            if ((cpuID == buf.substr(0, cpuID.size()))) {
-                return line;
-            }
-        }
-        line++;
-    }
-    logFatal << "Failed to find " << cpuID
-             << " in " << STATFILENAME << std::endl;
-    return 0;
-}
 
 // Checks for the SMP kernel patch by forissier@isia.cma.fr.
 // http://www-isia.cma.fr/~forissie/smp_kernel_patch/
@@ -167,32 +140,56 @@ std::string CPUMeter::cpuStr(size_t num){
     return std::string("cpu") + util::repr(num-1);
 }
 
-void CPUMeter::getStats(std::vector<unsigned long long> &v) const {
+
+void CPUMeter::getStats(std::vector<uint64_t> &v) const {
+
+    static StatCache<std::vector<std::vector<uint64_t> > > sc;
+
+    if (!sc.valid())
+        sc.set(readStats());
+
+    v = sc.get()[_cpu];
+}
+
+
+std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
+    // index0 = combined cpus, index1 = first cpu, ...
+    std::vector<std::vector<uint64_t> > rval(countCPUs() + 1,
+      std::vector<uint64_t>(numfields()));
+
     std::ifstream stats( STATFILENAME );
     if ( !stats )
         logFatal << "Can not open file : " << STATFILENAME << std::endl;
 
-    // read until we are at the right line.
-    for (unsigned int i = 0 ; i < _lineNum ; i++) {
+    while (!stats.eof()) {
+        std::string idstr;
+        stats >> idstr;
         if (stats.eof())
             break;
-        stats.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    }
-
-    // Parse the line for this cpu
-    std::string tmp; // The cpuID
-    stats >> tmp;
-
-    for (size_t i = 0 ; i < v.size() ; i++) {
-        stats >> v[i];
-        if (stats.fail()) {
-            // kernels up to 2.5.41 (not including) have usr/ni/sys/idle
-            // Die if we don't have all of these
-            if (i < 4)
-                logFatal << "error reading cpu stats from: " << STATFILENAME
-                         << std::endl;
-            // Stats added in 2.5.41 (and later).  Just use zero fields
-            break;
+        if (stats.fail())
+            logFatal << "failed to parse: " << STATFILENAME << std::endl;
+        if (idstr.substr(0, 3) == "cpu") {
+            size_t cpui = 0;
+            if (idstr.size() > 3) {
+                if (!util::fstr(idstr.substr(3), cpui))
+                    logFatal << "failed to parse: " << STATFILENAME
+                             << std::endl;
+                cpui += 1;
+            }
+            size_t index = 0;
+            while (index < numfields() && stats.peek() != '\n') {
+                stats >> rval[cpui][index];
+                if (stats.fail())
+                    logFatal << "failed to parse: " << STATFILENAME
+                             << std::endl;
+                index++;
+            }
+            // skip any new additional stats on this line.
+            stats.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         }
+        else
+            break; // assumes cpu entries are at the top.
     }
+
+    return rval;
 }

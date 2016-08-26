@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2004, 2006, 2015
+//  Copyright (c) 1994, 1995, 2004, 2006, 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -13,7 +13,7 @@
 
 class CPUMeter : public FieldMeterGraph {
 public:
-    CPUMeter(unsigned int cpu=0);
+    CPUMeter(size_t cpu=0);
     ~CPUMeter(void);
 
     std::string resName(void) const { return "cpu"; }
@@ -25,13 +25,12 @@ public:
     static std::string cpuStr(size_t num);
 
 private:
-    unsigned int _cpu;
-    std::vector<unsigned long long> _oldStats;
-    size_t _lineNum;
+    size_t _cpu;
+    std::vector<uint64_t> _oldStats;
 
-    void getcputime(void);
-    size_t findLine(void);
-    void getStats(std::vector<unsigned long long> &stats) const;
+    void getStats(std::vector<uint64_t> &stats) const;
+
+    std::vector<std::vector<uint64_t> > readStats(void) const;
 };
 
 
