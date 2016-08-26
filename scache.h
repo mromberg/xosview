@@ -10,7 +10,7 @@
 #include <cstdint>
 
 
-// Fancy wrapper around a global var to invalidate the cached stat data.
+// "Fancy" wrapper around a global var to invalidate the cached stat data.
 class LoopCounter {
 public:
     static void increment(void) { _counter++; }
@@ -35,7 +35,6 @@ public:
     }
 
     const X &get(void) { return _cache; }
-    X &val(void) { return _cache; }
 
     bool valid(void) { return count() == _validCount; }
     void validate(void) { _validCount = count(); }
