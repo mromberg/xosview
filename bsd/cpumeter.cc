@@ -208,7 +208,7 @@ std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
 
 
 #if defined(XOSVIEW_OPENBSD)
-void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
+std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
 
     //---- OpenBSD docs ----
     // KERN_CPTIME  long[CPUSTATES]
@@ -226,25 +226,27 @@ void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray, size_t cpu) {
     static SysCtl cp_time_sc(mib_cpt, 2);
     static SysCtl cp_time2_sc(mib_cpt2, 3);
 
-    timeArray.resize(CPUSTATES);
+    const size_t ncpus = countCPUs();
+    // index0 = aggregate, index1 = first cpu, ...
+    std::vector<std::vector<uint64_t> > rval(ncpus + 1,
+      std::vector<uint64_t>(CPUSTATES));
 
-    if (cpu) {
-        cp_time2_sc.mib()[2] = cpu - 1; // cpu stats at 1, index stats at 0.
+    for (size_t cpu = 0 ; cpu < ncpus ; cpu++) {
+        cp_time2_sc.mib()[2] = cpu;
 
-        std::vector<u_int64_t> times(CPUSTATES, 0);
-        if (!cp_time2_sc.get(times))
+        if (!cp_time2_sc.get(rval[cpu + 1]))
             logFatal << "sysctl(" << cp_time2_sc.id() << ") failed."
                      << std::endl;
-
-        std::copy(times.begin(), times.end(), timeArray.begin());
     }
-    else { // aggregate.
-        std::vector<long> times(CPUSTATES, 0);
-        if (!cp_time_sc.get(times))
-            logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
-                     << std::endl;
 
-        std::copy(times.begin(), times.end(), timeArray.begin());
-    }
+    // aggregate.
+    std::vector<long> times(CPUSTATES, 0);
+    if (!cp_time_sc.get(times))
+        logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
+                 << std::endl;
+
+    std::copy(times.begin(), times.end(), rval[0].begin());
+
+    return rval;
 }
 #endif
