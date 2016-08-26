@@ -78,15 +78,21 @@ void XOSView::loop(void) {
     bool firstPass = true;  // checkevent and draw all meters on first pass.
 
     while( !done() ){
-        if (_xsc->check())
-            break;
+        // reset draw related vars.
         drawv.clear();
         _doFullDraw = false;
-        checkevent();
+
+        // Check ICE/SM message once every 10 times.
+        if (!(LoopCounter::count() % 10))
+            done(_xsc->check());
+
+        // If the session manager did not tell us to die check X.
+        if (!done())
+            checkevent();
 
         if (done()) {
             logDebug << "checkevent() set done" << std::endl;
-            break; // XEvents can set this
+            break; // XEvents or ICE/SM can set this.
         }
 
         if (_isvisible){
