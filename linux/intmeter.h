@@ -8,7 +8,6 @@
 #define INTMETER_H
 
 #include "bitmeter.h"
-#include "intrstats.h"
 
 #include <vector>
 #include <map>
@@ -27,11 +26,12 @@ public:
     void checkResources(const ResDB &rdb);
 
 private:
-    size_t _cpu;                 // which cpu are we displaying
-    std::vector<uint64_t> _last; // counts from last event.
-    IntrStats _istats;
+    size_t _cpu;                      // which cpu are we displaying.
+    std::map<size_t, uint64_t> _last; // counts from last event.
 
     void initUI(void);
+    const std::map<size_t, uint64_t> &getStats(size_t cpu) const;
+    std::vector<std::map<size_t, uint64_t> > readStats(void) const;
 };
 
 

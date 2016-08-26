@@ -18,7 +18,6 @@ memmeter.o \
 swapmeter.o \
 wlinkmeter.o \
 nfsmeter.o \
-intrstats.o \
 intmeter.o \
 btrymeter.o \
 raidmeter.o \
