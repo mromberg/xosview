@@ -7,7 +7,7 @@
 #ifndef scache_h
 #define scache_h
 
-#include <cstdint>
+#include <stdint.h>
 
 
 // "Fancy" wrapper around a global var to invalidate the cached stat data.

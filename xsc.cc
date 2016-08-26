@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <cerrno>
 
 
 #ifdef HAVE_LIB_SM
