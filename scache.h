@@ -14,8 +14,6 @@
 class LoopCounter {
 public:
     static void increment(void) { _counter++; }
-
-protected:
     static uint64_t count(void) { return _counter; }
 
 private:
@@ -33,12 +31,14 @@ public:
 
     void set(const X &x) {
         _cache = x;
-        _validCount = count();
+        validate();
     }
 
     const X &get(void) { return _cache; }
+    X &val(void) { return _cache; }
 
     bool valid(void) { return count() == _validCount; }
+    void validate(void) { _validCount = count(); }
 
 private:
     X _cache;
