@@ -102,9 +102,11 @@ void IntMeter::updateirqcount( bool init ) {
     if (_realintnum.upper_bound(15) == _realintnum.end()) // only 16 ints
         os << "-15";
     else {
-        int prev = 15, prev2 = 14;
-        for (std::map<int,int>::const_iterator it = _realintnum.upper_bound(15),
-                 end = _realintnum.end(); it != end; ++it) {
+        size_t prev = 15, prev2 = 14;
+        std::map<size_t, size_t>::const_iterator it, end;
+        for (it = _realintnum.upper_bound(15), end = _realintnum.end() ;
+             it != end ; ++it) {
+
             if ( &*it == &*_realintnum.rbegin() ) { // last element
                 if (it->first == prev + 1)
                     os << "-" ;

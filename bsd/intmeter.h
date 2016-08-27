@@ -25,7 +25,7 @@ private:
     size_t _irqcount;
     std::vector<uint64_t> _irqs, _lastirqs;
     std::vector<bool> _inbrs;
-    std::map<int,int> _realintnum;
+    std::map<size_t, size_t> _realintnum;
     IntrStats _istats;
 
     void getirqs( void );
