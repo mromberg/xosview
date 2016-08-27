@@ -21,14 +21,12 @@ public:
 
     static size_t countCPUs(void);
 
-protected:
-    void getcputime( void );
-
 private:
     std::vector<std::vector<uint64_t> > _cputime;
-    unsigned int _cpuindex, _nbr;
+    size_t _cpuindex, _nbr;
 
-    static void getCPUTimes(std::vector<uint64_t> &timesArray, size_t cpu = 0);
+    const std::vector<uint64_t> &getStats(void) const;
+    std::vector<std::vector<uint64_t> > readStats(void) const;
 };
 
 

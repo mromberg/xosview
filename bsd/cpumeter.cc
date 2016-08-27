@@ -15,6 +15,7 @@
 //
 #include "cpumeter.h"
 #include "sctl.h"
+#include "scache.h"
 
 #if defined(XOSVIEW_DFBSD)
 #include <kinfo.h>
@@ -52,15 +53,8 @@ void CPUMeter::checkResources(const ResDB &rdb) {
 
 
 void CPUMeter::checkevent( void ) {
-    getcputime();
-}
-
-
-void CPUMeter::getcputime( void ) {
-    std::vector<uint64_t> tempCPU;
+    const std::vector<uint64_t> &tempCPU = getStats();
     total_ = 0;
-
-    getCPUTimes(tempCPU, _nbr);
 
     int oldindex = (_cpuindex + 1) % 2;
     for (size_t i = 0 ; i < _cputime[_cpuindex].size() ; i++) {
@@ -90,37 +84,52 @@ size_t CPUMeter::countCPUs(void) {
 }
 
 
+const std::vector<uint64_t> &CPUMeter::getStats(void) const {
+
+    static StatCache<std::vector<std::vector<uint64_t> > > sc;
+
+    if (!sc.valid())
+        sc.set(readStats());
+
+    return sc.get()[_nbr];
+}
+
+
 #if defined(XOSVIEW_DFBSD)
-void CPUMeter::getCPUTimes(std::vector<uint64_t> &timeArray,
-  size_t cpu) {
+std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
 
     static SysCtl cputime_sc("kern.cputime");  // per-cpu.
     static SysCtl cp_time_sc("kern.cp_time");  // aggregate.
 
-    timeArray.resize(CPUSTATES);
+    const size_t ncpus = countCPUs();
+    // index0 = aggregate, index1 = first cpu, ...
+    std::vector<std::vector<uint64_t> > rval(ncpus + 1,
+      std::vector<uint64_t>(CPUSTATES));
 
-    if (cpu) {
-        std::vector<struct kinfo_cputime> times(countCPUs(),
-          kinfo_cputime());
-        if (!cputime_sc.get(times))
-            logFatal << "sysctl(" << cputime_sc.id() << ") failed."
-                     << std::endl;
 
-        cpu -= 1;  // cpu starts at 1.  Stats start at 0.
-        timeArray[0] = times[cpu].cp_user;
-        timeArray[1] = times[cpu].cp_nice;
-        timeArray[2] = times[cpu].cp_sys;
-        timeArray[3] = times[cpu].cp_intr;
-        timeArray[4] = times[cpu].cp_idle;
+    std::vector<struct kinfo_cputime> times(countCPUs(),
+      kinfo_cputime());
+    if (!cputime_sc.get(times))
+        logFatal << "sysctl(" << cputime_sc.id() << ") failed."
+                 << std::endl;
+
+    for (size_t cpu = 0 ; cpu < ncpus ; cpu++) {
+        rval[cpu + 1][0] = times[cpu].cp_user;
+        rval[cpu + 1][1] = times[cpu].cp_nice;
+        rval[cpu + 1][2] = times[cpu].cp_sys;
+        rval[cpu + 1][3] = times[cpu].cp_intr;
+        rval[cpu + 1][4] = times[cpu].cp_idle;
     }
-    else { // aggregate.
-        std::vector<long> times(CPUSTATES);
-        if (!cp_time_sc.get(times))
-            logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
-                     << std::endl;
 
-        std::copy(times.begin(), times.end(), timeArray.begin());
-    }
+    // aggregate.
+    std::vector<long> atimes(CPUSTATES);
+    if (!cp_time_sc.get(atimes))
+        logFatal << "sysctl(" << cp_time_sc.id() << ") failed."
+                 << std::endl;
+
+    std::copy(atimes.begin(), atimes.end(), rval[0].begin());
+
+    return rval;
 }
 #endif
 
