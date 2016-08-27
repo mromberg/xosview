@@ -8,6 +8,7 @@
 #include "log.h"
 #include "sctl.h"
 #include "strutil.h"
+#include "scache.h"
 
 #if defined(XOSVIEW_NETBSD)
 #include <sys/evcnt.h>
@@ -35,7 +36,7 @@ void IntrStats::stats(std::vector<uint64_t> &intrCount,
     intrCount.resize(intVectorLen);
     intrNbrs.resize(intVectorLen);
 
-    std::map<size_t, uint64_t> cmap = counts();
+    const std::map<size_t, uint64_t> &cmap = counts();
 
     for (size_t i = 0 ; i < intrCount.size() ; i++) {
         std::map<size_t, uint64_t>::const_iterator it = cmap.find(i);
@@ -48,6 +49,16 @@ void IntrStats::stats(std::vector<uint64_t> &intrCount,
             intrNbrs[i] = 0;
         }
     }
+}
+
+
+const std::map<size_t, uint64_t> &IntrStats::counts(void) const {
+    static StatCache<std::map<size_t, uint64_t> > sc;
+
+    if (!sc.valid())
+        sc.set(readCounts());
+
+    return sc.get();
 }
 
 
@@ -83,7 +94,7 @@ void IntrStats::scan(void) {
 
 
 #if defined(XOSVIEW_OPENBSD)
-std::map<size_t, uint64_t> IntrStats::counts(void) const {
+std::map<size_t, uint64_t> IntrStats::readCounts(void) const {
     const int mib_intc[] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_CNT, 0 };
     static SysCtl intrcnt_sc(mib_intc, 4);
 
@@ -151,7 +162,7 @@ void IntrStats::scan(void) {
 
 
 #if defined(XOSVIEW_NETBSD)
-std::map<size_t, uint64_t> IntrStats::counts(void) const {
+std::map<size_t, uint64_t> IntrStats::readCounts(void) const {
     const int Mib[] = { CTL_KERN, KERN_EVCNT, EVCNT_TYPE_INTR,
                         KERN_EVCNT_COUNT_ANY };
     static SysCtl evcnt_sc(Mib, sizeof(Mib) / sizeof(int));
@@ -220,7 +231,7 @@ void IntrStats::scan(void) {
 
 
 #if defined(XOSVIEW_DFBSD) || defined(XOSVIEW_FREEBSD)
-std::map<size_t, uint64_t> IntrStats::counts(void) const {
+std::map<size_t, uint64_t> IntrStats::readCounts(void) const {
 
     static SysCtl intrcnt_sc("hw.intrcnt");
 

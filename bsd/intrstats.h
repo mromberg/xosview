@@ -30,13 +30,14 @@ public:
 
     void scan(void); // find and cache "active" irqs.  somewhat expensive.
 
-    std::map<size_t, uint64_t> counts(void) const;
+    const std::map<size_t, uint64_t> &counts(void) const;
 
     std::ostream &printOn(std::ostream &os) const;
 
 private:
     std::map<size_t, size_t> _irqMap; // key=irq, val=index
 
+    std::map<size_t, uint64_t> readCounts(void) const;
     template <class X>
     std::map<size_t, uint64_t> getCounts(const std::vector<X> &v) const;
 };
