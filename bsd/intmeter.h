@@ -24,7 +24,7 @@ public:
 private:
     size_t _irqcount;
     std::vector<uint64_t> _irqs, _lastirqs;
-    std::vector<unsigned int> _inbrs;
+    std::vector<bool> _inbrs;
     std::map<int,int> _realintnum;
     IntrStats _istats;
 

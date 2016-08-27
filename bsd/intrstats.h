@@ -18,18 +18,8 @@ class IntrStats {
 public:
     IntrStats(void);
 
-    // ----- old API -------
-    size_t maxirq(void) const; // highest irq number.
-    void stats(std::vector<uint64_t> &intrCount,
-      std::vector<unsigned int> &intrNbrs) const;
-    void counts(std::vector<uint64_t> &intrCount) const {
-        std::vector<unsigned int> notUsed;
-        stats(intrCount, notUsed);
-    }
-    // ----- old API -------
-
     void scan(void); // find and cache "active" irqs.  somewhat expensive.
-
+    size_t maxirq(void) const; // highest irq number.
     const std::map<size_t, uint64_t> &counts(void) const;
 
     std::ostream &printOn(std::ostream &os) const;
@@ -38,6 +28,7 @@ private:
     std::map<size_t, size_t> _irqMap; // key=irq, val=index
 
     std::map<size_t, uint64_t> readCounts(void) const;
+
     template <class X>
     std::map<size_t, uint64_t> getCounts(const std::vector<X> &v) const;
 };

@@ -29,29 +29,6 @@ size_t IntrStats::maxirq(void) const {
 }
 
 
-void IntrStats::stats(std::vector<uint64_t> &intrCount,
-  std::vector<unsigned int> &intrNbrs) const {
-
-    size_t intVectorLen = maxirq() + 1;
-    intrCount.resize(intVectorLen);
-    intrNbrs.resize(intVectorLen);
-
-    const std::map<size_t, uint64_t> &cmap = counts();
-
-    for (size_t i = 0 ; i < intrCount.size() ; i++) {
-        std::map<size_t, uint64_t>::const_iterator it = cmap.find(i);
-        if (it != cmap.end()) {
-            intrCount[i] = it->second;
-            intrNbrs[i] = 1;
-        }
-        else {
-            intrCount[i] = 0;
-            intrNbrs[i] = 0;
-        }
-    }
-}
-
-
 const std::map<size_t, uint64_t> &IntrStats::counts(void) const {
     static StatCache<std::map<size_t, uint64_t> > sc;
 

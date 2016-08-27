@@ -17,7 +17,7 @@ IntMeter::IntMeter(void)
     _irqcount = _istats.maxirq();
     _irqs.resize(_irqcount + 1, 0);
     _lastirqs.resize(_irqcount + 1, 0);
-    _inbrs.resize(_irqcount + 1, 0);
+    _inbrs.resize(_irqcount + 1, false);
 
     updateirqcount(true);
 
@@ -34,7 +34,7 @@ void IntMeter::checkevent( void ) {
     getirqs();
 
     for (size_t i = 0 ; i <= _irqcount ; i++) {
-        if (_inbrs[i] != 0) {
+        if (_inbrs[i]) {
             // new interrupt number
             if (_realintnum.find(i) == _realintnum.end()) {
                 updateirqcount();
@@ -45,7 +45,7 @@ void IntMeter::checkevent( void ) {
         }
     }
     for (size_t i = 0 ; i < _irqcount + 1 ; i++) {
-        _inbrs[i] = 0;
+        _inbrs[i] = false;
         _irqs[i] = 0;
     }
 }
@@ -59,7 +59,24 @@ void IntMeter::checkResources(const ResDB &rdb) {
 
 
 void IntMeter::getirqs( void ) {
-    _istats.stats(_irqs, _inbrs);
+
+    const size_t intVectorLen = _istats.maxirq() + 1;
+    _irqs.resize(intVectorLen);
+    _inbrs.resize(intVectorLen, false);
+
+    const std::map<size_t, uint64_t> &cmap = _istats.counts();
+
+    for (size_t i = 0 ; i < _irqs.size() ; i++) {
+        std::map<size_t, uint64_t>::const_iterator it = cmap.find(i);
+        if (it != cmap.end()) {
+            _irqs[i] = it->second;
+            _inbrs[i] = true;
+        }
+        else {
+            _irqs[i] = 0;
+            _inbrs[i] = false;
+        }
+    }
 }
 
 
@@ -72,9 +89,9 @@ void IntMeter::updateirqcount( bool init ) {
             _realintnum[i] = i;
     }
     for (size_t i = 16; i <= _irqcount; i++) {
-        if (_inbrs[i] != 0) {
+        if (_inbrs[i]) {
             _realintnum[i] = count++;
-            _inbrs[i] = 0;
+            _inbrs[i] = false;
         }
     }
     setNumBits(count);
