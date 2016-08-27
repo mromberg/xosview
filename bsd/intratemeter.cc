@@ -11,15 +11,9 @@
 #include "intratemeter.h"
 
 
-IrqRateMeter::IrqRateMeter( void )
-    : ComIrqRateMeter(), _irqcount(0) {
-
+IrqRateMeter::IrqRateMeter( void ) : ComIrqRateMeter() {
     _istats.scan();
-    _irqcount = _istats.maxirq();
-    _irqs.resize(_irqcount + 1, 0);
-    _lastirqs.resize(_irqcount + 1, 0);
-
-    _istats.counts(_lastirqs);
+    _lastirqs = _istats.counts();
     IntervalTimerStart();
 }
 
@@ -27,15 +21,14 @@ IrqRateMeter::IrqRateMeter( void )
 float IrqRateMeter::getIrqRate(void) {
     IntervalTimerStop();
     double t = IntervalTimeInSecs();
-    _istats.counts(_irqs);
+    const std::map<size_t, uint64_t> &cmap = _istats.counts();
     IntervalTimerStart();
 
-    long int delta = 0;
-    for (size_t i = 0 ; i <= _irqcount ; i++) {
-        delta += _irqs[i] - _lastirqs[i];
-        _lastirqs[i] = _irqs[i];
-        _irqs[i] = 0;
-    }
+    uint64_t delta = 0;
+    std::map<size_t, uint64_t>::const_iterator it;
+    for (it = cmap.begin() ; it != cmap.end() ; ++it)
+        delta += it->second - util::get(_lastirqs, it->first);
+    _lastirqs = cmap;
 
-    return (float)delta / t;
+    return delta / t;
 }

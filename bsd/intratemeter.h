@@ -25,8 +25,7 @@ protected:
     virtual float getIrqRate(void);
 
 private:
-    size_t _irqcount;
-    std::vector<uint64_t> _irqs, _lastirqs;
+    std::map<size_t, uint64_t> _lastirqs;
     IntrStats _istats;
 };
 
