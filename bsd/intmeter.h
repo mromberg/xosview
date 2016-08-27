@@ -22,14 +22,11 @@ public:
     void checkResources(const ResDB &rdb);
 
 private:
-    size_t _irqcount;
-    std::vector<uint64_t> _irqs, _lastirqs;
-    std::vector<bool> _inbrs;
-    std::map<size_t, size_t> _realintnum;
+    std::map<size_t, uint64_t> _lastirqs;  // last sample.
+    std::map<size_t, size_t> _irq2bit;     // irq -> bit index.
     IntrStats _istats;
 
-    void getirqs( void );
-    void updateirqcount( bool init = false );
+    void updateirqcount(bool init=false);
 };
 
 

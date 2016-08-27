@@ -10,16 +10,10 @@
 
 
 
-IntMeter::IntMeter(void)
-    : BitMeter( "INTS", "IRQs" ), _irqcount(0) {
-
-    _istats.scan();
-    _irqcount = _istats.maxirq();
-    _irqs.resize(_irqcount + 1, 0);
-    _lastirqs.resize(_irqcount + 1, 0);
-    _inbrs.resize(_irqcount + 1, false);
+IntMeter::IntMeter(void) : BitMeter( "INTS", "IRQs" ) {
 
     updateirqcount(true);
+    _lastirqs = _istats.counts();
 
     logDebug << "_istats: " << _istats << "\n"
              << "maxirq: " << _istats.maxirq() << std::endl;
@@ -31,23 +25,26 @@ IntMeter::~IntMeter( void ) {
 
 
 void IntMeter::checkevent( void ) {
-    getirqs();
 
-    for (size_t i = 0 ; i <= _irqcount ; i++) {
-        if (_inbrs[i]) {
-            // new interrupt number
-            if (_realintnum.find(i) == _realintnum.end()) {
-                updateirqcount();
-                return;
-            }
-            _bits[_realintnum[i]] = ((_irqs[i] - _lastirqs[i]) != 0);
-            _lastirqs[i] = _irqs[i];
+    const std::map<size_t, uint64_t> &cmap = _istats.counts();
+
+    std::map<size_t, uint64_t>::const_iterator it;
+    for (it = cmap.begin() ; it != cmap.end() ; ++it) {
+        // is the bit on or off?
+        bool on = it->second - util::get(_lastirqs, it->first);
+
+        // Find the index into _bits.  If not found update and bailout.
+        std::map<size_t, size_t>::const_iterator bit = _irq2bit.find(it->first);
+
+        if (bit != _irq2bit.end())
+            _bits[bit->second] = on;
+        else {
+            updateirqcount();
+            return;
         }
     }
-    for (size_t i = 0 ; i < _irqcount + 1 ; i++) {
-        _inbrs[i] = false;
-        _irqs[i] = 0;
-    }
+
+    _lastirqs = cmap;
 }
 
 
@@ -58,56 +55,35 @@ void IntMeter::checkResources(const ResDB &rdb) {
 }
 
 
-void IntMeter::getirqs( void ) {
-
-    const size_t intVectorLen = _istats.maxirq() + 1;
-    _irqs.resize(intVectorLen);
-    _inbrs.resize(intVectorLen, false);
-
+void IntMeter::updateirqcount( bool init ) {
+    _istats.scan();
     const std::map<size_t, uint64_t> &cmap = _istats.counts();
 
-    for (size_t i = 0 ; i < _irqs.size() ; i++) {
-        std::map<size_t, uint64_t>::const_iterator it = cmap.find(i);
-        if (it != cmap.end()) {
-            _irqs[i] = it->second;
-            _inbrs[i] = true;
-        }
-        else {
-            _irqs[i] = 0;
-            _inbrs[i] = false;
-        }
-    }
-}
-
-
-void IntMeter::updateirqcount( bool init ) {
-    int count = 16;
+    size_t count = 16;
 
     if (init) {
-        getirqs();
-        for (int i = 0; i < 16; i++)
-            _realintnum[i] = i;
+        for (size_t i = 0; i < 16; i++)
+            _irq2bit[i] = i;
     }
-    for (size_t i = 16; i <= _irqcount; i++) {
-        if (_inbrs[i]) {
-            _realintnum[i] = count++;
-            _inbrs[i] = false;
-        }
-    }
+    std::map<size_t, uint64_t>::const_iterator it;
+    for (it = cmap.begin() ; it != cmap.end() ; ++it)
+        if (it->first > 15)
+            _irq2bit[it->first] = count++;
+
     setNumBits(count);
 
     // Build the legend.
     std::ostringstream os;
     os << "0";
-    if (_realintnum.upper_bound(15) == _realintnum.end()) // only 16 ints
+    if (_irq2bit.upper_bound(15) == _irq2bit.end()) // only 16 ints
         os << "-15";
     else {
         size_t prev = 15, prev2 = 14;
         std::map<size_t, size_t>::const_iterator it, end;
-        for (it = _realintnum.upper_bound(15), end = _realintnum.end() ;
+        for (it = _irq2bit.upper_bound(15), end = _irq2bit.end() ;
              it != end ; ++it) {
 
-            if ( &*it == &*_realintnum.rbegin() ) { // last element
+            if ( &*it == &*_irq2bit.rbegin() ) { // last element
                 if (it->first == prev + 1)
                     os << "-" ;
                 else {
@@ -127,7 +103,6 @@ void IntMeter::updateirqcount( bool init ) {
             prev2 = prev;
             prev = it->first;
         }
-        os << std::ends;
     }
-    legend(os.str().c_str());
+    legend(os.str());
 }
