@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -9,6 +9,7 @@
 #include "log.h"
 #include "x11pixmap.h"
 #include "strutil.h"
+#include "fsutil.h"
 
 #include <sstream>
 #include <algorithm>
@@ -248,16 +249,15 @@ void XWin::setHints(XSizeHints *szHints){
     // First make a "fake" argument list
     std::vector<std::string> clst = util::split(resdb().getResource(
           "command"), " ");
-    char **fargv = new char*[clst.size()+1];
-    for (size_t i = 0 ; i < clst.size() ; i++)
-        fargv[i] = const_cast<char *>(clst[i].c_str()); // we'll be careful...
-    fargv[clst.size()] = 0; // just in cat argc is ignored
+    std::vector<char *> fargv(clst.size() + 1, 0);
+    for (size_t i = 0 ; i < clst.size() ; i++) {
+        if (i == 0)
+            clst[i] = util::fs::normpath(util::fs::abspath(clst[i]));
+        fargv[i] = const_cast<char *>(clst[i].c_str());
+    }
 
-    XSetWMProperties(display_, window_, &titlep, &iconnamep, fargv,
+    XSetWMProperties(display_, window_, &titlep, &iconnamep, fargv.data(),
       clst.size(), szHints, wmhints, classhints);
-
-    delete[] fargv; // the char* elements here just point into clst
-    fargv = 0;
 
     XFree( titlep.value );
     XFree( iconnamep.value );
