@@ -60,6 +60,13 @@ void XOSView::run(int argc, const char * const *argv) {
     _xsc = new XSessionClient(vargv);
     if (_xsc->init())
         logDebug << "session ID: " << _xsc->sessionID() << std::endl;
+
+    std::vector<std::string>::const_iterator it = std::find(vargv.begin(),
+      vargv.end(), "--smid");
+    if (it != vargv.end())
+        vargv.erase(it, it + 2);
+    logDebug << "cmdline2 args: " << vargv << std::endl;
+
     loadConfiguration(vargv);
     checkResources();      // initialize from our resources
     setEvents();           //  set up the X events
