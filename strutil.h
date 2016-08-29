@@ -48,6 +48,13 @@ inline std::string repr(const X &x) {
 int stoi(const std::string &str, size_t *idx = 0, int base = 10);
 float stof(const std::string &str, size_t *idx = 0);
 
+inline std::vector<std::string> vargv(int argc, const char * const *argv) {
+    std::vector<std::string> rval;
+    for (int i = 0 ; i < argc ; i++)
+        rval.push_back(argv[i]);
+    return rval;
+}
+
 extern std::vector<std::string> split(const std::string& s,
   const std::string& delim="", size_t maxsplit=std::string::npos);
 
