@@ -100,6 +100,7 @@ class XSVar {
 public:
     XSVar(const std::string &name, const std::vector<std::string> &values);
     XSVar(const std::string &name, const std::string &value);
+    XSVar(const std::string &name, unsigned char value);
 
     void addVal(const std::string &v) { _values.push_back(v); }
     std::vector<std::string> values(void) { return _values; }
@@ -110,6 +111,7 @@ private:
     std::string _name;
     std::string _type;
     std::vector<std::string> _values;
+    unsigned char _nval;
     SmProp _prop;
     std::vector<SmPropValue> _pvals;
 };
@@ -127,6 +129,7 @@ XSessionClient::XSessionClient(int argc, char * const *argv,
     (void)argv;
     (void)sessionArg;
 #else
+    logDebug << "cmdline: " << util::vargv(argc, argv) << std::endl;
     _imp = new XSCImp(argc, argv, sessionArg);
 #endif
 }
@@ -279,12 +282,17 @@ void IceClient::addConnCB(IceConn ice_conn, IcePointer client_data,
 // XSVar
 //-------------------------------------------------------------------
 XSVar::XSVar(const std::string &name, const std::vector<std::string> &values)
-    : _name(name), _type(SmLISTofARRAY8), _values(values) {
+    : _name(name), _type(SmLISTofARRAY8), _values(values), _nval(0) {
 }
 
 
 XSVar::XSVar(const std::string &name, const std::string &value)
-    : _name(name), _type(SmARRAY8), _values(1, value) {
+    : _name(name), _type(SmARRAY8), _values(1, value), _nval(0) {
+}
+
+
+XSVar::XSVar(const std::string &name, unsigned char value)
+    : _name(name), _type(SmCARD8), _nval(value) {
 }
 
 
@@ -296,6 +304,12 @@ SmProp *XSVar::prop(void) {
         SmPropValue pv;
         pv.length = _values[i].size();
         pv.value = (SmPointer)_values[i].c_str();
+        _pvals.push_back(pv);
+    }
+    if (_type == SmCARD8) {
+        SmPropValue pv;
+        pv.length = sizeof(_nval);
+        pv.value = &_nval;
         _pvals.push_back(pv);
     }
     _prop.num_vals = _pvals.size();
@@ -422,8 +436,15 @@ void XSCImp::propReplyCB(SmcConn smc_conn, SmPointer client_data,
         std::ostringstream os;
         for (int j = 0 ; j < p->num_vals ; j++) {
             SmPropValue *v = &(p->vals[j]);
-            std::string sv((char *)v->value, v->length);
-            os << sv << ((j != p->num_vals - 1) ? ", " : "");
+            if (std::string(p->type) == SmCARD8) {
+                unsigned int iv = *reinterpret_cast<unsigned char *>(v->value);
+                os << iv;
+            }
+            else {
+                std::string sv((char *)v->value, v->length);
+                os << sv;
+            }
+            os << ((j != p->num_vals - 1) ? ", " : "");
         }
 
         logDebug << p->name
@@ -461,6 +482,8 @@ void XSCImp::saveCB(SmcConn smc_conn, void *client_data,
         util::fs::normpath(util::fs::abspath(xsc->_argv[0]))));
     // Optional.
     xsvars.push_back(XSVar(SmCurrentDirectory, util::fs::cwd()));
+    xsvars.push_back(XSVar(SmRestartStyleHint, SmRestartIfRunning));
+    xsvars.push_back(XSVar(SmProcessID, util::repr(getpid())));
 
     std::vector<SmProp *> propsp(xsvars.size(), 0);
     for (size_t i = 0 ; i < xsvars.size() ; i++)
