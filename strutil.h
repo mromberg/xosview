@@ -50,6 +50,7 @@ float stof(const std::string &str, size_t *idx = 0);
 
 inline std::vector<std::string> vargv(int argc, const char * const *argv) {
     std::vector<std::string> rval;
+    rval.reserve(argc);
     for (int i = 0 ; i < argc ; i++)
         rval.push_back(argv[i]);
     return rval;

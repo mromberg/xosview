@@ -50,12 +50,17 @@ XOSView::~XOSView( void ){
 }
 
 
-void XOSView::run(int argc, char **argv) {
+void XOSView::run(int argc, const char * const *argv) {
 
-    _xsc = new XSessionClient(argc, argv);
+    // Convert argc and argv to STL containers.  No use of argc/argv
+    // beyond this point.
+    std::vector<std::string> vargv = util::vargv(argc, argv);
+    logDebug << "cmdline args: " << vargv << std::endl;
+
+    _xsc = new XSessionClient(vargv);
     if (_xsc->init())
         logDebug << "session ID: " << _xsc->sessionID() << std::endl;
-    loadConfiguration(argc, argv);
+    loadConfiguration(vargv);
     checkResources();      // initialize from our resources
     setEvents();           //  set up the X events
     createMeters();        // add in the meters
@@ -254,15 +259,12 @@ void XOSView::slumber(void) const {
 // ** Configure
 //-----------------------------------------------------------------
 
-void XOSView::loadConfiguration(int argc, char **argv) {
+void XOSView::loadConfiguration(const std::vector<std::string> &argv) {
     //...............................................
     // Command line options
     //...............................................
 
-    util::CLOpts clopts(argc, argv);
-    // No one touches (or even looks at) argc or argv
-    // beyond this point without an EXCELLENT reason.
-    //!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*!*
+    util::CLOpts clopts(argv);
     setCommandLineArgs(clopts);
     clopts.parse(); // will exit() if fails.
 
@@ -327,7 +329,7 @@ void XOSView::loadConfiguration(int argc, char **argv) {
     // arguments.  Since this may be used to restore a session, we
     // will save them here in a resource.
     std::string command;
-    for (int i = 0 ; i < argc ; i++)
+    for (size_t i = 0 ; i < argv.size() ; i++)
         command += std::string(" ") + argv[i];
     _xrm->putResource("." + instanceName() + "*command", command);
 

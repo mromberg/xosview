@@ -24,7 +24,7 @@ public:
     XOSView(void);
     virtual ~XOSView(void);
 
-    void run(int argc, char **argv);
+    void run(int argc, const char * const *argv);
 
 protected:
     Xrm *_xrm;
@@ -55,7 +55,7 @@ protected:
     virtual ResDB &resdb(void) { return *_xrm; }
 
     void loop(void);
-    void loadConfiguration(int argc, char **argv);
+    void loadConfiguration(const std::vector<std::string> &argv);
     void setCommandLineArgs(util::CLOpts &o);
     void draw(void);
     void drawIfNeeded(std::vector<Meter *> &mtrs);

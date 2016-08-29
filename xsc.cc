@@ -52,7 +52,7 @@ private:
 
 class XSCImp {
 public:
-    XSCImp(int argc, char * const *argv,
+    XSCImp(const std::vector<std::string> &argv,
       const std::string &sessionArg="--smid");
     ~XSCImp(void);
 
@@ -122,15 +122,13 @@ private:
 //-----------------------------------------------------------------------
 // XSessionClient
 //-----------------------------------------------------------------------
-XSessionClient::XSessionClient(int argc, char * const *argv,
+XSessionClient::XSessionClient(const std::vector<std::string> &argv,
   const std::string &sessionArg) : _imp(0) {
 #ifndef HAVE_LIB_SM
-    (void)argc;
     (void)argv;
     (void)sessionArg;
 #else
-    logDebug << "cmdline: " << util::vargv(argc, argv) << std::endl;
-    _imp = new XSCImp(argc, argv, sessionArg);
+    _imp = new XSCImp(argv, sessionArg);
 #endif
 }
 
@@ -322,19 +320,19 @@ SmProp *XSVar::prop(void) {
 //------------------------------------------------------------------------
 // XSCImp
 //------------------------------------------------------------------------
-XSCImp::XSCImp(int argc, char * const *argv,
+XSCImp::XSCImp(const std::vector<std::string> &argv,
   const std::string &sessionArg)
     : _die(false), _sessionArg(sessionArg), _iceClient(0), _smcConn(0) {
 
-    _argv.reserve(argc);
-    for (int i = 0 ; i < argc ; i++) {
-        std::string sv(argv[i]);
+    _argv.reserve(argv.size());
+    for (size_t i = 0 ; i < argv.size() ; i++) {
+        std::string sv = argv[i];
 
         if (i == 0)
             sv = util::fs::normpath(util::fs::abspath(sv));
 
         if (sv == _sessionArg) {
-            if (i + 1 >= argc) {
+            if (i + 1 >= argv.size()) {
                 logProblem << "missing " << _sessionArg << " argument."
                            << std::endl;
             }

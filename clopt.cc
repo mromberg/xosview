@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -10,7 +10,15 @@
 #include <iostream>
 #include <cstdlib>
 
+
+
 namespace util {
+
+CLOpts::CLOpts(int argc, const char * const *argv) {
+    for (int i = 0 ; i < argc ; i++)
+        _argv.push_back(argv[i]);
+}
+
 
 void CLOpts::add(const std::string &name, const std::string &shortOpt,
   const std::string &longOpt, const std::string &desc) {
@@ -46,12 +54,11 @@ std::string CLOpts::useage(void) const {
 }
 
 void CLOpts::parse(void) {
-    // check is mostly to shutdown warning aboout _argc unused
-    if (_argc < 1)
+    if (_argv.empty())
         return;
 
-    char **argp = &_argv[1];
-    while (*argp) {
+    std::vector<std::string>::const_iterator argp = _argv.begin() + 1;
+    while (argp < _argv.end()) {
         bool skipTwo = false;
         std::string arg(*argp);
         bool found = false;
@@ -61,12 +68,11 @@ void CLOpts::parse(void) {
                 if (!_opts[i].isValue())
                     _opts[i].setValue();
                 else {
-                    char **nextp = argp + 1;
-                    if (!*nextp) {
+                    if (argp + 1 >= _argv.end()) {
                         fail("missing value for option: " + arg);
                     }
                     else {
-                        std::string next(*nextp);
+                        std::string next(*(argp + 1));
                         for (size_t j = 0 ; j < _opts.size() ; j++) {
                             if (_opts[j].match(next)) {
                                 fail("missing value for option: " + arg);

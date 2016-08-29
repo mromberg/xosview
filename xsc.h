@@ -8,13 +8,14 @@
 #define xsc_h
 
 #include <string>
+#include <vector>
 
 class XSCImp;
 
 
 class XSessionClient {
 public:
-    XSessionClient(int argc, char * const *argv,
+    XSessionClient(const std::vector<std::string> &argv,
       const std::string &sessionArg="--smid");
     ~XSessionClient(void);
 

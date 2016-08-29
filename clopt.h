@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2016
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -49,7 +49,8 @@ private:
 
 class CLOpts {
 public:
-    CLOpts(int argc, char **argv): _argc(argc), _argv(argv) {}
+    CLOpts(int argc, const char * const *argv);
+    CLOpts(const std::vector<std::string> &argv) : _argv(argv) {}
 
     // Add a boolean option (no value)
     void add(const std::string &name, const std::string &shortOpt,
@@ -75,8 +76,7 @@ public:
     const std::vector<CLOpt> &opts(void) const { return _opts; }
 
 private:
-    int _argc;
-    char **_argv;
+    std::vector<std::string> _argv;
     std::vector<CLOpt> _opts;
     std::vector<std::string> _args;
 
