@@ -183,13 +183,13 @@ std::string fs::abspath(const std::string &path) {
     return path;
 }
 
-std::string fs::findCommand(const std::string &command) {
+std::string fs::findCommand(const std::string &command, bool log) {
     // Atempt to guess the prefix from argv0, CWD and PATH
 
     // If command has a path component it is already
     // "found".
     if (command.find('/') != std::string::npos)
-        return command;
+        return canonpath(command);
 
     // Check on PATH
     if (command.size()) {
@@ -199,12 +199,15 @@ std::string fs::findCommand(const std::string &command) {
             for (size_t i = 0 ; i < path.size() ; i++) {
                 std::string fname(path[i] + '/' + command);
                 if (fs::isexec(fname))
-                    return fname;
+                    return canonpath(fname);
             }
         }
     }
 
-    return "";
+    if (log)
+        logProblem << command << " not found." << std::endl;
+
+    return command;
 }
 
 

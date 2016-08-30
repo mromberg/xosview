@@ -61,8 +61,9 @@ public:
         return normpath(abspath(path));
     }
 
-    // returns an absolute path to the command.
-    static std::string findCommand(const std::string &command);
+    // returns a canonical path to the command (using PATH if needed).
+    // On failure, logs a problem (optional) and returns command.
+    static std::string findCommand(const std::string &command, bool log=true);
 
     // maximum file name size for given file system
     static size_t fnameMax(const std::string &path);
