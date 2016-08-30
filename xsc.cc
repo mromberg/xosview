@@ -53,7 +53,9 @@ private:
 class XSCImp {
 public:
     XSCImp(const std::vector<std::string> &argv,
-      const std::string &sessionArg="--smid");
+      const std::string &sessionArg);
+    XSCImp(const std::vector<std::string> &argv,
+      const std::string &sessionArg, const std::string &lastID);
     ~XSCImp(void);
 
     // returns false if no session manager found.
@@ -75,6 +77,7 @@ private:
     IceClient *_iceClient;
     SmcConn _smcConn;
 
+    std::vector<std::string> prune(const std::vector<std::string> &argv) const;
     static std::string getuser(void);
 
     // xsl protocol callbacks.
@@ -133,6 +136,18 @@ XSessionClient::XSessionClient(const std::vector<std::string> &argv,
 }
 
 
+XSessionClient::XSessionClient(const std::vector<std::string> &argv,
+  const std::string &sessionArg, const std::string &lastID) : _imp(0) {
+#ifndef HAVE_LIB_SM
+    (void)argv;
+    (void)sessionArg;
+    (void)lastID;
+#else
+    _imp = new XSCImp(argv, sessionArg, lastID);
+#endif
+}
+
+
 XSessionClient::~XSessionClient(void) {
 #ifdef HAVE_LIB_SM
     delete _imp;
@@ -178,7 +193,6 @@ const std::string &XSessionClient::sessionID(void) const {
     return nullid;
 #endif
 }
-
 
 
 #ifdef HAVE_LIB_SM
@@ -329,7 +343,7 @@ XSCImp::XSCImp(const std::vector<std::string> &argv,
         std::string sv = argv[i];
 
         if (i == 0)
-            sv = util::fs::normpath(util::fs::abspath(sv));
+            sv = util::fs::findCommand(sv);
 
         if (sv == _sessionArg) {
             if (i + 1 >= argv.size()) {
@@ -344,6 +358,14 @@ XSCImp::XSCImp(const std::vector<std::string> &argv,
         else
             _argv.push_back(sv);
     }
+}
+
+
+XSCImp::XSCImp(const std::vector<std::string> &argv,
+  const std::string &sessionArg, const std::string &lastID)
+    : _die(false), _argv(argv),
+      _sessionArg(sessionArg), _lastSessionID(lastID),
+      _iceClient(0), _smcConn(0) {
 }
 
 
@@ -477,7 +499,7 @@ void XSCImp::saveCB(SmcConn smc_conn, void *client_data,
     xsvars.push_back(resvar);
     xsvars.push_back(XSVar(SmUserID, getuser()));
     xsvars.push_back(XSVar(SmProgram,
-        util::fs::normpath(util::fs::abspath(xsc->_argv[0]))));
+        util::fs::findCommand(xsc->_argv[0])));
     // Optional.
     xsvars.push_back(XSVar(SmCurrentDirectory, util::fs::cwd()));
     xsvars.push_back(XSVar(SmRestartStyleHint, SmRestartIfRunning));

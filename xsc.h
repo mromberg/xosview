@@ -16,6 +16,8 @@ class XSCImp;
 class XSessionClient {
 public:
     XSessionClient(const std::vector<std::string> &argv,
+      const std::string &sessionArg, const std::string &lastID);
+    XSessionClient(const std::vector<std::string> &argv,
       const std::string &sessionArg="--smid");
     ~XSessionClient(void);
 

@@ -65,17 +65,6 @@ XO_GCC_AUTO_DEPEND($enable_auto_depend)
 
 XO_GCC_CXXFLAGS
 
-# Give AC_ thing a shot (for the user to supply paths if nothing else)
-AC_PATH_XTRA
-
-# First add what comes from AC_PATH_XTRA
-XO_CONCAT(CPPFLAGS,$CPPFLAGS,"$X_CFLAGS")
-XO_CONCAT(LDFLAGS,$LDFLAGS,"$X_LIBS")
-
-# This takes care of the paths.  The libraries themselves (like -lX11)
-# will be added later.  First need to check for Xpm, Xft etc.
-# Any checks for X11 depended LIBS will need to add
-# $X_PRE_LIBS -lX11 $X_EXTRA_LIBS to thier checks.
 
 # Let the user have a stab at app-defaults if they don't
 # like the default (${datarootdir}/X11/app-defaults)
@@ -105,10 +94,30 @@ XO_MIN_CXX_CHECK
 #  Check for usleep().  Currently, only HP-UX doesn't have it.
 AC_CHECK_FUNCS(usleep)
 
+# Give AC_ thing a shot (for the user to supply paths if nothing else)
+AC_PATH_X
+
+# First add what comes from AC_PATH_X
+XO_CONCAT(CPPFLAGS,$CPPFLAGS,"$X_CFLAGS")
+XO_CONCAT(LDFLAGS,$LDFLAGS,"$X_LIBS")
+
+# This takes care of the paths.  The libraries themselves (like -lX11)
+# will be added later.  First need to check for Xpm, Xft etc.
+# Any checks for X11 depended LIBS will need to add
+# $X_PRE_LIBS -lX11 $X_EXTRA_LIBS to thier checks.
+
+
 #------------------------------------------------
 # Session management library support.
 #------------------------------------------------
-XO_CHECK_SM_LIBS
+AC_ARG_WITH([xsm],
+            [AS_HELP_STRING([--with-xsm],
+              [enable experimental X11R6 session management support])],
+            [AC_PATH_XTRA
+             XO_CHECK_SM_LIBS],
+            [with_xsm=no])
+
+dnl XO_CHECK_SM_LIBS
 
 #------------------------------------------------
 # Used for pixmap backgrounds.

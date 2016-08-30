@@ -41,14 +41,16 @@ XWin::~XWin( void ){
         XdbeDeallocateBackBufferName(display_, _bb);
 #endif
 
-    XDestroyWindow( display_, window_ );
+    if (display_) {
+        XDestroyWindow( display_, window_ );
 
-    if (XVisualIDFromVisual(visual_)
-      != XVisualIDFromVisual(DefaultVisual(display_, screen())))
-        XFreeColormap(display_, colormap_);
+        if (XVisualIDFromVisual(visual_)
+          != XVisualIDFromVisual(DefaultVisual(display_, screen())))
+            XFreeColormap(display_, colormap_);
 
-    // close the connection to the display
-    XCloseDisplay( display_ );
+        // close the connection to the display
+        XCloseDisplay( display_ );
+    }
 }
 
 
@@ -246,18 +248,27 @@ void XWin::setHints(XSizeHints *szHints){
         logFatal << "Error creating XTextProperty!" << std::endl;
     }
 
-    // First make a "fake" argument list
-    std::vector<std::string> clst = util::split(resdb().getResource(
-          "command"), " ");
-    std::vector<char *> fargv(clst.size() + 1, 0);
-    for (size_t i = 0 ; i < clst.size() ; i++) {
-        if (i == 0)
-            clst[i] = util::fs::normpath(util::fs::abspath(clst[i]));
-        fargv[i] = const_cast<char *>(clst[i].c_str());
+    if (resdb().getResource("sessionID") != "") {
+        // X11R6 Session Manager gave us an ID.  Command handled elsewhere.
+        logDebug << "X11R6 session." << std::endl;
+        XSetWMProperties(display_, window_, &titlep, &iconnamep, NULL,
+          0, szHints, wmhints, classhints);
     }
+    else {
+        // Set the session restart command the old way.
+        logDebug << "Pre X11R6 session." << std::endl;
+        std::vector<std::string> clst = util::split(resdb().getResource(
+              "command"), " ");
+        std::vector<char *> fargv(clst.size() + 1, 0);
+        for (size_t i = 0 ; i < clst.size() ; i++) {
+            if (i == 0)
+                clst[i] = util::fs::findCommand(clst[i]);
+            fargv[i] = const_cast<char *>(clst[i].c_str());
+        }
 
-    XSetWMProperties(display_, window_, &titlep, &iconnamep, fargv.data(),
-      clst.size(), szHints, wmhints, classhints);
+        XSetWMProperties(display_, window_, &titlep, &iconnamep, fargv.data(),
+          clst.size(), szHints, wmhints, classhints);
+    }
 
     XFree( titlep.value );
     XFree( iconnamep.value );

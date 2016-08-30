@@ -9,6 +9,7 @@
 #include "clopt.h"
 #include "MeterMaker.h"
 #include "strutil.h"
+#include "fsutil.h"
 #include "x11font.h"
 #include "xsc.h"
 #include "scache.h"
@@ -55,19 +56,38 @@ void XOSView::run(int argc, const char * const *argv) {
     // Convert argc and argv to STL containers.  No use of argc/argv
     // beyond this point.
     std::vector<std::string> vargv = util::vargv(argc, argv);
+    if (!vargv.empty())
+        vargv[0] = util::fs::findCommand(vargv[0]); // full absolute path.
     logDebug << "cmdline args: " << vargv << std::endl;
 
-    _xsc = new XSessionClient(vargv);
-    if (_xsc->init())
-        logDebug << "session ID: " << _xsc->sessionID() << std::endl;
+    loadConfiguration(vargv);
 
+#if defined(HAVE_LIB_SM)
+    // loadConfiguration() put the old sessionID into the resource
+    // database.  Remove the command line arg for it.
     std::vector<std::string>::const_iterator it = std::find(vargv.begin(),
       vargv.end(), "--smid");
     if (it != vargv.end())
         vargv.erase(it, it + 2);
     logDebug << "cmdline2 args: " << vargv << std::endl;
+#endif
 
-    loadConfiguration(vargv);
+    // The window manager will later wanna know the command line
+    // arguments.  Since this may be used to restore a session, we
+    // will save them here in a resource.
+    _xrm->putResource("." + instanceName() + "*command",
+      util::join(vargv, " "));
+
+    // Try to contact an X11R6 session manager...
+    _xsc = new XSessionClient(vargv, "--smid",
+      resdb().getResourceOrUseDefault("sessionID", ""));
+    if (_xsc->init()) {
+        logDebug << "session ID: " << _xsc->sessionID()
+                 << std::endl;
+    }
+    _xrm->putResource("." + instanceName() + "*sessionID",
+      _xsc->sessionID());
+
     checkResources();      // initialize from our resources
     setEvents();           //  set up the X events
     createMeters();        // add in the meters
@@ -332,14 +352,6 @@ void XOSView::loadConfiguration(const std::vector<std::string> &argv) {
                      << std::endl;
         }
 
-    // The window manager will later wanna know the command line
-    // arguments.  Since this may be used to restore a session, we
-    // will save them here in a resource.
-    std::string command;
-    for (size_t i = 0 ; i < argv.size() ; i++)
-        command += std::string(" ") + argv[i];
-    _xrm->putResource("." + instanceName() + "*command", command);
-
     //---------------------------------------------------
     // No use of clopts beyond this point.  It is all in
     // the resource database now.  Example immediately follows...
@@ -590,10 +602,12 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
       "-xrmd", "--xrm-dump",
       "Dump the X resouces seen by xosview to stdout and exit.");
 
+#if defined(HAVE_LIB_SM)
     // X Session Managment ID.
     o.add("sessionID",
       "-smid", "--smid", "sessionID",
       "Session management ID.");
+#endif
 
     //-----------------------------------------------------
     // No other options that override X resources are needed
