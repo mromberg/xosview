@@ -33,6 +33,7 @@ public:
 
     std::string usage(void) const; // return a usage string
 
+    void eraseFrom(std::vector<std::string> &argv) const;
     void printOn(std::ostream &os) const;
 
 private:
@@ -45,6 +46,8 @@ private:
     std::vector<std::string> _values;
 
     std::string formatedDesc(size_t offset) const;
+    void eraseFrom(const std::string &opt,
+      std::vector<std::string> &argv) const;
 };
 
 class CLOpts {

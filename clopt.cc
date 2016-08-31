@@ -9,6 +9,7 @@
 #include <sstream>
 #include <iostream>
 #include <cstdlib>
+#include <algorithm>
 
 
 
@@ -153,6 +154,34 @@ std::string CLOpt::formatedDesc(size_t offset) const {
 
     return rval;
 }
+
+
+void CLOpt::eraseFrom(const std::string &opt,
+  std::vector<std::string> &argv) const {
+
+    if (missing())
+        return;
+
+    std::vector<std::string>::const_iterator it = std::find(argv.begin(),
+      argv.end(), opt);
+
+    if (it == argv.end())
+        return;
+
+    if (!isValue())
+        argv.erase(it, it + 1);
+    else {
+        if (it + 2 <= argv.end())
+            argv.erase(it, it + 2);
+    }
+}
+
+
+void CLOpt::eraseFrom(std::vector<std::string> &argv) const {
+    eraseFrom(_shortOpt, argv);
+    eraseFrom(_longOpt, argv);
+}
+
 
 void CLOpt::printOn(std::ostream &os) const {
     os << "[" << name() << ": " << _shortOpt << " [";
