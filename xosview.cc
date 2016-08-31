@@ -56,50 +56,22 @@ void XOSView::run(int argc, const char * const *argv) {
     // Convert argc and argv to STL containers.  No use of argc/argv
     // beyond this point.
     std::vector<std::string> vargv = util::vargv(argc, argv);
-    if (!vargv.empty())
-        vargv[0] = util::fs::findCommand(vargv[0]); // full absolute path.
     logDebug << "cmdline args: " << vargv << std::endl;
 
-    loadConfiguration(vargv);
+    loadConfiguration(vargv);  // parse cmdline and open Xrm.
+    openSession(vargv);        // X11R6+ session management.
+    checkResources();          // initialize from our resources
+    setEvents();               //  set up the X events
+    createMeters();            // add in the meters
+    figureSize();              // calculate size using number of meters
+    createWindow();            // Graphics should now be up (can alloc colors)
+    resdb().setGraphics(&g()); // So, ResDB can allocate colors
+    resize();                  // initialize size values
+    title(winname());          // Now that the window exists set the title
+    iconname(winname());       // and the icon name
+    checkMeterResources();     // Have the meters check their resources.
 
-#if defined(HAVE_LIB_SM)
-    // loadConfiguration() put the old sessionID into the resource
-    // database.  Remove the command line arg for it.
-    std::vector<std::string>::const_iterator it = std::find(vargv.begin(),
-      vargv.end(), "--smid");
-    if (it != vargv.end())
-        vargv.erase(it, it + 2);
-    logDebug << "cmdline2 args: " << vargv << std::endl;
-#endif
-
-    // The window manager will later wanna know the command line
-    // arguments.  Since this may be used to restore a session, we
-    // will save them here in a resource.
-    _xrm->putResource("." + instanceName() + "*command",
-      util::join(vargv, " "));
-
-    // Try to contact an X11R6 session manager...
-    _xsc = new XSessionClient(vargv, "--smid",
-      resdb().getResourceOrUseDefault("sessionID", ""));
-    if (_xsc->init()) {
-        logDebug << "session ID: " << _xsc->sessionID()
-                 << std::endl;
-    }
-    _xrm->putResource("." + instanceName() + "*sessionID",
-      _xsc->sessionID());
-
-    checkResources();      // initialize from our resources
-    setEvents();           //  set up the X events
-    createMeters();        // add in the meters
-    figureSize();          // calculate size using number of meters
-    createWindow();        // Graphics should now be up (so can alloc colors)
-    resdb().setGraphics(&g());  // So, ResDB can allocate colors
-    resize();              // initialize size values
-    title(winname());      // Now that the window exists set the title
-    iconname(winname());   // and the icon name
-    checkMeterResources(); // Have the meters check their resources.
-
-    loop();                // enter event loop
+    loop(); // enter event loop
 }
 
 
@@ -281,15 +253,32 @@ void XOSView::slumber(void) const {
 }
 
 
+void XOSView::openSession(const std::vector<std::string> &argv) {
+    // Try to contact an X11R6 session manager...
+    // sessionID (if it exists will be the old ID from the cmdline.
+    _xsc = new XSessionClient(argv, "--smid",
+      resdb().getResourceOrUseDefault("sessionID", ""));
+    if (_xsc->init()) {
+        logDebug << "session ID: " << _xsc->sessionID()
+                 << std::endl;
+    }
+
+    // Set the sessionID in the resdb in case we have a new one.
+    _xrm->putResource("." + instanceName() + "*sessionID",
+      _xsc->sessionID());
+}
+
 
 //-----------------------------------------------------------------
 // ** Configure
 //-----------------------------------------------------------------
 
-void XOSView::loadConfiguration(const std::vector<std::string> &argv) {
+void XOSView::loadConfiguration(std::vector<std::string> &argv) {
     //...............................................
     // Command line options
     //...............................................
+    if (!argv.empty())
+        argv[0] = util::fs::findCommand(argv[0]); // full absolute path.
 
     util::CLOpts clopts(argv);
     setCommandLineArgs(clopts);
@@ -339,9 +328,9 @@ void XOSView::loadConfiguration(const std::vector<std::string> &argv) {
     }
 
     // Now all the rest that are set by the user.
-    // defaults delt with by getResourceOrUseDefault()
+    // defaults dealt with by getResourceOrUseDefault()
     const std::vector<util::CLOpt> &opts = clopts.opts();
-    for (size_t i = 0 ; i < opts.size() ; i++)
+    for (size_t i = 0 ; i < opts.size() ; i++) {
         if (opts[i].name() != "xrm"
           && opts[i].name() != "xosvxrm"
           && !opts[i].missing()) {
@@ -350,7 +339,21 @@ void XOSView::loadConfiguration(const std::vector<std::string> &argv) {
             logDebug << "ADD: "
                      << rname << " : " << opts[i].value()
                      << std::endl;
+
+#if defined(HAVE_LIB_SM)
+            // Take the old session ID opt out of argv.
+            if (opts[i].name() == "sessionID")
+                opts[i].eraseFrom(argv);
+#endif
         }
+    }
+
+    // The window manager will later wanna know the command line
+    // arguments.  Since this may be used to restore a session, we
+    // will save them here in a resource.
+    logDebug << "modified cmdline args: " << argv << std::endl;
+    _xrm->putResource("." + instanceName() + "*command",
+      util::join(argv, " "));
 
     //---------------------------------------------------
     // No use of clopts beyond this point.  It is all in

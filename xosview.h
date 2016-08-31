@@ -51,7 +51,8 @@ private:
     bool isAtLeastPartiallyVisible() const { return _isvisible; }
     std::string versionStr(void) const;
     void loop(void);
-    void loadConfiguration(const std::vector<std::string> &argv);
+    void loadConfiguration(std::vector<std::string> &argv);
+    void openSession(const std::vector<std::string> &argv);
     void setCommandLineArgs(util::CLOpts &o);
     void draw(void);
     void drawIfNeeded(std::vector<Meter *> &mtrs);
