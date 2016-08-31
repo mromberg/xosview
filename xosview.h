@@ -8,7 +8,7 @@
 #define XOSVIEW_H
 
 #include "xwin.h"
-#include "Xrm.h"  //  For Xrm resource manager class.
+#include "Xrm.h"
 
 #include <string>
 
@@ -27,40 +27,36 @@ public:
     void run(int argc, const char * const *argv);
 
 protected:
+    virtual ResDB &resdb(void) { return *_xrm; }
+    virtual void setEvents(void);
+
+private:
     Xrm *_xrm;
-    bool caption_, legend_, usedlabels_;
-    int xoff_, yoff_;
-    int hmargin_, vmargin_, vspacing_;
-    unsigned long sleeptime_, usleeptime_;
+    bool _caption, _legend, _usedlabels;
+    int _xoff, _yoff;
+    int _hmargin, _vmargin, _vspacing;
+    unsigned long _sleeptime, _usleeptime;
     bool _isvisible;
     bool _ispartiallyvisible;
     std::vector<Meter *> _meters;
+    double _sampleRate;   // samples/sec
+    bool _doFullDraw;     // schedule full clear/draw
+    XSessionClient *_xsc; // session management client.
 
-    // Samples/sec max
-    double sampleRate(void) const { return _sampleRate; }
+    double sampleRate(void) const { return _sampleRate; } // samples/sec max
     std::string winname(void);
-
-    // used by meter makers
-    int xoff(void) const { return xoff_; }
+    int xoff(void) const { return _xoff; }
     int newypos(void);
-
-    bool isFullyVisible() const
-        { return _isvisible && !_ispartiallyvisible; }
+    bool isFullyVisible() const { return _isvisible && !_ispartiallyvisible; }
     bool isAtLeastPartiallyVisible() const { return _isvisible; }
     std::string versionStr(void) const;
-
-    //------------------------------------------------------
-    // Resouce interface
-    //------------------------------------------------------
-    virtual ResDB &resdb(void) { return *_xrm; }
-
     void loop(void);
     void loadConfiguration(const std::vector<std::string> &argv);
     void setCommandLineArgs(util::CLOpts &o);
     void draw(void);
     void drawIfNeeded(std::vector<Meter *> &mtrs);
-    virtual std::string className(void) { return _xrm->className(); }
-    virtual std::string instanceName(void) { return _xrm->instanceName(); }
+    std::string className(void) { return _xrm->className(); }
+    std::string instanceName(void) { return _xrm->instanceName(); }
     void resize(void);
     void checkMeterResources(void);
     void figureSize(void);
@@ -68,7 +64,6 @@ protected:
     int findy(XOSVFont &font);
     void setSleepTime(void);
     void checkResources(void);
-    virtual void setEvents(void);
     void createMeters(void);
     void dolegends(void);
     void configureEvent(XEvent &event);
@@ -76,12 +71,6 @@ protected:
     void keyPressEvent(XKeyEvent &event);
     void visibilityEvent(XVisibilityEvent &event);
     void unmapEvent(XUnmapEvent &event);
-
-private:
-    double _sampleRate;   // samples/sec
-    bool _doFullDraw;     // schedule full clear/draw
-    XSessionClient *_xsc; // session management client.
-
     void scheduleDraw(bool full) { _doFullDraw = full; }
     void slumber(void) const;
     void usleep_via_select(unsigned long usec);

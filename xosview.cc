@@ -32,10 +32,10 @@ static const char * const NAME = "xosview@";
 
 XOSView::XOSView(void)
     : XWin(), _xrm(0),
-      caption_(false), legend_(false), usedlabels_(false),
-      xoff_(0), yoff_(0),
-      hmargin_(0), vmargin_(0), vspacing_(0),
-      sleeptime_(1), usleeptime_(1000),
+      _caption(false), _legend(false), _usedlabels(false),
+      _xoff(0), _yoff(0),
+      _hmargin(0), _vmargin(0), _vspacing(0),
+      _sleeptime(1), _usleeptime(1000),
       _isvisible(false), _ispartiallyvisible(false), _sampleRate(10),
       _doFullDraw(true), _xsc(0) {
 }
@@ -271,10 +271,10 @@ void XOSView::slumber(void) const {
 #ifdef HAVE_USLEEP
         /*  First, sleep for the proper integral number of seconds --
          *  usleep only deals with times less than 1 sec.  */
-        if (sleeptime_)
-            sleep((unsigned int)sleeptime_);
-        if (usleeptime_)
-            usleep( (unsigned int)usleeptime_);
+        if (_sleeptime)
+            sleep((unsigned int)_sleeptime);
+        if (_usleeptime)
+            usleep( (unsigned int)_usleeptime);
 #else
         usleep_via_select ( usleeptime_ );
 #endif
@@ -366,34 +366,34 @@ void XOSView::loadConfiguration(const std::vector<std::string> &argv) {
 void XOSView::checkResources(void) {
     setSleepTime();
 
-    hmargin_  = util::stoi(resdb().getResource("horizontalMargin"));
-    vmargin_  = util::stoi(resdb().getResource("verticalMargin"));
-    vspacing_ = util::stoi(resdb().getResource("verticalSpacing"));
-    hmargin_  = std::max(0, hmargin_);
-    vmargin_  = std::max(0, vmargin_);
-    vspacing_ = std::max(0, vspacing_);
+    _hmargin  = util::stoi(resdb().getResource("horizontalMargin"));
+    _vmargin  = util::stoi(resdb().getResource("verticalMargin"));
+    _vspacing = util::stoi(resdb().getResource("verticalSpacing"));
+    _hmargin  = std::max(0, _hmargin);
+    _vmargin  = std::max(0, _vmargin);
+    _vspacing = std::max(0, _vspacing);
 
-    xoff_ = hmargin_;
-    yoff_ = 0;
+    _xoff = _hmargin;
+    _yoff = 0;
     appName("xosview");
     _isvisible = false;
     _ispartiallyvisible = false;
 
     //  Set 'off' value.  This is not necessarily a default value --
     //    the value in the defaultXResourceString is the default value.
-    usedlabels_ = legend_ = caption_ = false;
+    _usedlabels = _legend = _caption = false;
 
     // use captions
     if ( resdb().isResourceTrue("captions") )
-        caption_ = 1;
+        _caption = true;
 
     // use labels
     if ( resdb().isResourceTrue("labels") )
-        legend_ = 1;
+        _legend = true;
 
     // use "free" labels
     if ( resdb().isResourceTrue("usedlabels") )
-        usedlabels_ = 1;
+        _usedlabels = true;
 }
 
 
@@ -409,8 +409,8 @@ int XOSView::newypos( void ){
 
 
 int XOSView::findx(XOSVFont &font){
-    if ( legend_ ){
-        if ( !usedlabels_ )
+    if ( _legend ){
+        if ( !_usedlabels )
             return font.maxCharWidth() * 24;
         else
             return font.maxCharWidth() * 24
@@ -421,8 +421,8 @@ int XOSView::findx(XOSVFont &font){
 
 
 int XOSView::findy(XOSVFont &font){
-    if ( legend_ )
-        return 10 + font.textHeight() * _meters.size() * ( caption_ ? 2 : 1 );
+    if ( _legend )
+        return 10 + font.textHeight() * _meters.size() * ( _caption ? 2 : 1 );
 
     return 15 * _meters.size();
 }
@@ -439,13 +439,13 @@ void XOSView::figureSize(void) {
     if (!font)
         logFatal << "Could not load font: " << fname << std::endl;
 
-    if ( legend_ ){
-        if ( !usedlabels_ )
-            xoff_ = font.textWidth("INT(9) ");
+    if ( _legend ){
+        if ( !_usedlabels )
+            _xoff = font.textWidth("INT(9) ");
         else
-            xoff_ = font.textWidth("SWAP 99%%");
+            _xoff = font.textWidth("SWAP 99%%");
 
-        yoff_ = caption_ ? font.textHeight() + font.textHeight() / 4 : 0;
+        _yoff = _caption ? font.textHeight() + font.textHeight() / 4 : 0;
     }
     static bool firsttime = true;
     if (firsttime) {
@@ -466,27 +466,27 @@ void XOSView::setSleepTime(void) {
     if (!_sampleRate)
         _sampleRate = 10;
 
-    usleeptime_ = (unsigned long) (1000000/_sampleRate);
-    if (usleeptime_ >= 1000000) {
+    _usleeptime = (unsigned long) (1000000/_sampleRate);
+    if (_usleeptime >= 1000000) {
         /*  The syscall usleep() only takes times less than 1 sec, so
          *  split into a sleep time and a usleep time if needed.  */
-        sleeptime_ = usleeptime_ / 1000000;
-        usleeptime_ = usleeptime_ % 1000000;
+        _sleeptime = _usleeptime / 1000000;
+        _usleeptime = _usleeptime % 1000000;
     }
     else {
-        sleeptime_ = 0;
+        _sleeptime = 0;
     }
 }
 
 
 void XOSView::dolegends( void ){
     logDebug << "caption, legend, usedlabels: "
-             << caption_ << "," << legend_ << "," << usedlabels_
+             << _caption << "," << _legend << "," << _usedlabels
              << std::endl;
     for (size_t i = 0 ; i < _meters.size() ; i++) {
-        _meters[i]->docaptions(caption_);
-        _meters[i]->dolegends(legend_);
-        _meters[i]->dousedlegends(usedlabels_);
+        _meters[i]->docaptions(_caption);
+        _meters[i]->dolegends(_legend);
+        _meters[i]->dousedlegends(_usedlabels);
     }
 }
 
@@ -510,8 +510,8 @@ void  XOSView::resize( void ){
     //-----------------------------------
     // Width
     //-----------------------------------
-    unsigned int rightmargin = hmargin_;
-    unsigned int xpad = xoff_ + rightmargin; // reserved for padding.
+    unsigned int rightmargin = _hmargin;
+    unsigned int xpad = _xoff + rightmargin; // reserved for padding.
     xpad = xpad > width() ? width() : xpad;  // clamp to width().
 
     int newwidth = width() - xpad;
@@ -520,19 +520,19 @@ void  XOSView::resize( void ){
     //-----------------------------------
     // Height
     //-----------------------------------
-    unsigned int spacing = vspacing_ + 1;
-    unsigned int topmargin = vmargin_;
+    unsigned int spacing = _vspacing + 1;
+    unsigned int topmargin = _vmargin;
     size_t nmeters = _meters.size() ? _meters.size() : 1; // don't divide by 0.
     unsigned int ypad = 2 * topmargin + (nmeters - 1) * spacing
-        + nmeters * yoff_; // size reserved for padding.
+        + nmeters * _yoff; // size reserved for padding.
     ypad = ypad > height() ? height() : ypad; // clamp to height.
 
     int newheight = (height() - ypad) / nmeters;
     newheight = (newheight >= 2) ? newheight : 2; // min clamp to 2.
 
     for (size_t i = 0 ; i < _meters.size() ; i++) {
-        _meters[i]->resize(xoff_,
-          topmargin + (i + 1) * yoff_ + i * (newheight+spacing),
+        _meters[i]->resize(_xoff,
+          topmargin + (i + 1) * _yoff + i * (newheight+spacing),
           newwidth, newheight);
     }
 }
