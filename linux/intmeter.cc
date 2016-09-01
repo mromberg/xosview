@@ -29,16 +29,24 @@ IntMeter::IntMeter(size_t cpu)
 }
 
 
-IntMeter::~IntMeter( void ){
+IntMeter::~IntMeter( void ) {
 }
 
 
-void IntMeter::checkevent( void ){
+void IntMeter::checkevent( void ) {
     const std::map<size_t, uint64_t> &newc = getStats(_cpu);
-    for (size_t i = 0 ; i < _bits.size() ; i++)
-        _bits[i] = util::get(newc, i) != util::get(_last, i);
-
-    _last = newc;
+    std::map<size_t, uint64_t>::const_iterator itn = newc.begin();
+    std::map<size_t, uint64_t>::iterator itl = _last.begin();
+    while (itn != newc.end() && itl != _last.end()) {
+        if (itn->first != itl->first) {
+            _last = newc;
+            break;
+        }
+        _bits[itn->first] = itn->second != itl->second;
+        itl->second = itn->second;
+        ++itn;
+        ++itl;
+    }
 }
 
 
