@@ -162,7 +162,7 @@ void CLOpt::eraseFrom(const std::string &opt,
     if (missing())
         return;
 
-    std::vector<std::string>::const_iterator it = std::find(argv.begin(),
+    std::vector<std::string>::iterator it = std::find(argv.begin(),
       argv.end(), opt);
 
     if (it == argv.end())
