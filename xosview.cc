@@ -618,10 +618,4 @@ void XOSView::setCommandLineArgs(util::CLOpts &o) {
     // methods above.  We don't need to support as many options
     // as the UNIX ls command.
     //-----------------------------------------------------
-
-#ifdef XOSVIEW_BSD
-    o.add("kernelName",
-      "-N", "--kernel-name", "name",
-      "Sets the kernel name for BSD variants.");
-#endif
 }
