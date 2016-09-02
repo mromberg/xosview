@@ -12,6 +12,8 @@
 #include <vector>
 #include <map>
 
+#include <stdint.h>
+
 
 
 class IntMeter : public BitMeter {

@@ -9,6 +9,7 @@
 
 #include "fieldmetergraph.h"
 
+#include <stdint.h>
 
 
 class CPUMeter : public FieldMeterGraph {

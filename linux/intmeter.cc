@@ -8,6 +8,7 @@
 #include "scache.h"
 
 #include <fstream>
+#include <limits>
 
 
 static const char * const INTFILE = "/proc/interrupts";
