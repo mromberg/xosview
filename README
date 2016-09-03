@@ -1,7 +1,7 @@
                           XOSVIEW
 
-    xosview is a lightweight program that gathers information
-    from your operating system and displays it in graphical form.
+    xosview is a program that gathers information from your
+    operating system and displays it in graphical form.
     It attempts to show you in a quick glance an overview of how
     your system resources are being utilized.
 
@@ -30,7 +30,7 @@
 
   - FreeBSD (10.3)
 
-  - OpenBSD (5.9)
+  - OpenBSD (6.0)
 
   - Dragonfly BSD (4.4.3)
 

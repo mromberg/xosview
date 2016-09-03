@@ -1,5 +1,9 @@
 Changes since xosview-2.1.3
 
+  - Performance improvements for multiple cpu/int meters.
+
+  - Experimental X11R6+ session management support.
+
   - xosview2 no longer requires membership in the kmem group or any other
     special privileges beyond those of a normal user on all BSD platforms.
 
