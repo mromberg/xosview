@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( mike-romberg@comcast.net )
+//  Copyright (c) 1994, 1995, 2015, 2016 by Mike Romberg ( mike-romberg@comcast.net )
 //  2007 by Samuel Thibault ( samuel.thibault@ens-lyon.org )
 //
 //  This file may be distributed under terms of the GPL
@@ -37,11 +37,14 @@ void MemMeter::checkevent( void ){
     if (err)
         logFatal << "vm_statistics(): " << util::strerror(err) << std::endl;
 
-    fields_[0] = vmstats.active_count * vmstats.pagesize;
-    fields_[1] = vmstats.inactive_count * vmstats.pagesize;;
-    fields_[2] = vmstats.wire_count * vmstats.pagesize;;
-    fields_[3] = vmstats.free_count * vmstats.pagesize;;
+    fields_[0] = vmstats.active_count;
+    fields_[1] = vmstats.inactive_count;
+    fields_[2] = vmstats.wire_count;
+    fields_[3] = vmstats.free_count;
     total_ = fields_[0] + fields_[1] + fields_[2] + fields_[3];
 
-    FieldMeterDecay::setUsed (total_ - fields_[3], total_);
+    float used = static_cast<double>(total_ - fields_[3]) * vmstats.pagesize;
+    float total = static_cast<double>(total_) * vmstats.pagesize;
+
+    FieldMeterDecay::setUsed(used, total);
 }
