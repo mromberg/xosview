@@ -30,8 +30,11 @@ public:
 private:
     size_t _cpu;                      // which cpu are we displaying.
     std::map<size_t, uint64_t> _last; // counts from last event.
+    std::map<size_t, size_t> _imap;   // irq -> bit index.
 
     void initUI(void);
+    void initIMap(void);
+    std::string makeLegend(void) const;
     const std::map<size_t, uint64_t> &getStats(size_t cpu) const;
     std::vector<std::map<size_t, uint64_t> > readStats(void) const;
 };
