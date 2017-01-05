@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2017
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -24,7 +24,9 @@ float PrcIrqRateMeter::getIrqRate(void) {
     double etime = _timer.report();
 
     uint64_t count = getIntCount();
-    float rval = (float)(count - _last) / etime;
+    float rval = 0.0;
+    if (count >= _last)
+        rval = (float)(count - _last) / etime;
 
     logDebug << "(count, time, rate): "
              << count - _last << ", " << etime << ", " << rval
