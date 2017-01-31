@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2017
 //  by Mike Romberg (mike-romberg@comcast.net)
 //
 //  This file may be distributed under terms of the GPL
@@ -55,8 +55,14 @@ std::pair<uint64_t, uint64_t> PrcDiskMeter::getTotals(void) {
 
 inline static void skip(std::ifstream &ifs, size_t count) {
     for (size_t i = 0 ; i < count ; i++) {
+        // "seek" to field start.
+        while (ifs.good() && ifs.peek() == ' ')
+            ifs.ignore();
+
         if (!ifs)
             break;
+
+        // "seek" to next space delimiter.
         ifs.ignore(std::numeric_limits<std::streamsize>::max(), ' ');
     }
 }
