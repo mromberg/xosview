@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016
+//  Copyright (c) 2015, 2016, 2017
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -248,15 +248,15 @@ void XWin::setHints(XSizeHints *szHints){
         logFatal << "Error creating XTextProperty!" << std::endl;
     }
 
-    if (resdb().getResource("sessionID") != "") {
+    // For now try always setting both the X WM Property and the session info.
+    // If this continues to work, then just use the else branch.
+    if (false && resdb().getResource("sessionID") != "") {
         // X11R6 Session Manager gave us an ID.  Command handled elsewhere.
-        logDebug << "X11R6 session." << std::endl;
         XSetWMProperties(display_, window_, &titlep, &iconnamep, NULL,
           0, szHints, wmhints, classhints);
     }
     else {
         // Set the session restart command the old way.
-        logDebug << "Pre X11R6 session." << std::endl;
         std::vector<std::string> clst = util::split(resdb().getResource(
               "command"), " ");
         std::vector<char *> fargv(clst.size() + 1, 0);
