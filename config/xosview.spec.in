@@ -16,7 +16,7 @@ License:        GPLv2, BSD
 Source: @PACKAGE_TARNAME@-@PACKAGE_VERSION@.tar.gz
 URL: https://sourceforge.net/projects/xosview/files/latest/download
 
-BuildRequires: gawk libXext-devel gcc-c++ libXft-devel libXpm-devel
+BuildRequires: gawk libXext-devel gcc-c++ libXft-devel libXpm-devel libSM-devel
 
 %description
 xosview is a lightweight program that gathers information
