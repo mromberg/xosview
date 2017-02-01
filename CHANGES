@@ -1,3 +1,17 @@
+Changes since xosview-2.2.0
+
+  - /sys based diskmeters now read the correct stats (linux)
+
+  - xwm hint set even if x session management used.
+
+  - linux irq rate meter overflow fixed.
+
+  - libstdc++.so.6 is throwing exceptions when not asked to.  Catch and log.
+
+  - linux int meter sparsely displays irqs after 0-16.
+
+  - hurd memory meter fix for totals > 2gb.
+
 Changes since xosview-2.1.3
 
   - Performance improvements for multiple cpu/int meters.
