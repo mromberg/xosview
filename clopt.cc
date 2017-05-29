@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016
+//  Copyright (c) 2015, 2016, 2017
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -183,7 +183,7 @@ void CLOpt::eraseFrom(std::vector<std::string> &argv) const {
 }
 
 
-void CLOpt::printOn(std::ostream &os) const {
+std::ostream &CLOpt::printOn(std::ostream &os) const {
     os << "[" << name() << ": " << _shortOpt << " [";
     for (size_t i = 0 ; i < _values.size() ; i++) {
         os << _values[i];
@@ -191,9 +191,11 @@ void CLOpt::printOn(std::ostream &os) const {
             os << ",";
     }
     os << "]]";
+
+    return os;
 }
 
-void CLOpts::printOn(std::ostream &os) const {
+std::ostream &CLOpts::printOn(std::ostream &os) const {
     os << "opts: [\n";
     for (size_t i = 0 ; i < _opts.size() ; i++) {
         os << "\t" << _opts[i];
@@ -207,6 +209,8 @@ void CLOpts::printOn(std::ostream &os) const {
             os << ",";
     }
     os << "]";
+
+    return os;
 }
 
 const std::vector<std::string> &CLOpts::values(const std::string &name) const {

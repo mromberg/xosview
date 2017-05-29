@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016
+//  Copyright (c) 2015, 2016, 2017
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -9,7 +9,7 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
+#include <iosfwd>
 
 
 namespace util {
@@ -34,7 +34,7 @@ public:
     std::string usage(void) const; // return a usage string
 
     void eraseFrom(std::vector<std::string> &argv) const;
-    void printOn(std::ostream &os) const;
+    std::ostream &printOn(std::ostream &os) const;
 
 private:
     std::string _name;
@@ -74,7 +74,7 @@ public:
     bool missing(const std::string &name) const;
 
     std::string useage(void) const; // return a usage string
-    void printOn(std::ostream &os) const;
+    std::ostream &printOn(std::ostream &os) const;
 
     const std::vector<CLOpt> &opts(void) const { return _opts; }
 
