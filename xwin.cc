@@ -248,9 +248,7 @@ void XWin::setHints(XSizeHints *szHints){
         logFatal << "Error creating XTextProperty!" << std::endl;
     }
 
-    // For now try always setting both the X WM Property and the session info.
-    // If this continues to work, then just use the else branch.
-    if (false && resdb().getResource("sessionID") != "") {
+    if (resdb().getResource("sessionID") != "") {
         // X11R6 Session Manager gave us an ID.  Command handled elsewhere.
         XSetWMProperties(display_, window_, &titlep, &iconnamep, NULL,
           0, szHints, wmhints, classhints);
