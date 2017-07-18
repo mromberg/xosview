@@ -22,11 +22,14 @@
 // macro attempts to test for the compilers support of the
 // fallthough attribute.
 //------------------------------------------------------------------
-#define FALLTHROUGH ;
 #if defined(__has_cpp_attribute)
 #if __has_cpp_attribute(fallthrough)
 #define FALLTHROUGH [[fallthrough]]
+#else
+#define FALLTHROUGH ;
 #endif
+#else
+#define FALLTHROUGH ;
 #endif
 
 
