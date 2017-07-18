@@ -30,17 +30,13 @@ void Label::clearOld(X11Graphics &g) const {
     switch (_anchor) {
     case BLSE:
         y += g.textDescent();
-#if __has_cpp_attribute(fallthrough)
-            [[fallthrough]]; // standard c++ attribute to supress warning.
-#endif
+        FALLTHROUGH;
     case SE:
         x -= width;
         break;
     case BLSW:
         y += g.textDescent();
-#if __has_cpp_attribute(fallthrough)
-            [[fallthrough]]; // standard c++ attribute to supress warning.
-#endif
+        FALLTHROUGH;
     case SW:
         break;
     default:
@@ -70,17 +66,13 @@ void Label::draw(X11Graphics &g) {
     switch(_anchor) {
     case BLSE:
         y += g.textDescent();
-#if __has_cpp_attribute(fallthrough)
-            [[fallthrough]]; // standard c++ attribute to supress warning.
-#endif
+        FALLTHROUGH;
     case SE:
         x -= g.textWidth(_current);
         break;
     case BLSW:
         y += g.textDescent();
-#if __has_cpp_attribute(fallthrough)
-            [[fallthrough]]; // standard c++ attribute to supress warning.
-#endif
+        FALLTHROUGH;
     case SW:
         break;
     default:
