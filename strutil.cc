@@ -307,6 +307,9 @@ std::istream &util::sink::consume(std::istream &is) const {
         switch (util::glob(_pattern, buf)) {
         case util::Glob::M_ERROR:
             is.setstate(std::ios::badbit);
+#if __has_cpp_attribute(fallthrough)
+            [[fallthrough]]; // standard c++ attribute to supress warning.
+#endif
         case util::Glob::FAIL:
             if (_greedy && matchedOnce)
                 return is;

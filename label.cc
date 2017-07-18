@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016
+//  Copyright (c) 2015, 2016, 2017
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -30,11 +30,17 @@ void Label::clearOld(X11Graphics &g) const {
     switch (_anchor) {
     case BLSE:
         y += g.textDescent();
+#if __has_cpp_attribute(fallthrough)
+            [[fallthrough]]; // standard c++ attribute to supress warning.
+#endif
     case SE:
         x -= width;
         break;
     case BLSW:
         y += g.textDescent();
+#if __has_cpp_attribute(fallthrough)
+            [[fallthrough]]; // standard c++ attribute to supress warning.
+#endif
     case SW:
         break;
     default:
@@ -64,11 +70,17 @@ void Label::draw(X11Graphics &g) {
     switch(_anchor) {
     case BLSE:
         y += g.textDescent();
+#if __has_cpp_attribute(fallthrough)
+            [[fallthrough]]; // standard c++ attribute to supress warning.
+#endif
     case SE:
         x -= g.textWidth(_current);
         break;
     case BLSW:
         y += g.textDescent();
+#if __has_cpp_attribute(fallthrough)
+            [[fallthrough]]; // standard c++ attribute to supress warning.
+#endif
     case SW:
         break;
     default:
