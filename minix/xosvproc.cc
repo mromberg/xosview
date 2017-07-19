@@ -75,6 +75,8 @@ std::vector<XOSVProc> XOSVProc::ptable(void) {
     rval.reserve(dir.size());
 
     for (size_t i = 0 ; i < dir.size() ; i++) {
+        if (!std::isdigit(dir[i][0]) && dir[i][0] != '-')
+            continue;
         std::string psinfo("/proc/" + dir[i] + "/psinfo");
         std::ifstream ifs(psinfo.c_str());
         if (ifs.good()) {
