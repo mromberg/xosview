@@ -25,6 +25,30 @@ std::ostream &XOSVProc::dump(std::ostream &os) const {
 }
 
 
+//------------------------------------------------------------------------
+// from 3.4.0/minix/fs/procfs/pid.c
+//------------------------------------------------------------------------
+//	/* Print all the information. */
+// 	buf_printf("%d %c %d %s %c %d %d %u %u "
+// 	    "%"PRIu64" %"PRIu64" %"PRIu64" %lu %d %u\n",
+// 	    PSINFO_VERSION,			/* information version */
+// 	    type,				/* process type */
+// 	    mpd.mpd_endpoint,			/* process endpoint */
+// 	    mpd.mpd_name,			/* process name */
+// 	    state,				/* process state letter */
+// 	    mpd.mpd_blocked_on,			/* endpt blocked on, or NONE */
+// 	    mpd.mpd_priority,			/* process priority */
+// 	    mpd.mpd_user_time,			/* user time */
+// 	    mpd.mpd_sys_time,			/* system time */
+// 	    mpd.mpd_cycles,			/* execution cycles */
+// 	    mpd.mpd_kipc_cycles,		/* kernel IPC cycles */
+// 	    mpd.mpd_kcall_cycles,		/* kernel call cycles */
+// 	    vui.vui_total,			/* total memory */
+// 	    mpd.mpd_nice,			/* nice value */
+// 	    uid					/* effective user ID */
+// 	);
+//--------------------------------------------------------------------------
+
 std::istream &XOSVProc::load(std::istream &is) {
     is >> psiVers;
     if (psiVers != PSINFO_VERSION) {
@@ -35,10 +59,20 @@ std::istream &XOSVProc::load(std::istream &is) {
         return is;
     }
 
+    uint64_t ecycle, icycle, kcycle;
+    unsigned long tmem;
+    int nice;
+    unsigned euid;
     is >> ptype >> pend >> name >> state >> blockedon
-       >> ppri >> usrTime >> sysTime >> cycles_hi >> cycles_lo;
+       >> ppri >> usrTime >> sysTime >> ecycle >> kcycle 
+       >> tmem >> nice >> euid;
     if (!is)
         return is;
+
+    cycles = ecycle;
+    kcall_cycles = kcycle;
+    return is;
+
     cycles = make64(cycles_lo, cycles_hi);
 
     if (ptype != TYPE_TASK) {
