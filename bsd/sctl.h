@@ -1,11 +1,13 @@
 //
-//  Copyright (c) 2016
+//  Copyright (c) 2016, 2017
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
 #ifndef sctl_h
 #define sctl_h
+
+#include "strutil.h"
 
 #include <iostream>
 #include <string>
@@ -27,7 +29,11 @@ public:
 
     bool get(void *dst, size_t dsize) const {
         if (sysctl(_mib.data(), _mib.size(), dst, &dsize, NULL, 0) < 0)
+            {
+            logDebug << "sysctl(" << id() << ") failed: "
+                     << util::strerror() << std::endl;
             return false;
+            }
 
         return true;
     }
