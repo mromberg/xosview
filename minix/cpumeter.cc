@@ -29,12 +29,12 @@
 
 
 CPUMeter::CPUMeter(unsigned int cpu)
-    : FieldMeterGraph( 5, util::toupper(CPUMeter::cpuStr(cpu)),
-      "USR/NI/KERN/SYS/IDL"), _cpu(cpu) {
+    : FieldMeterGraph( 7, util::toupper(CPUMeter::cpuStr(cpu)),
+      "USR/NI/KERN/KIPC/KCALL/SYS/IDL"), _cpu(cpu) {
 
     // Suppress the warning about _cpu being unused.  In the future
     // minix may support smp and we will use it for real.
-    logDebug << "CPU: " << _cpu << std::endl;
+    (void)_cpu;
 
     getTicks(); // initialize _ptable
 }
@@ -49,9 +49,11 @@ void CPUMeter::checkResources(const ResDB &rdb){
 
     setfieldcolor( 0, rdb.getColor( "cpuUserColor" ) );
     setfieldcolor( 1, rdb.getColor( "cpuNiceColor" ) );
-    setfieldcolor( 2, rdb.getColor( "cpuWaitColor" ) );
-    setfieldcolor( 3, rdb.getColor( "cpuSystemColor" ) );
-    setfieldcolor( 4, rdb.getColor( "cpuFreeColor" ) );
+    setfieldcolor( 2, rdb.getColor( "cpuSystemColor" ) );
+    setfieldcolor( 3, rdb.getColor( "cpuWaitColor" ) );
+    setfieldcolor( 4, rdb.getColor( "cpuSoftIntColor" ) );
+    setfieldcolor( 5, rdb.getColor( "cpuInterruptColor" ) );
+    setfieldcolor( 6, rdb.getColor( "cpuFreeColor" ) );
 }
 
 
@@ -61,15 +63,13 @@ void CPUMeter::checkevent( void ){
 
     //logDebug << ticks << std::endl;
 
-    float ticktotal = (float)ticks[5];
+    float ticktotal = (float)ticks[7];
 
-    fields_[0] = (float)ticks[0] / ticktotal;
-    fields_[1] = (float)ticks[1] / ticktotal;
-    fields_[2] = (float)ticks[3] / ticktotal;
-    fields_[3] = (float)ticks[2] / ticktotal;
-    fields_[4] = (float)ticks[4] / ticktotal;
+    for (size_t i = 0 ; i + 1 < ticks.size() ; i++)
+        fields_[i] = (float)ticks[i] / ticktotal;
+
     total_ = 1.0;
-    setUsed(total_ - fields_[4], total_);
+    setUsed(total_ - fields_[6], total_);
 }
 
 
@@ -85,25 +85,34 @@ std::string CPUMeter::cpuStr(size_t /* num */){
 
 std::vector<uint64_t> CPUMeter::getTicks(void) {
 
-    // 0=usr, 1=nice, 2=sys, 3=kern, 4=idle, 5=total
-    std::vector<uint64_t> rval(6, 0);
+    // 0=usr, 1=nice, 2=sys, 3=kern, 4=kipc, 5=kcall, 6=idle, 7=total
+    std::vector<uint64_t> rval(8, 0);
     std::vector<XOSVProc> procs(XOSVProc::ptable());
-    std::map<pid_t, uint64_t> nptable;
+    std::map<pid_t, XOSVProc> nptable;
 
     for (size_t i = 0 ; i < procs.size() ; i++) {
 
         // get current total ticks, subtract last count
         // and save new count.  Build new ptable (in case a process
         // goes away).
-        uint64_t uticks = procs[i].cycles;
-        nptable[procs[i].pid] = uticks;
-        uticks -= _ptable[procs[i].pid];
+        pid_t pid = procs[i].pid;
+        uint64_t uticks = procs[i].execycles;
+        uint64_t kiticks = procs[i].kerncycles;
+        uint64_t kcticks = procs[i].kcallcycles;
+        const XOSVProc &last = _ptable[pid];
+        nptable[pid] = procs[i];
+        uticks -= last.execycles;
+        kiticks -= last.kerncycles;
+        kcticks -= last.kcallcycles;
 
-        rval[5] += uticks;
+        rval[4] += kiticks;
+        rval[5] += kcticks;
+        rval[7] += uticks + kiticks + kcticks;
 
+        // put the execycles into a bin based on ptype.
         if (procs[i].ptype == TYPE_TASK) {
             if (procs[i].pid == IDLE)
-                rval[4] += uticks; // idle
+                rval[6] += uticks; // idle
             else if (procs[i].pid == KERNEL)
                 rval[3] += uticks; // kernel
         }
@@ -117,7 +126,6 @@ std::vector<uint64_t> CPUMeter::getTicks(void) {
                     rval[0] += uticks; // user
             }
         }
-
     }
 
     _ptable = nptable;

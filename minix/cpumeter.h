@@ -8,6 +8,7 @@
 #define CPUMETER_H
 
 #include "fieldmetergraph.h"
+#include "xosvproc.h"
 
 #include <map>
 
@@ -27,7 +28,7 @@ public:
 
 private:
     unsigned int _cpu;
-    std::map<pid_t, uint64_t> _ptable;
+    std::map<pid_t, XOSVProc> _ptable;
 
     std::vector<uint64_t> getTicks(void);
 };

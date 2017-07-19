@@ -12,6 +12,8 @@
 
 #include <fstream>
 
+#include <minix/procfs.h>
+
 
 
 std::ostream &XOSVProc::dump(std::ostream &os) const {
