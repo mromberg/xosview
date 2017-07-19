@@ -16,7 +16,7 @@ static const char * const MEMFILENAME = "/proc/meminfo";
 
 
 MemMeter::MemMeter( void )
-    : FieldMeterGraph( 4, "MEM", "USED/CACHE/CFREE/FREE" ) {
+    : FieldMeterGraph( 3, "MEM", "USED/CACHE/FREE" ) {
 }
 
 
@@ -29,8 +29,7 @@ void MemMeter::checkResources(const ResDB &rdb){
 
     setfieldcolor( 0, rdb.getColor( "memUsedColor" ) );
     setfieldcolor( 1, rdb.getColor( "memCacheColor" ) );
-    setfieldcolor( 2, rdb.getColor( "memInactiveColor" ) );
-    setfieldcolor( 3, rdb.getColor( "memFreeColor" ) );
+    setfieldcolor( 2, rdb.getColor( "memFreeColor" ) );
 }
 
 
@@ -41,12 +40,18 @@ void MemMeter::checkevent( void ){
     logDebug << std::setprecision(1) << std::fixed
              << "t " << total_ * TOMEG << " "
              << "used "    << fields_[0] * TOMEG << " "
-             << "cache "   << fields_[1] * TOMEG << " "
-             << "contig "  << fields_[2] * TOMEG << " "
-             << "free "    << fields_[3] * TOMEG
+             << "cache  "  << fields_[1] * TOMEG << " "
+             << "free "    << fields_[2] * TOMEG
              << std::endl;
 }
 
+//---------------------------------------------------------------------
+// from 3.4.0/minix/fs/procfs/root.c
+//buf_printf("%u %lu %lu %lu %lu\n", vsi.vsi_pagesize, vsi.vsi_total,
+// 	    vsi.vsi_free, vsi.vsi_largest, vsi.vsi_cached);
+//
+// It is not clear to me what vsi_largest means.
+//---------------------------------------------------------------------
 
 void MemMeter::getmeminfo( void ){
     std::ifstream ifs(MEMFILENAME);
@@ -54,28 +59,29 @@ void MemMeter::getmeminfo( void ){
     if (!ifs)
         logFatal << "Could not open: " << MEMFILENAME << std::endl;
 
-    unsigned long long psize, total, free, largest, cached;
+    unsigned int psize;
+    unsigned long total, free, largest, cached;
 
     ifs >> psize >> total >> free >> largest >> cached;
 
     if (!ifs)
         logFatal << "Could not parse: " << MEMFILENAME << std::endl;
 
+    unsigned long used = total - cached - free;
+
     logDebug << "psize: " << psize << ", "
              << "total: " << total << ", "
+             << "used: " << used << ", "
+             << "cache: " << cached << ", "
              << "free: " << free << ", "
-             << "lrg: " << largest << ", "
-             << "cache: " << cached << std::endl;
-
+             << "sum: " << used + cached + free
+             << std::endl;
+    
     total_ = (float)total * (float)psize;
+    fields_[0] = (float)used * (float)psize;
     fields_[1] = (float)cached * (float)psize;
-    fields_[2] = (float)largest * (float)psize;
-    fields_[3] = (float)(free - largest) * (float)psize;
-    // The used is whatever is left.  Assuming the largest is part
-    // of this count.  So, subtract the largest from used
-    fields_[0] = total_ - (fields_[1] + fields_[2] + fields_[3]);
-    fields_[0] = fields_[0] >= 0 ? fields_[0] : 0;
+    fields_[2] = (float)free * (float)psize;
 
     if (total_)
-        FieldMeterDecay::setUsed(fields_[0], total_);
+        FieldMeterDecay::setUsed(total_ - fields_[2], total_);
 }
