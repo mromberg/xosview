@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2017
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -45,9 +45,9 @@ void SwapMeter::getSwapInfo(uint64_t &total, uint64_t &used) {
     static SysCtl swcache_sc("vm.swap_cache_use");
 
     size_t pagesize = getpagesize();
-    int ssize = 0;
-    int anon = 0;
-    int cache = 0;
+    uint64_t ssize = 0;
+    uint64_t anon = 0;
+    uint64_t cache = 0;
 
     if (!swsize_sc.get(ssize))
         logFatal << "sysctl(" << swsize_sc.id() << ") failed." << std::endl;
