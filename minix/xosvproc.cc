@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2017
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -12,14 +12,12 @@
 
 #include <fstream>
 
-#include <minix/procfs.h>
-#include <minix/u64.h>
 
 
 std::ostream &XOSVProc::dump(std::ostream &os) const {
     os << "name=" << name << ",pid=" << pid
-       <<",ptype=" << ptype << ",state=" << state
-       << ",cycles=" << cycles;
+       << ",ptype=" << ptype << ",state=" << state
+       << ",execycles=" << execycles;
 
     return os;
 }
@@ -50,6 +48,10 @@ std::ostream &XOSVProc::dump(std::ostream &os) const {
 //--------------------------------------------------------------------------
 
 std::istream &XOSVProc::load(std::istream &is) {
+    // The theory is that the first value PSINFO_VERSION will be incremented
+    // when the contents of the file change.   This did not seem to happen
+    // (yet) for the change between 3.3 and 3.4.  So, this check may be
+    // just for theatrics.
     is >> psiVers;
     if (psiVers != PSINFO_VERSION) {
         is.setstate(std::ios::failbit);
@@ -59,43 +61,9 @@ std::istream &XOSVProc::load(std::istream &is) {
         return is;
     }
 
-    uint64_t ecycle, icycle, kcycle;
-    unsigned long tmem;
-    int nice;
-    unsigned euid;
-    is >> ptype >> pend >> name >> state >> blockedon
-       >> ppri >> usrTime >> sysTime >> ecycle >> kcycle 
-       >> tmem >> nice >> euid;
-    if (!is)
-        return is;
-
-    cycles = ecycle;
-    kcall_cycles = kcycle;
-    return is;
-
-    cycles = make64(cycles_lo, cycles_hi);
-
-    if (ptype != TYPE_TASK) {
-        is >> totMem >> comMem >> shMem >> sleepState
-           >> ppid >> realuid >> effuid >> procgrp
-           >> nice >> f_state >> fp_blk_on >> fp_tty;
-
-        if (!is)
-            return is;
-    }
-
-    is >> kipc_cycles_hi >> kipc_cycles_lo
-       >> kcall_cycles_hi >> kcall_cycles_lo;
-    if (!is)
-        return is;
-    kipc_cycles = make64(kipc_cycles_lo, kipc_cycles_hi);
-    kcall_cycles = make64(kcall_cycles_lo, kcall_cycles_hi);
-
-    if (ptype == TYPE_TASK) {
-        is >> vui_total;
-        if (!is)
-            return is;
-    }
+    is >> ptype >> pend >> name >> state >> blockedon >> ppri >> usrtime
+       >> systime >> execycles >> kerncycles >> kcallcycles >> totmem
+       >> nice >> euid;
 
     return is;
 }
@@ -109,8 +77,10 @@ std::vector<XOSVProc> XOSVProc::ptable(void) {
     rval.reserve(dir.size());
 
     for (size_t i = 0 ; i < dir.size() ; i++) {
+        // Skip directory entires that are not numbers.
         if (!std::isdigit(dir[i][0]) && dir[i][0] != '-')
             continue;
+
         std::string psinfo("/proc/" + dir[i] + "/psinfo");
         std::ifstream ifs(psinfo.c_str());
         if (ifs.good()) {
