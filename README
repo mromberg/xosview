@@ -20,23 +20,23 @@
 
 * Current known working platforms:
    
-  - Linux (tested on fedora-24 but almost anything should work)
+  - Linux (tested on fedora-26 but almost anything should work)
 
-  - Gnu Hurd (debian 3-25-2016 snapshot)
+  - Gnu Hurd (debian 2017-01-15)
 
-  - Solaris (tested on OpenIndiana hipster 2016.04)
+  - Solaris (tested on OpenIndiana hipster 2017-05-02)
 
-  - NetBSD  (7.0.1)
+  - NetBSD  (7.1)
 
-  - FreeBSD (10.3)
+  - FreeBSD (11.0)
 
-  - OpenBSD (6.0)
+  - OpenBSD (6.1)
 
-  - Dragonfly BSD (4.4.3)
+  - Dragonfly BSD (4.8.0)
 
   - cygwin (displayed stats are for windows)
 
-  - minix (3.3.0 dev snapshot with X11)
+  - minix (3.4.0rc6 dev snapshot)
 
 * To build xosview:
 
