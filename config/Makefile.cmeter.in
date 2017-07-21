@@ -28,6 +28,7 @@ ppagemeter.o \
 ctzonemeter.o \
 cdiskmeter.o \
 pdiskmeter.o \
+cintmeter.o \
 cmetermaker.o
 
 
