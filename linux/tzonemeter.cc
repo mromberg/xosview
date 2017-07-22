@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016
+//  Copyright (c) 2015, 2016, 2017
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 #include "tzonemeter.h"
@@ -23,13 +23,16 @@ float TZoneMeter::getTemp(void) {
         // Unit: millidegree Celsius
         unsigned long long temp = 0;
         if (!util::fs::readFirst(_tempFName, temp))
-            logFatal << "error reading: " << _tempFName << std::endl;
+            logProblem << "error reading: " << _tempFName << std::endl;
         return static_cast<float>(temp) / 1000.0;
     }
     catch (...) {
-        // gnu libstdc++ has this bug.  Remove this try/catch block
-        // if/when it is fixed.
-        logProblem << "libstdc++ throwing unrequested exception." << std::endl;
+        // gnu libstdc++ has this bug:
+        // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53984
+        // Remove this try/catch block if/when it is fixed.
+        logProblem << "libstdc++ throwing un-requested exception.\n"
+                   << "See: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=53984"
+                   << std::endl;
         return 0.0;
     }
 }
