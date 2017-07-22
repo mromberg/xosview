@@ -1,7 +1,13 @@
+//
+//  Copyright (c) 2017
+//  by Mike Romberg ( mike-romberg@comcast.net )
+//
+//  This file may be distributed under terms of the GPL
+//
 #include "cintmeter.h"
 
 
-static const size_t RESIRQ = 16; // reserved irqs (always show 0 - RESIRQ bits)
+static const size_t ResIRQ = 15; // reserved irqs (always show 0 - ResIRQ bits)
 
 
 
@@ -46,13 +52,13 @@ void ComIntMeter::checkResources(const ResDB &rdb) {
 void ComIntMeter::initIMap(void) {
     _imap.clear();
 
-    for (size_t i = 0 ; i <= RESIRQ ; i++)
+    for (size_t i = 0 ; i <= ResIRQ ; i++)
         _imap[i] = i;
 
-    size_t next = RESIRQ + 1;
+    size_t next = ResIRQ + 1;
     std::map<size_t, uint64_t>::const_iterator it;
     for (it = _last.begin() ; it != _last.end() ; ++it) {
-        if (it->first > RESIRQ)
+        if (it->first > ResIRQ)
             _imap[it->first] = next++;
     }
 }
