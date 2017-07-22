@@ -1,3 +1,14 @@
+Changes since xosview-2.2.1
+
+  - BSD and Linux intmeters now have a common base class.
+
+  - minix port now only supports 3.4.0 as it is the most practical way
+    to get an X11 setup with it.
+
+  - Use new 64bit sysctl calls for swap on dragonflyBSD (4.8.0).
+
+  - compiles clean with -Wall -Wextra with gcc7.
+
 Changes since xosview-2.2.0
 
   - /sys based diskmeters now read the correct stats (linux)
