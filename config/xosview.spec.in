@@ -38,13 +38,6 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-#-----------------------------
-# local developer repo update
-#-----------------------------
-createrepo -c cache_dir --update ~/rpmbuild/RPMS
-echo "RERUN createrepo -c cache_dir --update ~/rpmbuild/RPMS if --sign used"
-#-----------------------------
-
 %files
 %defattr(-,root,root,-)
 %{_bindir}/*
