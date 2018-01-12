@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AC_INIT([xosview],[2.2.1],
+AC_INIT([xosview],[2.2.2],
         [https://sourceforge.net/p/xosview/_list/tickets],
         [xosview2],
         [http://sourceforge.net/projects/xosview/])

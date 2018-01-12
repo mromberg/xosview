@@ -23,15 +23,17 @@ float PrcIrqRateMeter::getIrqRate(void) {
     _timer.stop();
     double etime = _timer.report();
 
-    uint64_t count = getIntCount();
     float rval = 0.0;
-    if (count >= _last)
-        rval = (float)(count - _last) / etime;
+    if (etime >= 0.001) {
+        uint64_t count = getIntCount();
+        if (count >= _last)
+            rval = (float)(count - _last) / etime;
 
-    logDebug << "(count, time, rate): "
-             << count - _last << ", " << etime << ", " << rval
-             << std::endl;
-    _last = count;
+        logDebug << "(count, time, rate): "
+                 << count - _last << ", " << etime << ", " << rval
+                 << std::endl;
+        _last = count;
+    }
 
     return rval;
 }

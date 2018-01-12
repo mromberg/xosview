@@ -24,6 +24,7 @@ from your operating system and displays it in graphical form.
 It attempts to show you in a quick glance an overview of how
 your system resources are being utilized.
 
+%global debug_package %{nil}
 %prep
 %setup -q -n @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
@@ -37,13 +38,6 @@ make install DESTDIR=$RPM_BUILD_ROOT
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-
-#-----------------------------
-# local developer repo update
-#-----------------------------
-createrepo -c cache_dir --update ~/rpmbuild/RPMS
-echo "RERUN createrepo -c cache_dir --update ~/rpmbuild/RPMS if --sign used"
-#-----------------------------
 
 %files
 %defattr(-,root,root,-)
