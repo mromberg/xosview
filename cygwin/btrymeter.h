@@ -14,17 +14,19 @@
 
 class BtryMeter : public FieldMeter {
 public:
-    BtryMeter( void );
-    ~BtryMeter( void );
+    BtryMeter(void);
 
-    std::string resName( void ) const { return "battery"; }
-    void checkevent( void );
+    std::string resName(void) const { return "battery"; }
+    void checkevent(void);
 
     void checkResources(const ResDB &rdb);
 
 private:
     unsigned long _critColor, _lowColor, _leftColor, _chargeColor;
     unsigned long _fullColor, _noneColor;
+
+    void setLegend(bool crit, bool low, bool acstatus, bool charging,
+      int batlifetime);
 };
 
 
