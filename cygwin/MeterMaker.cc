@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016
+//  Copyright (c) 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -19,6 +19,7 @@
 #include "netmeter.h"
 #include "pintratemeter.h"
 #include "tzonemeter.h"
+#include "btrymeter.h"
 #include "example.h"  // The example meter
 
 
@@ -59,6 +60,9 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
 
     if (rdb.isResourceTrue("irqrate"))
         _meters.push_back(new PrcIrqRateMeter());
+
+    if (rdb.isResourceTrue("battery"))
+        _meters.push_back(new BtryMeter());
 
     if (rdb.isResourceTrue("tzone"))
         tzoneFactory();
