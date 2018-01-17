@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -8,13 +8,14 @@
 #include "meter.h"
 
 
+
 Meter::Meter(const std::string &title, const std::string &legend)
-    : x_(0), y_(0), width_(1), height_(1),
-      priority_(1), counter_(0),
-      docaptions_(false),
-      dolegends_(false), dousedlegends_(false), metric_(false),
-      _title(x_, y_, title, Label::BLSW),
-      _legend(x_, y_, legend, "/"), _fgColor(0), _bgColor(0) {
+    : _x(0), _y(0), _width(1), _height(1),
+      _priority(1), _counter(0),
+      _docaptions(false),
+      _dolegends(false), _dousedlegends(false), _metric(false),
+      _title(_x, _y, title, Label::BLSW),
+      _legend(_x, _y, legend, "/"), _fgColor(0), _bgColor(0) {
 }
 
 
@@ -23,8 +24,8 @@ Meter::~Meter( void ){
 
 
 void Meter::checkResources(const ResDB &rdb) {
-    priority_ = util::stoi(rdb.getResourceOrUseDefault(resName() + "Priority",
-          "10"));
+    _priority = util::stoi(rdb.getResourceOrUseDefault(resName() + "Priority",
+        "10"));
     _fgColor = rdb.getColor("foreground");
     _bgColor = rdb.getColor("background");
     unsigned long tcolor = rdb.getColor("meterLabelColor");
@@ -34,13 +35,13 @@ void Meter::checkResources(const ResDB &rdb) {
 
 
 void Meter::resize( int x, int y, int width, int height ){
-    x_ = x;
-    y_ = y;
-    width_ = (width>=0) ? width : 0;    // fix for cosmetical bug:
-    height_ = (height>=0) ? height : 0; // beware of values < 0 !
-    width_ &= ~1;                       // only allow even width_ values
-    _title.move(0, y_ + height_ + 2);
-    _legend.move(x_, y_ - 1);
+    _x = x;
+    _y = y;
+    _width = (width>=0) ? width : 0;    // fix for cosmetical bug:
+    _height = (height>=0) ? height : 0; // beware of values < 0 !
+    _width &= ~1;                       // only allow even _width values
+    _title.move(0, _y + _height + 2);
+    _legend.move(_x, _y - 1);
 }
 
 
@@ -112,4 +113,11 @@ double Meter::scaleValue(double value, std::string &scale) const {
     }
 
     return scaled;
+}
+
+
+bool Meter::requestevent(void) {
+    logAssert(_priority != 0) << "meter " << name() << " invalid priority\n";
+    _counter = (_counter + 1) % _priority;
+    return !_counter;
 }
