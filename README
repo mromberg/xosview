@@ -22,17 +22,17 @@
    
   - Linux (tested on fedora-26 but almost anything should work)
 
-  - Gnu Hurd (debian 2017-01-15)
+  - Gnu Hurd (debian 2018-01-12)
 
-  - Solaris (tested on OpenIndiana hipster 2017-05-02)
+  - Solaris (tested on OpenIndiana hipster 2018-01-12)
 
-  - NetBSD  (7.1)
+  - NetBSD  (7.1.1)
 
   - FreeBSD (11.1)
 
-  - OpenBSD (6.1)
+  - OpenBSD (6.2)
 
-  - Dragonfly BSD (4.8.0)
+  - Dragonfly BSD (5.0.2)
 
   - cygwin (displayed stats are for windows)
 
