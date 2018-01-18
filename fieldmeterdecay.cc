@@ -24,7 +24,7 @@
 //   3.  Change the constructor call to use FieldMeterDecay(), rather than
 //       FieldMeter().
 //   4.  Make the checkResources () function in the meter set the
-//	 dodecay_ variable according to the, e.g., xosview*cpuDecay resource.
+//	 _dodecay variable according to the, e.g., xosview*cpuDecay resource.
 #include "fieldmeterdecay.h"
 #include "x11graphics.h"
 
@@ -33,26 +33,26 @@
 FieldMeterDecay::FieldMeterDecay(size_t numfields, const std::string &title,
   const std::string &legend)
     : FieldMeter (numfields, title, legend),
-      dodecay_(true), firsttime_(true), decay_(numfields, 0.0),
-      lastDecayval_(numfields, 0.0) {
+      _dodecay(true), _firsttime(true), _decay(numfields, 0.0),
+      _lastDecayVal(numfields, 0.0) {
 
-    decay_[numfields-1] = 1.0;  //  Initialize to all free...
+    _decay[numfields-1] = 1.0;  //  Initialize to all free...
 }
 
 
-FieldMeterDecay::~FieldMeterDecay( void ){
+FieldMeterDecay::~FieldMeterDecay(void) {
 }
 
 
 void FieldMeterDecay::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
-    dodecay_ = rdb.isResourceTrue( resName() + "Decay" );
+    _dodecay = rdb.isResourceTrue( resName() + "Decay" );
 }
 
 
 void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
 
-    if (!dodecay_) {
+    if (!_dodecay) {
         //  If this meter shouldn't be done as a decaying splitmeter,
         //  call the ordinary fieldmeter code.
         FieldMeter::drawfields(g, mandatory);
@@ -67,13 +67,13 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
 
     //  This code is supposed to make the average display look just like
     //  the ordinary display for the first drawfields, but it doesn't seem
-    //  to work too well.  But it's better than setting all decay_ fields
+    //  to work too well.  But it's better than setting all _decay fields
     //  to 0.0 initially!
 
-    if (firsttime_) {
-        firsttime_ = false;
+    if (_firsttime) {
+        _firsttime = false;
         for (unsigned int i = 0; i < numfields(); i++)
-            decay_[i] = _fields[i] / _total;
+            _decay[i] = _fields[i] / _total;
     }
 
     //  Update the decay fields.  This is not quite accurate, since if
@@ -100,17 +100,17 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
     int x = fx;
     for ( size_t i = 0 ; i < numfields() ; i++ ){
 
-        decay_[i] = ALPHA * decay_[i] + (1.0 - ALPHA) * (_fields[i] / _total);
+        _decay[i] = ALPHA * _decay[i] + (1.0 - ALPHA) * (_fields[i] / _total);
 
         //  We want to round the widths, rather than truncate.
         int twidth = (int) (0.5 + (fwidth * (float) _fields[i]) / _total);
-        int decaytwidth = (int) (0.5 + fwidth * decay_[i]);
+        int decaytwidth = (int) (0.5 + fwidth * _decay[i]);
         logAssert(decaytwidth >= 0.0)
             << "FieldMeterDecay " << name()
             << ":  decaytwidth of " << std::endl
             << decaytwidth << ", width of " << fwidth
-            << ", decay_[" << i << std::endl
-            << "] of " << decay_[i] << std::endl;
+            << ", _decay[" << i << std::endl
+            << "] of " << _decay[i] << std::endl;
 
         //  However, due to rounding, we may have gone one
         //  pixel too far by the time we get to the later fields...
@@ -141,7 +141,7 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
             _lastx[i] = x;
         }
 
-        if ( mandatory || (decay_[i] != lastDecayval_[i]) ){
+        if ( mandatory || (_decay[i] != _lastDecayVal[i]) ){
             checkX(decayx, decaytwidth);
             if (!fgSet) {
                 g.setFG( fieldcolor(i) );
@@ -149,7 +149,7 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
             }
             g.drawFilledRectangle( decayx, y() + halfheight + 1,
               decaytwidth, height() - halfheight - 1);
-            lastDecayval_[i] = decay_[i];
+            _lastDecayVal[i] = _decay[i];
         }
 
         x += twidth;
