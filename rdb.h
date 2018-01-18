@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef RDB_H
-#define RDB_H
+#ifndef rdb_h
+#define rdb_h
 
 #include "log.h"
 

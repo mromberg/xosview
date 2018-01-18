@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef LABEL_H
-#define LABEL_H
+#ifndef label_h
+#define label_h
 
 #include <string>
 #include <vector>

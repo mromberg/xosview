@@ -1,16 +1,14 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef X11GRAPHICS_H
-#define X11GRAPHICS_H
+#ifndef x11graphics_h
+#define x11graphics_h
 
-#include "log.h"
 #include "font.h"
 
-#include <string>
 #include <vector>
 
 #include <X11/Xlib.h>

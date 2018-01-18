@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef XRM_H
-#define XRM_H
+#ifndef Xrm_h
+#define Xrm_h
 
 #include "rdb.h"
 
@@ -17,7 +17,7 @@
 class Xrm : public ResDB {
 public:
     Xrm(const std::string &className, const std::string &instanceName);
-    virtual ~Xrm();
+    virtual ~Xrm(void);
 
     virtual std::string className(void) const
         { return std::string(XrmQuarkToString(_class)); }

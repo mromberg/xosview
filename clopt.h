@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2015, 2016, 2017
+//  Copyright (c) 2015, 2016, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef CLOPT_H
-#define CLOPT_H
+#ifndef clopt_h
+#define clopt_h
 
 #include <string>
 #include <vector>

@@ -8,8 +8,8 @@
 //-------------------------------------------------------
 
 // header data guards
-#ifndef EXAMPLE_H
-#define EXAMPLE_H
+#ifndef example_h
+#define example_h
 
 #include "fieldmetergraph.h"  // our parent drawing class
 

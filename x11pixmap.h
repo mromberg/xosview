@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef X11PIXMAP_H
-#define X11PIXMAP_H
+#ifndef x11pixmap_h
+#define x11pixmap_h
 
 #include "x11graphics.h"
 

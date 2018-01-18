@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef XFTGRAPHICS_H
-#define XFTGRAPHICS_H
+#ifndef xftgraphics_h
+#define xftgraphics_h
 
 #include "xftfont.h"
 

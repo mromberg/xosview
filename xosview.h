@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015, 2016
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef XOSVIEW_H
-#define XOSVIEW_H
+#ifndef xosview_h
+#define xosview_h
 
 #include "xwin.h"
 #include "Xrm.h"

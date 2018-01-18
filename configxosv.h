@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2017
+//  Copyright (c) 2015, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -8,8 +8,8 @@
 // have include guards.  Rather than pondering the mysteries of
 // why, I'm just gonna put them here.  No one should directly include
 // config.h
-#ifndef CONFIGXOSV_H
-#define CONFIGXOSV_H
+#ifndef configxosv_h
+#define configxosv_h
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"

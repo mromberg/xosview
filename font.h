@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef FONT_H
-#define FONT_H
+#ifndef font_h
+#define font_h
 
 #include <string>
 

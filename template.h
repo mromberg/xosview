@@ -2,8 +2,8 @@
 //  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
-#ifndef EXAMPLE_H
-#define EXAMPLE_H
+#ifndef template_h
+#define template_h
 
 #include "fieldmetergraph.h"  // our parent drawing class
 

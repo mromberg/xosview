@@ -1,7 +1,7 @@
-#ifndef LOG_H
-#define LOG_H
+#ifndef log_h
+#define log_h
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL

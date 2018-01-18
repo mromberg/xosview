@@ -1,13 +1,11 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef _TIMER_H_
-#define _TIMER_H_
-
-#define TIMER_H_CVSID "$Id: timer.h,v 1.8 2006/02/18 04:33:04 romberg Exp $"
+#ifndef timer_h
+#define timer_h
 
 //
 //                 General purpose interval timer class
@@ -29,37 +27,35 @@ inline std::ostream &operator<<(std::ostream &os, const struct timeval &tv) {
 class Timer {
 public:
     Timer(bool start=false) {
-        // in C++11 you can do starttime_({0, 0}) in the initializer list
-        starttime_.tv_sec = starttime_.tv_usec = 0;
-        stoptime_.tv_sec = stoptime_.tv_usec = 0;
-        if ( start )
+        // in C++11 you can do _startTime({0, 0}) in the initializer list
+        _startTime.tv_sec = _startTime.tv_usec = 0;
+        _stopTime.tv_sec = _stopTime.tv_usec = 0;
+        if (start)
             Timer::start();
     }
-    ~Timer( void ){}
+    ~Timer(void){}
 
-    void start( void ) { gettimeofday( &starttime_, NULL ); }
-    void stop( void )  { gettimeofday( &stoptime_, NULL );  }
+    void start(void) { gettimeofday(&_startTime, NULL); }
+    void stop(void)  { gettimeofday(&_stopTime, NULL);  }
     //  reports time intervall between calls to start and stop in usec
     //  This one uses doubles as the return value, to avoid
     //  overflow/sign problems.
     double report_usecs(void) const {
-        return (stoptime_.tv_sec - starttime_.tv_sec) * 1000000.0
-            + stoptime_.tv_usec - starttime_.tv_usec;
+        return (_stopTime.tv_sec - _startTime.tv_sec) * 1000000.0
+            + _stopTime.tv_usec - _startTime.tv_usec;
     }
 
     double report(void) const { return report_usecs() / 1000000.0; } // sec
 
     std::ostream &printOn(std::ostream &os) const {
         return os << "Timer : ["
-                  << "starttime_ = " << starttime_ << ", "
-                  << "stoptime_ = " << stoptime_ << ", "
+                  << "_startTime = " << _startTime << ", "
+                  << "_stopTime = " << _stopTime << ", "
                   << "duration = " << report_usecs() <<" usecs]";
     }
 
-protected:
-    struct timeval starttime_, stoptime_;
-
 private:
+    struct timeval _startTime, _stopTime;
 };
 
 inline std::ostream &operator<<(std::ostream &os, const Timer &t){
