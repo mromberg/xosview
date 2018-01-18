@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 
@@ -29,8 +29,8 @@ private:
     // For this example I will just display something
     // silly.
 
-    // Note:  Our parent meter has a fields_ vector
-    // and total_ of type float
+    // Note:  Our parent meter has a _fields vector
+    // and _total of type float
     // that we use to have it draw the
     // display for us.  This data type is perfectly
     // fine for this purpose.  But may be unsuitable
@@ -131,7 +131,7 @@ inline void ExampleMeter::checkevent( void ) {
     // update our values
     readWarpCoreTemp();
 
-    // Now set values in the fields_.  Note that there
+    // Now set values in the _fields.  Note that there
     // is no reason you have to store the actual measured
     // value in these fields.  They are just used to draw
     // So attempting to use them to store things like
@@ -142,11 +142,11 @@ inline void ExampleMeter::checkevent( void ) {
     // 1.0 maps to the _testMaximum.
     float percentVal = static_cast<float>(_warpCoreTemp)
         / static_cast<float>(_testMaximum);
-    total_ = 1.0;
-    fields_[0] = percentVal;
-    if (fields_[0] > 1.0) // peak the meter
-        fields_[0] = 1.0;
-    fields_[1] = 1.0 - fields_[0];
+    _total = 1.0;
+    _fields[0] = percentVal;
+    if (_fields[0] > 1.0) // peak the meter
+        _fields[0] = 1.0;
+    _fields[1] = 1.0 - _fields[0];
 
     // Change the field color to show our level of concern
     if (percentVal > 0.9)
@@ -158,7 +158,7 @@ inline void ExampleMeter::checkevent( void ) {
 
     // we can have the used label report the actual value even
     // if we peak the meter.
-    setUsed(percentVal, total_);
+    setUsed(percentVal, _total);
 }
 
 // What is your name?  This is the prefix for resource names

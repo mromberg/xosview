@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006, 2015, 2016
+//  Copyright (c) 1999, 2006, 2015, 2016, 2018
 //  by Thomas Waldmann ( ThomasWaldmann@gmx.de )
 //  based on work of Mike Romberg ( mike-romberg@comcast.net )
 //
@@ -24,10 +24,10 @@ RAIDMeter::RAIDMeter(const std::string &device)
     // legend format: level ndevs/ffsize - sync_action - TODO
     legend(_level + " none ?/" + util::repr(_ffsize) + " - none - TODO", "-");
 
-    total_ = 1.0;         // All fields 0.0 - 1.0
-    // fields_[0] = 0.0;  // Always 0.0 (used for legend color).
-    // fields_[1] = 0.0;  // sync_action progress.
-    // fields_[2] = 0.0;  // todo
+    _total = 1.0;         // All fields 0.0 - 1.0
+    // _fields[0] = 0.0;  // Always 0.0 (used for legend color).
+    // _fields[1] = 0.0;  // sync_action progress.
+    // _fields[2] = 0.0;  // todo
 }
 
 
@@ -198,8 +198,8 @@ std::string RAIDMeter::setSyncAction(void) {
 
     std::string sync_action("idle");
 
-    fields_[1] = 0.0;
-    fields_[2] = 1.0;
+    _fields[1] = 0.0;
+    _fields[2] = 1.0;
 
     // Not all raid levels have a sync_action.  If missing use idle.
     if (util::fs::readAll(_dir + "sync_action", sync_action)) {
@@ -217,8 +217,8 @@ std::string RAIDMeter::setSyncAction(void) {
                            << std::endl;
             }
             else {
-                fields_[1] = done / total;
-                fields_[2] = 1.0 - fields_[1];
+                _fields[1] = done / total;
+                _fields[2] = 1.0 - _fields[1];
             }
         }
     }

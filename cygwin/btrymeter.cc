@@ -32,10 +32,10 @@ void BtryMeter::checkevent(void){
     SYSTEM_POWER_STATUS sps;
     if (!GetSystemPowerStatus(&sps)) {
         logProblem << "GetSystemPowerStatus() failed." << std::endl;
-        total_ = 100;
-        fields_[0] = 0;
-        fields_[1] = total_;
-        setUsed(fields_[0], total_);
+        _total = 100;
+        _fields[0] = 0;
+        _fields[1] = _total;
+        setUsed(_fields[0], _total);
         return;
     }
 
@@ -60,10 +60,10 @@ void BtryMeter::checkevent(void){
              << "bat life  : " << batlifetime << " secs."
              << std::endl;
 
-    total_ = 100;
-    fields_[0] = nobat ? 0 : batlife;
-    fields_[1] = total_;
-    setUsed(fields_[0], total_);
+    _total = 100;
+    _fields[0] = nobat ? 0 : batlife;
+    _fields[1] = _total;
+    setUsed(_fields[0], _total);
 
     setLegend(crit, low, acstatus, charging, batlifetime);
 }

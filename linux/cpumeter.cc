@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -76,7 +76,7 @@ void CPUMeter::checkevent( void ) {
     std::vector<uint64_t> cstats(numfields(), 0);
     getStats(cstats);
 
-    total_ = 0;
+    _total = 0;
     float used = 0;          // for setUsed
     unsigned int sindex = 0; // index into cstats
     float idle = 0;          // temp storage for idle field
@@ -84,29 +84,29 @@ void CPUMeter::checkevent( void ) {
     for (unsigned int i = 0 ; i < numfields() - 1; i++) {
         if (sindex == 3) { // idle field
             idle = cstats[sindex] - _oldStats[sindex]; // save for later
-            total_ += idle;
+            _total += idle;
             sindex++;  // offset
         }
 
-        fields_[i] = cstats[sindex] - _oldStats[sindex];
-        total_ += fields_[i];
-        used += fields_[i];
+        _fields[i] = cstats[sindex] - _oldStats[sindex];
+        _total += _fields[i];
+        used += _fields[i];
 
         sindex++; // normal move ahead
     }
-    fields_[numfields()-1] = idle;  // fill in the idle
+    _fields[numfields()-1] = idle;  // fill in the idle
 
     _oldStats = cstats;
 
-    // Convert fields_ to percent
-    if (total_ == 0.0)
-        total_ = 1.0;
-    used = used / total_;
+    // Convert _fields to percent
+    if (_total == 0.0)
+        _total = 1.0;
+    used = used / _total;
     for (size_t i = 0 ; i < numfields() ; i++)
-        fields_[i] = fields_[i] / total_;
-    total_ = 1.0;
+        _fields[i] = _fields[i] / _total;
+    _total = 1.0;
 
-    setUsed(used, total_);
+    setUsed(used, _total);
 }
 
 

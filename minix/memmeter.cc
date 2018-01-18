@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -38,10 +38,10 @@ void MemMeter::checkevent( void ){
 
     const float TOMEG = 1.0/1024.0/1024.0;
     logDebug << std::setprecision(1) << std::fixed
-             << "t " << total_ * TOMEG << " "
-             << "used "    << fields_[0] * TOMEG << " "
-             << "cache  "  << fields_[1] * TOMEG << " "
-             << "free "    << fields_[2] * TOMEG
+             << "t " << _total * TOMEG << " "
+             << "used "    << _fields[0] * TOMEG << " "
+             << "cache  "  << _fields[1] * TOMEG << " "
+             << "free "    << _fields[2] * TOMEG
              << std::endl;
 }
 
@@ -76,12 +76,12 @@ void MemMeter::getmeminfo( void ){
              << "free: " << free << ", "
              << "sum: " << used + cached + free
              << std::endl;
-    
-    total_ = (float)total * (float)psize;
-    fields_[0] = (float)used * (float)psize;
-    fields_[1] = (float)cached * (float)psize;
-    fields_[2] = (float)free * (float)psize;
 
-    if (total_)
-        FieldMeterDecay::setUsed(total_ - fields_[2], total_);
+    _total = (float)total * (float)psize;
+    _fields[0] = (float)used * (float)psize;
+    _fields[1] = (float)cached * (float)psize;
+    _fields[2] = (float)free * (float)psize;
+
+    if (_total)
+        FieldMeterDecay::setUsed(_total - _fields[2], _total);
 }

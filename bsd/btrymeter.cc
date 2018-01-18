@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2013, 2015 by Tomi Tapper ( tomi.o.tapper@student.jyu.fi )
+//  Copyright (c) 2013, 2015, 2018 by Tomi Tapper ( tomi.o.tapper@student.jyu.fi )
 //
 //  Based on linux/btrymeter.cc:
 //  Copyright (c) 1997, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
@@ -79,8 +79,8 @@ void BtryMeter::getstats( void ) {
         old_state_ = state;
     }
 
-    total_ = 100.0;
-    fields_[0] = remaining;
-    fields_[1] = total_ - remaining;
-    setUsed(fields_[0], total_);
+    _total = 100.0;
+    _fields[0] = remaining;
+    _fields[1] = _total - remaining;
+    setUsed(_fields[0], _total);
 }

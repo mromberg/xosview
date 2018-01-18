@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -28,10 +28,10 @@ void ComSwapMeter::checkResources(const ResDB &rdb){
 
 void ComSwapMeter::checkevent( void ){
     std::pair<uint64_t, uint64_t> swinfo = getswapinfo();
-    total_ = swinfo.first;
-    fields_[0] = total_ - swinfo.second;
-    fields_[1] = swinfo.second;
+    _total = swinfo.first;
+    _fields[0] = _total - swinfo.second;
+    _fields[1] = swinfo.second;
 
     if (swinfo.first)
-        setUsed (fields_[0], total_);
+        setUsed (_fields[0], _total);
 }

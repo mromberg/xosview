@@ -1,5 +1,5 @@
 //
-//  The original FieldMeter class is Copyright (c) 1994, 2006, 2015, 2016
+//  The original FieldMeter class is Copyright (c) 1994, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  Modifications from FieldMeter class done in Oct. 1995
@@ -59,7 +59,7 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
         return;
     }
 
-    if ( total_ == 0.0 )
+    if ( _total == 0.0 )
         return;
 
     const int fx = fldx();
@@ -73,7 +73,7 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
     if (firsttime_) {
         firsttime_ = false;
         for (unsigned int i = 0; i < numfields(); i++)
-            decay_[i] = fields_[i] / total_;
+            decay_[i] = _fields[i] / _total;
     }
 
     //  Update the decay fields.  This is not quite accurate, since if
@@ -89,7 +89,7 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
 
     /*  This is majorly ugly code.  It needs a rewrite.  BCG  */
     /*  I think one good way to do it may be to normalize all of the
-     *  fields_ in a temporary array into the range 0.0 .. 1.0,
+     *  _fields in a temporary array into the range 0.0 .. 1.0,
      *  calculate the shifted starting positions and ending positions
      *  for coloring, multiply by the pixel width of the meter, and
      *  then turn to ints.  I think this will solve a whole bunch of
@@ -100,10 +100,10 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
     int x = fx;
     for ( size_t i = 0 ; i < numfields() ; i++ ){
 
-        decay_[i] = ALPHA * decay_[i] + (1.0 - ALPHA) * (fields_[i] / total_);
+        decay_[i] = ALPHA * decay_[i] + (1.0 - ALPHA) * (_fields[i] / _total);
 
         //  We want to round the widths, rather than truncate.
-        int twidth = (int) (0.5 + (fwidth * (float) fields_[i]) / total_);
+        int twidth = (int) (0.5 + (fwidth * (float) _fields[i]) / _total);
         int decaytwidth = (int) (0.5 + fwidth * decay_[i]);
         logAssert(decaytwidth >= 0.0)
             << "FieldMeterDecay " << name()
@@ -131,14 +131,14 @@ void FieldMeterDecay::drawfields(X11Graphics &g, bool mandatory) {
         //  drawFilledRectangle() adds one to its width and height.
         //    Let's correct for that here.
         bool fgSet = false;
-        if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
+        if ( mandatory || (twidth != _lastvals[i]) || (x != _lastx[i]) ){
             checkX(x, twidth);
             g.setFG( fieldcolor(i) );
             g.setStippleN(i%4);
             fgSet = true;
             g.drawFilledRectangle( x, y(), twidth, halfheight );
-            lastvals_[i] = twidth;
-            lastx_[i] = x;
+            _lastvals[i] = twidth;
+            _lastx[i] = x;
         }
 
         if ( mandatory || (decay_[i] != lastDecayval_[i]) ){

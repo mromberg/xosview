@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015, 2016
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -14,37 +14,37 @@
 
 class FieldMeter : public Meter {
 public:
-    FieldMeter( size_t numfields, const std::string &title = "",
-      const std::string &legend = "");
+    FieldMeter(size_t numfields, const std::string &title="",
+      const std::string &legend="");
 
-    virtual ~FieldMeter( void );
+    virtual ~FieldMeter(void);
 
     // virtual from Meter
     virtual void draw(X11Graphics &g);
     virtual void drawIfNeeded(X11Graphics &g);
     virtual void checkResources(const ResDB &rdb);
-    virtual void resize( int x, int y, int width, int height );
+    virtual void resize(int x, int y, int width, int height);
 
 protected:
-    std::vector<float> fields_;
-    float total_;
-    std::vector<int> lastvals_;
-    std::vector<int> lastx_;
+    std::vector<float> _fields;
+    float _total;
+    std::vector<int> _lastvals;
+    std::vector<int> _lastx;
 
     void setNumFields(size_t n);
-    size_t numfields(void) const { return fields_.size() ; }
-    void setfieldcolor( int field, unsigned long color);
-    unsigned long fieldcolor(size_t field) const { return colors_[field]; }
+    size_t numfields(void) const { return _fields.size() ; }
+    void setfieldcolor(size_t field, unsigned long color);
+    unsigned long fieldcolor(size_t field) const { return _colors[field]; }
 
     void setUsed (float val, float total);
 
-    void IntervalTimerStart() { _timer.start(); }
-    void IntervalTimerStop() { _timer.stop(); }
+    void IntervalTimerStart(void) { _timer.start(); }
+    void IntervalTimerStop(void) { _timer.stop(); }
     //  Before, we simply called _timer.report(), which returns usecs.
     //  However, it suffers from wrap/overflow/sign-bit problems, so
     //  instead we use doubles for everything.
-    double IntervalTimeInMicrosecs() { return _timer.report_usecs(); }
-    double IntervalTimeInSecs() { return _timer.report_usecs()/1e6; }
+    double IntervalTimeInMicrosecs(void) { return _timer.report_usecs(); }
+    double IntervalTimeInSecs(void) { return _timer.report_usecs()/1e6; }
 
     bool checkX(int x, int width) const;
 
@@ -57,17 +57,17 @@ protected:
 private:
     enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };
 
-    float used_;
-    std::vector<unsigned long> colors_;
-    UsedType print_;
-    int printedZeroTotalMesg_;
+    float _used;
+    std::vector<unsigned long> _colors;
+    UsedType _usedFmt;
+    bool _printedZeroTotalMsg;
     Timer _timer;
     std::vector<float> _usedAvg;
     size_t _usedAvgIndex;
     bool _decayUsed;
-    Label _used;
+    Label _usedLabel;
 
-    void setUsedFormat ( const std::string &str );
+    void setUsedFormat(const std::string &str);
     bool decayUsed(void) const { return _decayUsed; }
     void decayUsed(bool val) { _decayUsed = val; }
     void updateUsed(void);
@@ -78,7 +78,7 @@ inline bool FieldMeter::checkX(int xv, int widthv) const {
     logAssert((xv >= x()) && (xv + widthv >= x())
       && (xv <= x() + width()) && (xv + widthv <= x() + width()))
         << "bad horiz values for meter: " << name() << "\n"
-        << "fields_: " << fields_ << std::endl;
+        << "_fields: " << _fields << std::endl;
 
     return true;
 }

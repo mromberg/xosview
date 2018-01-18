@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -54,16 +54,16 @@ void CPUMeter::checkResources(const ResDB &rdb) {
 
 void CPUMeter::checkevent( void ) {
     const std::vector<uint64_t> &tempCPU = getStats();
-    total_ = 0;
+    _total = 0;
 
     int oldindex = (_cpuindex + 1) % 2;
     for (size_t i = 0 ; i < _cputime[_cpuindex].size() ; i++) {
         _cputime[_cpuindex][i] = tempCPU[i];
-        fields_[i] = _cputime[_cpuindex][i] - _cputime[oldindex][i];
-        total_ += fields_[i];
+        _fields[i] = _cputime[_cpuindex][i] - _cputime[oldindex][i];
+        _total += _fields[i];
     }
-    if (total_) {
-        setUsed(total_ - fields_[4], total_);
+    if (_total) {
+        setUsed(_total - _fields[4], _total);
         _cpuindex = (_cpuindex + 1) % 2;
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 #ifndef EXAMPLE_H
@@ -65,11 +65,11 @@ inline void ExampleMeter::checkevent( void ) {
 
     float percentVal = static_cast<float>(_warpCoreTemp)
         / static_cast<float>(_testMaximum);
-    total_ = 1.0;
-    fields_[0] = percentVal;
-    if (fields_[0] > 1.0) // peak the meter
-        fields_[0] = 1.0;
-    fields_[1] = 1.0 - fields_[0];
+    _total = 1.0;
+    _fields[0] = percentVal;
+    if (_fields[0] > 1.0) // peak the meter
+        _fields[0] = 1.0;
+    _fields[1] = 1.0 - _fields[0];
 
     // Change the field color to show our level of concern
     if (percentVal > 0.9)
@@ -79,7 +79,7 @@ inline void ExampleMeter::checkevent( void ) {
     else
         setfieldcolor(0, _normColor);
 
-    setUsed(percentVal, total_);
+    setUsed(percentVal, _total);
 }
 
 

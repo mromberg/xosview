@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006, 2015
+//  Copyright (c) 1999, 2006, 2015, 2018
 //  by Mike Romberg (mike-romberg@comcast.net)
 //
 //  This file may be distributed under terms of the GPL
@@ -34,16 +34,16 @@ void ComDiskMeter::checkevent( void ) {
     setUsed(rates.first + rates.second, 1.0);
 
     if (rates.first + rates.second > maxspeed_) {
-        total_ = rates.first + rates.second;
-        fields_[0] = rates.first / total_;
-        fields_[1] = rates.second / total_;
-        fields_[2] = 0;
-        total_ = 1.0;
+        _total = rates.first + rates.second;
+        _fields[0] = rates.first / _total;
+        _fields[1] = rates.second / _total;
+        _fields[2] = 0;
+        _total = 1.0;
     }
     else {
-        total_ = maxspeed_;
-        fields_[0] = rates.first;
-        fields_[1] = rates.second;
-        fields_[2] = total_ - fields_[0] - fields_[1];
+        _total = maxspeed_;
+        _fields[0] = rates.first;
+        _fields[1] = rates.second;
+        _fields[2] = _total - _fields[0] - _fields[1];
     }
 }

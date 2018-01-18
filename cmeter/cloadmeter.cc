@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2008, 2015, 2016
+//  Copyright (c) 1994, 1995, 2006, 2008, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -42,7 +42,7 @@ void ComLoadMeter::checkResources(const ResDB &rdb){
 
     // The max displayed on the bar will be the crit
     // legend still displays total load.
-    total_ = _critThreshold;
+    _total = _critThreshold;
 
     _do_cpu_speed  = rdb.isResourceTrue( "loadCpuSpeed" );
 }
@@ -94,14 +94,14 @@ void ComLoadMeter::setLoadInfo(float load){
         _lastalarmstate = _alarmstate;
     }
 
-    // total_ set to _critThreshold in ctor
-    fields_[0] = std::min(load, total_);
-    fields_[1] = total_ - fields_[0];
-    if (fields_[1] < 0) // peaked the meter
-        fields_[1] = 0.0;
+    // _total set to _critThreshold in ctor
+    _fields[0] = std::min(load, _total);
+    _fields[1] = _total - _fields[0];
+    if (_fields[1] < 0) // peaked the meter
+        _fields[1] = 0.0;
 
-    logDebug << "loadMeter: " << fields_[0] << ", " << fields_[1] << ", "
-             << total_ << std::endl;
+    logDebug << "loadMeter: " << _fields[0] << ", " << _fields[1] << ", "
+             << _total << std::endl;
 
     setUsed(load, 1.0);
 }

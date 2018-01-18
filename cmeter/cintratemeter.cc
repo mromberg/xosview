@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -24,7 +24,7 @@ void ComIrqRateMeter::checkResources(const ResDB &rdb) {
     setfieldcolor(1, rdb.getColor("irqrateIdleColor"));
 
     _peak = util::stof(rdb.getResource("irqratePeak"));
-    total_ = _peak;
+    _total = _peak;
 }
 
 
@@ -37,6 +37,6 @@ void ComIrqRateMeter::checkevent( void ){
     if (rate > _peak)
         rate = _peak;
 
-    fields_[0] = rate;
-    fields_[1] = total_ - rate;
+    _fields[0] = rate;
+    _fields[1] = _total - rate;
 }

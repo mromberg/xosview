@@ -15,7 +15,7 @@
 
 class Meter {
 public:
-    Meter( const std::string &title = "", const std::string &legend ="");
+    Meter(const std::string &title="", const std::string &legend="");
 
     virtual ~Meter(void);
 
@@ -68,8 +68,8 @@ private:
 
 
 
-inline void Meter::legend( const std::string &legend,
-  const std::string &delimiter ) {
+inline void Meter::legend(const std::string &legend,
+  const std::string &delimiter) {
     _legend.text(legend);
     _legend.delimiter(delimiter);
 }

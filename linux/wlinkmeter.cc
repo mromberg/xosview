@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 #include "wlinkmeter.h"
@@ -17,7 +17,7 @@ WLinkMeter::WLinkMeter(void)
       _goodColor(0), _poorColor(0), _poorValue(39) {
 
     // scale is always 0 - 70 (I think)
-    total_ = 70.0;
+    _total = 70.0;
 }
 
 
@@ -51,10 +51,10 @@ void WLinkMeter::checkevent( void ) {
     else
         setfieldcolor(0, _goodColor);
 
-    total_ = 70.0;
-    fields_[0] = link;
-    fields_[1] = total_ - link;
-    setUsed(link, total_);
+    _total = 70.0;
+    _fields[0] = link;
+    _fields[1] = _total - link;
+    setUsed(link, _total);
 }
 
 

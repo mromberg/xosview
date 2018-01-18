@@ -1,5 +1,5 @@
 //
-//  The original FieldMeter class is Copyright (c) 1994, 2006, 2015
+//  The original FieldMeter class is Copyright (c) 1994, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  Modifications from FieldMeter class done in Oct. 1995
@@ -100,12 +100,12 @@ void FieldMeterGraph::checkBackBuffer(X11Graphics &g) {
 void FieldMeterGraph::drawBars(X11Graphics &g) {
     int i;
 
-    if( total_ <= 0.0 )
+    if( _total <= 0.0 )
         return;
 
     // allocate memory for height field graph storage
     // note: this is done here as it is not certain that both
-    // numfields_ and graphNumCols_ are defined in the constructor
+    // numfields() and graphNumCols_ are defined in the constructor
     if( heightfield_.size() == 0 ) {
         if( numfields() > 0 && graphNumCols_ > 0 ) {
             heightfield_.resize(numfields()*graphNumCols_);
@@ -134,7 +134,7 @@ void FieldMeterGraph::drawBars(X11Graphics &g) {
 
     // get current values to be plotted
     for( unsigned int i = 0; i < numfields(); i++ ) {
-        float a = fields_[i] / total_;
+        float a = _fields[i] / _total;
         if( a <= 0.0 )
             a = 0.0;
         if( a >= 1.0 )

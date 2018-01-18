@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -40,7 +40,7 @@ private:
     private:
         int _line;
         std::string _id;
-        float *_val;  // pointer into fields_ array
+        float *_val;  // pointer into _fields array
     };
 
     std::vector<LineInfo> _MIlineInfos;

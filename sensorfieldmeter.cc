@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2014, 2015 by Tomi Tapper <tomi.o.tapper@jyu.fi>
+//  Copyright (c) 2014, 2015, 2018 by Tomi Tapper <tomi.o.tapper@jyu.fi>
 //
 //  This file may be distributed under terms of the GPL
 //
@@ -28,25 +28,25 @@ void SensorFieldMeter::updateLegend( void ){
     std::string lscale, tscale;
     std::ostringstream l;
     double limit = ( negative_ ? low_ : high_ ), total;
-    total = scaleValue(total_, tscale);
+    total = scaleValue(_total, tscale);
     if ( (!negative_ && has_high_) || (negative_ && has_low_) ) {
-        if ( ( 0.1 <= fabs(total_) && fabs(total_) < 9.95 ) ||
+        if ( ( 0.1 <= fabs(_total) && fabs(_total) < 9.95 ) ||
           ( 0.1 <= fabs(limit) && fabs(limit) < 9.95 ) ) {
             if ( unit_.size() ) {
                 l << std::setprecision(1)
-                  << "ACT(" << unit_ << ")/" << limit << "/" << total_;
+                  << "ACT(" << unit_ << ")/" << limit << "/" << _total;
             }
             else
-                l << std::setprecision(1) << "ACT/" << limit << "/" << total_;
+                l << std::setprecision(1) << "ACT/" << limit << "/" << _total;
         }
-        else if ( ( 9.95 <= fabs(total_) && fabs(total_) < 10000 ) ||
+        else if ( ( 9.95 <= fabs(_total) && fabs(_total) < 10000 ) ||
           ( 9.95 <= fabs(limit) && fabs(limit) < 10000 ) ) {
             if ( unit_.size() ) {
                 l << std::setprecision(0)
-                  << "ACT(" << unit_ << ")/" << limit << "/" << total_;
+                  << "ACT(" << unit_ << ")/" << limit << "/" << _total;
             }
             else
-                l << std::setprecision(0) << "ACT/" << limit << "/" << total_;
+                l << std::setprecision(0) << "ACT/" << limit << "/" << _total;
         }
         else {
             limit = scaleValue(limit, lscale);
@@ -62,37 +62,37 @@ void SensorFieldMeter::updateLegend( void ){
         }
     }
     else {
-        if ( ( 0.1 <= fabs(total_) && fabs(total_) < 9.95 ) ||
+        if ( ( 0.1 <= fabs(_total) && fabs(_total) < 9.95 ) ||
           ( 0.1 <= fabs(limit) && fabs(limit) < 9.95 ) ) {
             if ( unit_.size() ) {
                 l << std::setprecision(1)
                   << "ACT(" << unit_ << ")/" << ( negative_ ? "LOW" : "HIGH" )
-                  << "/" << total_;
+                  << "/" << _total;
             }
             else {
                 l << std::setprecision(1)
                   << "ACT/" << ( negative_ ? "LOW" : "HIGH" )
-                  << "/" << total_;
+                  << "/" << _total;
             }
         }
-        else if ( ( 9.95 <= fabs(total_) && fabs(total_) < 10000 ) ||
+        else if ( ( 9.95 <= fabs(_total) && fabs(_total) < 10000 ) ||
           ( 9.95 <= fabs(limit) && fabs(limit) < 10000 ) ) {
             if ( unit_.size() ) {
                 l << std::setprecision(0)
                   << "ACT(" << unit_ << ")/" << ( negative_ ? "LOW" : "HIGH" )
-                  << "/" << total_;
+                  << "/" << _total;
             }
             else {
                 l << std::setprecision(0)
                   << "ACT/" << ( negative_ ? "LOW" : "HIGH" )
-                  << "/" << total_;
+                  << "/" << _total;
             }
         }
         else {
             if ( unit_.size() ) {
                 l << std::setprecision(0)
                   << "ACT(" << unit_ << ")/" << ( negative_ ? "LOW" : "HIGH" )
-                  << "/" << total_ << tscale;
+                  << "/" << _total << tscale;
             }
             else {
                 l << std::setprecision(0)
@@ -115,10 +115,10 @@ void SensorFieldMeter::checkFields( double low, double high ){
     bool do_legend = false;
 
     if (negative_) {  // negative at previous run
-        if (fields_[0] >= 0 || low > 0) { // flip to positive
+        if (_fields[0] >= 0 || low > 0) { // flip to positive
             negative_ = false;
-            total_ = fabs(total_);
-            high_ = ( has_high_ ? high : total_ );
+            _total = fabs(_total);
+            high_ = ( has_high_ ? high : _total );
             low_ = ( has_low_ ? low : 0 );
             setfieldcolor( 2, highcolor_ );
             do_legend = true;
@@ -134,12 +134,12 @@ void SensorFieldMeter::checkFields( double low, double high ){
     }
     else {  // positive at previous run
         // flip to negative if value and either limit is < 0
-        if ( fields_[0] < 0 &&
+        if ( _fields[0] < 0 &&
           ( (!has_low_ && !has_high_) || low < 0 || high < 0 ) ) {
             negative_ = true;
-            total_ = -fabs(total_);
+            _total = -fabs(_total);
             high_ = ( has_high_ ? high : 0 );
-            low_ = ( has_low_ ? low : total_ );
+            low_ = ( has_low_ ? low : _total );
             setfieldcolor( 2, lowcolor_ );
             do_legend = true;
         }
@@ -155,18 +155,18 @@ void SensorFieldMeter::checkFields( double low, double high ){
 
     // change total if value or alarms won't fit
     double highest = fabs(high_);
-    if ( fabs(fields_[0]) > highest )
-        highest = fabs(fields_[0]);
+    if ( fabs(_fields[0]) > highest )
+        highest = fabs(_fields[0]);
     if ( fabs(low_) > highest )
         highest = fabs(low_);
-    if ( highest > fabs(total_) ) {
+    if ( highest > fabs(_total) ) {
         do_legend = true;
         int scale = floor(log10(highest));
-        total_ = ceil((highest / pow(10.0, scale)) * 1.25) * pow(10.0, scale);
+        _total = ceil((highest / pow(10.0, scale)) * 1.25) * pow(10.0, scale);
         if (negative_) {
-            total_ = -fabs(total_);
+            _total = -fabs(_total);
             if (!has_low_)
-                low_ = total_;
+                low_ = _total;
             if (!has_high_)
                 high_ = 0;
         }
@@ -174,20 +174,20 @@ void SensorFieldMeter::checkFields( double low, double high ){
             if (!has_low_)
                 low_ = 0;
             if (!has_high_)
-                high_ = total_;
+                high_ = _total;
         }
     }
     if (do_legend)
         updateLegend();
 
     // check for alarms
-    if (fields_[0] > high_) { // alarm: T > max
+    if (_fields[0] > high_) { // alarm: T > max
         if (fieldcolor(0) != highcolor_) {
             setfieldcolor( 0, highcolor_ );
             do_legend = true;
         }
     }
-    else if (fields_[0] < low_) { // alarm: T < min
+    else if (_fields[0] < low_) { // alarm: T < min
         if (fieldcolor(0) != lowcolor_) {
             setfieldcolor( 0, lowcolor_ );
             do_legend = true;
@@ -200,14 +200,14 @@ void SensorFieldMeter::checkFields( double low, double high ){
         }
     }
 
-    setUsed(fields_[0], total_);
+    setUsed(_fields[0], _total);
     if (negative_)
-        fields_[1] = ( fields_[0] < low_ ? 0 : low_ - fields_[0] );
+        _fields[1] = ( _fields[0] < low_ ? 0 : low_ - _fields[0] );
     else {
-        if (fields_[0] < 0)
-            fields_[0] = 0;
-        fields_[1] = ( fields_[0] > high_ ? 0 : high_ - fields_[0] );
+        if (_fields[0] < 0)
+            _fields[0] = 0;
+        _fields[1] = ( _fields[0] > high_ ? 0 : high_ - _fields[0] );
     }
 
-    fields_[2] = total_ - fields_[1] - fields_[0];
+    _fields[2] = _total - _fields[1] - _fields[0];
 }

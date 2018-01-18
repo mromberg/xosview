@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  Modifications to support dynamic addresses by:
@@ -79,7 +79,7 @@ void NFSDStats::checkevent(void) {
         return;
     }
 
-    fields_[0] = fields_[1] = fields_[2] = 0;  // network activity
+    _fields[0] = _fields[1] = _fields[2] = 0;  // network activity
     stoptimer();
 
     name[0] = '\0';
@@ -108,21 +108,21 @@ void NFSDStats::checkevent(void) {
         maxpackets_ = netcnt;
     }
     else {
-        fields_[0] = (badcalls - _lastBad) * t;
-        fields_[1] = (netudpcnt - _lastUdp) * t;
-        fields_[2] = (nettcpcnt - _lastTcp) * t;
+        _fields[0] = (badcalls - _lastBad) * t;
+        _fields[1] = (netudpcnt - _lastUdp) * t;
+        _fields[2] = (nettcpcnt - _lastTcp) * t;
     }
 
-    total_ = fields_[0] + fields_[1] + fields_[2];
-    if (total_ > maxpackets_)
-        fields_[3] = 0;
+    _total = _fields[0] + _fields[1] + _fields[2];
+    if (_total > maxpackets_)
+        _fields[3] = 0;
     else {
-        total_ = maxpackets_;
-        fields_[3] = total_ - fields_[0] - fields_[1] - fields_[2];
+        _total = maxpackets_;
+        _fields[3] = _total - _fields[0] - _fields[1] - _fields[2];
     }
 
-    if (total_)
-        setUsed(fields_[0] + fields_[1] + fields_[2], total_);
+    if (_total)
+        setUsed(_fields[0] + _fields[1] + _fields[2], _total);
 
     starttimer();
 
@@ -163,7 +163,7 @@ void NFSStats::checkevent(void) {
         return;
     }
 
-    fields_[0] = fields_[1] = fields_[2] = 0;
+    _fields[0] = _fields[1] = _fields[2] = 0;
     stoptimer();
 
     name[0] = '\0';
@@ -186,21 +186,21 @@ void NFSStats::checkevent(void) {
         maxpackets_ = calls;
     }
     else {
-        fields_[2] = (calls - _lastcalls) * t;
-        fields_[1] = (authrefresh - _lastauthrefresh) * t;
-        fields_[0] = (retrns - _lastretrns) * t;
+        _fields[2] = (calls - _lastcalls) * t;
+        _fields[1] = (authrefresh - _lastauthrefresh) * t;
+        _fields[0] = (retrns - _lastretrns) * t;
     }
 
-    total_ = fields_[0] + fields_[1] + fields_[2];
-    if (total_ > maxpackets_)
-        fields_[3] = 0;
+    _total = _fields[0] + _fields[1] + _fields[2];
+    if (_total > maxpackets_)
+        _fields[3] = 0;
     else {
-        total_ = maxpackets_;
-        fields_[3] = total_ - fields_[2] - fields_[1] - fields_[0];
+        _total = maxpackets_;
+        _fields[3] = _total - _fields[2] - _fields[1] - _fields[0];
     }
 
-    if (total_)
-        setUsed(fields_[0] + fields_[1] + fields_[2], total_);
+    if (_total)
+        setUsed(_fields[0] + _fields[1] + _fields[2], _total);
 
     starttimer();
 

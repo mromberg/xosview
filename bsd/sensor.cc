@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2012, 2015 by Tomi Tapper <tomi.o.tapper@jyu.fi>
+//  Copyright (c) 2012, 2015, 2018 by Tomi Tapper <tomi.o.tapper@jyu.fi>
 //
 //  File based on linux/lmstemp.* by
 //  Copyright (c) 2000, 2006 by Leopold Toetsch <lt@toetsch.at>
@@ -65,11 +65,11 @@ void BSDSensor::checkResources(const ResDB &rdb) {
           "bsdsensorHighest", "0" ));
     std::string s("bsdsensorHighest");
     s += util::repr(nbr_);
-    total_ = fabs( util::stof( rdb.getResourceOrUseDefault(s, tmp) ) );
+    _total = fabs( util::stof( rdb.getResourceOrUseDefault(s, tmp) ) );
     s = "bsdsensorUsedFormat" + util::repr(nbr_);
 
     if (!has_high_)
-        high_ = total_;
+        high_ = _total;
     if (!has_low_)
         low_ = 0;
 
@@ -94,6 +94,6 @@ void BSDSensor::getsensor( void ) {
     if ( lowname_.size() )
         BSDGetSensor(lowname_, lowval_, low, emptyStr);
 
-    fields_[0] = value;
+    _fields[0] = value;
     checkFields(low, high);
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 #include "ctzonemeter.h"
@@ -42,9 +42,9 @@ void ComTZoneMeter::checkevent( void ) {
     float ctemp = getTemp();
 
     // set the fields
-    total_ = _peak;
-    fields_[0] = ctemp;
-    fields_[1] = total_ - fields_[0];
+    _total = _peak;
+    _fields[0] = ctemp;
+    _fields[1] = _total - _fields[0];
 
     // and the colors
     if (ctemp >= _critTrip)

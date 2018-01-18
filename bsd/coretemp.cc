@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2008, 2015 by Tomi Tapper <tomi.o.tapper@jyu.fi>
+//  Copyright (c) 2008, 2015, 2018 by Tomi Tapper <tomi.o.tapper@jyu.fi>
 //
 //  Read coretemp reading with sysctl and display actual temperature.
 //  If actual >= high, actual temp changes color to indicate alarm.
@@ -44,7 +44,7 @@ void CoreTemp::checkResources(const ResDB &rdb) {
 
     std::string highest = rdb.getResourceOrUseDefault(
         "coretempHighest", "100" );
-    total_ = util::stoi( highest );
+    _total = util::stoi( highest );
     std::string high = rdb.getResourceOrUseDefault("coretempHigh", "");
 
     // Get tjMax here and use as total.
@@ -57,17 +57,17 @@ void CoreTemp::checkResources(const ResDB &rdb) {
     }
 
     if (total > 0.0)
-        total_ = total;
+        _total = total;
 
     std::string lgnd;
     if (!high.size()) {
-        high_ = total_;
-        lgnd = "ACT(\260C)/HIGH/" + util::repr((int)total_);
+        high_ = _total;
+        lgnd = "ACT(\260C)/HIGH/" + util::repr((int)_total);
     }
     else {
         high_ = util::stoi( high );
         lgnd = "ACT(\260C)/" + util::repr((int)high_)
-            + "/" + util::repr((int)total_);
+            + "/" + util::repr((int)_total);
     }
     legend(lgnd);
 }
@@ -86,15 +86,15 @@ void CoreTemp::checkevent( void ) {
 void CoreTemp::getcoretemp( void ) {
     BSDGetCPUTemperature(temps_);
 
-    fields_[0] = 0.0;
+    _fields[0] = 0.0;
     if ( cpu_ >= 0 && cpu_ < cpucount_ ) {  // one core
-        fields_[0] = temps_[cpu_];
+        _fields[0] = temps_[cpu_];
     }
     else if ( cpu_ == -1 ) {  // average
         float tempval = 0.0;
         for (int i = 0; i < cpucount_; i++)
             tempval += temps_[i];
-        fields_[0] = tempval / (float)cpucount_;
+        _fields[0] = tempval / (float)cpucount_;
     }
     else if ( cpu_ == -2 ) {  // maximum
         float tempval = -300.0;
@@ -102,24 +102,24 @@ void CoreTemp::getcoretemp( void ) {
             if (temps_[i] > tempval)
                 tempval = temps_[i];
         }
-        fields_[0] = tempval;
+        _fields[0] = tempval;
     }
     else {    // should not happen
         logFatal << "Unknown CPU core number in coretemp." << std::endl;
     }
 
-    setUsed(fields_[0], total_);
-    if (fields_[0] < 0)
-        fields_[0] = 0;
-    fields_[1] = high_ - fields_[0];
-    fields_[2] = total_ - fields_[1] - fields_[0];
-    if (fields_[0] > total_)
-        fields_[0] = total_;
-    if (fields_[2] < 0)
-        fields_[2] = 0;
+    setUsed(_fields[0], _total);
+    if (_fields[0] < 0)
+        _fields[0] = 0;
+    _fields[1] = high_ - _fields[0];
+    _fields[2] = _total - _fields[1] - _fields[0];
+    if (_fields[0] > _total)
+        _fields[0] = _total;
+    if (_fields[2] < 0)
+        _fields[2] = 0;
 
-    if (fields_[1] < 0) { // alarm: T > high
-        fields_[1] = 0;
+    if (_fields[1] < 0) { // alarm: T > high
+        _fields[1] = 0;
         if (fieldcolor(0) != highcolor_) {
             setfieldcolor( 0, highcolor_ );
         }

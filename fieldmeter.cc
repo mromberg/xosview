@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015, 2016
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -21,18 +21,18 @@ static const size_t DECAYN = 8;
 FieldMeter::FieldMeter(size_t numfields, const std::string &title,
   const std::string &legend)
     : Meter(title, legend),
-      fields_(numfields, 0.0), total_(1.0),
-      lastvals_(numfields, 0.0),
-      lastx_(numfields, 0), used_(0), colors_(numfields, 0),
-      print_(PERCENT), printedZeroTotalMesg_(0),
+      _fields(numfields, 0.0), _total(1.0),
+      _lastvals(numfields, 0.0),
+      _lastx(numfields, 0), _used(0), _colors(numfields, 0),
+      _usedFmt(PERCENT), _printedZeroTotalMsg(false),
       _usedAvg(DECAYN, 0.0), _usedAvgIndex(0),
-      _decayUsed(false), _used(0, 0, Label::BLSE) {
+      _decayUsed(false), _usedLabel(0, 0, Label::BLSE) {
 }
 
 
 void FieldMeter::resize( int x, int y, int width, int height ) {
     Meter::resize(x, y, width, height);
-    _used.move(Meter::x() - 2, Meter::y() + Meter::height() + 2);
+    _usedLabel.move(Meter::x() - 2, Meter::y() + Meter::height() + 2);
 }
 
 
@@ -45,7 +45,7 @@ void FieldMeter::checkResources(const ResDB &rdb){
     setUsedFormat(rdb.getResourceOrUseDefault(resName() + "UsedFormat",
         "percent"));
     decayUsed(rdb.isResourceTrue(resName() + "UsedDecay"));
-    _used.color(rdb.getColor("usedLabelColor"));
+    _usedLabel.color(rdb.getColor("usedLabelColor"));
 }
 
 
@@ -53,11 +53,11 @@ void FieldMeter::setUsedFormat ( const std::string &fmt ) {
     std::string lfmt = util::tolower(fmt);
     /*  Do case-insensitive compares.  */
     if (lfmt == "percent")
-        print_ = PERCENT;
+        _usedFmt = PERCENT;
     else if (lfmt == "autoscale")
-        print_ = AUTOSCALE;
+        _usedFmt = AUTOSCALE;
     else if (lfmt == "float")
-        print_ = FLOAT;
+        _usedFmt = FLOAT;
     else {
         logFatal << "could not parse format of " <<  fmt << "\n"
                  << "  for meter: " << name() << "\n"
@@ -67,34 +67,34 @@ void FieldMeter::setUsedFormat ( const std::string &fmt ) {
 }
 
 void FieldMeter::setUsed (float val, float total) {
-    if (print_ == FLOAT)
-        used_ = val;
-    else if (print_ == PERCENT) {
+    if (_usedFmt == FLOAT)
+        _used = val;
+    else if (_usedFmt == PERCENT) {
         if (total != 0.0)
-            used_ = val / total * 100.0;
+            _used = val / total * 100.0;
         else {
-            if (!printedZeroTotalMesg_) {
-                printedZeroTotalMesg_ = 1;
+            if (!_printedZeroTotalMsg) {
+                _printedZeroTotalMsg = true;
                 logProblem << name() << " meter had a zero total "
                            << "field!  Would have caused a div-by-zero "
                            << "exception." << std::endl;
             }
-            used_ = 0.0;
+            _used = 0.0;
         }
     }
-    else if (print_ == AUTOSCALE)
-        used_ = val;
+    else if (_usedFmt == AUTOSCALE)
+        _used = val;
     else {
         logFatal << "Error in " << name() << ":  I can't handle a "
-                 << "UsedType enum value of " << print_ << "!" << std::endl;
+                 << "UsedType enum value of " << _usedFmt << "!" << std::endl;
     }
 
     updateUsed();
 }
 
 
-void FieldMeter::setfieldcolor( int field, unsigned long color ) {
-    colors_[field] = color;
+void FieldMeter::setfieldcolor(size_t field, unsigned long color) {
+    _colors[field] = color;
     setLegendColor(field, color);
 }
 
@@ -106,7 +106,7 @@ void FieldMeter::draw(X11Graphics &g) {
     g.drawRectangle( fldx() - 1, y() - 1, fldwidth() + 2, height() + 2 );
 
     drawLabels(g);
-    _used.draw(g);
+    _usedLabel.draw(g);
     drawfields( g, true );
 }
 
@@ -114,7 +114,7 @@ void FieldMeter::draw(X11Graphics &g) {
 void FieldMeter::drawIfNeeded(X11Graphics &g) {
     Meter::drawIfNeeded(g);
     drawfields(g, false);
-    _used.drawIfNeeded(g);
+    _usedLabel.drawIfNeeded(g);
 }
 
 
@@ -122,7 +122,7 @@ void FieldMeter::updateUsed() {
     if (!dolegends() || !dousedlegends())
         return;
 
-    float dispUsed = used_; // value we will display here
+    float dispUsed = _used; // value we will display here
     if (decayUsed()) {
         _usedAvg[_usedAvgIndex%DECAYN] = dispUsed;
         _usedAvgIndex++;
@@ -136,10 +136,10 @@ void FieldMeter::updateUsed() {
     std::ostringstream bufs;
     bufs << std::fixed;
 
-    if (print_ == PERCENT){
+    if (_usedFmt == PERCENT){
         bufs << (int)dispUsed << "%";
     }
-    else if (print_ == AUTOSCALE){
+    else if (_usedFmt == AUTOSCALE){
         char scale;
         float scaled_used;
         /*  Unfortunately, we have to do our comparisons by 1000s (otherwise
@@ -195,7 +195,7 @@ void FieldMeter::updateUsed() {
         bufs << std::setprecision(1) << dispUsed;
     }
 
-    _used.text(bufs.str());
+    _usedLabel.text(bufs.str());
 }
 
 
@@ -204,29 +204,29 @@ void FieldMeter::drawfields(X11Graphics &g, bool mandatory) {
     const int fwidth = fldwidth();
     int twidth, x = fx;
 
-    if ( total_ == 0 )
+    if ( _total == 0 )
         return;
 
     for ( unsigned int i = 0 ; i < numfields() ; i++ ){
         /*  Look for bogus values.  */
-        logAssert(fields_[i] >= 0.0)
+        logAssert(_fields[i] >= 0.0)
             << "meter " << name() <<  " had a negative "
-            << "value of " << fields_[i]
+            << "value of " << _fields[i]
             << " for field " << i << "\n"
-            << "fields_: " << fields_ << std::endl;
+            << "_fields: " << _fields << std::endl;
 
-        twidth = (int) ((fwidth * (float) fields_[i]) / total_);
+        twidth = (int) ((fwidth * (float) _fields[i]) / _total);
         if ( (i == numfields() - 1)
           && ((x + twidth) != (fx + fwidth)) )
             twidth = fwidth + fx - x;
 
-        if ( mandatory || (twidth != lastvals_[i]) || (x != lastx_[i]) ){
-            g.setFG( colors_[i] );
+        if ( mandatory || (twidth != _lastvals[i]) || (x != _lastx[i]) ){
+            g.setFG( _colors[i] );
             g.setStippleN(i%4);
             g.drawFilledRectangle( x, y(), twidth, height() );
             g.setStippleN(0);	/*  Restore all-bits stipple.  */
-            lastvals_[i] = twidth;
-            lastx_[i] = x;
+            _lastvals[i] = twidth;
+            _lastx[i] = x;
         }
 
         x += twidth;
@@ -235,14 +235,14 @@ void FieldMeter::drawfields(X11Graphics &g, bool mandatory) {
 
 
 void FieldMeter::setNumFields(size_t n){
-    fields_.clear();
-    fields_.resize(n, 0);
-    colors_.clear();
-    colors_.resize(n, 0);
-    lastvals_.clear();
-    lastvals_.resize(n, 0);
-    lastx_.clear();
-    lastx_.resize(n, 0);
+    _fields.clear();
+    _fields.resize(n, 0);
+    _colors.clear();
+    _colors.resize(n, 0);
+    _lastvals.clear();
+    _lastvals.resize(n, 0);
+    _lastx.clear();
+    _lastx.resize(n, 0);
 
-    total_ = 1.0;
+    _total = 1.0;
 }

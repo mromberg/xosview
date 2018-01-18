@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -43,12 +43,12 @@ void MemMeter::checkevent( void ){
     /* for debugging (see below) */
     const float TOMEG = 1.0/1024.0/1024.0;
     logDebug << std::setprecision(1) << std::fixed
-             << "t " << total_ * TOMEG << " "
-             << "used "    << fields_[0] * TOMEG << " "
-             << "buf "     << fields_[1] * TOMEG << " "
-             << "cache "   << fields_[2] * TOMEG << " "
-             << "swcache " << fields_[3] * TOMEG << " "
-             << "free "    << fields_[4] * TOMEG
+             << "t " << _total * TOMEG << " "
+             << "used "    << _fields[0] * TOMEG << " "
+             << "buf "     << _fields[1] * TOMEG << " "
+             << "cache "   << _fields[2] * TOMEG << " "
+             << "swcache " << _fields[3] * TOMEG << " "
+             << "free "    << _fields[4] * TOMEG
              << std::endl;
 }
 
@@ -58,10 +58,10 @@ void MemMeter::checkevent( void ){
 void MemMeter::getmeminfo( void ){
     getmemstat(MEMFILENAME, _MIlineInfos);
 
-    fields_[0] = total_ - fields_[4] - fields_[3] - fields_[2] - fields_[1];
+    _fields[0] = _total - _fields[4] - _fields[3] - _fields[2] - _fields[1];
 
-    if (total_)
-        FieldMeterDecay::setUsed (total_ - fields_[3] - fields_[4], total_);
+    if (_total)
+        FieldMeterDecay::setUsed (_total - _fields[3] - _fields[4], _total);
 }
 
 
@@ -98,11 +98,11 @@ std::vector<MemMeter::LineInfo> MemMeter::findLines(
 
 void MemMeter::initLineInfo(void){
     std::vector<LineInfo> infos;
-    infos.push_back(LineInfo("MemTotal", &total_));
-    infos.push_back(LineInfo("Buffers", &fields_[1]));
-    infos.push_back(LineInfo("Cached", &fields_[2]));
-    infos.push_back(LineInfo("SwapCached", &fields_[3]));
-    infos.push_back(LineInfo("MemFree", &fields_[4]));
+    infos.push_back(LineInfo("MemTotal", &_total));
+    infos.push_back(LineInfo("Buffers", &_fields[1]));
+    infos.push_back(LineInfo("Cached", &_fields[2]));
+    infos.push_back(LineInfo("SwapCached", &_fields[3]));
+    infos.push_back(LineInfo("MemFree", &_fields[4]));
 
     _MIlineInfos = findLines(infos, MEMFILENAME);
 }

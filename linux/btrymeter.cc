@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1997, 2006, 2015, 2016
+//  Copyright (c) 1997, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -70,10 +70,10 @@ void BtryMeter::checkevent( void ){
     if (!getpwrinfo()) {
         // getting the power info failed (for some reason)
         // reset with sane defaults.
-        total_ = 100;
-        fields_[0] = 0;
-        fields_[1] = 100;
-        setUsed(fields_[0], total_);
+        _total = 100;
+        _fields[0] = 0;
+        _fields[1] = 100;
+        setUsed(_fields[0], _total);
     }
 }
 
@@ -179,9 +179,9 @@ bool BtryMeter::getsysinfo(void) {
         capacity = 100;
 
     // set UI components to report our findings
-    fields_[0] = capacity;
-    fields_[1] = 100 - capacity;
-    total_ = 100;
+    _fields[0] = capacity;
+    _fields[1] = 100 - capacity;
+    _total = 100;
 
     // I just makde these numbers up.  Perhaps
     // another resource?
@@ -192,7 +192,7 @@ bool BtryMeter::getsysinfo(void) {
     else
         setfieldcolor( 0, _leftColor );
 
-    setUsed(fields_[0], total_);
+    setUsed(_fields[0], _total);
 
     std::string newLegend(std::string(std::string("CAP ") + timeLeft
         + "(" + status + ")/USED"));
@@ -390,7 +390,7 @@ bool BtryMeter::getapminfo( void ){
     std::string buff;
 
     loadinfo >> buff >> buff >> buff >> buff >> std::hex
-             >> battery_status >> buff >> fields_[0];
+             >> battery_status >> buff >> _fields[0];
 
 
     // XOSDEBUG("apm battery_status is: %d\n",battery_status);
@@ -404,21 +404,21 @@ bool BtryMeter::getapminfo( void ){
     // If the battery status is reported as a negative number, it means we are
     // running on AC power and no battery status is available - Report it as
     // completely empty (0). (Refer to Debian bug report #281565)
-    if (fields_[0] < 0)
-        fields_[0] = 0;
+    if (_fields[0] < 0)
+        _fields[0] = 0;
 
-    total_ = 100;
+    _total = 100;
 
     if ( apm_battery_state != 0xFF ) {
 
-        fields_[1] = total_ - fields_[0];
+        _fields[1] = _total - _fields[0];
 
     } else { // prevent setting it to '-1' if no batt
 
-	fields_[0] = 0; fields_[1] = total_;
+	_fields[0] = 0; _fields[1] = _total;
     }
 
-    setUsed (fields_[0], total_);
+    setUsed (_fields[0], _total);
 
     /* if the APM state changed - we need to update the colors,
        AND force a legend redraw - otherwise not ...
@@ -554,7 +554,7 @@ bool BtryMeter::getacpiinfo( void ){
         }
     }
 
-    total_ = 100;
+    _total = 100;
 
     // convert into percent vals
     // XOSDEBUG("acpi: total max=%d, remain=%d\n",acpi_sum_cap,acpi_sum_remain);
@@ -565,17 +565,17 @@ bool BtryMeter::getacpiinfo( void ){
 
     // if NONE of the batts is present:
     if ( found ) {
-        fields_[0] = (float)acpi_sum_remain/(float)acpi_sum_cap*100.0;
+        _fields[0] = (float)acpi_sum_remain/(float)acpi_sum_cap*100.0;
     } else {
         // none of the batts is present
         // (just pull out both while on AC)
-        fields_[0] = 0;
+        _fields[0] = 0;
         acpi_charge_state=-3;
     }
 
-    fields_[1] = total_ - fields_[0];
+    _fields[1] = _total - _fields[0];
 
-    setUsed (fields_[0], total_);
+    setUsed (_fields[0], _total);
 
     /* if the ACPI state changed - we need to update the colors,
        AND force a legend redraw - otherwise not ...

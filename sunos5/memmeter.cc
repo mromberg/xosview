@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2015
+//  Copyright (c) 1999, 2015, 2018
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
@@ -18,7 +18,7 @@ MemMeter::MemMeter(kstat_ctl_t *_kc)
       kc(_kc),
       ksp_sp(0), ksp_zfs(0) {
 
-    total_ = sysconf(_SC_PHYS_PAGES);
+    _total = sysconf(_SC_PHYS_PAGES);
 
     ksp_sp = kstat_lookup(kc, const_cast<char *>("unix"), 0,
       const_cast<char *>("system_pages"));
@@ -53,7 +53,7 @@ void MemMeter::checkevent(void) {
 void MemMeter::getmeminfo(void) {
     kstat_named_t *k;
 
-    fields_[1] = 0;
+    _fields[1] = 0;
     if (ksp_zfs) {
         if (kstat_read(kc, ksp_zfs, NULL) == -1)
             logFatal << "Can't read vmem::zfs_file_data_buf kstat." << std::endl;
@@ -65,7 +65,7 @@ void MemMeter::getmeminfo(void) {
                      << "vmem::zfs_file_data_buf:mem_inuse kstat."
                      << std::endl;
         }
-        fields_[1] = kstat_to_double(k) / pageSize;
+        _fields[1] = kstat_to_double(k) / pageSize;
     }
 
     if (kstat_read(kc, ksp_sp, NULL) == -1)
@@ -78,25 +78,25 @@ void MemMeter::getmeminfo(void) {
                  << "unix:0:system_pages:pp_kernel kstat." << std::endl;
     }
 
-    fields_[0] = kstat_to_double(k) - fields_[1];
+    _fields[0] = kstat_to_double(k) - _fields[1];
     k = (kstat_named_t *)kstat_data_lookup(ksp_sp,
       const_cast<char *>("freemem"));
     if (k == NULL) {
         logFatal << "Can not read "
                  << "unix:0:system_pages:freemem kstat." << std::endl;
     }
-    fields_[3] = kstat_to_double(k);
-    fields_[2] = total_ - (fields_[0] + fields_[1] + fields_[3]);
+    _fields[3] = kstat_to_double(k);
+    _fields[2] = _total - (_fields[0] + _fields[1] + _fields[3]);
     logDebug << "kernel: "
-             << (unsigned long long)(fields_[0] * pageSize / 1024) << " kB "
+             << (unsigned long long)(_fields[0] * pageSize / 1024) << " kB "
              << "zfs: "
-             << (unsigned long long)(fields_[1] * pageSize / 1024) <<" kB "
+             << (unsigned long long)(_fields[1] * pageSize / 1024) <<" kB "
              << "other: "
-             << (unsigned long long)(fields_[2] * pageSize / 1024) << " kB "
+             << (unsigned long long)(_fields[2] * pageSize / 1024) << " kB "
              << "free: "
-             << (unsigned long long)(fields_[3] * pageSize / 1024) << " kB"
+             << (unsigned long long)(_fields[3] * pageSize / 1024) << " kB"
              << std::endl;
 
-    setUsed((fields_[0] + fields_[1] + fields_[2]) * pageSize,
-      total_ * pageSize);
+    setUsed((_fields[0] + _fields[1] + _fields[2]) * pageSize,
+      _total * pageSize);
 }

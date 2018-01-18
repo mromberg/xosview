@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -72,18 +72,18 @@ void MemMeter::checkevent( void ) {
 
 void MemMeter::getmeminfo( void ) {
     getMemStats(_meminfo);
-    fields_[0] = (double)_meminfo[0];
-    fields_[1] = (double)_meminfo[1];
-    fields_[2] = (double)_meminfo[2];
+    _fields[0] = (double)_meminfo[0];
+    _fields[1] = (double)_meminfo[1];
+    _fields[2] = (double)_meminfo[2];
 #if defined(HAVE_UVM)
-    fields_[3] = (double)_meminfo[4];
+    _fields[3] = (double)_meminfo[4];
 #else
-    fields_[3] = (double)_meminfo[3];
-    fields_[4] = (double)_meminfo[4];
+    _fields[3] = (double)_meminfo[3];
+    _fields[4] = (double)_meminfo[4];
 #endif
-    total_ = (double)(_meminfo[0] + _meminfo[1] + _meminfo[2] + _meminfo[3]
+    _total = (double)(_meminfo[0] + _meminfo[1] + _meminfo[2] + _meminfo[3]
       + _meminfo[4]);
-    setUsed(total_ - (double)_meminfo[4], total_);
+    setUsed(_total - (double)_meminfo[4], _total);
 }
 
 

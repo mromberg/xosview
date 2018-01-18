@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2000, 2006, 2012, 2015, 2016
+//  Copyright (c) 2000, 2006, 2012, 2015, 2016, 2018
 //  by Leopold Toetsch <lt@toetsch.at>
 //
 //  Read temperature entries from /proc/sys/dev/sensors/*/*
@@ -150,7 +150,7 @@ void LmsTemp::getlmstemp( void ){
         if ( !file )
             logFatal << "Can not open file : " << _filename << std::endl;
 
-        file >> high >> dummy >> fields_[0];
+        file >> high >> dummy >> _fields[0];
   }
     else {
         std::string f = _filename + "_input";
@@ -158,7 +158,7 @@ void LmsTemp::getlmstemp( void ){
         if ( !file1 )
             logFatal << "Can not open file : " << f << std::endl;
 
-        file1 >> fields_[0];
+        file1 >> _fields[0];
 
         f = _filename + "_max";
         std::ifstream file2(f.c_str());
@@ -166,24 +166,24 @@ void LmsTemp::getlmstemp( void ){
             logFatal << "Can not open file : " << f << std::endl;
 
         file2 >> high;
-        high /= 1000; fields_[0] /= 1000;
+        high /= 1000; _fields[0] /= 1000;
     }
 
-    total_ = _highest;  // Max temp
-    fields_[1] = high - fields_[0];
-    if(fields_[1] <= 0) {	// alarm
-        fields_[1] = 0;
+    _total = _highest;  // Max temp
+    _fields[1] = high - _fields[0];
+    if(_fields[1] <= 0) {	// alarm
+        _fields[1] = 0;
         setfieldcolor( 0, _highColor );
     }
     else
         setfieldcolor( 0, _actColor );
 
-    fields_[2] = total_ - fields_[1] - fields_[0];
-    if(fields_[2] <= 0) {	// alarm, high was set above 100
-        fields_[2] = 0;
+    _fields[2] = _total - _fields[1] - _fields[0];
+    if(_fields[2] <= 0) {	// alarm, high was set above 100
+        _fields[2] = 0;
         setfieldcolor( 0, _highColor );
     }
     else
         setfieldcolor( 0, _actColor );
-    setUsed (fields_[0], total_);
+    setUsed (_fields[0], _total);
 }

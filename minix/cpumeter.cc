@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -66,10 +66,10 @@ void CPUMeter::checkevent( void ){
     float ticktotal = (float)ticks[7];
 
     for (size_t i = 0 ; i + 1 < ticks.size() ; i++)
-        fields_[i] = (float)ticks[i] / ticktotal;
+        _fields[i] = (float)ticks[i] / ticktotal;
 
-    total_ = 1.0;
-    setUsed(total_ - fields_[6], total_);
+    _total = 1.0;
+    setUsed(_total - _fields[6], _total);
 }
 
 

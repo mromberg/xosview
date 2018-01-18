@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -33,7 +33,7 @@ void ComFSMeter::checkResources(const ResDB &rdb) {
 
 
 void ComFSMeter::checkevent( void ) {
-    total_ = 1.0;
+    _total = 1.0;
 
     if (isMount(_path)) {
         setBGColor(_bgColor);
@@ -43,14 +43,14 @@ void ComFSMeter::checkevent( void ) {
 
         logDebug << _path << ":\t" << fsSize << std::endl;
 
-        fields_[0] = (float)(fsSize.second - fsSize.first)
+        _fields[0] = (float)(fsSize.second - fsSize.first)
             / (float)fsSize.second;
-        fields_[1] = (float)fsSize.first / (float)fsSize.second;
+        _fields[1] = (float)fsSize.first / (float)fsSize.second;
         setUsed(fsSize.second - fsSize.first, fsSize.second);
     }
     else {
-        fields_[0] = 0;
-        fields_[1] = 1.0;
+        _fields[0] = 0;
+        _fields[1] = 1.0;
         setUsed(0, 1);
         setBGColor(_umountColor);
     }
@@ -59,11 +59,11 @@ void ComFSMeter::checkevent( void ) {
 
 void ComFSMeter::setBGColor(unsigned long c) {
     if (fieldcolor(1) != c) {
-        fields_[0] = 1.0;
-        fields_[1] = 0;
+        _fields[0] = 1.0;
+        _fields[1] = 0;
         setfieldcolor(1, c);
-        fields_[0] = 0;
-        fields_[1] = 1.0;
+        _fields[0] = 0;
+        _fields[1] = 1.0;
     }
 }
 

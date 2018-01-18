@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
@@ -45,7 +45,7 @@ void CPUMeter::checkevent(void) {
 
 
 void CPUMeter::getcputime(void) {
-    total_ = 0;
+    _total = 0;
     cpu_stat_t cs;
 
     if (_aggregate) {
@@ -73,13 +73,13 @@ void CPUMeter::getcputime(void) {
 
     int oldindex = (cpuindex_ + 1) % 2;
     for (int i = 0 ; i < CPU_STATES ; i++) {
-        fields_[i] = cputime_[cpuindex_][i] - cputime_[oldindex][i];
-        total_ += fields_[i];
+        _fields[i] = cputime_[cpuindex_][i] - cputime_[oldindex][i];
+        _total += _fields[i];
     }
     cpuindex_ = (cpuindex_ + 1) % 2;
 
-    if (total_)
-        setUsed(total_ - fields_[3], total_);
+    if (_total)
+        setUsed(_total - _fields[3], _total);
 }
 
 
