@@ -24,6 +24,7 @@ protected:
     unsigned long _actColor, _highColor, _lowColor;
 
     const std::string &unit(void) const { return _unit; }
+    std::string &unit(void) { return _unit; }
     void updateLegend(void);
     void checkFields(double low, double high);
 
