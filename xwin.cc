@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016, 2017
+//  Copyright (c) 2015, 2016, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -24,10 +24,10 @@ static std::ostream &operator<<(std::ostream &os, const XEvent &e);
 
 
 XWin::XWin()
-    : _graphics(0), done_(false),
-      wm_(None), wmdelete_(None), x_(0), y_(0), width_(1), height_(1),
-      visual_(0), display_(0), window_(0), fgcolor_(0), bgcolor_(0),
-      colormap_(0), _transparent(false), _dbe(false), _bb(0) {
+    : _graphics(0), _done(false),
+      _wm(None), _wmdelete(None), _x(0), _y(0), _width(1), _height(1),
+      _visual(0), _display(0), _window(0), _fgColor(0), _bgColor(0),
+      _colormap(0), _transparent(false), _dbe(false), _bb(0) {
 }
 
 
@@ -38,26 +38,26 @@ XWin::~XWin( void ){
 
 #ifdef HAVE_DBE
     if (_dbe && _bb)
-        XdbeDeallocateBackBufferName(display_, _bb);
+        XdbeDeallocateBackBufferName(display(), _bb);
 #endif
 
-    if (display_) {
-        XDestroyWindow( display_, window_ );
+    if (display()) {
+        XDestroyWindow(display(), window());
 
-        if (XVisualIDFromVisual(visual_)
-          != XVisualIDFromVisual(DefaultVisual(display_, screen())))
-            XFreeColormap(display_, colormap_);
+        if (XVisualIDFromVisual(visual())
+          != XVisualIDFromVisual(DefaultVisual(display(), screen())))
+            XFreeColormap(display(), colormap());
 
         // close the connection to the display
-        XCloseDisplay( display_ );
+        XCloseDisplay(display());
     }
 }
 
 
 void XWin::openDisplay( void ){
     // Open connection to display selected by user
-    const char *dname = display_name_ == "" ? NULL : display_name_.c_str();
-    if ((display_ = XOpenDisplay(dname)) == NULL) {
+    const char *dname = displayName().empty() ? NULL : displayName().c_str();
+    if ((_display = XOpenDisplay(dname)) == NULL) {
         logFatal << "Can't open display named "
                  << "'" << (dname == NULL ? (void *)NULL : dname) << "'"
                  << std::endl;
@@ -72,9 +72,9 @@ void XWin::createWindow(void) {
     XSizeHints *szHints = getGeometry();
 
     XVisualInfo tmplt;
-    tmplt.visualid = XVisualIDFromVisual(visual_);
+    tmplt.visualid = XVisualIDFromVisual(visual());
     int ninfo = 0;
-    XVisualInfo *vinfo = XGetVisualInfo(display_, VisualIDMask, &tmplt,
+    XVisualInfo *vinfo = XGetVisualInfo(display(), VisualIDMask, &tmplt,
       &ninfo);
     if (ninfo != 1)
         logFatal << "Failed to locate XVisualInfo." << std::endl;
@@ -82,26 +82,26 @@ void XWin::createWindow(void) {
     // Define the windows attributes
     XSetWindowAttributes attr;
     unsigned long amask = 0;
-    attr.colormap = colormap_;            amask |= CWColormap;
-    attr.border_pixel = bgcolor_;         amask |= CWBorderPixel;
-    attr.background_pixel = bgcolor_;     amask |= CWBackPixel;
+    attr.colormap = colormap();           amask |= CWColormap;
+    attr.border_pixel = background();     amask |= CWBorderPixel;
+    attr.background_pixel = background(); amask |= CWBackPixel;
     attr.backing_store = WhenMapped;      amask |= CWBackingStore;
     attr.bit_gravity = ForgetGravity;     amask |= CWBitGravity;
 
-    window_ = XCreateWindow(display_, DefaultRootWindow(display_),
+    _window = XCreateWindow(display(), DefaultRootWindow(display()),
       szHints->x, szHints->y, szHints->width, szHints->height,
-      0, vinfo->depth, InputOutput, visual_, amask, &attr);
+      0, vinfo->depth, InputOutput, visual(), amask, &attr);
 
     XFree(vinfo);
 
 #ifdef HAVE_DBE
     if (_dbe) {
-        _bb = XdbeAllocateBackBufferName(display_, window_, XdbeCopied);
+        _bb = XdbeAllocateBackBufferName(display(), window(), XdbeCopied);
         logDebug << "BACK BUFFER ID: " << std::hex << std::showbase
                  << _bb << std::endl;
     }
     else
-        _bb = window_;
+        _bb = window();
 #else
     _bb = window_;
 #endif
@@ -111,23 +111,23 @@ void XWin::createWindow(void) {
     szHints = 0;
 
     // Create Graphics interface.
-    _graphics = new X11Graphics(display_, visual_, _bb, true, colormap_,
-      bgcolor_);
+    _graphics = new X11Graphics(display(), visual(), _bb, true, colormap(),
+      background());
     g().setFont(resdb().getResource("font"));
-    g().setBG(bgcolor_);
-    g().setFG(fgcolor_);
+    g().setBG(background());
+    g().setFG(foreground());
     g().setStippleMode(resdb().isResourceTrue("enableStipple"));
 
     // Pixmap backgrounds
     std::string pixmapFName = resdb().getResourceOrUseDefault(
         "pixmapName", "");
-    X11Pixmap x11p(display_, visual_, window_, colormap_);
+    X11Pixmap x11p(display(), visual(), window(), colormap());
     if (pixmapFName.size() && x11p.load(pixmapFName))
         g().setBG(x11p);
 
     // add the events
-    for (size_t i = 0 ; i < events_.size() ; i++)
-        selectEvents(events_[i].mask_);
+    for (size_t i = 0 ; i < _events.size() ; i++)
+        selectEvents(_events[i]._mask);
 
     // Map the main window
     map();
@@ -136,11 +136,11 @@ void XWin::createWindow(void) {
 
 Visual *XWin::getVisual(void) {
 
-    Visual *rval = DefaultVisual(display_, screen());
+    Visual *rval = DefaultVisual(display(), screen());
 
     if(resdb().isResourceTrue("transparent")) {
         XVisualInfo vinfo;
-        if (XMatchVisualInfo(display_, DefaultScreen(display_),
+        if (XMatchVisualInfo(display(), DefaultScreen(display()),
             32, TrueColor, &vinfo)) {
             logDebug << "Found 32 bit ARGB visual: "
                      << std::hex << std::showbase
@@ -167,12 +167,12 @@ bool XWin::isDBE(Visual *v) const {
     VisualID visID = XVisualIDFromVisual(v);
 
     int major, minor;
-    if (XdbeQueryExtension(display_, &major, &minor)) {
+    if (XdbeQueryExtension(display(), &major, &minor)) {
         logDebug << "HAVE DBE: " << major << "." << minor << std::endl;
 
-        Window rootWindow = XDefaultRootWindow(display_);
+        Window rootWindow = XDefaultRootWindow(display());
         int numsp = 1;
-        XdbeScreenVisualInfo *dbeVisuals = XdbeGetVisualInfo(display_,
+        XdbeScreenVisualInfo *dbeVisuals = XdbeGetVisualInfo(display(),
           &rootWindow, &numsp);
 
         if (dbeVisuals != NULL) {
@@ -205,9 +205,9 @@ void XWin::swapBB(void) const {
 #ifdef HAVE_DBE
     if (_dbe) {
         XdbeSwapInfo swinfo;
-        swinfo.swap_window = window_;
+        swinfo.swap_window = window();
         swinfo.swap_action = XdbeCopied;
-        XdbeSwapBuffers(display_, &swinfo, 1);
+        XdbeSwapBuffers(display(), &swinfo, 1);
     }
 #endif
 }
@@ -238,7 +238,7 @@ void XWin::setHints(XSizeHints *szHints){
         wmhints->initial_state = IconicState;
 
     // Set up XTextProperty for window name and icon name
-    char *np = const_cast<char *>(name_.c_str());
+    char *np = const_cast<char *>(_name.c_str());
     XTextProperty titlep;
     if(XStringListToTextProperty(&np, 1, &titlep) == 0){
         logFatal << "Error creating XTextProperty!" << std::endl;
@@ -250,7 +250,7 @@ void XWin::setHints(XSizeHints *szHints){
 
     if (resdb().getResource("sessionID") != "") {
         // X11R6 Session Manager gave us an ID.  Command handled elsewhere.
-        XSetWMProperties(display_, window_, &titlep, &iconnamep, NULL,
+        XSetWMProperties(display(), window(), &titlep, &iconnamep, NULL,
           0, szHints, wmhints, classhints);
     }
     else {
@@ -264,7 +264,7 @@ void XWin::setHints(XSizeHints *szHints){
             fargv[i] = const_cast<char *>(clst[i].c_str());
         }
 
-        XSetWMProperties(display_, window_, &titlep, &iconnamep, fargv.data(),
+        XSetWMProperties(display(), window(), &titlep, &iconnamep, fargv.data(),
           clst.size(), szHints, wmhints, classhints);
     }
 
@@ -272,10 +272,10 @@ void XWin::setHints(XSizeHints *szHints){
     XFree( iconnamep.value );
 
     // Set up the Atoms for delete messages
-    wm_ = XInternAtom( display(), "WM_PROTOCOLS", False );
-    wmdelete_ = XInternAtom( display(), "WM_DELETE_WINDOW", False );
-    XChangeProperty( display(), window(), wm_, XA_ATOM, 32,
-      PropModeReplace, (unsigned char *)(&wmdelete_), 1 );
+    _wm = XInternAtom( display(), "WM_PROTOCOLS", False );
+    _wmdelete = XInternAtom( display(), "WM_DELETE_WINDOW", False );
+    XChangeProperty( display(), window(), _wm, XA_ATOM, 32,
+      PropModeReplace, (unsigned char *)(&_wmdelete), 1 );
 
     XFree(wmhints);
     XFree(classhints);
@@ -284,22 +284,22 @@ void XWin::setHints(XSizeHints *szHints){
 
 void XWin::setColors( void ){
 
-    visual_ = getVisual();
+    _visual = getVisual();
 
-    if (XVisualIDFromVisual(visual_)
-      == XVisualIDFromVisual(DefaultVisual(display_, screen())))
-        colormap_ = DefaultColormap( display_, screen() );
+    if (XVisualIDFromVisual(visual())
+      == XVisualIDFromVisual(DefaultVisual(display(), screen())))
+        _colormap = DefaultColormap(display(), screen());
     else
-        colormap_ = XCreateColormap(display_, DefaultRootWindow(display_),
-          visual_, AllocNone);
+        _colormap = XCreateColormap(display(), DefaultRootWindow(display()),
+          visual(), AllocNone);
 
     if(_transparent)
-        bgcolor_ = 0;
+        _bgColor = 0;
     else
-        bgcolor_ = X11Graphics::allocColor(display_, colormap_,
+        _bgColor = X11Graphics::allocColor(display(), colormap(),
           resdb().getResource("background"));
 
-    fgcolor_ = X11Graphics::allocColor(display_, colormap_,
+    _fgColor = X11Graphics::allocColor(display(), colormap(),
       resdb().getResource("foreground"));
 }
 
@@ -313,12 +313,12 @@ XSizeHints *XWin::getGeometry(void) {
         logFatal << "Error allocating size hints!" << std::endl;
     }
     szHints->flags = PSize;
-    szHints->height = height_;
+    szHints->height = height();
     szHints->min_height = szHints->height;
-    szHints->width = width_;
+    szHints->width = width();
     szHints->min_width = szHints->width;
-    szHints->x = x_;
-    szHints->y = y_;
+    szHints->x = x();
+    szHints->y = y();
 
     // Construct a default geometry string
     std::ostringstream defgs;
@@ -334,7 +334,7 @@ XSizeHints *XWin::getGeometry(void) {
     const char *gptr = NULL;
     if (!geomUnspecified)
         gptr = geomStr.c_str();
-    int bitmask =  XGeometry(display_, DefaultScreen(display_), gptr,
+    int bitmask =  XGeometry(display(), DefaultScreen(display()), gptr,
       defgs.str().c_str(),
       0,
       1, 1, 0, 0, &(szHints->x), &(szHints->y),
@@ -343,14 +343,14 @@ XSizeHints *XWin::getGeometry(void) {
     // Check bitmask and set flags in XSizeHints structure
     if (bitmask & (WidthValue | HeightValue)){
         szHints->flags |= PPosition;
-        width_ = szHints->width;
-        height_ = szHints->height;
+        width(szHints->width);
+        height(szHints->height);
     }
 
     if (bitmask & (XValue | YValue)){
         szHints->flags |= USPosition;
-        x_ = szHints->x;
-        y_ = szHints->y;
+        x(szHints->x);
+        y(szHints->y);
     }
 
     return szHints;
@@ -361,9 +361,9 @@ void XWin::selectEvents( long mask ){
     XWindowAttributes    xAttr;
     XSetWindowAttributes xSwAttr;
 
-    if ( XGetWindowAttributes( display_, window_, &xAttr ) != 0 ){
+    if ( XGetWindowAttributes(display(), window(), &xAttr) != 0 ){
         xSwAttr.event_mask = xAttr.your_event_mask | mask;
-        XChangeWindowAttributes( display_, window_, CWEventMask, &xSwAttr );
+        XChangeWindowAttributes(display(), window(), CWEventMask, &xSwAttr );
     }
 }
 
@@ -372,30 +372,30 @@ void XWin::ignoreEvents( long mask ){
     XWindowAttributes    xAttr;
     XSetWindowAttributes xSwAttr;
 
-    if ( XGetWindowAttributes( display_, window_, &xAttr ) != 0 ){
+    if (XGetWindowAttributes(display(), window(), &xAttr) != 0) {
         xSwAttr.event_mask = xAttr.your_event_mask & mask;
-        XChangeWindowAttributes( display_, window_, CWEventMask, &xSwAttr );
+        XChangeWindowAttributes(display(), window(), CWEventMask, &xSwAttr);
     }
 }
 
 
 void XWin::checkevent( void ){
 
-    if (XEventsQueued(display_, QueuedAfterReading))
+    if (XEventsQueued(display(), QueuedAfterReading))
         logDebug << "++++++++++++ event sequence +++++++++++++" << std::endl;
-    while (XEventsQueued(display_, QueuedAfterReading)) {
+    while (XEventsQueued(display(), QueuedAfterReading)) {
         XEvent event;
-        XNextEvent(display_, &event);
+        XNextEvent(display(), &event);
 
         logDebug << "XWin::checkevent *** : " << event << std::endl;
 
-        for (size_t j = 0 ; j < events_.size() ; j++) {
-            events_[j].callBack(event);
+        for (size_t j = 0 ; j < _events.size() ; j++) {
+            _events[j].callBack(event);
             if (done())
                 return;
         }
 
-        if (!XEventsQueued(display_, QueuedAfterReading))
+        if (!XEventsQueued(display(), QueuedAfterReading))
             logDebug << "------------ event sequence -------------"
                      << std::endl;
     }
@@ -403,7 +403,7 @@ void XWin::checkevent( void ){
 
 
 void XWin::addEvent(int eventType, XWin *xwin, EventCallBack callBack){
-    events_.push_back(Event(xwin, eventType, callBack));
+    _events.push_back(Event(xwin, eventType, callBack));
 }
 
 
@@ -416,8 +416,8 @@ void XWin::configureEvent( XEvent &event ){
 
 
 void XWin::deleteEvent( XEvent &event ){
-    if ( (event.xclient.message_type == wm_ ) &&
-      ((unsigned)event.xclient.data.l[0] == wmdelete_) ) {
+    if ( (event.xclient.message_type == _wm ) &&
+      ((unsigned)event.xclient.data.l[0] == _wmdelete) ) {
         logDebug << "calling done(true)..." << std::endl;
         done(true);
     }
@@ -425,37 +425,37 @@ void XWin::deleteEvent( XEvent &event ){
 
 
 XWin::Event::Event( XWin *parent, int event, EventCallBack callBack )
-    : parent_(parent), callBack_(callBack), event_(event),
-      mask_(NoEventMask) {
+    : _parent(parent), _callBack(callBack), _event(event),
+      _mask(NoEventMask) {
 
-    switch ( event_ ){
+    switch (_event) {
     case ButtonPress:
-        mask_ = ButtonPressMask;
+        _mask = ButtonPressMask;
         break;
     case ButtonRelease:
-        mask_ = ButtonReleaseMask;
+        _mask = ButtonReleaseMask;
         break;
     case EnterNotify:
-        mask_ = EnterWindowMask;
+        _mask = EnterWindowMask;
         break;
     case LeaveNotify:
-        mask_ = LeaveWindowMask;
+        _mask = LeaveWindowMask;
         break;
     case MotionNotify:
-        mask_ = PointerMotionMask;
+        _mask = PointerMotionMask;
         break;
     case FocusIn:
     case FocusOut:
-        mask_ = FocusChangeMask;
+        _mask = FocusChangeMask;
         break;
     case KeymapNotify:
-        mask_ = KeymapStateMask;
+        _mask = KeymapStateMask;
         break;
     case KeyPress:
-        mask_ = KeyPressMask;
+        _mask = KeyPressMask;
         break;
     case KeyRelease:
-        mask_ = KeyReleaseMask;
+        _mask = KeyReleaseMask;
         break;
     case MapNotify:
     case SelectionClear:
@@ -463,18 +463,18 @@ XWin::Event::Event( XWin *parent, int event, EventCallBack callBack )
     case SelectionRequest:
     case ClientMessage:
     case MappingNotify:
-        mask_ = NoEventMask;
+        _mask = NoEventMask;
         break;
     case Expose:
     case GraphicsExpose:
     case NoExpose:
-        mask_ = ExposureMask;
+        _mask = ExposureMask;
         break;
     case ColormapNotify:
-        mask_ = ColormapChangeMask;
+        _mask = ColormapChangeMask;
         break;
     case PropertyNotify:
-        mask_ = PropertyChangeMask;
+        _mask = PropertyChangeMask;
         break;
     case UnmapNotify:
     case ReparentNotify:
@@ -482,27 +482,27 @@ XWin::Event::Event( XWin *parent, int event, EventCallBack callBack )
     case DestroyNotify:
     case CirculateNotify:
     case ConfigureNotify:
-        mask_ = StructureNotifyMask | SubstructureNotifyMask;
+        _mask = StructureNotifyMask | SubstructureNotifyMask;
         break;
     case CreateNotify:
-        mask_ = SubstructureNotifyMask;
+        _mask = SubstructureNotifyMask;
         break;
     case VisibilityNotify:
-        mask_ = VisibilityChangeMask;
+        _mask = VisibilityChangeMask;
         break;
         // The following are used by window managers
     case CirculateRequest:
     case ConfigureRequest:
     case MapRequest:
-        mask_ = SubstructureRedirectMask;
+        _mask = SubstructureRedirectMask;
         break;
     case ResizeRequest:
-        mask_ = ResizeRedirectMask;
+        _mask = ResizeRedirectMask;
         break;
     default:
         logBug << "XWin::Event::Event() : unknown event type : "
-               << event_ << std::endl;
-        mask_ = NoEventMask;
+               << _event << std::endl;
+        _mask = NoEventMask;
         break;
     }
 }
@@ -513,8 +513,8 @@ std::vector<XVisualInfo> XWin::getVisuals(void) {
 
     XVisualInfo *visList, visFilter;
     int numVis;
-    visFilter.screen = DefaultScreen(display_);
-    visList = XGetVisualInfo(display_, VisualScreenMask, &visFilter, &numVis);
+    visFilter.screen = DefaultScreen(display());
+    visList = XGetVisualInfo(display(), VisualScreenMask, &visFilter, &numVis);
     for (int i = 0 ; i < numVis ; i++)
         rval.push_back(visList[i]);
 
