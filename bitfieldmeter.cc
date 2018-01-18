@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006, 2015, 2016
+//  Copyright (c) 1999, 2006, 2015, 2016, 2018
 //  by Thomas Waldmann ( ThomasWaldmann@gmx.de )
 //  based on work of Mike Romberg ( mike-romberg@comcast.net )
 //
@@ -47,9 +47,9 @@ void BitFieldMeter::drawIfNeeded( X11Graphics &g ) {
 }
 
 
-void BitFieldMeter::setBits(int startbit, unsigned char values){
+void BitFieldMeter::setBits(size_t startbit, unsigned char values){
     unsigned char mask = 1;
-    for (int i = startbit ; i < startbit + 8 ; i++){
+    for (size_t i = startbit ; i < startbit + 8 ; i++){
         _bits[i] = values & mask;
         mask = mask << 1;
     }

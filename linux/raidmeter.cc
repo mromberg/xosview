@@ -168,7 +168,7 @@ size_t RAIDMeter::setDevBits(void) {
     size_t active = 0;
 
     std::vector<std::string> devs(scanDevs());
-    if (devs.size() != numbits())
+    if (devs.size() != numBits())
         setNumBits(devs.size());
 
     for (size_t i = 0 ; i < devs.size() ; i++) {

@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 1999, 2006, 2015, 2016 Thomas Waldmann (ThomasWaldmann@gmx.de)
+//  Copyright (c) 1999, 2006, 2015, 2016, 2018 Thomas Waldmann (ThomasWaldmann@gmx.de)
 //  based on work of Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef BITFIELDMETER_H
-#define BITFIELDMETER_H
+#ifndef bitfieldmeter_h
+#define bitfieldmeter_h
 
 #include "fieldmeter.h"
 #include "drawbits.h"
@@ -13,11 +13,11 @@
 
 class BitFieldMeter : public FieldMeter {
 public:
-    BitFieldMeter( size_t numBits=1, size_t numfields=1,
-      const std::string &title = "", const std::string &bitlegend = "",
-      const std::string &fieldlegend = "");
+    BitFieldMeter(size_t numBits=1, size_t numfields=1,
+      const std::string &title="", const std::string &bitlegend="",
+      const std::string &fieldlegend="");
 
-    virtual ~BitFieldMeter( void );
+    virtual ~BitFieldMeter(void);
 
     // virtual from Meter
     virtual void draw(X11Graphics &g);
@@ -28,13 +28,9 @@ protected:
     std::vector<unsigned char> _bits;
     DrawBits<unsigned char> _dbits;
 
-    void setBits(int startbit, unsigned char values);
-    size_t numbits(void) const { return _bits.size(); }
+    void setBits(size_t startbit, unsigned char values);
+    size_t numBits(void) const { return _bits.size(); }
     void setNumBits(size_t n);
-
-    // Values used to draw the fields only.
-    virtual int fldx(void) const { return x() + width() * 2 / 6 + 4; }
-    virtual int fldwidth(void) const { return width() * 2 / 3 - 4; }
 
 private:
     std::string _fieldLegend;

@@ -1,5 +1,5 @@
 //
-//  Original FieldMeter class is Copyright (c) 1994, 2006, 2015
+//  Original FieldMeter class is Copyright (c) 1994, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  Modifications from FieldMeter class done in Oct. 1995
@@ -9,23 +9,20 @@
 //    by Scott McNab ( jedi@tartarus.uwa.edu.au )
 //
 
-#ifndef FIELDMETERGRAPH_H
-#define FIELDMETERGRAPH_H
+#ifndef fieldmetergraph_h
+#define fieldmetergraph_h
 
-#include "meter.h"
 #include "fieldmeterdecay.h"
-
-#include <vector>
 
 class X11Pixmap;
 
 
 class FieldMeterGraph : public FieldMeterDecay {
 public:
-    FieldMeterGraph( size_t numfields, const std::string &title = "",
-      const std::string &legend = "");
+    FieldMeterGraph(size_t numfields, const std::string &title="",
+      const std::string &legend="");
 
-    virtual ~FieldMeterGraph( void );
+    virtual ~FieldMeterGraph(void);
 
     // virtual from Meter
     virtual void checkResources(const ResDB &rdb);
@@ -34,13 +31,13 @@ protected:
     virtual void drawfields(X11Graphics &g, bool mandatory=false);
 
 private:
-    bool useGraph_;
-    int graphNumCols_;
-    int graphpos_;
-    std::vector<float> heightfield_;
+    bool _useGraph;
+    int _graphNumCols;
+    int _graphPos;
+    std::vector<float> _heightField;
     X11Pixmap *_pmap;  // backbuffer
 
-    void setNumCols( int n );
+    void setNumCols(int n);
     void drawBars(X11Graphics &g);
     void drawBar(X11Graphics &g, int i) const;
     void checkBackBuffer(X11Graphics &g);
