@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015, 2016
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -21,7 +21,7 @@ BitMeter::~BitMeter( void ){
 void BitMeter::setNumBits(size_t n){
     _bits.resize(n);
 
-    for ( unsigned int i = 0 ; i < numbits() ; i++ )
+    for ( unsigned int i = 0 ; i < numBits() ; i++ )
         _bits[i] = false;
 }
 
@@ -43,9 +43,9 @@ void BitMeter::draw(X11Graphics &g){
 }
 
 
-void BitMeter::setBits(int startbit, unsigned char values){
+void BitMeter::setBits(size_t startbit, unsigned char values){
     unsigned char mask = 1;
-    for (int i = startbit ; i < startbit + 8 ; i++){
+    for (size_t i = startbit ; i < startbit + 8 ; i++){
         _bits[i] = values & mask;
         mask = mask << 1;
     }

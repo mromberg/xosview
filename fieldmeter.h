@@ -4,8 +4,9 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef FIELDMETER_H
-#define FIELDMETER_H
+#ifndef fieldmeter_h
+#define fieldmeter_h
+
 #include "meter.h"
 #include "timer.h"
 
