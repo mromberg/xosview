@@ -28,16 +28,16 @@ BSDSensor::BSDSensor( const std::string &name, const std::string &high,
     name_ = n.substr( 0, n.find_first_of('.') );
     val_ = n.substr( n.find_first_of('.') + 1 );
     if (high.size()) {
-        has_high_ = true;
-        if (!util::fstr(high, high_)) { // high given as number?
+        _hasHigh = true;
+        if (!util::fstr(high, _high)) { // high given as number?
             n = high;
             highname_ = n.substr( 0, n.find_first_of('.') );
             highval_ = n.substr( n.find_first_of('.') + 1 );
         }
     }
     if (low.size()) {
-        has_low_ = true;
-        if (!util::fstr(low, low_)) {  // low given as number?
+        _hasLow = true;
+        if (!util::fstr(low, _low)) {  // low given as number?
             n = low;
             lowname_ = n.substr( 0, n.find_first_of('.') );
             lowval_ = n.substr( n.find_first_of('.') + 1 );
@@ -53,13 +53,13 @@ BSDSensor::~BSDSensor( void ) {
 void BSDSensor::checkResources(const ResDB &rdb) {
     SensorFieldMeter::checkResources(rdb);
 
-    actcolor_  = rdb.getColor("bsdsensorActColor");
-    highcolor_ = rdb.getColor("bsdsensorHighColor");
-    lowcolor_  = rdb.getColor("bsdsensorLowColor");
+    _actColor  = rdb.getColor("bsdsensorActColor");
+    _highColor = rdb.getColor("bsdsensorHighColor");
+    _lowColor  = rdb.getColor("bsdsensorLowColor");
 
-    setfieldcolor( 0, actcolor_  );
+    setfieldcolor( 0, _actColor  );
     setfieldcolor( 1, rdb.getColor( "bsdsensorIdleColor" ) );
-    setfieldcolor( 2, highcolor_ );
+    setfieldcolor( 2, _highColor );
 
     std::string tmp(rdb.getResourceOrUseDefault(
           "bsdsensorHighest", "0" ));
@@ -68,14 +68,14 @@ void BSDSensor::checkResources(const ResDB &rdb) {
     _total = fabs( util::stof( rdb.getResourceOrUseDefault(s, tmp) ) );
     s = "bsdsensorUsedFormat" + util::repr(nbr_);
 
-    if (!has_high_)
-        high_ = _total;
-    if (!has_low_)
-        low_ = 0;
+    if (!_hasHigh)
+        _high = _total;
+    if (!_hasLow)
+        _low = 0;
 
     // Get the unit.
     float dummy;
-    BSDGetSensor(name_, val_, dummy, unit_);
+    BSDGetSensor(name_, val_, dummy, unit());
     updateLegend();
 }
 
@@ -86,7 +86,7 @@ void BSDSensor::checkevent( void ) {
 
 
 void BSDSensor::getsensor( void ) {
-    float value, high = high_, low = low_;
+    float value, high = _high, low = _low;
     std::string emptyStr;
     BSDGetSensor(name_, val_, value, emptyStr);
     if ( highname_.size() )
