@@ -103,7 +103,7 @@ void XWin::createWindow(void) {
     else
         _bb = window();
 #else
-    _bb = window_;
+    _bb = window();
 #endif
 
     setHints(szHints);
