@@ -40,16 +40,16 @@ xosview*transparent:        False
 xosview*meterLabelColor:    #EEEEEE
 xosview*usedLabelColor:     #EEEEEE
 !xosview*font:               7x13bold      ! X11 core font
-!xosview*font:               Oxygen Mono-8  ! Freetype2 font
+!xosview*font:               Mono-8  ! Freetype2 font
 xosview*font:               @XOSV_FONT@
 xosview*background:         #352E37
 xosview*foreground:         #FFFFFF
+xosview*samplesPerSec:      10
 xosview*enableStipple:	    False ! Change to true to try beta stipple support.
-xosview*samplesPerSec:      10    ! not yet supported
 xosview*graphNumCols:       128   ! number of samples shown in a graph
 xosview*horizontalMargin:   5
-xosview*verticalMargin:     5
-xosview*verticalSpacing:    5
+xosview*verticalMargin:     4
+xosview*verticalSpacing:    1
 
 
 ! ** Load Meter Resources

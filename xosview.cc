@@ -175,6 +175,7 @@ void XOSView::exposeEvent( XExposeEvent &event ) {
 void XOSView::configureEvent( XEvent &e ) {
     unsigned int ew = e.xconfigure.width;
     unsigned int eh = e.xconfigure.height;
+    logDebug << "configure event: " << ew << '/' << eh << std::endl;
     if ((g().width() != ew) || (g().height() != eh)) {
         logDebug << "XOSView::configureEvent(): set sizes..." << std::endl;
         g().resize(ew, eh);
@@ -375,7 +376,7 @@ void XOSView::checkResources(void) {
     _vspacing = util::stoi(resdb().getResource("verticalSpacing"));
     _hmargin  = std::max(0, _hmargin);
     _vmargin  = std::max(0, _vmargin);
-    _vspacing = std::max(0, _vspacing);
+    _vspacing = std::max(1, _vspacing);
 
     _xoff = _hmargin;
     _yoff = 0;
@@ -424,11 +425,12 @@ int XOSView::findx(XOSVFont &font){
 }
 
 
-int XOSView::findy(XOSVFont &font){
-    if ( _legend )
-        return 10 + font.textHeight() * _meters.size() * ( _caption ? 2 : 1 );
-
-    return 15 * _meters.size();
+int XOSView::findy(void) {
+    // Same match as in resize().
+    const size_t nmeters = std::max(_meters.size(), (size_t)1);  // don't / by 0
+    const int mh = 2 + _yoff + _vspacing;
+    const int my = _vmargin + mh * nmeters - _vspacing;
+    return my + 2 * _vmargin;
 }
 
 
@@ -449,13 +451,21 @@ void XOSView::figureSize(void) {
         else
             _xoff = font.textWidth("SWAP 99%%");
 
-        _yoff = _caption ? font.textHeight() + font.textHeight() / 4 : 0;
+        // The +6/+3 accounts for slop in the font drawing/clearing code.
+        _yoff = _caption ? (font.textHeight() + 6): 6;
     }
+    else
+        _yoff = 3;
+
     static bool firsttime = true;
     if (firsttime) {
         firsttime = false;
         width(findx(font));
-        height(findy(font));
+        height(findy());
+        logDebug << "number of meters: " << _meters.size() << std::endl;
+        logDebug << "text height: " << font.textHeight() << std::endl;
+        logDebug << "Width/Height set to: " << width() << '/' << height()
+                 << std::endl;
     }
 }
 
@@ -510,7 +520,7 @@ std::string XOSView::winname( void ){
 }
 
 
-void  XOSView::resize( void ){
+void  XOSView::resize(void) {
     //-----------------------------------
     // Width
     //-----------------------------------
@@ -524,20 +534,24 @@ void  XOSView::resize( void ){
     //-----------------------------------
     // Height
     //-----------------------------------
-    unsigned int spacing = _vspacing + 1;
-    unsigned int topmargin = _vmargin;
-    size_t nmeters = _meters.size() ? _meters.size() : 1; // don't divide by 0.
-    unsigned int ypad = 2 * topmargin + (nmeters - 1) * spacing
-        + nmeters * _yoff; // size reserved for padding.
-    ypad = ypad > height() ? height() : ypad; // clamp to height.
+    const size_t nmeters = std::max(_meters.size(), (size_t)1);  // don't / by 0
+    const int minmh = 2 + _yoff + _vspacing;
+    const int mh = std::max((int)((height() - _vmargin * 2) / nmeters), minmh);
+    const int newheight = std::max(mh - _yoff - _vspacing, 2);
 
-    int newheight = (height() - ypad) / nmeters;
-    newheight = (newheight >= 2) ? newheight : 2; // min clamp to 2.
+    logDebug << "-- meter height --\n"
+             << "_vmargin : " << _vmargin << "\n"
+             << "_vspacing: " << _vspacing << "\n"
+             << "_yoff    : " << _yoff << "\n"
+             << "minmh    : " << minmh << "\n"
+             << "mh       : " << mh << "\n"
+             << "newheight: " << newheight
+             << std::endl;
+
 
     for (size_t i = 0 ; i < _meters.size() ; i++) {
-        _meters[i]->resize(_xoff,
-          topmargin + (i + 1) * _yoff + i * (newheight+spacing),
-          newwidth, newheight);
+        const int my = _vmargin + mh * (i + 1) - _vspacing;
+        _meters[i]->resize(_xoff, my, newwidth, newheight);
     }
 }
 

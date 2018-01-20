@@ -32,7 +32,7 @@ AC_DEFUN([XO_XFT_SUPPORT],[dnl
         AC_CHECK_HEADERS([X11/Xft/Xft.h],[dnl
             AC_CHECK_LIB(Xft, XftFontOpenName,[dnl
                 AC_DEFINE(HAVE_XFT,[1],[Have libXft])
-                XOSV_FONT="Oxygen Mono-8"
+                XOSV_FONT="Mono-8"
                 XFT_OBJS="\$(XFT_OBJS)"
                 XO_CONCAT(LIBS,$LIBS,[-lXft])
                 ])

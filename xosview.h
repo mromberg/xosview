@@ -62,7 +62,7 @@ private:
     void checkMeterResources(void);
     void figureSize(void);
     int findx(XOSVFont &font);
-    int findy(XOSVFont &font);
+    int findy(void);
     void setSleepTime(void);
     void checkResources(void);
     void createMeters(void);
