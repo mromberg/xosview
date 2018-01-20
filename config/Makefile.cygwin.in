@@ -20,6 +20,7 @@ diskmeter.o \
 winders.o \
 perfcount.o \
 netmeter.o \
+btrymeter.o \
 tzonemeter.o \
 MeterMaker.o
 
