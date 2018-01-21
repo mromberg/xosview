@@ -59,7 +59,7 @@ public:
     void checkResources(const ResDB &rdb);
 
 protected:
-    float maxpackets_;
+    float _maxpackets;
 
 private:
     unsigned long _lastTcp, _lastUdp, _lastNetCnt, _lastBad;

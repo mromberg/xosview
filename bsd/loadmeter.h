@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2018
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  Most of this code was written by Werner Fink <werner@suse.de>
@@ -13,8 +14,8 @@
 //    authors for a copy.
 //
 
-#ifndef LOADMETER_H
-#define LOADMETER_H
+#ifndef loadmeter_h
+#define loadmeter_h
 
 #include "cloadmeter.h"
 
@@ -22,7 +23,7 @@
 
 class LoadMeter : public ComLoadMeter {
 public:
-    LoadMeter( void );
+    LoadMeter(void);
 
 protected:
     virtual float getLoad(void);

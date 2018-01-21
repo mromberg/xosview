@@ -1,6 +1,6 @@
 //
 //  NetBSD port:
-//  Copyright (c) 1995,1996,1997,2015,2016
+//  Copyright (c) 1995,1996,1997,2015,2016,2018
 //  by Brian Grayson(bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -12,8 +12,8 @@
 //    authors for a copy.
 //
 
-#ifndef DISKMETER_H
-#define DISKMETER_H
+#ifndef diskmeter_h
+#define diskmeter_h
 
 #include "cdiskmeter.h"
 
@@ -21,7 +21,7 @@
 
 class DiskMeter : public ComDiskMeter {
 public:
-    DiskMeter( void );
+    DiskMeter(void);
 
 protected:
     virtual std::pair<double, double> getRate(void);

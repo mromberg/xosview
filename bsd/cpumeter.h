@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  This file may be distributed under terms of the GPL.
@@ -12,10 +12,10 @@
 
 class CPUMeter : public FieldMeterGraph {
 public:
-    CPUMeter( unsigned int nbr );
-    ~CPUMeter( void );
+    CPUMeter(unsigned int nbr);
+    ~CPUMeter(void);
 
-    virtual std::string resName( void ) const { return "cpu"; }
+    virtual std::string resName(void) const { return "cpu"; }
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 

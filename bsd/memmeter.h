@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -14,8 +14,8 @@
 //    authors for a copy.
 //
 
-#ifndef MEMMETER_H
-#define MEMMETER_H
+#ifndef memmeter_h
+#define memmeter_h
 
 #include "fieldmetergraph.h"
 
@@ -23,17 +23,17 @@
 
 class MemMeter : public FieldMeterGraph {
 public:
-    MemMeter( void );
-    ~MemMeter( void );
+    MemMeter(void);
+    ~MemMeter(void);
 
-    virtual std::string resName( void ) const { return "mem"; }
+    virtual std::string resName(void) const { return "mem"; }
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
 private:
     std::vector<uint64_t> _meminfo;
 
-    void getmeminfo( void );
+    void getmeminfo(void);
 
     // layout: { active, inactive, wired, cached, free }
     static void getMemStats(std::vector<uint64_t> &meminfo);

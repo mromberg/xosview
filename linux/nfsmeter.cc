@@ -103,9 +103,9 @@ void NFSDStats::checkevent(void) {
     if (t < 0)
         t = 0.1;
 
-    maxpackets_ = std::max(netcnt, calls) - _lastNetCnt;
-    if (maxpackets_ == 0) {
-        maxpackets_ = netcnt;
+    _maxpackets = std::max(netcnt, calls) - _lastNetCnt;
+    if (_maxpackets == 0) {
+        _maxpackets = netcnt;
     }
     else {
         _fields[0] = (badcalls - _lastBad) * t;
@@ -114,10 +114,10 @@ void NFSDStats::checkevent(void) {
     }
 
     _total = _fields[0] + _fields[1] + _fields[2];
-    if (_total > maxpackets_)
+    if (_total > _maxpackets)
         _fields[3] = 0;
     else {
-        _total = maxpackets_;
+        _total = _maxpackets;
         _fields[3] = _total - _fields[0] - _fields[1] - _fields[2];
     }
 
@@ -155,7 +155,7 @@ void NFSStats::checkResources(const ResDB &rdb){
 
 void NFSStats::checkevent(void) {
     std::string buf, name;
-    unsigned long calls = 0, retrns = 0, authrefresh = 0, maxpackets_ = 0;
+    unsigned long calls = 0, retrns = 0, authrefresh = 0, _maxpackets = 0;
 
     std::ifstream ifs(_statfile.c_str());
 
@@ -181,9 +181,9 @@ void NFSStats::checkevent(void) {
     if (t < 0)
         t = 0.1;
 
-    maxpackets_ = calls - _lastcalls;
-    if (maxpackets_ == 0) {
-        maxpackets_ = calls;
+    _maxpackets = calls - _lastcalls;
+    if (_maxpackets == 0) {
+        _maxpackets = calls;
     }
     else {
         _fields[2] = (calls - _lastcalls) * t;
@@ -192,10 +192,10 @@ void NFSStats::checkevent(void) {
     }
 
     _total = _fields[0] + _fields[1] + _fields[2];
-    if (_total > maxpackets_)
+    if (_total > _maxpackets)
         _fields[3] = 0;
     else {
-        _total = maxpackets_;
+        _total = _maxpackets;
         _fields[3] = _total - _fields[2] - _fields[1] - _fields[0];
     }
 

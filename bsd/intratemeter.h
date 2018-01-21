@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2015, 2016
+//  Copyright (c) 1999, 2015, 2016, 2018
 //  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file may be distributed under terms of the GPL or of the BSD
@@ -9,8 +9,8 @@
 //    authors for a copy.
 //
 
-#ifndef IRQRATEMETER_H
-#define IRQRATEMETER_H
+#ifndef intratemeter_h
+#define intratemeter_h
 
 #include "cintratemeter.h"
 #include "intrstats.h"
@@ -19,7 +19,7 @@
 
 class IrqRateMeter : public ComIrqRateMeter {
 public:
-    IrqRateMeter( void );
+    IrqRateMeter(void);
 
 protected:
     virtual float getIrqRate(void);

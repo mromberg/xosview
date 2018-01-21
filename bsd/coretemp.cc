@@ -20,9 +20,9 @@
 CoreTemp::CoreTemp( const std::string &label, const std::string &caption,
   int cpu)
     : FieldMeter( 3, label, caption ),
-      cpu_(cpu), cpucount_(countCpus()),
-      high_(0), temps_(cpucount_, 0),
-      actcolor_(0), highcolor_(0) {
+      _cpu(cpu), _cpuCount(countCpus()),
+      _high(0), _temps(_cpuCount, 0),
+      _actColor(0), _highColor(0) {
 
     setMetric(true);
 }
@@ -35,12 +35,12 @@ CoreTemp::~CoreTemp( void ) {
 void CoreTemp::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
 
-    actcolor_  = rdb.getColor("coretempActColor");
-    highcolor_ = rdb.getColor("coretempHighColor");
+    _actColor  = rdb.getColor("coretempActColor");
+    _highColor = rdb.getColor("coretempHighColor");
 
-    setfieldcolor( 0, actcolor_ );
+    setfieldcolor( 0, _actColor );
     setfieldcolor( 1, rdb.getColor( "coretempIdleColor") );
-    setfieldcolor( 2, highcolor_ );
+    setfieldcolor( 2, _highColor );
 
     std::string highest = rdb.getResourceOrUseDefault(
         "coretempHighest", "100" );
@@ -49,9 +49,9 @@ void CoreTemp::checkResources(const ResDB &rdb) {
 
     // Get tjMax here and use as total.
     float total = -300.0;
-    std::vector<float> tjmax(cpucount_, 0.0);
-    BSDGetCPUTemperature(temps_, tjmax);
-    for (int i = 0; i < cpucount_; i++) {
+    std::vector<float> tjmax(_cpuCount, 0.0);
+    BSDGetCPUTemperature(_temps, tjmax);
+    for (int i = 0; i < _cpuCount; i++) {
         if (tjmax[i] > total)
             total = tjmax[i];
     }
@@ -61,12 +61,12 @@ void CoreTemp::checkResources(const ResDB &rdb) {
 
     std::string lgnd;
     if (!high.size()) {
-        high_ = _total;
+        _high = _total;
         lgnd = "ACT(\260C)/HIGH/" + util::repr((int)_total);
     }
     else {
-        high_ = util::stoi( high );
-        lgnd = "ACT(\260C)/" + util::repr((int)high_)
+        _high = util::stoi( high );
+        lgnd = "ACT(\260C)/" + util::repr((int)_high)
             + "/" + util::repr((int)_total);
     }
     legend(lgnd);
@@ -84,23 +84,23 @@ void CoreTemp::checkevent( void ) {
 
 
 void CoreTemp::getcoretemp( void ) {
-    BSDGetCPUTemperature(temps_);
+    BSDGetCPUTemperature(_temps);
 
     _fields[0] = 0.0;
-    if ( cpu_ >= 0 && cpu_ < cpucount_ ) {  // one core
-        _fields[0] = temps_[cpu_];
+    if ( _cpu >= 0 && _cpu < _cpuCount ) {  // one core
+        _fields[0] = _temps[_cpu];
     }
-    else if ( cpu_ == -1 ) {  // average
+    else if ( _cpu == -1 ) {  // average
         float tempval = 0.0;
-        for (int i = 0; i < cpucount_; i++)
-            tempval += temps_[i];
-        _fields[0] = tempval / (float)cpucount_;
+        for (int i = 0; i < _cpuCount; i++)
+            tempval += _temps[i];
+        _fields[0] = tempval / (float)_cpuCount;
     }
-    else if ( cpu_ == -2 ) {  // maximum
+    else if ( _cpu == -2 ) {  // maximum
         float tempval = -300.0;
-        for (int i = 0; i < cpucount_; i++) {
-            if (temps_[i] > tempval)
-                tempval = temps_[i];
+        for (int i = 0; i < _cpuCount; i++) {
+            if (_temps[i] > tempval)
+                tempval = _temps[i];
         }
         _fields[0] = tempval;
     }
@@ -111,7 +111,7 @@ void CoreTemp::getcoretemp( void ) {
     setUsed(_fields[0], _total);
     if (_fields[0] < 0)
         _fields[0] = 0;
-    _fields[1] = high_ - _fields[0];
+    _fields[1] = _high - _fields[0];
     _fields[2] = _total - _fields[1] - _fields[0];
     if (_fields[0] > _total)
         _fields[0] = _total;
@@ -120,13 +120,13 @@ void CoreTemp::getcoretemp( void ) {
 
     if (_fields[1] < 0) { // alarm: T > high
         _fields[1] = 0;
-        if (fieldcolor(0) != highcolor_) {
-            setfieldcolor( 0, highcolor_ );
+        if (fieldcolor(0) != _highColor) {
+            setfieldcolor( 0, _highColor );
         }
     }
     else {
-        if (fieldcolor(0) != actcolor_) {
-            setfieldcolor( 0, actcolor_ );
+        if (fieldcolor(0) != _actColor) {
+            setfieldcolor( 0, _actColor );
         }
     }
 }

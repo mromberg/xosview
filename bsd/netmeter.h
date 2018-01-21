@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -13,8 +13,8 @@
 //    should have received.  If not, contact one of the xosview
 //    authors for a copy.
 //
-#ifndef NETMETER_H
-#define NETMETER_H
+#ifndef netmeter_h
+#define netmeter_h
 
 #include "cnetmeter.h"
 

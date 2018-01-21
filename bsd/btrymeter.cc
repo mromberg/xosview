@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 2013, 2015, 2018 by Tomi Tapper ( tomi.o.tapper@student.jyu.fi )
+//  Copyright (c) 2013, 2015, 2018
+//  by Tomi Tapper ( tomi.o.tapper@student.jyu.fi )
 //
 //  Based on linux/btrymeter.cc:
 //  Copyright (c) 1997, 2006 by Mike Romberg ( mike.romberg@noaa.gov )
@@ -13,9 +14,9 @@
 
 BtryMeter::BtryMeter( void )
     : FieldMeter( 2, "BTRY", "CHRG/USED" ),
-      leftcolor_(0), usedcolor_(0), chargecolor_(0), fullcolor_(0),
-      lowcolor_(0), critcolor_(0), nonecolor_(0),
-      old_state_(256) {
+      _leftColor(0), _usedColor(0), _chargeColor(0), _fullColor(0),
+      _lowColor(0), _critColor(0), _noneColor(0),
+      _oldState(256) {
 }
 
 
@@ -26,16 +27,16 @@ BtryMeter::~BtryMeter( void ) {
 void BtryMeter::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
 
-    leftcolor_ = rdb.getColor("batteryLeftColor");
-    usedcolor_ = rdb.getColor("batteryUsedColor");
-    chargecolor_ = rdb.getColor("batteryChargeColor");
-    fullcolor_ = rdb.getColor("batteryFullColor");
-    lowcolor_ = rdb.getColor("batteryLowColor");
-    critcolor_ = rdb.getColor("batteryCritColor");
-    nonecolor_ = rdb.getColor("batteryNoneColor");
+    _leftColor = rdb.getColor("batteryLeftColor");
+    _usedColor = rdb.getColor("batteryUsedColor");
+    _chargeColor = rdb.getColor("batteryChargeColor");
+    _fullColor = rdb.getColor("batteryFullColor");
+    _lowColor = rdb.getColor("batteryLowColor");
+    _critColor = rdb.getColor("batteryCritColor");
+    _noneColor = rdb.getColor("batteryNoneColor");
 
-    setfieldcolor(0, leftcolor_);
-    setfieldcolor(1, usedcolor_);
+    setfieldcolor(0, _leftColor);
+    setfieldcolor(1, _usedColor);
 }
 
 
@@ -50,25 +51,25 @@ void BtryMeter::getstats( void ) {
 
     BSDGetBatteryInfo(remaining, state);
 
-    if (state != old_state_) {
+    if (state != _oldState) {
         if (state == XOSVIEW_BATT_NONE) { // no battery present
-            setfieldcolor(0, nonecolor_);
+            setfieldcolor(0, _noneColor);
             legend("NONE/NONE");
         }
         else if (state & XOSVIEW_BATT_FULL) { // full battery
-            setfieldcolor(0, fullcolor_);
+            setfieldcolor(0, _fullColor);
             legend("CHRG/FULL");
         }
         else { // present, not full
             if (state & XOSVIEW_BATT_CRITICAL) // critical charge
-                setfieldcolor(0, critcolor_);
+                setfieldcolor(0, _critColor);
             else if (state & XOSVIEW_BATT_LOW) // low charge
-                setfieldcolor(0, lowcolor_);
+                setfieldcolor(0, _lowColor);
             else { // above low, below full
                 if (state & XOSVIEW_BATT_CHARGING) // is charging
-                    setfieldcolor(0, chargecolor_);
+                    setfieldcolor(0, _chargeColor);
                 else
-                    setfieldcolor(0, leftcolor_);
+                    setfieldcolor(0, _leftColor);
             }
             // legend tells if charging or discharging
             if (state & XOSVIEW_BATT_CHARGING)
@@ -76,7 +77,7 @@ void BtryMeter::getstats( void ) {
             else
                 legend("CHRG/USED");
         }
-        old_state_ = state;
+        _oldState = state;
     }
 
     _total = 100.0;

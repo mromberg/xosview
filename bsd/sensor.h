@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2012, 2015 by Tomi Tapper <tomi.o.tapper@jyu.fi>
+//  Copyright (c) 2012, 2015, 2018 by Tomi Tapper <tomi.o.tapper@jyu.fi>
 //
 //  File based on linux/lmstemp.* by
 //  Copyright (c) 2000, 2006 by Leopold Toetsch <lt@toetsch.at>
@@ -8,11 +8,10 @@
 //
 //
 //
-#ifndef BSDSENSOR_H
-#define BSDSENSOR_H
+#ifndef sensor_h
+#define sensor_h
 
 #include "sensorfieldmeter.h"
-
 
 
 
@@ -21,17 +20,17 @@ public:
     BSDSensor( const std::string &name, const std::string &high,
       const std::string &low, const std::string &label,
       const std::string &caption, int nbr );
-    ~BSDSensor( void );
+    ~BSDSensor(void);
 
-    virtual std::string resName( void ) const { return "bsdsensor"; }
+    virtual std::string resName(void) const { return "bsdsensor"; }
     void checkevent( void );
     void checkResources(const ResDB &rdb);
 
 private:
-    std::string name_, val_, highname_, lowname_, highval_, lowval_;
-    int nbr_;
+    std::string _name, _val, _highName, _lowName, _highVal, _lowVal;
+    int _nbr;
 
-    void getsensor( void );
+    void getsensor(void);
 };
 
 

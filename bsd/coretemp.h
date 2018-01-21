@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2008, 2015 by Tomi Tapper <tomi.o.tapper@jyu.fi>
+//  Copyright (c) 2008, 2015, 2018 by Tomi Tapper <tomi.o.tapper@jyu.fi>
 //
 //  File based on linux/lmstemp.* by
 //  Copyright (c) 2000, 2006 by Leopold Toetsch <lt@toetsch.at>
@@ -8,8 +8,8 @@
 //
 //
 //
-#ifndef CORETEMP_H
-#define CORETEMP_H
+#ifndef coretemp_h
+#define coretemp_h
 
 
 #include "fieldmeter.h"
@@ -18,23 +18,23 @@
 
 class CoreTemp : public FieldMeter {
 public:
-    CoreTemp( const std::string &label,
+    CoreTemp(const std::string &label,
       const std::string &caption, int cpu);
-    ~CoreTemp( void );
+    ~CoreTemp(void);
 
-    virtual std::string resName( void ) const { return "coretemp"; }
-    void checkevent( void );
+    virtual std::string resName(void) const { return "coretemp"; }
+    void checkevent(void);
     void checkResources(const ResDB &rdb);
 
-    static unsigned int countCpus( void );
+    static unsigned int countCpus(void);
 
 private:
-    int   cpu_, cpucount_;
-    float high_;
-    std::vector<float> temps_;
-    unsigned long actcolor_, highcolor_;
+    int   _cpu, _cpuCount;
+    float _high;
+    std::vector<float> _temps;
+    unsigned long _actColor, _highColor;
 
-    void getcoretemp( void );
+    void getcoretemp(void);
 };
 
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -14,15 +14,15 @@
 //    authors for a copy.
 //
 
-#ifndef PAGEMETER_H
-#define PAGEMETER_H
+#ifndef pagemeter_h
+#define pagemeter_h
 
 #include "cpagemeter.h"
 
 
 class PageMeter : public ComPageMeter {
 public:
-    PageMeter( void );
+    PageMeter(void);
 
 protected:
     virtual std::pair<float, float> getPageRate(void);
