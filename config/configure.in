@@ -41,7 +41,7 @@ LIBS=${LIBS:-}
 # Find and set the C++ compiler.
 # Everything is C++ no need to change this again.
 #AC_PROG_CXX([c++ g++])
-AC_PROG_CXX()
+AC_PROG_CXX([c++ clang++ c++-5 c++-6 c++-7f g++-5 g++-6 g++-7 g++])
 AC_LANG([C++])
 
 #------------------------------------------------
