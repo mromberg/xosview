@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -273,9 +273,10 @@ void X11Graphics::resize(unsigned int width, unsigned int height) {
 }
 
 
-X11Pixmap *X11Graphics::newX11Pixmap(unsigned int width, unsigned int height) {
+std::unique_ptr<X11Pixmap> X11Graphics::newX11Pixmap(unsigned int width,
+  unsigned int height) {
     logAssert(_isWindow) << "Drawable is not a window." << std::endl;
 
-    return new X11Pixmap(_dsp, _visual, _drawable, _cmap, _bgPixel,
-      width, height, _depth);
+    return std::make_unique<X11Pixmap>(_dsp, _visual, _drawable, _cmap,
+      _bgPixel, width, height, _depth);
 }

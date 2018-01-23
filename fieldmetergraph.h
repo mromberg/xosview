@@ -14,6 +14,8 @@
 
 #include "fieldmeterdecay.h"
 
+#include <memory>
+
 class X11Pixmap;
 
 
@@ -35,7 +37,7 @@ private:
     int _graphNumCols;
     int _graphPos;
     std::vector<float> _heightField;
-    X11Pixmap *_pmap;  // backbuffer
+    std::unique_ptr<X11Pixmap> _pmap;  // backbuffer
 
     void setNumCols(int n);
     void drawBars(X11Graphics &g);

@@ -34,13 +34,11 @@ FieldMeterGraph::FieldMeterGraph(size_t numfields, const std::string &title,
     : FieldMeterDecay (numfields, title, legend),
       _useGraph(false),
       _graphNumCols(DEF_COLS), _graphPos(DEF_COLS-1),
-      _heightField(0),
-      _pmap(0) {
+      _heightField(0) {
 }
 
 
-FieldMeterGraph::~FieldMeterGraph( void ){
-    delete _pmap;
+FieldMeterGraph::~FieldMeterGraph(void) {
 }
 
 
@@ -79,9 +77,6 @@ void FieldMeterGraph::checkBackBuffer(X11Graphics &g) {
         allocNew = true;
 
     if (allocNew) {
-        delete _pmap;
-        _pmap = 0;
-
         // the x_ and x_ if a FieldMeter are relative to
         // the parent window.  The width_ and height_ are for
         // the actual meter graphic display (where x_ and y_ are upper left

@@ -10,6 +10,7 @@
 #include "font.h"
 
 #include <vector>
+#include <memory>
 
 #include <X11/Xlib.h>
 
@@ -70,7 +71,8 @@ public:
     void copyArea(int x, int y, unsigned int width, unsigned int height,
       int dest_x, int dest_y);
 
-    X11Pixmap *newX11Pixmap(unsigned int width, unsigned int height);
+    std::unique_ptr<X11Pixmap> newX11Pixmap(unsigned int width,
+      unsigned int height);
 
     //------------------------------------------------------------
     // Depricated interface
