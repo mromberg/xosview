@@ -6,6 +6,7 @@ AC_INIT([xosview],[2.2.2],
         [http://sourceforge.net/projects/xosview/])
 AC_CONFIG_HEADERS(config.h:config.h.in)
 AC_CONFIG_AUX_DIR(config)
+AC_CONFIG_MACRO_DIR([config])
 
 #------------------------------------------------
 # Support macros
@@ -19,6 +20,8 @@ m4_include([xo_bsd_config.m4])
 m4_include([xo_xft_support.m4])
 m4_include([xo_define_dir.m4])
 m4_include([xo_smlibs.m4])
+m4_pattern_allow(AC_MSG_WARN)
+m4_include([m4_ax_cxx_compile_stdcxx.m4])
 
 AC_CANONICAL_HOST
 
@@ -37,7 +40,8 @@ LIBS=${LIBS:-}
 
 # Find and set the C++ compiler.
 # Everything is C++ no need to change this again.
-AC_PROG_CXX([c++ g++])
+#AC_PROG_CXX([c++ g++])
+AC_PROG_CXX()
 AC_LANG([C++])
 
 #------------------------------------------------
@@ -88,7 +92,8 @@ AC_PROG_INSTALL
 # But if the configure script fails then so will
 # the build.  So... early warning.
 #------------------------------------------------
-XO_MIN_CXX_CHECK
+# XO_MIN_CXX_CHECK
+AX_CXX_COMPILE_STDCXX([14],[noext],[mandatory])
 
 #  Check for usleep().  Currently, only HP-UX doesn't have it.
 AC_CHECK_FUNCS(usleep)
