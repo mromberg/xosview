@@ -35,7 +35,7 @@ public:
     bool loadResources(const std::string &fname);
     void loadResources(Display* display);
 
-    std::ostream &dump(std::ostream &os) const;
+    virtual std::ostream &dump(std::ostream &os) const override;
 
 private:
     XrmDatabase _db;

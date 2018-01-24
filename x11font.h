@@ -19,7 +19,7 @@ public:
     X11Font(Display *dsp, const std::string &name);
     virtual ~X11Font(void);
 
-    bool good(void) const { return _font; }
+    virtual bool good(void) const override { return _font; }
 
     virtual const std::string &name(void) const override { return _name; }
     Font id(void) const;
