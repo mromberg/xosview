@@ -24,17 +24,16 @@ static std::ostream &operator<<(std::ostream &os, const XEvent &e);
 
 
 XWin::XWin()
-    : _graphics(0), _done(false),
+    : _done(false),
       _wm(None), _wmdelete(None), _x(0), _y(0), _width(1), _height(1),
       _visual(0), _display(0), _window(0), _fgColor(0), _bgColor(0),
       _colormap(0), _transparent(false), _dbe(false), _bb(0) {
 }
 
 
-XWin::~XWin( void ){
+XWin::~XWin(void) {
     // remove the Graphics interface
-    delete _graphics;
-    _graphics = 0;
+    _graphics.reset();
 
 #ifdef HAVE_DBE
     if (_dbe && _bb)
@@ -111,8 +110,8 @@ void XWin::createWindow(void) {
     szHints = 0;
 
     // Create Graphics interface.
-    _graphics = new X11Graphics(display(), visual(), _bb, true, colormap(),
-      background());
+    _graphics = std::make_unique<X11Graphics>(display(), visual(), _bb, true,
+      colormap(), background());
     g().setFont(resdb().getResource("font"));
     g().setBG(background());
     g().setFG(foreground());
@@ -126,8 +125,8 @@ void XWin::createWindow(void) {
         g().setBG(x11p);
 
     // add the events
-    for (size_t i = 0 ; i < _events.size() ; i++)
-        selectEvents(_events[i]._mask);
+    for (const auto &event : _events)
+        selectEvents(event._mask);
 
     // Map the main window
     map();
@@ -389,8 +388,8 @@ void XWin::checkevent( void ){
 
         logDebug << "XWin::checkevent *** : " << event << std::endl;
 
-        for (size_t j = 0 ; j < _events.size() ; j++) {
-            _events[j].callBack(event);
+        for (auto &evcb : _events) {
+            evcb.callBack(event);
             if (done())
                 return;
         }

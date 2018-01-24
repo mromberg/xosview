@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -91,7 +92,7 @@ protected:
 private:
     class Event;  // defined below
 
-    X11Graphics       *_graphics;       //  New graphics interface
+    std::unique_ptr<X11Graphics> _graphics; //  New graphics interface
     bool               _done;           //  If true the application is finished.
     Atom               _wm, _wmdelete;  //  Used to handle delete Events
     std::string	       _displayName;    //  Display name string.

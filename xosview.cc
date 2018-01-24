@@ -99,10 +99,10 @@ void XOSView::loop(void) {
         }
 
         if (_isvisible){
-            for (size_t i = 0 ; i < _meters.size() ; i++) {
-                if (_meters[i]->requestevent() || firstPass) {
-                    _meters[i]->checkevent();
-                    drawv.push_back(_meters[i]);
+            for (const auto &meter : _meters) {
+                if (meter->requestevent() || firstPass) {
+                    meter->checkevent();
+                    drawv.push_back(meter);
                 }
             }
             if (firstPass)
@@ -207,8 +207,8 @@ void XOSView::unmapEvent( XUnmapEvent & ){
 
 void XOSView::drawIfNeeded(std::vector<Meter *> &mtrs) {
     if (isAtLeastPartiallyVisible()) {
-        for (size_t i = 0 ; i < mtrs.size() ; i++)
-            mtrs[i]->drawIfNeeded(g());
+        for (auto &mtr : mtrs)
+            mtr->drawIfNeeded(g());
     }
 }
 
@@ -218,8 +218,8 @@ void XOSView::draw ( void ) {
         logDebug << "Doing full clear/draw." << std::endl;
         g().clear();
 
-        for (size_t i = 0 ; i < _meters.size() ; i++)
-            _meters[i]->draw(g());
+        for (auto &meter : _meters)
+            meter->draw(g());
     }
     else {
         logDebug << "********** FIXME ************\n";
@@ -306,45 +306,42 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
 
     // Now load any resouce files specified on the command line
     const std::vector<std::string> &cfiles = clopts.values("configFile");
-    for (size_t i = 0 ; i < cfiles.size() ; i++)
-        if (!_xrm->loadResources(cfiles[i])) {
-            logProblem << "Could not read file: " << cfiles[i]
-                       << std::endl;
+    for (const auto &cfile : cfiles)
+        if (!_xrm->loadResources(cfile)) {
+            logProblem << "Could not read file: " << cfile << std::endl;
         }
 
 
     // load all of the command line options into the
     // resouce database.  First the ones speced by -xrm
     const std::vector<std::string> &xrml = clopts.values("xrm");
-    for (size_t i = 0 ; i < xrml.size() ; i++) {
-        _xrm->putResource(xrml[i]);
-        logDebug << "ADD: " << xrml[i] << std::endl;
+    for (const auto &xrm : xrml) {
+        _xrm->putResource(xrm);
+        logDebug << "ADD: " << xrm << std::endl;
     }
     // And then those from -o
     const std::vector<std::string> &ol = clopts.values("xosvxrm");
-    for (size_t i = 0 ; i < ol.size() ; i++) {
-        std::string res(instanceName() + "*" + ol[i]);
+    for (const auto &o : ol) {
+        std::string res(instanceName() + "*" + o);
         _xrm->putResource(res);
         logDebug << "ADD: " << res << std::endl;
     }
 
     // Now all the rest that are set by the user.
     // defaults dealt with by getResourceOrUseDefault()
-    const std::vector<util::CLOpt> &opts = clopts.opts();
-    for (size_t i = 0 ; i < opts.size() ; i++) {
-        if (opts[i].name() != "xrm"
-          && opts[i].name() != "xosvxrm"
-          && !opts[i].missing()) {
-            std::string rname("." + instanceName() + "*" +opts[i].name());
-            _xrm->putResource(rname, opts[i].value());
+    for (const auto &opt : clopts.opts()) {
+        if (opt.name() != "xrm" && opt.name() != "xosvxrm"
+          && !opt.missing()) {
+            std::string rname("." + instanceName() + "*" + opt.name());
+            _xrm->putResource(rname, opt.value());
             logDebug << "ADD: "
-                     << rname << " : " << opts[i].value()
+                     << rname << " : " << opt.value()
                      << std::endl;
 
 #if defined(HAVE_LIB_SM)
             // Take the old session ID opt out of argv.
-            if (opts[i].name() == "sessionID")
-                opts[i].eraseFrom(argv);
+            if (opt.name() == "sessionID")
+                opt.eraseFrom(argv);
 #endif
         }
     }
@@ -402,8 +399,8 @@ void XOSView::checkResources(void) {
 
 
 void XOSView::checkMeterResources( void ){
-    for (size_t i = 0 ; i < _meters.size() ; i++)
-        _meters[i]->checkResources(resdb());
+    for (auto &meter : _meters)
+        meter->checkResources(resdb());
 }
 
 
@@ -496,10 +493,10 @@ void XOSView::dolegends( void ){
     logDebug << "caption, legend, usedlabels: "
              << _caption << "," << _legend << "," << _usedlabels
              << std::endl;
-    for (size_t i = 0 ; i < _meters.size() ; i++) {
-        _meters[i]->docaptions(_caption);
-        _meters[i]->dolegends(_legend);
-        _meters[i]->dousedlegends(_usedlabels);
+    for (auto &meter : _meters) {
+        meter->docaptions(_caption);
+        meter->dolegends(_legend);
+        meter->dousedlegends(_usedlabels);
     }
 }
 
