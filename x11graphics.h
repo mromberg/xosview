@@ -94,11 +94,11 @@ private:
     unsigned int _depth;
     unsigned long _fgPixel;
     unsigned long _bgPixel;
-    X11Pixmap *_bgPixmap;
+    std::unique_ptr<X11Pixmap> _bgPixmap;
     unsigned int _width;
     unsigned int _height;
+    std::unique_ptr<XftGraphics> _xftg;
     XOSVFont *_font;
-    XftGraphics *_xftg;
     Visual *_visual;
 
     void updateInfo(void); // update _width, _height, _depth

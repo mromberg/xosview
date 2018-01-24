@@ -10,6 +10,8 @@
 #include "x11font.h"
 #ifdef HAVE_XFT
 #include "xftgraphics.h"
+#else
+class XftGraphics {};
 #endif
 
 #include <iomanip>
@@ -21,16 +23,17 @@ std::vector<Pixmap>	X11Graphics::_stipples;
 X11Graphics::X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
   Colormap cmap, unsigned long bgPixVal)
     : _dsp(dsp), _drawable(d), _isWindow(isWindow), _cmap(cmap),
-      _gc(0), _depth(0),
-      _fgPixel(0), _bgPixel(bgPixVal), _bgPixmap(0),
-      _width(0), _height(0), _font(0),
-      _xftg(0), _visual(v), _doStippling(false) {
+      _gc(0), _depth(0), _fgPixel(0), _bgPixel(bgPixVal),
+      _width(0), _height(0),
 #if HAVE_XFT
-    _xftg = new XftGraphics(_dsp, v, _drawable, _isWindow, _cmap, _bgPixel);
-    _font = &_xftg->font();
+      _xftg(std::make_unique<XftGraphics>(_dsp, v, _drawable, _isWindow,
+          _cmap, _bgPixel)),
+      _font(&_xftg->font()),
 #else
-    _font = new X11Font(_dsp);
+      _font(new X11Font(_dsp)),
 #endif
+      _visual(v), _doStippling(false) {
+
     refCount()++;
     updateInfo();
     _gc = XCreateGC(_dsp, _drawable, 0, NULL);
@@ -46,13 +49,9 @@ X11Graphics::X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
 X11Graphics::~X11Graphics(void) {
     logDebug << "~X11Graphics(): " << refCount() << std::endl;
 
-#ifdef HAVE_XFT
-    delete _xftg;
-#else
+#ifndef HAVE_XFT
     delete _font;
 #endif
-
-    delete _bgPixmap;
 
     // The refCount is used to free global cached stipples
     refCount()--;
@@ -118,8 +117,7 @@ unsigned long X11Graphics::allocColor(Display *d, Colormap c,
 
 
 void X11Graphics::setBG(const X11Pixmap &pmap) {
-    delete _bgPixmap;
-    _bgPixmap = new X11Pixmap(pmap);
+    _bgPixmap = std::make_unique<X11Pixmap>(pmap);
 }
 
 
