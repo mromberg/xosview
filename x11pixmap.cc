@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -15,26 +15,26 @@
 
 X11Pixmap::X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap,
   unsigned long bgPixVal, int width, int height, int depth)
-    : _pmap(0), _dsp(dsp), _vis(v), _parent(parent), _cmap(cmap), _g(0),
-      _width(width), _height(height) {
+    : _dsp(dsp), _vis(v), _parent(parent), _cmap(cmap),
+      _width(width), _height(height),
+      _pmap(XCreatePixmap(dsp, _parent, _width, _height, depth)),
+      _g(std::make_unique<X11Graphics>(_dsp, _vis, _pmap, false, _cmap,
+          bgPixVal)) {
 
-    _pmap = XCreatePixmap(dsp, _parent, _width, _height, depth);
     logDebug << "new pixmap: " << _pmap << std::endl;
-    _g = new X11Graphics(_dsp, _vis, _pmap, false, _cmap, bgPixVal);
-
     _g->clear(0, 0, _width, _height);
 }
 
 
 X11Pixmap::X11Pixmap(Display *dsp, Visual *v, Drawable parent, Colormap cmap)
-    : _pmap(0), _dsp(dsp), _vis(v), _parent(parent), _cmap(cmap), _g(0),
-      _width(0), _height(0) {
+    : _dsp(dsp), _vis(v), _parent(parent), _cmap(cmap),
+      _width(0), _height(0), _pmap(0) {
 }
 
 
 X11Pixmap::X11Pixmap(const X11Pixmap &rhs)
-    : _pmap(0), _dsp(0), _vis(0), _parent(0), _cmap(0), _g(0),
-      _width(0), _height(0) {
+    : _dsp(0), _vis(0), _parent(0), _cmap(0),
+      _width(0), _height(0), _pmap(0) {
 
     copy(rhs);
 }
@@ -69,15 +69,15 @@ void X11Pixmap::copy(const X11Pixmap &rhs) {
     _height = h;
 
     _pmap = XCreatePixmap(_dsp, _parent, _width, _height, depth);
-    _g = new X11Graphics(_dsp, _vis, _pmap, false, _cmap, rhs.g().bgPixel());
+    _g = std::make_unique<X11Graphics>(_dsp, _vis, _pmap, false, _cmap,
+      rhs.g().bgPixel());
 
     rhs.copyTo(g(), 0, 0, _width, _height, 0, 0);
 }
 
 
 void X11Pixmap::freeObjs(void) {
-    delete _g;
-    _g = 0;
+    _g.reset();
     if (_pmap) {
         XFreePixmap(_dsp, _pmap);
         _pmap = 0;
@@ -110,7 +110,7 @@ bool X11Pixmap::load(const std::string &fileName, bool logfail) {
 
     _width = pixmap_att.width;
     _height = pixmap_att.height;
-    _g = new X11Graphics(_dsp, _vis, _pmap, false, _cmap, 0); //bgPixVal);
+    _g = std::make_unique<X11Graphics>(_dsp, _vis, _pmap, false, _cmap, 0);
     return true;
 #else
     return false;
