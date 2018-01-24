@@ -155,7 +155,7 @@ void XOSView::keyPressEvent( XKeyEvent &event ){
     char c = 0;
     KeySym key;
 
-    XLookupString( &event, &c, 1, &key, NULL );
+    XLookupString(&event, &c, 1, &key, nullptr);
 
     if ( (c == 'q') || (c == 'Q') )
         done(true);

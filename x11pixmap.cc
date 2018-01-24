@@ -98,7 +98,7 @@ bool X11Pixmap::load(const std::string &fileName, bool logfail) {
     pixmap_att.valuemask = XpmSize | XpmColormap | XpmCloseness;
 
     int code = XpmReadFileToPixmap(_dsp, _parent,
-      const_cast<char *>(fileName.c_str()), &_pmap, NULL, &pixmap_att);
+      const_cast<char *>(fileName.c_str()), &_pmap, nullptr, &pixmap_att);
 
     if (code != XpmSuccess) {
         if (logfail)

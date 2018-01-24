@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2008, 2015
+//  Copyright (c) 1994, 1995, 2006, 2008, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -9,7 +9,6 @@
 #include "log.h"
 
 #include <iostream>
-#include <cstddef> // for NULL
 #include <sstream>
 #include <algorithm>
 
@@ -44,7 +43,7 @@ ResDB::opt Xrm::getOptResource(const std::string &rname) const{
     std::string fcn = std::string(className()) + std::string(".") + rname;
 
     XrmValue val;
-    val.addr = NULL;
+    val.addr = nullptr;
     char *type;
     XrmGetResource(_db, frn.c_str(), fcn.c_str(), &type, &val);
     //  This case here is a hack, because we are currently moving from
@@ -136,12 +135,12 @@ void Xrm::loadResources(Display* display) {
 
     //  Now, check for an XOSView file in the XAPPLRESDIR directory...
     char* xappdir = getenv ("XAPPLRESDIR");
-    if (xappdir != NULL)
+    if (xappdir != nullptr)
         loadResources(std::string(xappdir) + "/" + className());
 
     //  Now, check the display's RESOURCE_MANAGER property...
     char* displayString = XResourceManagerString (display);
-    if (displayString != NULL) {
+    if (displayString != nullptr) {
         XrmDatabase displayrdb = XrmGetStringDatabase (displayString);
         XrmMergeDatabases (displayrdb, &_db);  //Destroys displayrdb when done.
         logDebug << "loaded display resources." << std::endl;
@@ -150,7 +149,7 @@ void Xrm::loadResources(Display* display) {
     //  And check this screen of the display...
     char* screenString =
         XScreenResourceString (DefaultScreenOfDisplay(display));
-    if (screenString != NULL) {
+    if (screenString != nullptr) {
         XrmDatabase screenrdb = XrmGetStringDatabase (screenString);
         XrmMergeDatabases (screenrdb, &_db);  //  Destroys screenrdb when done.
         XFree(screenString); // unlike XResourceManagerString() we must free

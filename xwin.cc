@@ -55,10 +55,10 @@ XWin::~XWin(void) {
 
 void XWin::openDisplay( void ){
     // Open connection to display selected by user
-    const char *dname = displayName().empty() ? NULL : displayName().c_str();
-    if ((_display = XOpenDisplay(dname)) == NULL) {
+    const char *dname = displayName().empty() ? nullptr : displayName().c_str();
+    if ((_display = XOpenDisplay(dname)) == nullptr) {
         logFatal << "Can't open display named "
-                 << "'" << (dname == NULL ? (void *)NULL : dname) << "'"
+                 << "'" << (dname == nullptr ? nullptr : dname) << "'"
                  << std::endl;
     }
 }
@@ -174,7 +174,7 @@ bool XWin::isDBE(Visual *v) const {
         XdbeScreenVisualInfo *dbeVisuals = XdbeGetVisualInfo(display(),
           &rootWindow, &numsp);
 
-        if (dbeVisuals != NULL) {
+        if (dbeVisuals != nullptr) {
             for (int i = 0 ; i < dbeVisuals->count ; i++) {
                 if (visID == dbeVisuals->visinfo[i].visual) {
                     rval = true;
@@ -215,7 +215,7 @@ void XWin::swapBB(void) const {
 void XWin::setHints(XSizeHints *szHints){
     // Set up class hint
     XClassHint    *classhints;   //  Class hint for window manager
-    if((classhints = XAllocClassHint()) == NULL){
+    if((classhints = XAllocClassHint()) == nullptr){
         logFatal << "Error allocating class hint!" << std::endl;
     }
     //  We have to cast away the const's.
@@ -226,7 +226,7 @@ void XWin::setHints(XSizeHints *szHints){
 
     // Set up the window manager hints
     XWMHints      *wmhints;      //  Hints for the window manager
-    if((wmhints = XAllocWMHints()) == NULL){
+    if((wmhints = XAllocWMHints()) == nullptr){
         logFatal << "Error allocating Window Manager hints!" << std::endl;
     }
 
@@ -249,7 +249,7 @@ void XWin::setHints(XSizeHints *szHints){
 
     if (resdb().getResource("sessionID") != "") {
         // X11R6 Session Manager gave us an ID.  Command handled elsewhere.
-        XSetWMProperties(display(), window(), &titlep, &iconnamep, NULL,
+        XSetWMProperties(display(), window(), &titlep, &iconnamep, nullptr,
           0, szHints, wmhints, classhints);
     }
     else {
@@ -308,7 +308,7 @@ XSizeHints *XWin::getGeometry(void) {
     // Fill out a XsizeHints structure to inform the window manager
     // of desired size and location of main window.
     XSizeHints *szHints = 0;
-    if((szHints = XAllocSizeHints()) == NULL){
+    if((szHints = XAllocSizeHints()) == nullptr) {
         logFatal << "Error allocating size hints!" << std::endl;
     }
     szHints->flags = PSize;
@@ -330,7 +330,7 @@ XSizeHints *XWin::getGeometry(void) {
     bool geomUnspecified = false;
     if (geomStr == "<!UNSP!>")
         geomUnspecified = true;
-    const char *gptr = NULL;
+    const char *gptr = nullptr;
     if (!geomUnspecified)
         gptr = geomStr.c_str();
     int bitmask =  XGeometry(display(), DefaultScreen(display()), gptr,

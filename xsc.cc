@@ -265,7 +265,7 @@ void IceClient::process(void) {
         return;
 
     IceProcessMessagesStatus status = IceProcessMessages(_iceConn,
-      NULL, NULL);
+      nullptr, nullptr);
 
     if (status == IceProcessMessagesSuccess)
         ; // it worked.
@@ -372,7 +372,7 @@ XSCImp::XSCImp(const std::vector<std::string> &argv,
 
 XSCImp::~XSCImp(void) {
     if (_smcConn) {
-        SmcCloseStatus status = SmcCloseConnection(_smcConn, 0, NULL);
+        SmcCloseStatus status = SmcCloseConnection(_smcConn, 0, nullptr);
         if (status == SmcClosedNow) {
             logDebug << "SmcClosedNow" << std::endl;
         }
@@ -395,8 +395,8 @@ bool XSCImp::init(void) {
 
     // Setup params for SmcOpenConnection()
     std::vector<char> errorBuf(256, 0);
-    char *clientID = NULL;
-    char *prevID = NULL;
+    char *clientID = nullptr;
+    char *prevID = nullptr;
     if (_lastSessionID.size())
         prevID = const_cast<char *>(_lastSessionID.c_str());
 
@@ -415,7 +415,7 @@ bool XSCImp::init(void) {
         SmcSaveCompleteProcMask |
         SmcShutdownCancelledProcMask;
 
-    _smcConn = SmcOpenConnection(NULL, NULL, SmProtoMajor, SmProtoMinor,
+    _smcConn = SmcOpenConnection(nullptr, nullptr, SmProtoMajor, SmProtoMinor,
       mask, &callbacks, prevID, &clientID,
       errorBuf.size() - 1, errorBuf.data());
 

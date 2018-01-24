@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016
+//  Copyright (c) 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -32,7 +32,7 @@ std::vector<std::string> fs::listdir(const std::string &path) {
     else {
         struct dirent *de = 0;
         errno = 0; // EOF readdir() does not change and returns NULL too
-        while ((de = readdir(d)) != NULL) {
+        while ((de = readdir(d)) != nullptr) {
             std::string name(de->d_name);
             if (name != "." && name != "..")
                 rval.push_back(name);

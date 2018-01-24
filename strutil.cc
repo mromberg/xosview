@@ -32,7 +32,7 @@ std::string join(const std::vector<std::string> &v,
 std::vector<std::string> split(const std::string& s,
   const std::string& delim, size_t maxsplit) {
     std::vector<std::string> result;
-    if (delim.size() == 0) {
+    if (delim.empty()) {
         std::string wsdelim(WHITE_SPACE);
         size_t pos = 0;
         while (pos < s.size() && result.size() < maxsplit) {
@@ -84,7 +84,7 @@ static void setLocale(void) {
 std::wstring s2ws(const std::string& s) {
     setLocale();
     const char * cs = s.c_str();
-    const size_t wn = std::mbsrtowcs(NULL, &cs, 0, NULL);
+    const size_t wn = std::mbsrtowcs(nullptr, &cs, 0, nullptr);
 
     if (wn == size_t(-1)) {
         logBug << "Error in mbsrtowcs(): errno=" << errno
@@ -93,7 +93,7 @@ std::wstring s2ws(const std::string& s) {
     }
 
     std::vector<wchar_t> buf(wn + 1);
-    const size_t wn_again = std::mbsrtowcs(buf.data(), &cs, wn + 1, NULL);
+    const size_t wn_again = std::mbsrtowcs(buf.data(), &cs, wn + 1, nullptr);
 
     if (wn_again == size_t(-1)) {
         logBug << "Error in mbsrtowcs(): errno=" << errno
@@ -101,7 +101,7 @@ std::wstring s2ws(const std::string& s) {
         return L"";
     }
 
-    assert(cs == NULL); // successful conversion
+    assert(cs == nullptr); // successful conversion
 
     return std::wstring(buf.data(), wn);
 }
@@ -110,7 +110,7 @@ std::wstring s2ws(const std::string& s) {
 std::string ws2s(const std::wstring &s) {
     setLocale();
     const wchar_t * cs = s.c_str();
-    const size_t wn = std::wcsrtombs(NULL, &cs, 0, NULL);
+    const size_t wn = std::wcsrtombs(nullptr, &cs, 0, nullptr);
 
     if (wn == size_t(-1)) {
         logBug << "Error in wcsrtombs(): errno=" << errno << std::endl;
@@ -118,14 +118,14 @@ std::string ws2s(const std::wstring &s) {
     }
 
     std::vector<char> buf(wn + 1);
-    const size_t wn_again = std::wcsrtombs(buf.data(), &cs, wn + 1, NULL);
+    const size_t wn_again = std::wcsrtombs(buf.data(), &cs, wn + 1, nullptr);
 
     if (wn_again == size_t(-1)) {
         logBug << "Error in wcsrtombs(): errno=" << errno << std::endl;
         return "";
     }
 
-    assert(cs == NULL); // successful conversion
+    assert(cs == nullptr); // successful conversion
 
     return std::string(buf.data(), wn);
 }
@@ -158,8 +158,7 @@ std::string strerror(void) {
 template <class X>
 inline std::ostream &operator<<(std::ostream &os, const std::set<X> &s) {
     os << "(";
-    typename std::set<X>::iterator it;
-    for (it = s.begin() ; it != s.end() ; ++it) {
+    for (auto it = s.cbegin() ; it != s.cend() ; ++it) {
         if (it != s.begin())
             os << ", ";
         os << *it;

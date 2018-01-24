@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -28,7 +28,7 @@ bool X11Font::setFont(const std::string &name) {
         _name = "";
     }
 
-    if ((_font = XLoadQueryFont(_dsp, name.c_str())) == NULL)
+    if ((_font = XLoadQueryFont(_dsp, name.c_str())) == nullptr)
         return false;
 
     _name = name;
