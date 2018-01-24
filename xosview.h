@@ -28,8 +28,8 @@ public:
     void run(int argc, const char * const *argv);
 
 protected:
-    virtual ResDB &resdb(void) { return *_xrm; }
-    virtual void setEvents(void);
+    virtual ResDB &resdb(void) override { return *_xrm; }
+    virtual void setEvents(void) override;
 
 private:
     std::unique_ptr<Xrm> _xrm;

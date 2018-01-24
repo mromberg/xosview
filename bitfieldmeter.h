@@ -20,9 +20,9 @@ public:
     virtual ~BitFieldMeter(void);
 
     // virtual from Meter
-    virtual void draw(X11Graphics &g);
-    virtual void drawIfNeeded(X11Graphics &g);
-    virtual void checkResources(const ResDB &rdb);
+    virtual void draw(X11Graphics &g) override;
+    virtual void drawIfNeeded(X11Graphics &g) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
     std::vector<unsigned char> _bits;

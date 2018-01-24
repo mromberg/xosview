@@ -27,10 +27,10 @@ public:
 
     virtual ~FieldMeterDecay(void);
 
-    virtual void checkResources(const ResDB &rdb);
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
-    virtual void drawfields(X11Graphics &g, bool mandatory=false);
+    virtual void drawfields(X11Graphics &g, bool mandatory=false) override;
 
 private:
     bool _dodecay;

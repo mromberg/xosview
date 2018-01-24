@@ -19,9 +19,9 @@ public:
     Xrm(const std::string &className, const std::string &instanceName);
     virtual ~Xrm(void);
 
-    virtual std::string className(void) const
+    virtual std::string className(void) const override
         { return std::string(XrmQuarkToString(_class)); }
-    virtual std::string instanceName(void) const
+    virtual std::string instanceName(void) const override
         { return std::string(XrmQuarkToString(_instance)); }
 
     // At some point ISO C++ may adopt std::optional.  At which point
@@ -29,7 +29,7 @@ public:
     // to indicate non-existant resources.
     //typedef std::pair<bool, std::string> opt;
 
-    virtual opt getOptResource(const std::string &rname) const;
+    virtual opt getOptResource(const std::string &rname) const override;
     void putResource(const std::string &line);
     void putResource(const std::string &specifier, const std::string &val);
     bool loadResources(const std::string &fname);

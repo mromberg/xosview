@@ -12,9 +12,9 @@ public:
     ExampleMeter(void);
     virtual ~ExampleMeter(void);
 
-    virtual std::string resName( void ) const { return "wcore"; }
-    virtual void checkevent( void );
-    virtual void checkResources(const ResDB &rdb);
+    virtual std::string resName( void ) const override { return "wcore"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     unsigned long long _warpCoreTemp;   // current value

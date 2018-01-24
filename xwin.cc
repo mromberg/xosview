@@ -333,7 +333,7 @@ XSizeHints *XWin::getGeometry(void) {
     const char *gptr = nullptr;
     if (!geomUnspecified)
         gptr = geomStr.c_str();
-    int bitmask =  XGeometry(display(), DefaultScreen(display()), gptr,
+    int bitmask = XGeometry(display(), DefaultScreen(display()), gptr,
       defgs.str().c_str(),
       0,
       1, 1, 0, 0, &(szHints->x), &(szHints->y),

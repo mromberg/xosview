@@ -20,9 +20,9 @@ public:
 
     // virtual methods called by our parents
     // when we should take action (more below)
-    virtual std::string resName( void ) const;
-    virtual void checkevent( void );
-    virtual void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override;
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     // Everything specific to our meter goes here

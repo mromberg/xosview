@@ -21,15 +21,15 @@ public:
 
     bool good(void) const { return _font; }
 
-    virtual const std::string &name(void) const { return _name; }
+    virtual const std::string &name(void) const override { return _name; }
     Font id(void) const;
 
-    virtual bool setFont(const std::string &name);
+    virtual bool setFont(const std::string &name) override;
 
-    virtual unsigned int textWidth(const std::string &str);
-    virtual unsigned int textHeight(void) const;
-    virtual int textAscent(void) const;
-    virtual int textDescent(void) const;
+    virtual unsigned int textWidth(const std::string &str) override;
+    virtual unsigned int textHeight(void) const override;
+    virtual int textAscent(void) const override;
+    virtual int textDescent(void) const override;
 
 private:
     Display *_dsp;

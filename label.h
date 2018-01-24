@@ -57,7 +57,7 @@ public:
 
 protected:
     virtual void drawText(X11Graphics &g, int x, int y,
-      const std::string &txt) const;
+      const std::string &txt) const override;
 
 private:
     std::string _delim;

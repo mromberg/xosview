@@ -21,10 +21,10 @@ public:
     virtual ~FieldMeter(void);
 
     // virtual from Meter
-    virtual void draw(X11Graphics &g);
-    virtual void drawIfNeeded(X11Graphics &g);
-    virtual void checkResources(const ResDB &rdb);
-    virtual void resize(int x, int y, int width, int height);
+    virtual void draw(X11Graphics &g) override;
+    virtual void drawIfNeeded(X11Graphics &g) override;
+    virtual void checkResources(const ResDB &rdb) override;
+    virtual void resize(int x, int y, int width, int height) override;
 
 protected:
     std::vector<float> _fields;
