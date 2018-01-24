@@ -119,6 +119,8 @@ private:
     std::vector<SmPropValue> _pvals;
 };
 
+#else
+class XSCImp {};
 #endif
 
 
