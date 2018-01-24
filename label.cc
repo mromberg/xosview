@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016, 2017
+//  Copyright (c) 2015, 2016, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -45,7 +45,7 @@ void Label::clearOld(X11Graphics &g) const {
 
 //    g.setFG("red");
 //    g.drawFilledRectangle(x, y, width, height);
-    g.clear(x - 1, y, width, height - 1);
+    g.clear(std::max(x - 1, 0), y, width, std::max(height - 1, 1));
 }
 
 
