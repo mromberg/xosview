@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2016
+//  Copyright (c) 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -126,33 +126,33 @@ private:
 // XSessionClient
 //-----------------------------------------------------------------------
 XSessionClient::XSessionClient(const std::vector<std::string> &argv,
-  const std::string &sessionArg) : _imp(0) {
+  const std::string &sessionArg)
+#ifdef HAVE_LIB_SM
+    : _imp(std::make_unique<XSCImp>(argv, sessionArg))
+#endif
+{
 #ifndef HAVE_LIB_SM
     (void)argv;
     (void)sessionArg;
-#else
-    _imp = new XSCImp(argv, sessionArg);
 #endif
 }
 
 
 XSessionClient::XSessionClient(const std::vector<std::string> &argv,
-  const std::string &sessionArg, const std::string &lastID) : _imp(0) {
+  const std::string &sessionArg, const std::string &lastID)
+#ifdef HAVE_LIB_SM
+    : _imp(std::make_unique<XSCImp>(argv, sessionArg, lastID))
+#endif
+{
 #ifndef HAVE_LIB_SM
     (void)argv;
     (void)sessionArg;
     (void)lastID;
-#else
-    _imp = new XSCImp(argv, sessionArg, lastID);
 #endif
 }
 
 
-XSessionClient::~XSessionClient(void) {
-#ifdef HAVE_LIB_SM
-    delete _imp;
-#endif
-}
+XSessionClient::~XSessionClient(void) = default;
 
 
 bool XSessionClient::init(void) {

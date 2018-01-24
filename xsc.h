@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2016
+//  Copyright (c) 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 class XSCImp;
 
@@ -32,7 +33,7 @@ public:
     const std::string &sessionID(void) const;
 
 private:
-    XSCImp *_imp;
+    std::unique_ptr<XSCImp> _imp;
 
     // Not implemented.
     XSessionClient(const XSessionClient &xsc);

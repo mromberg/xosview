@@ -32,13 +32,13 @@ static const char * const NAME = "xosview@";
 
 
 XOSView::XOSView(void)
-    : XWin(), _xrm(0),
+    : XWin(),
       _caption(false), _legend(false), _usedlabels(false),
       _xoff(0), _yoff(0),
       _hmargin(0), _vmargin(0), _vspacing(0),
       _sleeptime(1), _usleeptime(1000),
       _isvisible(false), _ispartiallyvisible(false), _sampleRate(10),
-      _doFullDraw(true), _xsc(0) {
+      _doFullDraw(true) {
 }
 
 
@@ -47,8 +47,6 @@ XOSView::~XOSView( void ){
     for (size_t i = 0 ; i < _meters.size() ; i++)
         delete _meters[i];
     _meters.resize(0);
-    delete _xrm;
-    delete _xsc;
 }
 
 
@@ -258,7 +256,7 @@ void XOSView::slumber(void) const {
 void XOSView::openSession(const std::vector<std::string> &argv) {
     // Try to contact an X11R6 session manager...
     // sessionID (if it exists will be the old ID from the cmdline.
-    _xsc = new XSessionClient(argv, "--smid",
+    _xsc = std::make_unique<XSessionClient>(argv, "--smid",
       resdb().getResourceOrUseDefault("sessionID", ""));
     if (_xsc->init()) {
         logDebug << "session ID: " << _xsc->sessionID()
@@ -298,7 +296,8 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
     //...............................................
     // X resources
     //...............................................
-    _xrm = new Xrm(PACKAGE_CLASSNAME, clopts.value("name", "xosview"));
+    _xrm = std::make_unique<Xrm>(PACKAGE_CLASSNAME,
+      clopts.value("name", "xosview"));
 
     //  Open the Display and load the X resources
     setDisplayName(clopts.value("displayName", ""));

@@ -11,6 +11,7 @@
 #include "Xrm.h"
 
 #include <string>
+#include <memory>
 
 
 class Meter;
@@ -31,7 +32,7 @@ protected:
     virtual void setEvents(void);
 
 private:
-    Xrm *_xrm;
+    std::unique_ptr<Xrm> _xrm;
     bool _caption, _legend, _usedlabels;
     int _xoff, _yoff;
     int _hmargin, _vmargin, _vspacing;
@@ -41,7 +42,7 @@ private:
     std::vector<Meter *> _meters;
     double _sampleRate;   // samples/sec
     bool _doFullDraw;     // schedule full clear/draw
-    XSessionClient *_xsc; // session management client.
+    std::unique_ptr<XSessionClient> _xsc; // session management client.
 
     double sampleRate(void) const { return _sampleRate; } // samples/sec max
     std::string winname(void);
