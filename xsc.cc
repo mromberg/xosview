@@ -74,7 +74,7 @@ private:
     const std::string _sessionArg;
     std::string _lastSessionID;
     std::string _sessionID;
-    IceClient *_iceClient;
+    std::unique_ptr<IceClient> _iceClient;
     SmcConn _smcConn;
 
     std::vector<std::string> prune(const std::vector<std::string> &argv) const;
@@ -338,7 +338,7 @@ SmProp *XSVar::prop(void) {
 //------------------------------------------------------------------------
 XSCImp::XSCImp(const std::vector<std::string> &argv,
   const std::string &sessionArg)
-    : _die(false), _sessionArg(sessionArg), _iceClient(0), _smcConn(0) {
+    : _die(false), _sessionArg(sessionArg), _smcConn(0) {
 
     _argv.reserve(argv.size());
     for (size_t i = 0 ; i < argv.size() ; i++) {
@@ -365,9 +365,8 @@ XSCImp::XSCImp(const std::vector<std::string> &argv,
 
 XSCImp::XSCImp(const std::vector<std::string> &argv,
   const std::string &sessionArg, const std::string &lastID)
-    : _die(false), _argv(argv),
-      _sessionArg(sessionArg), _lastSessionID(lastID),
-      _iceClient(0), _smcConn(0) {
+    : _die(false), _argv(argv), _sessionArg(sessionArg),
+      _lastSessionID(lastID), _smcConn(0) {
 }
 
 
@@ -386,13 +385,11 @@ XSCImp::~XSCImp(void) {
         else
             logProblem << "Unknown status: " << status << std::endl;
     }
-
-    delete _iceClient;
 }
 
 
 bool XSCImp::init(void) {
-    _iceClient = new IceClient();
+    _iceClient = std::make_unique<IceClient>();
     if (!_iceClient->init())
         return false;
 
