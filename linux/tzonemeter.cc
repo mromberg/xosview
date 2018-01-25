@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016, 2017
+//  Copyright (c) 2015, 2016, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 #include "tzonemeter.h"
@@ -43,8 +43,8 @@ size_t TZoneMeter::count(void) {
         std::vector<std::string> flist = util::fs::listdir(TZDIR);
         size_t rval = 0;
         std::string tzsdir(TZSDIR);
-        for (size_t i = 0 ; i < flist.size() ; i++)
-            if (flist[i].substr(0, tzsdir.size()) == tzsdir)
+        for (const auto &fn : flist)
+            if (fn.substr(0, tzsdir.size()) == tzsdir)
                 rval++;
 
         return rval;

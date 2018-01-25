@@ -97,12 +97,11 @@ void RAIDMeter::checkResources(const ResDB &rdb){
 
 std::vector<std::string> RAIDMeter::scanMDDevs(void) {
     std::vector<std::string> rval;
-    std::vector<std::string> bdevs(util::fs::listdir("/sys/block"));
 
-    for (size_t i = 0 ; i < bdevs.size() ; i++) {
-        if (bdevs[i].substr(0, 2) == "md"
-          && util::fs::isdir("/sys/block/" + bdevs[i] + "/md"))
-            rval.push_back(bdevs[i]);
+    for (const auto &bd : util::fs::listdir("/sys/block")) {
+        if (bd.substr(0, 2) == "md"
+          && util::fs::isdir("/sys/block/" + bd + "/md"))
+            rval.push_back(bd);
     }
 
     return rval;
@@ -120,9 +119,8 @@ std::vector<std::string> RAIDMeter::devices(const ResDB &rdb) {
         rval = devs;
     }
     else {
-        std::vector<std::string> usrDevs = util::split(devices, ",");
-        for (size_t i = 0 ; i < usrDevs.size() ; i++) {
-            std::string udev(util::strip(usrDevs[i]));
+        for (const auto &ud : util::split(devices, ",")) {
+            std::string udev(util::strip(ud));
             if (std::find(devs.begin(), devs.end(), udev) != devs.end())
                 rval.push_back(udev);
         }
@@ -135,10 +133,9 @@ std::vector<std::string> RAIDMeter::devices(const ResDB &rdb) {
 std::vector<std::string> RAIDMeter::scanDevs(void) {
     std::vector<std::string> devs;
 
-    std::vector<std::string> mddir(util::fs::listdir(_dir));
-    for (size_t i = 0 ; i < mddir.size() ; i++)
-        if (mddir[i].substr(0, 4) == "dev-")
-            devs.push_back(mddir[i]);
+    for (const auto &mddir : util::fs::listdir(_dir))
+        if (mddir.substr(0, 4) == "dev-")
+            devs.push_back(mddir);
 
     return devs;
 }
@@ -233,8 +230,8 @@ std::string RAIDMeter::filterState(const std::string &state) const {
     // Contents of the device state file is a ',' separated list of states.
     // Try and pick the most relevant one.
     std::vector<std::string> states(util::split(state, ","));
-    for (size_t i = 0 ; i < states.size() ; i++)
-        states[i] = util::strip(states[i]);
+    for (auto &state : states)
+        state = util::strip(state);
 
     if (util::find(states, std::string("faulty")))
         return "faulty";

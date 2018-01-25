@@ -48,10 +48,9 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     if (rdb.isResourceTrue("disk"))
         _meters.push_back(new PrcDiskMeter());
 
-    if (rdb.isResourceTrue("RAID")){
-        std::vector<std::string> devices(RAIDMeter::devices(rdb));
-        for (size_t i = 0 ; i < devices.size() ; i ++)
-            _meters.push_back(new RAIDMeter(devices[i]));
+    if (rdb.isResourceTrue("RAID")) {
+        for (const auto &device : RAIDMeter::devices(rdb))
+            _meters.push_back(new RAIDMeter(device));
     }
 
     if (rdb.isResourceTrue("filesys"))
@@ -148,14 +147,14 @@ void MeterMaker::lmsTempFactory(const ResDB &rdb) {
     std::string caption = "ACT/HIGH/"
         + rdb.getResourceOrUseDefault("lmstempHighest", "100");
     for (int i = 0 ; ; i++) {
-        std::ostringstream s;
-        s << "lmstemp" << i;
-        std::string res = rdb.getResourceOrUseDefault(s.str(), "<nil>");
+        std::string istr = std::to_string(i);
+        std::string res = rdb.getResourceOrUseDefault("lmstemp" + istr,
+          "<nil>");
         if(res == "<nil>")
             break;
-        std::ostringstream s2;
-        s2 << "lmstempLabel" << i;
-        std::string lab = rdb.getResourceOrUseDefault(s2.str(), "TMP");
+
+        std::string lab = rdb.getResourceOrUseDefault("lmstempLabel" + istr,
+          "TMP");
         _meters.push_back(new LmsTemp(res, lab, caption));
     }
 }

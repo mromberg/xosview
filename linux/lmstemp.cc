@@ -72,9 +72,7 @@ bool LmsTemp::checksensors(bool isproc, const std::string &dir,
                                << "exists but cannot be read.\n";
                 }
                 else {
-                    std::vector<std::string> d2=util::fs::listdir(dirname);
-                    for (size_t d2i = 0 ; d2i < d2.size() ; d2i++) {
-                        const std::string &e2dn = d2[d2i];
+                    for (const auto &e2dn : util::fs::listdir(dirname)) {
                         std::string f = dirname + "/" + e2dn;
                         if (!util::fs::isfile(f))
                             continue;
@@ -92,7 +90,6 @@ bool LmsTemp::checksensors(bool isproc, const std::string &dir,
 		    }
 		}
 	    }
-
 	}
     }
     return found;
