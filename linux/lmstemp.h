@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2000, 2006, 2015
+//  Copyright (c) 2000, 2006, 2015, 2018
 //  by Leopold Toetsch <lt@toetsch.at>
 //
 //  File based on btrymeter.* by
@@ -7,8 +7,8 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef LMSTEMP_H
-#define LMSTEMP_H
+#ifndef lmstemp_h
+#define lmstemp_h
 
 
 #include "fieldmeter.h"
@@ -16,25 +16,24 @@
 
 class LmsTemp : public FieldMeter {
 public:
-    LmsTemp( const std::string &filename, const std::string &label,
+    LmsTemp(const std::string &filename, const std::string &label,
       const std::string &caption);
+    virtual ~LmsTemp(void);
 
-    ~LmsTemp( void );
+    virtual std::string resName(void) const override { return "lmstemp"; }
+    virtual void checkevent(void) override;
 
-    std::string resName( void ) const { return "lmstemp"; }
-    void checkevent( void );
+    virtual void checkResources(const ResDB &rdb) override;
 
-    void checkResources(const ResDB &rdb);
-
-protected:
-    void getlmstemp( void );
-    int  checksensors(int isproc, const std::string &dir,
-      const std::string &filename);
 private:
     std::string _filename;
     int _highest;
-    int _isproc;
+    bool _isproc;
     unsigned long _highColor, _actColor;
+
+    void getlmstemp(void);
+    bool checksensors(bool isproc, const std::string &dir,
+      const std::string &filename);
 };
 
 

@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 1997, 2005, 2006, 2015, 2016
+//  Copyright (c) 1997, 2005, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef BTRYMETER_H
-#define BTRYMETER_H
+#ifndef btrymeter_h
+#define btrymeter_h
 
 #include "fieldmeter.h"
 
@@ -14,16 +14,16 @@
 
 class BtryMeter : public FieldMeter {
 public:
-    BtryMeter( void );
-    ~BtryMeter( void );
+    BtryMeter(void);
+    ~BtryMeter(void);
 
-    std::string resName( void ) const { return "battery"; }
-    void checkevent( void );
+    std::string resName(void) const { return "battery"; }
+    void checkevent(void);
 
     void checkResources(const ResDB &rdb);
 
 protected:
-    bool getpwrinfo( void );
+    bool getpwrinfo(void);
 
 private:
     // Reading battery stats is a mess

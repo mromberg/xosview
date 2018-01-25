@@ -47,7 +47,7 @@ LmsTemp::~LmsTemp( void ){
 }
 
 
-int  LmsTemp::checksensors(int isproc, const std::string &dir,
+bool LmsTemp::checksensors(bool isproc, const std::string &dir,
   const std::string &filename) {
 
     /* this part is adapted from ProcMeter3.2 */

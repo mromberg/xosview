@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -112,7 +112,7 @@ void MeterMaker::serialFactory(const ResDB &rdb) {
 // these architectures have no ioperm()
 #if defined (__arm__) || defined(__mc68000__) || defined(__powerpc__) || defined(__sparc__) || defined(__s390__) || defined(__s390x__)
 #else
-    for (int i = 0 ; i < SerialMeter::numDevices() ; i++) {
+    for (size_t i = 0 ; i < SerialMeter::numDevices() ; i++) {
         bool ok ;  unsigned long val ;
         std::string res = SerialMeter::getResourceName(
             (SerialMeter::Device)i);
