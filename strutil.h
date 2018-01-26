@@ -163,6 +163,13 @@ inline void concat(std::vector<T> &a, const std::vector<T> &b) {
 }
 
 
+template <class T>
+inline void concat(std::vector<T> &a, std::vector<T> &&b) {
+    for (auto &bi : b)
+        a.push_back(std::move(bi));
+}
+
+
 } // namespace util
 
 

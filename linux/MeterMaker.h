@@ -14,16 +14,14 @@ class ResDB;
 
 class MeterMaker : public ComMeterMaker {
 public:
-    MeterMaker(void) {}
-
-    std::vector<Meter *> makeMeters(const ResDB &rdb);
+    mlist makeMeters(const ResDB &rdb);
 
 private:
-    void cpuFactory(const ResDB &rdb);
-    void serialFactory(const ResDB &rdb);
-    void intFactory(const ResDB &rdb);
-    void tzoneFactory(void);
-    void lmsTempFactory(const ResDB &rdb);
+    void cpuFactory(const ResDB &rdb, mlist &meters) const;
+    void serialFactory(const ResDB &rdb, mlist &meters) const;
+    void intFactory(const ResDB &rdb, mlist &meters) const;
+    void tzoneFactory(mlist &meters) const;
+    void lmsTempFactory(const ResDB &rdb, mlist &meters) const;
 };
 
 

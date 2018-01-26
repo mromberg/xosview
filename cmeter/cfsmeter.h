@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -42,23 +42,22 @@ private:
 template <class X>
 class FSMFactory {
 public:
-    virtual std::vector<Meter *> make(const ResDB &rdb);
+    virtual std::vector<std::unique_ptr<Meter>> make(const ResDB &rdb);
     virtual std::vector<std::string> mounts(const ResDB &rdb);
     virtual std::vector<std::string> getAuto(void);
 };
 
 
-typedef FSMFactory<ComFSMeter> ComFSMeterFactory;
+using ComFSMeterFactory = FSMFactory<ComFSMeter>;
 
 
 template <class X>
-std::vector<Meter *> FSMFactory<X>::make(const ResDB &rdb) {
+std::vector<std::unique_ptr<Meter>> FSMFactory<X>::make(const ResDB &rdb) {
 
-    std::vector<Meter *> rval;
+    std::vector<std::unique_ptr<Meter>> rval;
 
-    std::vector<std::string> fs(mounts(rdb));
-    for (size_t i = 0 ; i < fs.size() ; i++)
-        rval.push_back(new X(fs[i]));
+    for (const auto &fs : mounts(rdb))
+        rval.push_back(std::make_unique<X>(fs));
 
     return rval;
 }

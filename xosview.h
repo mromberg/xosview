@@ -39,7 +39,7 @@ private:
     unsigned long _sleeptime, _usleeptime;
     bool _isvisible;
     bool _ispartiallyvisible;
-    std::vector<Meter *> _meters;
+    std::vector<std::unique_ptr<Meter>> _meters;
     double _sampleRate;   // samples/sec
     bool _doFullDraw;     // schedule full clear/draw
     std::unique_ptr<XSessionClient> _xsc; // session management client.

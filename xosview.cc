@@ -42,12 +42,7 @@ XOSView::XOSView(void)
 }
 
 
-XOSView::~XOSView( void ){
-    logDebug << "deleting " << _meters.size() << " meters..." << std::endl;
-    for (size_t i = 0 ; i < _meters.size() ; i++)
-        delete _meters[i];
-    _meters.resize(0);
-}
+XOSView::~XOSView(void) = default;
 
 
 void XOSView::run(int argc, const char * const *argv) {
@@ -102,7 +97,7 @@ void XOSView::loop(void) {
             for (const auto &meter : _meters) {
                 if (meter->requestevent() || firstPass) {
                     meter->checkevent();
-                    drawv.push_back(meter);
+                    drawv.push_back(meter.get());
                 }
             }
             if (firstPass)
