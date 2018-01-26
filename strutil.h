@@ -66,7 +66,7 @@ inline static bool fstr(const std::string &s, X &x) {
 
 template <class K, class V>
 V get(const std::map<K, V> &m, const K &k, V defVal=V()) {
-    typename std::map<K, V>::const_iterator it = m.find(k);
+    auto it = m.find(k);
     if (it == m.end())
         return defVal;
     return it->second;
@@ -193,11 +193,10 @@ ostream &operator<<(ostream &os, const vector<X> &x) {
 template<typename X,typename Y>
 ostream &operator<<(ostream &os, const map<X,Y> &m) {
     os << "{";
-    typename map<X,Y>::const_iterator it;
-    for (it = m.begin(); it != m.end(); ) {
+    for (auto it = m.cbegin(); it != m.cend(); ) {
         os << it->first << ":" << it->second;
         ++it;
-        if (it != m.end())
+        if (it != m.cend())
             os << ",";
     }
     os << "}";

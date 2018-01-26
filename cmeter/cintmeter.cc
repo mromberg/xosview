@@ -17,15 +17,15 @@ ComIntMeter::ComIntMeter(const std::string &title)
 
 void ComIntMeter::checkevent(void) {
     const std::map<size_t, uint64_t> newc = getStats();
-    std::map<size_t, uint64_t>::const_iterator itn = newc.begin();
-    std::map<size_t, uint64_t>::iterator itl = _last.begin();
+    auto itn = newc.cbegin();
+    auto itl = _last.begin();
 
-    while (itn != newc.end() && itl != _last.end()) {
+    while (itn != newc.cend() && itl != _last.end()) {
         if (itn->first != itl->first) {
             _last = newc;
             break;
         }
-        std::map<size_t, size_t>::const_iterator itim = _imap.find(itn->first);
+        auto itim = _imap.find(itn->first);
         if (itim == _imap.end())
             break;  // maybe also initUI()?
         _bits[itim->second] = itn->second != itl->second;

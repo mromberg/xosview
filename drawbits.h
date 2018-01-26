@@ -32,8 +32,7 @@ private:
 
 template <class X>
 unsigned long DrawBits<X>::getColor(const X &val) {
-    typename std::map<X, unsigned long>::const_iterator it = _cmap.find(
-        val);
+    auto it = _cmap.find(val);
 
     if (it != _cmap.end())
         return it->second;
