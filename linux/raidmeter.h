@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 1999, 2006, 2015, 2016
+//  Copyright (c) 1999, 2006, 2015, 2016, 2018
 //  by Thomas Waldmann ( ThomasWaldmann@gmx.de )
 //  based on work of Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef RAIDMETER_H
-#define RAIDMETER_H
+#ifndef raidmeter_h
+#define raidmeter_h
 
 #include "bitfieldmeter.h"
 
@@ -14,13 +14,13 @@
 class RAIDMeter : public BitFieldMeter {
 public:
     RAIDMeter(const std::string &device);
-    ~RAIDMeter(void);
+    virtual ~RAIDMeter(void);
 
-    void checkevent(void);
+    virtual void checkevent(void) override;
 
-    virtual std::string resName(void) const { return "RAID"; }
+    virtual std::string resName(void) const override { return "RAID"; }
 
-    void checkResources(const ResDB &rdb);
+    virtual void checkResources(const ResDB &rdb) override;
 
     static std::vector<std::string> devices(const ResDB &rdb);
 

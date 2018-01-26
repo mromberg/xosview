@@ -77,16 +77,16 @@ std::vector<MemMeter::LineInfo> MemMeter::findLines(
     std::string buf;
 
     // Get the info from the "standard" meminfo file.
-    int lineNum = 0;
-    int inum = 0;  // which info are we going to insert
+    size_t lineNum = 0;
+    size_t inum = 0;  // which info are we going to insert
     while (!meminfo.eof()){
         std::getline(meminfo, buf);
         lineNum++;
 
-        for (size_t i = 0 ; i < tmplate.size() ; i++)
-            if (tmplate[i].id() == buf.substr(0, tmplate[i].id().size())) {
+        for (const auto &li : tmplate)
+            if (li.id() == buf.substr(0, li.id().size())) {
                 logDebug << "FOUND line: " << buf << std::endl;
-                rval[inum] = tmplate[i];
+                rval[inum] = li;
                 rval[inum].line(lineNum);
                 inum++;
             }
@@ -120,18 +120,18 @@ void MemMeter::getmemstat(const std::string &fname,
     // Get the info from the "standard" meminfo file.
     int lineNum = 0;
     size_t fcount = 0; // found count
-    while (!meminfo.eof()){
+    while (!meminfo.eof()) {
         std::getline(meminfo, buf);
         lineNum++;
-        for (size_t i = 0 ; i < infos.size() ; i++)
-            if (infos[i].line() == lineNum) {
+        for (auto &li : infos)
+            if (li.line() == lineNum) {
                 std::istringstream line(buf);
                 unsigned long val;
                 std::string ignore;
                 line >> ignore >> val;
                 // All stats are in KB.
                 // Multiply by 1024 bytes per K
-                infos[i].setVal(val*1024.0);
+                li.setVal(val * 1024.0);
                 fcount++;
                 break;
             }

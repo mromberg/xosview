@@ -288,13 +288,12 @@ std::string BtryMeter::getBatDir(void) const {
 
     // create a list of all the BAT* subdirs
     std::vector<std::string> bats;
-    std::vector<std::string> dir = util::fs::listdir(SYSDIRNAME);
-    for (size_t i = 0 ; i < dir.size() ; i++)
-        if (dir[i].substr(0, 3) == "BAT")
-            bats.push_back(dir[i]);
+    for (const auto &fn : util::fs::listdir(SYSDIRNAME))
+        if (fn.substr(0, 3) == "BAT")
+            bats.push_back(fn);
     std::sort(bats.begin(), bats.end());
 
-    if (bats.size() == 0) // No batteries found
+    if (bats.empty()) // No batteries found
         return "";
 
     if (bats.size() > 1)
@@ -522,11 +521,10 @@ bool BtryMeter::getacpiinfo( void ){
     acpi_charge_state=0; // assume charged
 
     std::string abs_battery_dir = ACPIBATTERYDIR;
-    std::vector<std::string> dir = util::fs::listdir(ACPIBATTERYDIR);
-    for (size_t di = 0 ; di < dir.size(); di++) {
-        std::string abs_battery_name = abs_battery_dir + "/" + dir[di];
+    for (const auto &fn : util::fs::listdir(ACPIBATTERYDIR)) {
+        std::string abs_battery_name = abs_battery_dir + "/" + fn;
 
-        logDebug << "ACPI Batt: " <<  dir[di] << std::endl;
+        logDebug << "ACPI Batt: " << fn << std::endl;
 
         // still can happen that it's not present:
         if ( battery_present( abs_battery_name + "/info" ) ) {
@@ -541,9 +539,9 @@ bool BtryMeter::getacpiinfo( void ){
                     battery.remaining_capacity=battery.last_full_capacity;
 
 		acpi_sum_cap   +=battery.last_full_capacity;
-		acpi_sum_remain+=battery.remaining_capacity;
-		acpi_sum_rate  +=battery.present_rate;
-		acpi_sum_alarm +=battery.alarm;
+		acpi_sum_remain += battery.remaining_capacity;
+		acpi_sum_rate += battery.present_rate;
+		acpi_sum_alarm += battery.alarm;
 
 		// sum up charge state ...
 		// works only w. signed formats

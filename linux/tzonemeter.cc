@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016, 2017
+//  Copyright (c) 2015, 2016, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 #include "tzonemeter.h"
@@ -22,8 +22,10 @@ float TZoneMeter::getTemp(void) {
         // Read the temperature.  The docs say.
         // Unit: millidegree Celsius
         unsigned long long temp = 0;
-        if (!util::fs::readFirst(_tempFName, temp))
+        if (!util::fs::readFirst(_tempFName, temp)) {
             logProblem << "error reading: " << _tempFName << std::endl;
+            return 0.0;
+        }
         return static_cast<float>(temp) / 1000.0;
     }
     catch (...) {
@@ -40,11 +42,10 @@ float TZoneMeter::getTemp(void) {
 
 size_t TZoneMeter::count(void) {
     if (util::fs::isdir(TZDIR)) {
-        std::vector<std::string> flist = util::fs::listdir(TZDIR);
         size_t rval = 0;
-        std::string tzsdir(TZSDIR);
-        for (size_t i = 0 ; i < flist.size() ; i++)
-            if (flist[i].substr(0, tzsdir.size()) == tzsdir)
+        const std::string tzsdir(TZSDIR);
+        for (const auto &fn : util::fs::listdir(TZDIR))
+            if (fn.substr(0, tzsdir.size()) == tzsdir)
                 rval++;
 
         return rval;

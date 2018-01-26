@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015, 2016
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef METERMAKER_H
-#define METERMAKER_H
+#ifndef MeterMaker_h
+#define MeterMaker_h
 
 #include "cmetermaker.h"
 

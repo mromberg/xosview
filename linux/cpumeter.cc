@@ -81,7 +81,7 @@ void CPUMeter::checkevent( void ) {
     unsigned int sindex = 0; // index into cstats
     float idle = 0;          // temp storage for idle field
 
-    for (unsigned int i = 0 ; i < numfields() - 1; i++) {
+    for (size_t i = 0 ; i + 1 < numfields() ; i++) {
         if (sindex == 3) { // idle field
             idle = cstats[sindex] - _oldStats[sindex]; // save for later
             _total += idle;
@@ -94,16 +94,16 @@ void CPUMeter::checkevent( void ) {
 
         sindex++; // normal move ahead
     }
-    _fields[numfields()-1] = idle;  // fill in the idle
+    _fields.back() = idle;  // fill in the idle
 
     _oldStats = cstats;
 
     // Convert _fields to percent
     if (_total == 0.0)
         _total = 1.0;
-    used = used / _total;
-    for (size_t i = 0 ; i < numfields() ; i++)
-        _fields[i] = _fields[i] / _total;
+    used /= _total;
+    for (auto &field : _fields)
+        field /= _total;
     _total = 1.0;
 
     setUsed(used, _total);
