@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2017
+//  Copyright (c) 2015, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -89,7 +89,7 @@ std::vector<XOSVProc> XOSVProc::ptable(void) {
             XOSVProc p;
             ifs >> p;
             if (ifs.good()) {
-                pid_t pid = util::stoi(dir[i]);
+                pid_t pid = std::stoi(dir[i]);
                 p.pid = pid;
                 rval.push_back(p);
             }

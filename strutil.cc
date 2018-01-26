@@ -131,20 +131,6 @@ std::string ws2s(const std::wstring &s) {
 }
 
 
-int stoi(const std::string &str, size_t *, int) {
-    int rval;
-    if (!fstr(str, rval))
-        throw std::invalid_argument("error converting " + str + " to int");
-    return rval;
-}
-
-float stof(const std::string &str, size_t *) {
-    float rval;
-    if (!fstr(str, rval))
-        throw std::invalid_argument("error converting " + str + " to float");
-    return rval;
-}
-
 std::string strerror(int error) {
     return std::strerror(error);
 }

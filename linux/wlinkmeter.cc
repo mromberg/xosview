@@ -31,7 +31,7 @@ void WLinkMeter::checkResources(const ResDB &rdb) {
 
     _goodColor = rdb.getColor("wlinkGoodColor");
     _poorColor = rdb.getColor("wlinkPoorColor");
-    _poorValue = util::stoi(rdb.getResource("wlinkPoorValue"));
+    _poorValue = std::stoi(rdb.getResource("wlinkPoorValue"));
     setfieldcolor(0, _goodColor);
     setfieldcolor(1, rdb.getColor("wlinkBackground"));
 }

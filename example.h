@@ -105,9 +105,9 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
     // at the parent meter class for more details.
 
     // First our own private values.
-    _testMaximum = util::stoi(rdb.getResourceOrUseDefault(
+    _testMaximum = std::stoi(rdb.getResourceOrUseDefault(
           "exampleTestMax", "500"));
-    _designMaximum = util::stoi(rdb.getResourceOrUseDefault(
+    _designMaximum = std::stoi(rdb.getResourceOrUseDefault(
           "exampleDesignMax", "550"));
 
     // set the color with a string (requires a lookup)

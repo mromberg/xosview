@@ -24,7 +24,7 @@ Meter::~Meter( void ){
 
 
 void Meter::checkResources(const ResDB &rdb) {
-    _priority = util::stoi(rdb.getResourceOrUseDefault(resName() + "Priority",
+    _priority = std::stoi(rdb.getResourceOrUseDefault(resName() + "Priority",
         "10"));
     _fgColor = rdb.getColor("foreground");
     _bgColor = rdb.getColor("background");

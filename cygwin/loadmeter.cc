@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2008, 2015
+//  Copyright (c) 1994, 1995, 2006, 2008, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -25,8 +25,8 @@ LoadMeter::LoadMeter( void )
 
 void LoadMeter::checkResources(const ResDB &rdb) {
     ComLoadMeter::checkResources(rdb);
-    _sampRate = util::stof(rdb.getResource("loadPriority"))
-        / util::stof(rdb.getResource("samplesPerSec"));
+    _sampRate = std::stof(rdb.getResource("loadPriority"))
+        / std::stof(rdb.getResource("samplesPerSec"));
 }
 
 

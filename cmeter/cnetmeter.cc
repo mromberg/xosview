@@ -20,7 +20,7 @@ ComNetMeter::~ComNetMeter( void ){
 void ComNetMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    _maxBandwidth = util::stof(rdb.getResource( "netBandwidth" ));
+    _maxBandwidth = std::stof(rdb.getResource( "netBandwidth" ));
     setfieldcolor( 0, rdb.getColor( "netInColor" ) );
     setfieldcolor( 1, rdb.getColor( "netOutColor" ) );
     setfieldcolor( 2, rdb.getColor( "netBackground" ) );

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -42,12 +42,11 @@ uint64_t PrcLoadMeter::getCPUSpeed(void) {
         std::getline(speedinfo,argname,':');
         argval.clear();
         std::getline(speedinfo,argval);
-        // XOSDEBUG("speed: a=\"%s\" v=\"%s\"\n",
-        //     argname.c_str(),argval.c_str() );
+        logDebug << "speed: a=" << argname << " v=" << argval << std::endl;
 
         if ( argname.substr(0,7) == "cpu MHz" ) {
-            //XOSDEBUG("SPEED: %s\n",argval.c_str() );
-            return util::stof(argval) * 1000000;
+            logDebug << "SPEED: " << argval << std::endl;
+            return std::stof(argval) * 1000000;
         }
     }
 

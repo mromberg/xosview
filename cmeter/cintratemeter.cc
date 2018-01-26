@@ -23,7 +23,7 @@ void ComIrqRateMeter::checkResources(const ResDB &rdb) {
     setfieldcolor(0, rdb.getColor("irqrateUsedColor"));
     setfieldcolor(1, rdb.getColor("irqrateIdleColor"));
 
-    _peak = util::stof(rdb.getResource("irqratePeak"));
+    _peak = std::stof(rdb.getResource("irqratePeak"));
     _total = _peak;
 }
 

@@ -367,9 +367,9 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
 void XOSView::checkResources(void) {
     setSleepTime();
 
-    _hmargin  = util::stoi(resdb().getResource("horizontalMargin"));
-    _vmargin  = util::stoi(resdb().getResource("verticalMargin"));
-    _vspacing = util::stoi(resdb().getResource("verticalSpacing"));
+    _hmargin  = std::stoi(resdb().getResource("horizontalMargin"));
+    _vmargin  = std::stoi(resdb().getResource("verticalMargin"));
+    _vspacing = std::stoi(resdb().getResource("verticalSpacing"));
     _hmargin  = std::max(0, _hmargin);
     _vmargin  = std::max(0, _vmargin);
     _vspacing = std::max(1, _vspacing);
@@ -472,7 +472,7 @@ std::string XOSView::versionStr(void) const {
 
 
 void XOSView::setSleepTime(void) {
-    _sampleRate = util::stof(resdb().getResource("samplesPerSec"));
+    _sampleRate = std::stof(resdb().getResource("samplesPerSec"));
     if (!_sampleRate)
         _sampleRate = 10;
 

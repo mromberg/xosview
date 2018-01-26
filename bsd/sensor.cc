@@ -64,7 +64,7 @@ void BSDSensor::checkResources(const ResDB &rdb) {
           "bsdsensorHighest", "0" ));
     std::string s("bsdsensorHighest");
     s += util::repr(_nbr);
-    _total = fabs( util::stof( rdb.getResourceOrUseDefault(s, tmp) ) );
+    _total = fabs(std::stof(rdb.getResourceOrUseDefault(s, tmp)));
     s = "bsdsensorUsedFormat" + util::repr(_nbr);
 
     if (!_hasHigh)

@@ -45,9 +45,9 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    _testMaximum = util::stoi(rdb.getResourceOrUseDefault(
+    _testMaximum = std::stoi(rdb.getResourceOrUseDefault(
           "exampleTestMax", "500"));
-    _designMaximum = util::stoi(rdb.getResourceOrUseDefault(
+    _designMaximum = std::stoi(rdb.getResourceOrUseDefault(
           "exampleDesignMax", "550"));
 
     setfieldcolor(1, rdb.getColor("warpBG", "blue"));

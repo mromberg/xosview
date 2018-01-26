@@ -37,7 +37,7 @@ LmsTemp::LmsTemp( const std::string &filename, const std::string &label,
     }
     size_t p = std::string::npos;
     if ((p = caption.rfind('/')) != std::string::npos)
-        _highest = util::stoi(caption.substr(p + 1));
+        _highest = std::stoi(caption.substr(p + 1));
     else
         _highest = 100;
 }

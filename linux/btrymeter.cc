@@ -667,7 +667,7 @@ bool BtryMeter::parse_battery(const std::string& dirname) {
         //    argname.c_str(),argval.c_str() );
 
 	if ( argname == "alarm:" ) {
-            battery.alarm = util::stoi(argval);
+            battery.alarm = std::stoi(argval);
             break;
 	}
     }
@@ -686,13 +686,13 @@ bool BtryMeter::parse_battery(const std::string& dirname) {
 	//XOSDEBUG("info: a=\"%s\" v=\"%s\"\n",argname.c_str(),argval.c_str() );
 
 	if ( argname == "design capacity" ) {
-            battery.design_capacity=util::stoi(argval);
+            battery.design_capacity = std::stoi(argval);
 	}
 	if ( argname == "last full capacity" ) {
-            battery.last_full_capacity=util::stoi(argval);
+            battery.last_full_capacity = std::stoi(argval);
 	}
 	if ( argname == "last full capacity" ) {
-            battery.last_full_capacity=util::stoi(argval);
+            battery.last_full_capacity = std::stoi(argval);
 	}
 
     }
@@ -727,13 +727,13 @@ bool BtryMeter::parse_battery(const std::string& dirname) {
 	}
 
 	if ( argname == "last full capacity" ) {
-            battery.last_full_capacity=util::stoi(argval);
+            battery.last_full_capacity = std::stoi(argval);
 	}
 	if ( argname == "last full capacity" ) {
-            battery.last_full_capacity=util::stoi(argval);
+            battery.last_full_capacity = std::stoi(argval);
 	}
 	if ( argname == "remaining capacity" ) {
-            battery.remaining_capacity=util::stoi(argval);
+            battery.remaining_capacity = std::stoi(argval);
 	}
 
     }

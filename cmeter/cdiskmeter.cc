@@ -21,7 +21,7 @@ ComDiskMeter::~ComDiskMeter( void ){
 void ComDiskMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
-    maxspeed_ = util::stof(rdb.getResource("diskBandwidth"));
+    maxspeed_ = std::stof(rdb.getResource("diskBandwidth"));
     setfieldcolor( 0, rdb.getColor("diskReadColor") );
     setfieldcolor( 1, rdb.getColor("diskWriteColor") );
     setfieldcolor( 2, rdb.getColor("diskIdleColor") );

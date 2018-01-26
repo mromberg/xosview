@@ -37,8 +37,8 @@ void ComLoadMeter::checkResources(const ResDB &rdb){
     setfieldcolor( 1, rdb.getColor( "loadIdleColor" ) );
     setLegendColor( 1, _procloadcol ); // so cpu speed uses same color.
 
-    _warnThreshold = util::stoi (rdb.getResource("loadWarnThreshold"));
-    _critThreshold = util::stoi (rdb.getResource("loadCritThreshold"));
+    _warnThreshold = std::stoi (rdb.getResource("loadWarnThreshold"));
+    _critThreshold = std::stoi (rdb.getResource("loadCritThreshold"));
 
     // The max displayed on the bar will be the crit
     // legend still displays total load.

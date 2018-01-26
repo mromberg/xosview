@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -130,7 +130,7 @@ void MeterMaker::sensorFactory(const ResDB &rdb) {
     std::string s, caption, l;
     for (int i = 1 ; ; i++) {
         s = "bsdsensorHighest" + util::repr(i);
-        float highest = util::stof( rdb.getResourceOrUseDefault(s,
+        float highest = std::stof( rdb.getResourceOrUseDefault(s,
             "100") );
         caption = "ACT/HIGH/" + util::repr(highest);
         s = "bsdsensor" + util::repr(i);

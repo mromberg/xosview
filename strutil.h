@@ -42,12 +42,6 @@ inline std::string repr(const X &x) {
     return os.str();
 }
 
-// The stoX functions are in the standard.  But gcc wants
-// you to use -std=c++-11 to use them.  And this has made
-// things explode in the past
-int stoi(const std::string &str, size_t *idx = 0, int base = 10);
-float stof(const std::string &str, size_t *idx = 0);
-
 inline std::vector<std::string> vargv(int argc, const char * const *argv) {
     std::vector<std::string> rval;
     rval.reserve(argc);
@@ -91,15 +85,15 @@ std::string ws2s(const std::wstring &s);
 
 inline std::string toupper(const std::string &str) {
     std::string rval;
-    for (size_t i = 0 ; i < str.size() ; i++)
-        rval.push_back(std::toupper(str[i]));
+    std::transform(str.cbegin(), str.cend(), std::back_inserter(rval),
+      [](auto c){ return std::toupper(c); });
     return rval;
 }
 
 inline std::string tolower(const std::string &str) {
     std::string rval;
-    for (size_t i = 0 ; i < str.size() ; i++)
-        rval.push_back(std::tolower(str[i]));
+    std::transform(str.cbegin(), str.cend(), std::back_inserter(rval),
+      [](auto c){ return std::tolower(c); });
     return rval;
 }
 

@@ -22,7 +22,7 @@ ComPageMeter::~ComPageMeter( void ){
 void ComPageMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    _maxspeed = util::stof(rdb.getResource("pageBandwidth"));
+    _maxspeed = std::stof(rdb.getResource("pageBandwidth"));
     setfieldcolor( 0, rdb.getColor( "pageInColor" ) );
     setfieldcolor( 1, rdb.getColor( "pageOutColor" ) );
     setfieldcolor( 2, rdb.getColor( "pageIdleColor" ) );

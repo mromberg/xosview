@@ -44,7 +44,7 @@ void CoreTemp::checkResources(const ResDB &rdb) {
 
     std::string highest = rdb.getResourceOrUseDefault(
         "coretempHighest", "100" );
-    _total = util::stoi( highest );
+    _total = std::stoi( highest );
     std::string high = rdb.getResourceOrUseDefault("coretempHigh", "");
 
     // Get tjMax here and use as total.
@@ -65,7 +65,7 @@ void CoreTemp::checkResources(const ResDB &rdb) {
         lgnd = "ACT(\260C)/HIGH/" + util::repr((int)_total);
     }
     else {
-        _high = util::stoi( high );
+        _high = std::stoi( high );
         lgnd = "ACT(\260C)/" + util::repr((int)_high)
             + "/" + util::repr((int)_total);
     }
