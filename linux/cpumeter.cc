@@ -137,7 +137,7 @@ size_t CPUMeter::countCPUs(void){
 std::string CPUMeter::cpuStr(size_t num){
     if (num == 0)  // The cumulative meter
         return "cpu";
-    return std::string("cpu") + util::repr(num-1);
+    return std::string("cpu") + std::to_string(num - 1);
 }
 
 

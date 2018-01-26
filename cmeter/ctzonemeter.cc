@@ -7,7 +7,7 @@
 
 
 ComTZoneMeter::ComTZoneMeter(size_t zoneNum)
-    : FieldMeterGraph(2, "TZ" + util::repr(zoneNum),
+    : FieldMeterGraph(2, "TZ" + std::to_string(zoneNum),
       "DEG C/USED"), _peak(100.0),
       _hotTrip(70), _critTrip(84),
       _normColor(0), _hotColor(0), _critColor(0) {

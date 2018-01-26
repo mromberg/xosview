@@ -8,7 +8,6 @@
 #include "configxosv.h"
 #include "fsutil.h"
 #include "log.h"
-#include "strutil.h"
 
 #include <iostream>
 #include <sstream>
@@ -502,7 +501,7 @@ void XSCImp::saveCB(SmcConn smc_conn, void *client_data,
     // Optional.
     xsvars.push_back(XSVar(SmCurrentDirectory, util::fs::cwd()));
     xsvars.push_back(XSVar(SmRestartStyleHint, SmRestartIfRunning));
-    xsvars.push_back(XSVar(SmProcessID, util::repr(getpid())));
+    xsvars.push_back(XSVar(SmProcessID, std::to_string(getpid())));
 
     std::vector<SmProp *> propsp(xsvars.size(), 0);
     for (size_t i = 0 ; i < xsvars.size() ; i++)

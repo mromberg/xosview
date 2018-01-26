@@ -278,7 +278,7 @@ std::string BtryMeter::timeStr(float &hours) const {
     mins << std::setfill('0') << std::setw(2)
          << (unsigned int)(fracHours * 60);
 
-    std::string rval = util::repr(intHours) + ":" + mins.str();
+    std::string rval = std::to_string(intHours) + ":" + mins.str();
 
     return rval;
 }

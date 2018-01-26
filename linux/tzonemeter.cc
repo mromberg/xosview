@@ -12,7 +12,7 @@ static const char * const TZSDIR = "thermal_zone";
 TZoneMeter::TZoneMeter(size_t zoneNum)
     : ComTZoneMeter(zoneNum) {
 
-    _tempFName = std::string(TZDIR) + "/" + TZSDIR + util::repr(zoneNum)
+    _tempFName = std::string(TZDIR) + "/" + TZSDIR + std::to_string(zoneNum)
         + "/" + "temp";
 }
 

@@ -22,7 +22,8 @@ RAIDMeter::RAIDMeter(const std::string &device)
         logProblem << "reading " << _dir + "raid_disks  failed." << std::endl;
 
     // legend format: level ndevs/ffsize - sync_action - TODO
-    legend(_level + " none ?/" + util::repr(_ffsize) + " - none - TODO", "-");
+    legend(_level + " none ?/" + std::to_string(_ffsize) + " - none - TODO",
+      "-");
 
     _total = 1.0;         // All fields 0.0 - 1.0
     // _fields[0] = 0.0;  // Always 0.0 (used for legend color).
@@ -48,7 +49,7 @@ void RAIDMeter::checkevent( void ) {
     // Set the color of field 0 (used for legend color) and set the legend.
     setfieldcolor(0, active >= _ffsize ? _ffColor : _degradedColor);
     legend(_level + " " + state + " "
-      + util::repr(active) + "/" + util::repr(_ffsize)
+      + util::repr(active) + "/" + std::to_string(_ffsize)
       + " - " + sync_action + " - TODO", "-");
 }
 
