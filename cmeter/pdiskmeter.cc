@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2017
+//  Copyright (c) 2015, 2017, 2018
 //  by Mike Romberg (mike-romberg@comcast.net)
 //
 //  This file may be distributed under terms of the GPL
@@ -72,9 +72,8 @@ std::pair<uint64_t, uint64_t> PrcDiskMeter::getSysTotals(void) const {
     std::pair<uint64_t, uint64_t> rval(0, 0);
     const std::string dname("/sys/block/");
 
-    std::vector<std::string> devs = util::fs::listdir(dname);
-    for (size_t i = 0 ; i < devs.size() ; i++) {
-        std::string statFile(dname + devs[i] + "/stat");
+    for (const auto &dev : util::fs::listdir(dname)) {
+        std::string statFile(dname + dev + "/stat");
         std::ifstream ifs(statFile.c_str());
         if (ifs) {
             // 3rd field is read sectors and 7th is write

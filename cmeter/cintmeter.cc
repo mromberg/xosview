@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017
+//  Copyright (c) 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -56,8 +56,7 @@ void ComIntMeter::initIMap(void) {
         _imap[i] = i;
 
     size_t next = ResIRQ + 1;
-    std::map<size_t, uint64_t>::const_iterator it;
-    for (it = _last.begin() ; it != _last.end() ; ++it) {
+    for (auto it = _last.cbegin() ; it != _last.cend() ; ++it) {
         if (it->first > ResIRQ)
             _imap[it->first] = next++;
     }
@@ -83,8 +82,7 @@ std::string ComIntMeter::makeLegend(void) const {
     ostr << "IRQS: (";
     size_t last = -1;
     bool inrange = false;
-    std::map<size_t, size_t>::const_iterator it;
-    for (it = _imap.begin() ; it != _imap.end() ; ++it) {
+    for (auto it = _imap.cbegin() ; it != _imap.cend() ; ++it) {
         if (last == static_cast<size_t>(-1))
             ostr << it->first;
         else {
