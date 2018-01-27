@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2015, 2016
+//  Copyright (c) 1999, 2015, 2016, 2018
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
@@ -25,12 +25,9 @@
 
 
 
+ComMeterMaker::mlist MeterMaker::makeMeters(const ResDB &rdb) {
 
-MeterMaker::MeterMaker(void) {
-}
-
-
-std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
+    mlist meters;
 
     kstat_ctl_t *kc = kstat_open();
     if (kc == NULL)
@@ -40,41 +37,43 @@ std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        _meters.push_back(new ExampleMeter());
+        meters.push_back(std::make_unique<ExampleMeter>());
 
     // Standard meters (usually added, but users could turn them off)
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new LoadMeter(kc));
+        meters.push_back(std::make_unique<LoadMeter>(kc));
 
     if (rdb.isResourceTrue("cpu"))
-        cpuFactory(rdb, kc);
+        cpuFactory(rdb, kc, meters);
 
     if (rdb.isResourceTrue("mem"))
-        _meters.push_back(new MemMeter(kc));
+        meters.push_back(std::make_unique<MemMeter>(kc));
 
     if (rdb.isResourceTrue("disk"))
-        _meters.push_back(new DiskMeter(kc));
+        meters.push_back(std::make_unique<DiskMeter>(kc));
 
     if (rdb.isResourceTrue("filesys"))
-        util::concat(_meters, FSMeterFactory().make(rdb));
+        util::concat(meters, FSMeterFactory().make(rdb));
 
     if (rdb.isResourceTrue("swap"))
-        _meters.push_back(new SwapMeter());
+        meters.push_back(std::make_unique<SwapMeter>());
 
     if (rdb.isResourceTrue("page"))
-        _meters.push_back(new PageMeter(kc));
+        meters.push_back(std::make_unique<PageMeter>(kc));
 
     if (rdb.isResourceTrue("net"))
-        _meters.push_back(new NetMeter(kc));
+        meters.push_back(std::make_unique<NetMeter>(kc));
 
     if (rdb.isResourceTrue("irqrate"))
-        _meters.push_back(new IrqRateMeter(kc));
+        meters.push_back(std::make_unique<IrqRateMeter>(kc));
 
-    return _meters;
+    return meters;
 }
 
 
-void MeterMaker::cpuFactory(const ResDB &rdb, kstat_ctl_t *kc) {
+void MeterMaker::cpuFactory(const ResDB &rdb, kstat_ctl_t *kc,
+  mlist &meters)  const {
+
     int cpuCount = sysconf(_SC_NPROCESSORS_ONLN);
 
     size_t start = 0, end = 0;
@@ -83,8 +82,8 @@ void MeterMaker::cpuFactory(const ResDB &rdb, kstat_ctl_t *kc) {
     KStatList *cpulist = KStatList::getList(kc, KStatList::CPU_STAT);
     for (size_t i = start ; i <= end ; i++)
         if (i == 0)
-            _meters.push_back(new CPUMeter(kc, -1));
+            meters.push_back(std::make_unique<CPUMeter>(kc, -1));
         else
-            _meters.push_back(new CPUMeter(kc,
+            meters.push_back(std::make_unique<CPUMeter>(kc,
                 (*cpulist)[i - 1]->ks_instance));
 }
