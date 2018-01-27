@@ -8,21 +8,15 @@
 #ifndef METERMAKER_H
 #define METERMAKER_H
 
-#include "rdb.h"
+#include "cmetermaker.h"
 
-#include <vector>
-
-class Meter;
+class ResDB;
 
 
-class MeterMaker {
+
+class MeterMaker : public ComMeterMaker {
 public:
-    MeterMaker(void);
-
-    std::vector<Meter *> makeMeters(const ResDB &rdb);
-
-private:
-    std::vector<Meter *> _meters;
+    mlist makeMeters(const ResDB &rdb);
 };
 
 
