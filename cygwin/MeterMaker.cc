@@ -82,7 +82,7 @@ void MeterMaker::cpuFactory(const ResDB &rdb, mlist &meters) const {
 
 
 void MeterMaker::tzoneFactory(mlist &meters) const {
-    size_t nzones = TZoneMeter::count();
+    const size_t nzones = TZoneMeter::count();
 
     if (!nzones)
         logProblem << "tzone enabled but no thermal zones found.\n";
