@@ -1,3 +1,11 @@
+Changes since xosview-2.2.2
+
+  - Adjust default window size.
+
+  - Battery meter for cygwin.
+
+  - General code cleanup and minor bug fixes.
+
 Changes since xosview-2.2.1
 
   - BSD and Linux intmeters now have a common base class.
