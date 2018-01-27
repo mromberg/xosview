@@ -429,7 +429,7 @@ int XOSView::findy(void) {
     // Same match as in resize().
     const size_t nmeters = std::max(_meters.size(), (size_t)1);  // don't / by 0
     const int mh = 2 + _yoff + _vspacing;
-    const int my = _vmargin + mh * nmeters - _vspacing;
+    const int my = _vmargin + mh * nmeters;
     return my + 2 * _vmargin;
 }
 
@@ -540,6 +540,7 @@ void  XOSView::resize(void) {
     const int newheight = std::max(mh - _yoff - _vspacing, 2);
 
     logDebug << "-- meter height --\n"
+             << "height() : " << height() << "\n"
              << "_vmargin : " << _vmargin << "\n"
              << "_vspacing: " << _vspacing << "\n"
              << "_yoff    : " << _yoff << "\n"
@@ -548,9 +549,8 @@ void  XOSView::resize(void) {
              << "newheight: " << newheight
              << std::endl;
 
-
     for (size_t i = 0 ; i < _meters.size() ; i++) {
-        const int my = _vmargin + mh * (i + 1) - _vspacing;
+        const int my = _vmargin + mh * (i + 1) - newheight - 2;
         _meters[i]->resize(_xoff, my, newwidth, newheight);
     }
 }
