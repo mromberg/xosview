@@ -9,14 +9,11 @@
 
 #include "xftfont.h"
 
+#include <memory>
+
 #include <X11/Xlib.h>
 
-struct _XftDraw;
-typedef _XftDraw XftDraw;
-
-struct _XftColor;
-typedef _XftColor XftColor;
-
+class XftImp;
 
 
 
@@ -56,9 +53,7 @@ private:
     unsigned long _bgPixVal;
     unsigned long _fgPixVal;
     X11ftFont _font;
-    XftDraw *_draw;
-    XftColor *_fgxftc;
-    XftColor *_bgxftc;
+    std::unique_ptr<XftImp> _imp;
 };
 
 // color printing operators.

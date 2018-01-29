@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -15,48 +15,70 @@ static std::ostream &operator<<(std::ostream &os, const XRenderColor &c);
 static std::ostream &operator<<(std::ostream &os, const XftColor &c);
 
 
+class XftImp {
+public:
+    XftColor *fg(bool alloc=false) {
+        if (alloc) {
+            _fgAlloced = true;
+            return &_fgxftc;
+        }
+        return _fgAlloced ? &_fgxftc : nullptr;
+    }
+    XftColor *bg(bool alloc=false) {
+        if (alloc) {
+            _bgAlloced = true;
+            return &_bgxftc;
+        }
+        return _bgAlloced ? &_bgxftc : nullptr;
+    }
+
+    XftDraw *_draw = nullptr;
+    bool _fgAlloced = false;
+    XftColor _fgxftc = {};
+    bool _bgAlloced = false;
+    XftColor _bgxftc = {};
+};
+
 
 XftGraphics::XftGraphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
   Colormap cmap, unsigned long bgPixVal)
     : _dsp(dsp), _vis(v), _d(d), _isWindow(isWindow), _cmap(cmap),
-      _bgPixVal(bgPixVal), _fgPixVal(bgPixVal), _font(dsp), _draw(0),
-      _fgxftc(0), _bgxftc(0) {
+      _bgPixVal(bgPixVal), _fgPixVal(bgPixVal), _font(dsp),
+      _imp(std::make_unique<XftImp>()) {
 
     setBG(bgPixVal);
     setFG("white");
-    logDebug << "XftGraphics: fg: " << *_fgxftc << ", bg: " << *_bgxftc << "\n";
+    logDebug << "XftGraphics: fg: " << _imp->_fgxftc
+             << ", bg: " << _imp->_bgxftc << std::endl;
 
     if (_isWindow) {
         logDebug << "XftDrawCreate(): "
                  << std::hex << std::showbase << _d << std::endl;
-        _draw = XftDrawCreate(_dsp, _d, _vis, _cmap);
+        _imp->_draw = XftDrawCreate(_dsp, _d, _vis, _cmap);
     }
     else {
         if (depth() == 1) {
             logDebug << "XftDrawCreateBitmap(): "
                      << std::hex << std::showbase << _d << std::endl;
-            _draw = XftDrawCreateBitmap(_dsp, _d);
+            _imp->_draw = XftDrawCreateBitmap(_dsp, _d);
         }
         else {
             logDebug << "XftDrawCreateAlpha(): "
                      << std::hex << std::showbase << _d << std::endl;
-            _draw = XftDrawCreateAlpha(_dsp, _d, depth());
+            _imp->_draw = XftDrawCreateAlpha(_dsp, _d, depth());
         }
     }
 }
 
 XftGraphics::~XftGraphics(void) {
-    if (_draw)
-        XftDrawDestroy(_draw);
+    if (_imp->_draw)
+        XftDrawDestroy(_imp->_draw);
 
-    if (_fgxftc) {
-        XftColorFree(_dsp, _vis, _cmap, _fgxftc);
-        delete _fgxftc;
-    }
-    if (_bgxftc) {
-        XftColorFree(_dsp, _vis, _cmap, _bgxftc);
-        delete _bgxftc;
-    }
+    if (_imp->fg())
+        XftColorFree(_dsp, _vis, _cmap, _imp->fg());
+
+    if (_imp->bg())
+        XftColorFree(_dsp, _vis, _cmap, _imp->bg());
 }
 
 void XftGraphics::setFont(const std::string &name) {
@@ -114,12 +136,10 @@ void XftGraphics::setFG(unsigned long pixVal, unsigned short alpha) {
     xrc.blue = premul(def.blue, alpha);
     xrc.alpha = alpha;
 
-    if (!_fgxftc)
-        _fgxftc = new XftColor();
-    else
-        XftColorFree(_dsp, _vis, _cmap, _fgxftc);
+    if (_imp->fg())
+        XftColorFree(_dsp, _vis, _cmap, _imp->fg());
 
-    XftColorAllocValue(_dsp, _vis, _cmap, &xrc, _fgxftc);
+    XftColorAllocValue(_dsp, _vis, _cmap, &xrc, _imp->fg(true));
 }
 
 void XftGraphics::setBG(const std::string &color, unsigned short alpha) {
@@ -139,16 +159,14 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
     xrc.blue = premul(def.blue, alpha);
     xrc.alpha = alpha;
 
-    if (!_bgxftc)
-        _bgxftc = new XftColor();
-    else
-        XftColorFree(_dsp, _vis, _cmap, _bgxftc);
+    if (_imp->bg())
+        XftColorFree(_dsp, _vis, _cmap, _imp->bg());
 
-    XftColorAllocValue(_dsp, _vis, _cmap, &xrc, _bgxftc);
+    XftColorAllocValue(_dsp, _vis, _cmap, &xrc, _imp->bg(true));
 }
 
 void XftGraphics::drawString(int x, int y, const std::string &str) {
-    XftDrawString8(_draw, _fgxftc, _font.font(), x, y,
+    XftDrawString8(_imp->_draw, &_imp->_fgxftc, _font.font(), x, y,
       (XftChar8 *)str.c_str(), str.size());
 }
 
@@ -156,7 +174,7 @@ void XftGraphics::drawString(int x, int y, const std::string &str) {
 void XftGraphics::kick(void) {
     // For some unknown reason, Xft needs to be reset.
     // Setting (the same) drawable again seems to do it.
-    XftDrawChange(_draw, _d);
+    XftDrawChange(_imp->_draw, _d);
 }
 
 
