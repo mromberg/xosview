@@ -16,6 +16,7 @@
 
 class X11Pixmap;
 class XftGraphics;
+class X11Font;
 
 
 class X11Graphics {
@@ -98,9 +99,10 @@ private:
     unsigned int _width;
     unsigned int _height;
     std::unique_ptr<XftGraphics> _xftg;
-    XOSVFont *_font;
+    std::unique_ptr<X11Font> _x11font;
     Visual *_visual;
 
+    XOSVFont *font(void) const;
     void updateInfo(void); // update _width, _height, _depth
 
     //------------------------------------------------------------
@@ -155,15 +157,15 @@ inline void X11Graphics::lineWidth(unsigned int width) {
 }
 
 inline unsigned int X11Graphics::textWidth(const std::string &str) {
-    return _font->textWidth(str);
+    return font()->textWidth(str);
 }
 
 inline int X11Graphics::textAscent(void) const {
-    return _font->textAscent();
+    return font()->textAscent();
 }
 
 inline int X11Graphics::textDescent(void) const {
-    return _font->textDescent();
+    return font()->textDescent();
 }
 
 inline unsigned int X11Graphics::textHeight(void) const {
