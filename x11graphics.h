@@ -79,10 +79,7 @@ public:
     // Depricated interface
     //------------------------------------------------------------
     void setStippleMode(bool mode) { _doStippling = mode; }
-    void setStipple(Pixmap stipple);
     void setStippleN(unsigned int n) { setStipple(_stipples[n]); }
-    Pixmap createPixmap(const std::string &data,
-      unsigned int w, unsigned int h);
     //---End Depricated-------------------------------------------
 
 private:
@@ -110,6 +107,9 @@ private:
     bool _doStippling;
     void initStipples(void);
     void releaseStipples(void);
+    Pixmap createPixmap(const std::string &data,
+      unsigned int w, unsigned int h);
+    void setStipple(Pixmap stipple);
     static std::vector<Pixmap>	_stipples;	//  Array of Stipple masks.
     static size_t &refCount(void);
     //---End Depricated-------------------------------------------
