@@ -22,9 +22,9 @@ public:
       const std::string &caption, int nbr );
     ~BSDSensor(void);
 
-    virtual std::string resName(void) const { return "bsdsensor"; }
-    void checkevent( void );
-    void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override { return "bsdsensor"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     std::string _name, _val, _highName, _lowName, _highVal, _lowVal;

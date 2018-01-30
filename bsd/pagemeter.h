@@ -25,7 +25,7 @@ public:
     PageMeter(void);
 
 protected:
-    virtual std::pair<float, float> getPageRate(void);
+    virtual std::pair<float, float> getPageRate(void) override;
 
 private:
     const size_t _psize;

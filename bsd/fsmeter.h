@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef FSMETER_H
-#define FSMETER_H
+#ifndef fsmeter_h
+#define fsmeter_h
 
 #include "cfsmeter.h"
 
@@ -17,7 +17,7 @@ public:
     FSMeter(const std::string &path) : ComFSMeter(path) {}
 
 protected:
-    virtual bool isMount(const std::string &path);
+    virtual bool isMount(const std::string &path) override;
 };
 
 

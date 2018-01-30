@@ -22,9 +22,9 @@ public:
       const std::string &caption, int cpu);
     ~CoreTemp(void);
 
-    virtual std::string resName(void) const { return "coretemp"; }
-    void checkevent(void);
-    void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override { return "coretemp"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
     static unsigned int countCpus(void);
 

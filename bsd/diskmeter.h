@@ -24,7 +24,7 @@ public:
     DiskMeter(void);
 
 protected:
-    virtual std::pair<double, double> getRate(void);
+    virtual std::pair<double, double> getRate(void) override;
 
 private:
     uint64_t prevreads_, prevwrites_;

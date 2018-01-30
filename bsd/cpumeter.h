@@ -4,8 +4,8 @@
 //
 //  This file may be distributed under terms of the GPL.
 //
-#ifndef CPUMETER_H
-#define CPUMETER_H
+#ifndef cpumeter_h
+#define cpumeter_h
 
 #include "fieldmetergraph.h"
 
@@ -15,9 +15,9 @@ public:
     CPUMeter(unsigned int nbr);
     ~CPUMeter(void);
 
-    virtual std::string resName(void) const { return "cpu"; }
-    void checkevent( void );
-    void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override { return "cpu"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
     static size_t countCPUs(void);
 
