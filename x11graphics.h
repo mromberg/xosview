@@ -78,14 +78,13 @@ public:
     //------------------------------------------------------------
     // Depricated interface
     //------------------------------------------------------------
-    void setForeground(unsigned long pixVal) { setFG(pixVal); }
-    void setBackground(unsigned long pixVal) { setBG(pixVal); }
     void setStippleMode(bool mode) { _doStippling = mode; }
     void setStipple(Pixmap stipple);
     void setStippleN(unsigned int n) { setStipple(_stipples[n]); }
     Pixmap createPixmap(const std::string &data,
       unsigned int w, unsigned int h);
     //---End Depricated-------------------------------------------
+
 private:
     Display *_dsp;
     Drawable _drawable;

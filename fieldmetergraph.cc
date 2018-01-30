@@ -167,8 +167,8 @@ void FieldMeterGraph::drawBar(X11Graphics &g, int i) const {
              *  converting to an int.  */
             barheight = (int)((_heightField[i*numfields()+j] * height()) + 0.5);
 
-            g.setForeground( fieldcolor(j) );
-            g.setStippleN(j%4);
+            g.setFG(fieldcolor(j));
+            g.setStippleN(j % 4);
 
             if( barheight > (y - Meter::y()) )
                 barheight = (y - Meter::y());
