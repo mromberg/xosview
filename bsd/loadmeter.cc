@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018 by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  Most of this code was written by Werner Fink <werner@suse.de>.
@@ -74,7 +74,7 @@ uint64_t LoadMeter::getCPUSpeed(void) {
     if (!speed_sc.get(speed))
         logFatal << "sysctl(hw.cpuspeed) failed." << std::endl;
 
-    return speed * 1000000;
+    return static_cast<uint64_t>(speed) * 1000000;
 }
 
 #endif
