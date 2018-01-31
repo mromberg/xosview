@@ -1,28 +1,27 @@
 //
-//  Copyright (c) 1994, 1995, 2015
+//  Copyright (c) 1994, 1995, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef NETMETER_H
-#define NETMETER_H
+#ifndef netmeter_h
+#define netmeter_h
 
 #include "cnetmeter.h"
 #include "kstats.h"
 
 
 
-
 class NetMeter : public ComNetMeter {
 public:
-    NetMeter( kstat_ctl_t *kc );
-    ~NetMeter(void);
+    NetMeter(kstat_ctl_t *kc);
+    virtual ~NetMeter(void);
 
-    virtual void checkResources(const ResDB &rdb);
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
-    virtual std::pair<float, float> getRates(void);
+    virtual std::pair<float, float> getRates(void) override;
 
 private:
     uint64_t _lastBytesIn, _lastBytesOut;

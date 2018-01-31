@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -10,6 +10,11 @@
 
 static const char * const MOUNT_FNAME = "/etc/mnttab";
 
+
+
+FSMeter::FSMeter(const std::string &path)
+    : ComFSMeter(path) {
+}
 
 
 std::vector<std::string> FSMeterFactory::getAuto(void) {

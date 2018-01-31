@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef KSTATS_H
-#define KSTATS_H
+#ifndef kstats_h
+#define kstats_h
 
 #include "log.h"
 
@@ -18,6 +18,9 @@
 // Helper to keep track of kstats.
 class KStatList {
 public:
+    KStatList(const KStatList &) = delete;
+    KStatList &operator=(const KStatList &) = delete;
+
     enum module {  // module:instance:name (class)
         CPU_STAT,    // *:*:cpu_stat*
         CPU_INFO,    // *:*:cpu_info*
@@ -28,7 +31,7 @@ public:
     static KStatList *getList(kstat_ctl_t *kcp, module m);
 
     kstat_t *operator[](size_t i)
-        { return ( i < _stats.size() ? _stats[i] : NULL ); }
+        { return i < _stats.size() ? _stats[i] : nullptr; }
 
     size_t count(void) { return _stats.size(); }
     void update(kstat_ctl_t *kcp);
@@ -38,9 +41,6 @@ private:
     module _m;
     std::vector<kstat_t *> _stats;
 
-    KStatList(const KStatList &);
-    ~KStatList(void) {}
-    KStatList &operator=(const KStatList &);
     KStatList(kstat_ctl_t *kcp, module m);
     void getstats(kstat_ctl_t *kcp);
 };

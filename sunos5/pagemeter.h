@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 1999, 2015
+//  Copyright (c) 1999, 2015, 2018
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef PAGEMETER_H
-#define PAGEMETER_H
+#ifndef pagemeter_h
+#define pagemeter_h
 
 #include "cpagemeter.h"
 #include "kstats.h"
@@ -18,7 +18,7 @@ public:
     PageMeter(kstat_ctl_t *kcp);
 
 protected:
-    virtual std::pair<float, float> getPageRate(void);
+    virtual std::pair<float, float> getPageRate(void) override;
 
 private:
     const size_t _psize;
@@ -26,8 +26,6 @@ private:
     int pageindex_;
     KStatList *cpustats;
     kstat_ctl_t *kc;
-
-    void getpageinfo(void);
 };
 
 

@@ -24,7 +24,7 @@ MemMeter::MemMeter(kstat_ctl_t *_kc)
       const_cast<char *>("system_pages"));
     ksp_zfs = kstat_lookup(kc, const_cast<char *>("vmem"), -1,
       const_cast<char *>("zfs_file_data_buf"));
-    if (ksp_sp == NULL) { // ZFS cache may be missing
+    if (ksp_sp == nullptr) { // ZFS cache may be missing
         logFatal << "Can not find unix:0:system_pages kstat." << std::endl;
     }
 }
@@ -41,10 +41,6 @@ void MemMeter::checkResources(const ResDB &rdb) {
 }
 
 
-MemMeter::~MemMeter(void) {
-}
-
-
 void MemMeter::checkevent(void) {
     getmeminfo();
 }
@@ -55,12 +51,13 @@ void MemMeter::getmeminfo(void) {
 
     _fields[1] = 0;
     if (ksp_zfs) {
-        if (kstat_read(kc, ksp_zfs, NULL) == -1)
-            logFatal << "Can't read vmem::zfs_file_data_buf kstat." << std::endl;
+        if (kstat_read(kc, ksp_zfs, nullptr) == -1)
+            logFatal << "Can't read vmem::zfs_file_data_buf kstat."
+                     << std::endl;
 
         k = (kstat_named_t *)kstat_data_lookup(ksp_zfs,
           const_cast<char *>("mem_inuse"));
-        if (k == NULL) {
+        if (k == nullptr) {
             logFatal << "Can't read "
                      << "vmem::zfs_file_data_buf:mem_inuse kstat."
                      << std::endl;
@@ -68,12 +65,12 @@ void MemMeter::getmeminfo(void) {
         _fields[1] = kstat_to_double(k) / pageSize;
     }
 
-    if (kstat_read(kc, ksp_sp, NULL) == -1)
+    if (kstat_read(kc, ksp_sp, nullptr) == -1)
         logFatal << "Can not read unix:0:system_pages kstat." << std::endl;
 
     k = (kstat_named_t *)kstat_data_lookup(ksp_sp,
       const_cast<char *>("pp_kernel"));
-    if (k == NULL) {
+    if (k == nullptr) {
         logFatal << "Can not read "
                  << "unix:0:system_pages:pp_kernel kstat." << std::endl;
     }
@@ -81,7 +78,7 @@ void MemMeter::getmeminfo(void) {
     _fields[0] = kstat_to_double(k) - _fields[1];
     k = (kstat_named_t *)kstat_data_lookup(ksp_sp,
       const_cast<char *>("freemem"));
-    if (k == NULL) {
+    if (k == nullptr) {
         logFatal << "Can not read "
                  << "unix:0:system_pages:freemem kstat." << std::endl;
     }

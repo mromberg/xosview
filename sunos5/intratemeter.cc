@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2014, 2015 by Tomi Tapper <tomi.o.tapper@jyu.fi>
+//  Copyright (c) 2014, 2015, 2018 by Tomi Tapper <tomi.o.tapper@jyu.fi>
 //
 //  File based on bsd/intratemeter.* by
 //  Copyright (c) 1999 by Brian Grayson (bgrayson@netbsd.org)
@@ -27,12 +27,12 @@ float IrqRateMeter::getIrqRate(void) {
     _cpus->update(_kc);
     IntervalTimerStop();
     for (size_t i = 0; i < _cpus->count(); i++) {
-        if (kstat_read(_kc, (*_cpus)[i], NULL) == -1) {
+        if (kstat_read(_kc, (*_cpus)[i], nullptr) == -1) {
             logFatal << "kstat_read() failed." << std::endl;
         }
         k = (kstat_named_t *)kstat_data_lookup((*_cpus)[i],
           const_cast<char *>("intr"));
-        if (k == NULL)
+        if (k == nullptr)
             logFatal << "kstat_data_lookup() failed." << std::endl;
 
         irqcount += kstat_to_ui64(k);

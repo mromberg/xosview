@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2015
+//  Copyright (c) 1999, 2015, 2018
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
@@ -22,7 +22,7 @@ std::pair<uint64_t, uint64_t> SwapMeter::getswapinfo( void ) {
 
     std::pair<uint64_t, uint64_t> rval(0, 0);
 
-    int numswap = swapctl(SC_GETNSWP, NULL);
+    int numswap = swapctl(SC_GETNSWP, nullptr);
     if (numswap < 0)
         logFatal << "Can not determine number of swap spaces." << std::endl;
 

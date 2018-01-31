@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015
+//  Copyright (c) 1994, 1995, 2015, 2018
 //  Rewritten for Solaris by Arno Augustin 1999
 //  augustin@informatik.uni-erlangen.de
 //
@@ -26,12 +26,13 @@ NetMeter::NetMeter( kstat_ctl_t *kc )
       _ignored(false),
       _socket(socket(AF_INET, SOCK_DGRAM, 0)) {
 
-    if ( _socket < 0 )
-        logFatal << "Opening socket failed." << std::endl;
+    if (_socket < 0)
+        logFatal << "Opening socket failed: " << util::strerror()
+                 << std::endl;
 }
 
 
-NetMeter::~NetMeter( void ){
+NetMeter::~NetMeter(void) {
     close(_socket);
 }
 
@@ -63,18 +64,18 @@ std::pair<float, float> NetMeter::getRates(void) {
           ( (!_ignored && ksp->ks_name != _netIface) ||
             ( _ignored && ksp->ks_name == _netIface) ) )
             continue;
-        if ( kstat_read(_kc, ksp, NULL) == -1 )
+        if (kstat_read(_kc, ksp, nullptr) == -1)
             continue;
 
         logDebug << ksp->ks_name << ": \n";
 
         // try 64-bit byte counter, then 32-bit one, then packet counter
-        if ( (k = (kstat_named_t *)kstat_data_lookup(ksp,
-              const_cast<char *>("rbytes64"))) == NULL ) {
-            if ( (k = (kstat_named_t *)kstat_data_lookup(ksp,
-                  const_cast<char *>("rbytes"))) == NULL ) {
-                if ( (k = (kstat_named_t *)kstat_data_lookup(ksp,
-                      const_cast<char *>("ipackets"))) == NULL )
+        if ((k = (kstat_named_t *)kstat_data_lookup(ksp,
+              const_cast<char *>("rbytes64"))) == nullptr) {
+            if ((k = (kstat_named_t *)kstat_data_lookup(ksp,
+                  const_cast<char *>("rbytes"))) == nullptr) {
+                if ((k = (kstat_named_t *)kstat_data_lookup(ksp,
+                      const_cast<char *>("ipackets"))) == nullptr)
                     continue;
                 // for packet counter, mtu is needed
                 std::string(ksp->ks_name).copy(lfr.lifr_name,
@@ -98,12 +99,12 @@ std::pair<float, float> NetMeter::getRates(void) {
             logDebug << kstat_to_ui64(k) << " bytes received\n";
         }
 
-        if ( (k = (kstat_named_t *)kstat_data_lookup(ksp,
-              const_cast<char *>("obytes64"))) == NULL ) {
-            if ( (k = (kstat_named_t *)kstat_data_lookup(ksp,
-                  const_cast<char *>("obytes"))) == NULL ) {
-                if ( (k = (kstat_named_t *)kstat_data_lookup(ksp,
-                      const_cast<char *>("opackets"))) == NULL )
+        if ((k = (kstat_named_t *)kstat_data_lookup(ksp,
+              const_cast<char *>("obytes64"))) == nullptr) {
+            if ((k = (kstat_named_t *)kstat_data_lookup(ksp,
+                  const_cast<char *>("obytes"))) == nullptr) {
+                if ((k = (kstat_named_t *)kstat_data_lookup(ksp,
+                      const_cast<char *>("opackets"))) == nullptr)
                     continue;
                 std::string(ksp->ks_name).copy(lfr.lifr_name,
                   sizeof(lfr.lifr_name));

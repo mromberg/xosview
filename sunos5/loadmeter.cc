@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
@@ -29,7 +29,7 @@ LoadMeter::LoadMeter(kstat_ctl_t *_kc)
 #ifndef HAVE_GETLOADAVG
     ksp = kstat_lookup(kc, const_cast<char *>("unix"), 0,
       const_cast<char *>("system_misc"));
-    if (ksp == NULL)
+    if (ksp == nullptr)
         logFatal << "kstat_lookup() failed." << std::endl;
 #endif
 }
@@ -42,12 +42,12 @@ float LoadMeter::getLoad(void) {
     // any version.
     kstat_named_t *k;
 
-    if (kstat_read(kc, ksp, NULL) == -1)
+    if (kstat_read(kc, ksp, nullptr) == -1)
         logFatal << "kstat_read() failed." << std::endl;
 
     k = (kstat_named_t *)kstat_data_lookup(ksp,
       const_cast<char *>("avenrun_1min"));
-    if (k == NULL)
+    if (k == nullptr)
         logFatal << "kstat_data_lookup() failed." << std::endl;
 
     return kstat_to_double(k) / FSCALE;
@@ -68,17 +68,17 @@ uint64_t LoadMeter::getCPUSpeed(void) {
 
     for (i = 0; i < cpulist->count(); i++) {
         cpu = (*cpulist)[i];
-        if (kstat_read(kc, cpu, NULL) == -1)
+        if (kstat_read(kc, cpu, nullptr) == -1)
             logFatal << "kstat_read() failed." << std::endl;
 
         // Try current_clock_Hz first (needs frequency scaling support),
         // then clock_MHz.
         k = (kstat_named_t *)kstat_data_lookup(cpu,
           const_cast<char *>("current_clock_Hz"));
-        if (k == NULL) {
+        if (k == nullptr) {
             k = (kstat_named_t *)kstat_data_lookup(cpu,
               const_cast<char *>("clock_MHz"));
-            if (k == NULL)
+            if (k == nullptr)
                 logFatal << "CPU speed is not available." << std::endl;
 
             logDebug << "Speed of cpu " << i << " is "

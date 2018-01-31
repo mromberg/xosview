@@ -30,7 +30,7 @@ ComMeterMaker::mlist MeterMaker::makeMeters(const ResDB &rdb) {
     mlist meters;
 
     kstat_ctl_t *kc = kstat_open();
-    if (kc == NULL)
+    if (kc == nullptr)
         logFatal << "kstat_open() failed." << std::endl;
 
 
