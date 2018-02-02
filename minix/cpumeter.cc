@@ -40,10 +40,6 @@ CPUMeter::CPUMeter(unsigned int cpu)
 }
 
 
-CPUMeter::~CPUMeter( void ){
-}
-
-
 void CPUMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 

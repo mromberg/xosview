@@ -20,10 +20,6 @@ MemMeter::MemMeter( void )
 }
 
 
-MemMeter::~MemMeter( void ){
-}
-
-
 void MemMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
