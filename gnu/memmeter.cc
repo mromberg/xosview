@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016, 2018 by Mike Romberg ( mike-romberg@comcast.net )
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //  2007 by Samuel Thibault ( samuel.thibault@ens-lyon.org )
 //
 //  This file may be distributed under terms of the GPL
@@ -10,6 +11,7 @@
 #include <sstream>
 
 extern "C" {
+#include <mach/vm_statistics.h>
 #include <mach/mach_traps.h>
 #include <mach/mach_interface.h>
 }
@@ -18,8 +20,6 @@ MemMeter::MemMeter( void )
     : FieldMeterGraph( 4, "MEM", "ACT/INACT/WIRE/FREE" ){
 }
 
-MemMeter::~MemMeter( void ){
-}
 
 void MemMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
@@ -30,10 +30,10 @@ void MemMeter::checkResources(const ResDB &rdb){
     setfieldcolor( 3, rdb.getColor( "memFreeColor" ) );
 }
 
-void MemMeter::checkevent( void ){
-    kern_return_t err;
+void MemMeter::checkevent(void) {
 
-    err = vm_statistics (mach_task_self(), &vmstats);
+    struct vm_statistics vmstats;
+    kern_return_t err = vm_statistics (mach_task_self(), &vmstats);
     if (err)
         logFatal << "vm_statistics(): " << util::strerror(err) << std::endl;
 

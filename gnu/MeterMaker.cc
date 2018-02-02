@@ -10,7 +10,7 @@
 #include "cpumeter.h"
 #include "memmeter.h"
 #include "pswapmeter.h"
-#include "pagemeter.h"
+#include "ppagemeter.h"
 #include "loadmeter.h"
 #include "cfsmeter.h"
 #include "example.h"  // The example meter
@@ -42,7 +42,7 @@ ComMeterMaker::mlist MeterMaker::makeMeters(const ResDB &rdb) {
         meters.push_back(std::make_unique<PrcSwapMeter>());
 
     if (rdb.isResourceTrue("page"))
-        meters.push_back(std::make_unique<PageMeter>());
+        meters.push_back(std::make_unique<PrcPageMeter>(false));
 
     return meters;
 }
