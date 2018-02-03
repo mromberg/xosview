@@ -9,8 +9,6 @@
 
 #include "fieldmetergraph.h"
 
-#include <vector>
-#include <string>
 
 
 class MemMeter : public FieldMeterGraph {
