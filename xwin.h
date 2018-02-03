@@ -131,7 +131,6 @@ private:
 
     Visual *getVisual(void);
     bool isDBE(Visual *v) const;
-    std::vector<XVisualInfo> getVisuals(void);
     XSizeHints *getGeometry(void);
     void setHints(XSizeHints *szHints);
 };
