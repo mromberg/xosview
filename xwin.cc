@@ -11,9 +11,6 @@
 #include "strutil.h"
 #include "fsutil.h"
 
-#include <sstream>
-#include <algorithm>
-
 #include <X11/Xatom.h>
 #ifdef HAVE_DBE
 #include <X11/extensions/Xdbe.h>

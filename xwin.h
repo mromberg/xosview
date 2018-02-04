@@ -113,8 +113,8 @@ private:
 
     class Event {
     public:
-        Event(void) : _parent(0), _callBack(0), _event(0), _mask(NoEventMask)
-            {}
+        Event(void) : _parent(nullptr), _callBack(nullptr),
+                      _event(0), _mask(NoEventMask) {}
         Event(XWin *parent, int event, EventCallBack callBack);
 
         // use compiler generated copy ctor and op
