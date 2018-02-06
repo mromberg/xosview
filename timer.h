@@ -33,10 +33,9 @@ public:
         if (start)
             Timer::start();
     }
-    ~Timer(void){}
 
-    void start(void) { gettimeofday(&_startTime, NULL); }
-    void stop(void)  { gettimeofday(&_stopTime, NULL);  }
+    void start(void) { gettimeofday(&_startTime, nullptr); }
+    void stop(void) { gettimeofday(&_stopTime, nullptr);  }
     //  reports time intervall between calls to start and stop in usec
     //  This one uses doubles as the return value, to avoid
     //  overflow/sign problems.
@@ -58,7 +57,8 @@ private:
     struct timeval _startTime, _stopTime;
 };
 
-inline std::ostream &operator<<(std::ostream &os, const Timer &t){
+
+inline std::ostream &operator<<(std::ostream &os, const Timer &t) {
     return t.printOn(os);
 }
 

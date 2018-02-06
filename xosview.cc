@@ -9,7 +9,6 @@
 #include "meter.h"
 #include "clopt.h"
 #include "MeterMaker.h"
-#include "strutil.h"
 #include "fsutil.h"
 #include "x11font.h"
 #include "xsc.h"
@@ -18,8 +17,6 @@
 #ifdef HAVE_XFT
 #include "xftfont.h"
 #endif
-
-#include <algorithm>
 
 #include <sys/time.h>  //
 #include <sys/types.h> // All three for select()
