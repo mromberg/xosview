@@ -6,6 +6,7 @@
 //
 
 #include "meter.h"
+#include "log.h"
 
 
 

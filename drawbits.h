@@ -2,6 +2,7 @@
 #define drawbits_h
 
 #include "x11graphics.h"
+#include "log.h"
 
 #include <vector>
 #include <map>
