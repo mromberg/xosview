@@ -5,6 +5,7 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "xosview.h"
+#include "Xrm.h"
 #include "meter.h"
 #include "clopt.h"
 #include "MeterMaker.h"
@@ -75,7 +76,7 @@ void XOSView::loop(void) {
     drawv.reserve(_meters.size());
     bool firstPass = true;  // checkevent and draw all meters on first pass.
 
-    while( !done() ){
+    while(!done()) {
         // reset draw related vars.
         drawv.clear();
         _doFullDraw = false;
@@ -93,7 +94,7 @@ void XOSView::loop(void) {
             break; // XEvents or ICE/SM can set this.
         }
 
-        if (_isvisible){
+        if (_isvisible) {
             for (const auto &meter : _meters) {
                 if (meter->requestevent() || firstPass) {
                     meter->checkevent();
@@ -122,7 +123,7 @@ void XOSView::createMeters(void) {
     MeterMaker mm;
     _meters = mm.makeMeters(resdb());
 
-    if (_meters.size() == 0)
+    if (_meters.empty())
         logProblem << "No meters were enabled." << std::endl;
 
     dolegends(); // set global properties based on our resource
@@ -136,36 +137,39 @@ void XOSView::createMeters(void) {
 void XOSView::setEvents(void) {
     XWin::setEvents();
 
-    addEvent( ConfigureNotify, this,
-      (EventCallBack)&XOSView::configureEvent );
-    addEvent( Expose, this, (EventCallBack)&XOSView::exposeEvent );
-    addEvent( KeyPress, this, (EventCallBack)&XOSView::keyPressEvent );
-    addEvent( VisibilityNotify, this,
-      (EventCallBack)&XOSView::visibilityEvent );
-    addEvent( UnmapNotify, this, (EventCallBack)&XOSView::unmapEvent );
+    addEvent(ConfigureNotify, this,
+      static_cast<EventCallBack>(&XOSView::configureEvent));
+    addEvent(Expose, this,
+      reinterpret_cast<EventCallBack>(&XOSView::exposeEvent));
+    addEvent(KeyPress, this,
+      reinterpret_cast<EventCallBack>(&XOSView::keyPressEvent));
+    addEvent(VisibilityNotify, this,
+      reinterpret_cast<EventCallBack>(&XOSView::visibilityEvent));
+    addEvent(UnmapNotify, this,
+      reinterpret_cast<EventCallBack>(&XOSView::unmapEvent));
 }
 
 
-void XOSView::keyPressEvent( XKeyEvent &event ){
+void XOSView::keyPressEvent(XKeyEvent &event) {
     char c = 0;
     KeySym key;
 
     XLookupString(&event, &c, 1, &key, nullptr);
 
-    if ( (c == 'q') || (c == 'Q') )
+    if ((c == 'q') || (c == 'Q'))
         done(true);
 }
 
 
-void XOSView::exposeEvent( XExposeEvent &event ) {
+void XOSView::exposeEvent(XExposeEvent &event) {
     logDebug << "XOSView::exposeEvent(): count=" << event.count << std::endl;
     _isvisible = true;
-    if ( event.count == 0 )
+    if (event.count == 0)
         scheduleDraw(true);
 }
 
 
-void XOSView::configureEvent( XEvent &e ) {
+void XOSView::configureEvent(XEvent &e) {
     unsigned int ew = e.xconfigure.width;
     unsigned int eh = e.xconfigure.height;
     logDebug << "configure event: " << ew << '/' << eh << std::endl;
@@ -173,42 +177,35 @@ void XOSView::configureEvent( XEvent &e ) {
         logDebug << "XOSView::configureEvent(): set sizes..." << std::endl;
         g().resize(ew, eh);
         resize();
-        //draw();
     }
 }
 
 
-void XOSView::visibilityEvent( XVisibilityEvent &event ){
+void XOSView::visibilityEvent(XVisibilityEvent &event) {
     _ispartiallyvisible = false;
-    if (event.state == VisibilityPartiallyObscured){
+    if (event.state == VisibilityPartiallyObscured)
         _ispartiallyvisible = true;
-    }
 
-    if (event.state == VisibilityFullyObscured){
-        _isvisible = false;
-    }
-    else {
-        _isvisible = true;
-    }
+    _isvisible = (event.state == VisibilityFullyObscured) ? false : true;
+
     logDebug << "Got visibility event; " << _ispartiallyvisible
              << " and " << _isvisible << std::endl;
 }
 
 
-void XOSView::unmapEvent( XUnmapEvent & ){
+void XOSView::unmapEvent(XUnmapEvent &) {
     _isvisible = false;
 }
 
 
 void XOSView::drawIfNeeded(std::vector<Meter *> &mtrs) {
-    if (isAtLeastPartiallyVisible()) {
+    if (isAtLeastPartiallyVisible())
         for (auto &mtr : mtrs)
             mtr->drawIfNeeded(g());
-    }
 }
 
 
-void XOSView::draw ( void ) {
+void XOSView::draw(void) {
     if (isAtLeastPartiallyVisible()) {
         logDebug << "Doing full clear/draw." << std::endl;
         g().clear();
@@ -224,26 +221,26 @@ void XOSView::draw ( void ) {
 }
 
 
-void XOSView::usleep_via_select( unsigned long usec ){
+void XOSView::usleep_via_select(unsigned long usec) {
     struct timeval time;
 
-    time.tv_sec = (int)(usec / 1000000);
+    time.tv_sec = static_cast<int>(usec / 1000000);
     time.tv_usec = usec - time.tv_sec * 1000000;
 
-    select( 0, 0, 0, 0, &time );
+    select(0, 0, 0, 0, &time);
 }
 
 
 void XOSView::slumber(void) const {
 #ifdef HAVE_USLEEP
-        /*  First, sleep for the proper integral number of seconds --
-         *  usleep only deals with times less than 1 sec.  */
-        if (_sleeptime)
-            sleep((unsigned int)_sleeptime);
-        if (_usleeptime)
-            usleep( (unsigned int)_usleeptime);
+    //  First, sleep for the proper integral number of seconds --
+    //  usleep only deals with times less than 1 sec.
+    if (_sleeptime)
+        sleep(static_cast<unsigned int>(_sleeptime));
+    if (_usleeptime)
+        usleep(static_cast<unsigned int>(_usleeptime));
 #else
-        usleep_via_select ( usleeptime_ );
+    usleep_via_select(usleeptime_);
 #endif
 }
 
@@ -315,8 +312,7 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
         logDebug << "ADD: " << xrm << std::endl;
     }
     // And then those from -o
-    const std::vector<std::string> &ol = clopts.values("xosvxrm");
-    for (const auto &o : ol) {
+    for (const auto &o : clopts.values("xosvxrm")) {
         std::string res(instanceName() + "*" + o);
         _xrm->putResource(res);
         logDebug << "ADD: " << res << std::endl;
@@ -380,33 +376,33 @@ void XOSView::checkResources(void) {
     _usedlabels = _legend = _caption = false;
 
     // use captions
-    if ( resdb().isResourceTrue("captions") )
+    if (resdb().isResourceTrue("captions"))
         _caption = true;
 
     // use labels
-    if ( resdb().isResourceTrue("labels") )
+    if (resdb().isResourceTrue("labels"))
         _legend = true;
 
     // use "free" labels
-    if ( resdb().isResourceTrue("usedlabels") )
+    if (resdb().isResourceTrue("usedlabels"))
         _usedlabels = true;
 }
 
 
-void XOSView::checkMeterResources( void ){
+void XOSView::checkMeterResources(void) {
     for (auto &meter : _meters)
         meter->checkResources(resdb());
 }
 
 
-int XOSView::newypos( void ){
+int XOSView::newypos(void) {
     return 15 + 25 * _meters.size();
 }
 
 
-int XOSView::findx(XOSVFont &font){
-    if ( _legend ){
-        if ( !_usedlabels )
+int XOSView::findx(XOSVFont &font) {
+    if (_legend) {
+        if (!_usedlabels)
             return font.maxCharWidth() * 24;
         else
             return font.maxCharWidth() * 24
@@ -436,14 +432,14 @@ void XOSView::figureSize(void) {
     if (!font)
         logFatal << "Could not load font: " << fname << std::endl;
 
-    if ( _legend ){
-        if ( !_usedlabels )
+    if (_legend) {
+        if (!_usedlabels)
             _xoff = font.textWidth("INT(9) ");
         else
             _xoff = font.textWidth("SWAP 99%%");
 
         // The +6/+3 accounts for slop in the font drawing/clearing code.
-        _yoff = _caption ? (font.textHeight() + 6): 6;
+        _yoff = _caption ? (font.textHeight() + 6) : 6;
     }
     else
         _yoff = 3;
@@ -473,18 +469,17 @@ void XOSView::setSleepTime(void) {
 
     _usleeptime = (unsigned long) (1000000/_sampleRate);
     if (_usleeptime >= 1000000) {
-        /*  The syscall usleep() only takes times less than 1 sec, so
-         *  split into a sleep time and a usleep time if needed.  */
+        //  The syscall usleep() only takes times less than 1 sec, so
+        //  split into a sleep time and a usleep time if needed.
         _sleeptime = _usleeptime / 1000000;
         _usleeptime = _usleeptime % 1000000;
     }
-    else {
+    else
         _sleeptime = 0;
-    }
 }
 
 
-void XOSView::dolegends( void ){
+void XOSView::dolegends(void) {
     logDebug << "caption, legend, usedlabels: "
              << _caption << "," << _legend << "," << _usedlabels
              << std::endl;
@@ -496,15 +491,15 @@ void XOSView::dolegends( void ){
 }
 
 
-std::string XOSView::winname( void ){
-    char host[100];
+std::string XOSView::winname(void) {
+    std::array<char, 100> host;
     std::string hname("unknown");
-    if (gethostname( host, 99 )) {
+    if (gethostname(host.data(), host.size())) {
         logProblem << "gethostname() failed" << std::endl;
     }
     else {
-        host[99] = '\0';  //POSIX.1-2001 says truncated names not terminated
-        hname = std::string(host);
+        host.back() = '\0';  //POSIX.1-2001 says truncated names not terminated.
+        hname = std::string(host.data());
     }
     std::string name = std::string(NAME) + hname;
     return resdb().getResourceOrUseDefault("title", name);
@@ -544,6 +539,21 @@ void  XOSView::resize(void) {
         const int my = _vmargin + mh * (i + 1) - newheight - 2;
         _meters[i]->resize(_xoff, my, newwidth, newheight);
     }
+}
+
+
+ResDB &XOSView::resdb(void) {
+    return *_xrm;
+}
+
+
+std::string XOSView::className(void) const {
+    return _xrm->className();
+}
+
+
+std::string XOSView::instanceName(void) const {
+    return _xrm->instanceName();
 }
 
 

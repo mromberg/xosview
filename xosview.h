@@ -8,16 +8,16 @@
 #define xosview_h
 
 #include "xwin.h"
-#include "Xrm.h"
 
-#include <string>
 #include <memory>
-
 
 class Meter;
 class XOSVFont;
 class XSessionClient;
+class ResDB;
+class Xrm;
 namespace util { class CLOpts; }
+
 
 
 class XOSView : private XWin {
@@ -28,7 +28,7 @@ public:
     void run(int argc, const char * const *argv);
 
 protected:
-    virtual ResDB &resdb(void) override { return *_xrm; }
+    virtual ResDB &resdb(void) override;
     virtual void setEvents(void) override;
 
 private:
@@ -48,8 +48,9 @@ private:
     std::string winname(void);
     int xoff(void) const { return _xoff; }
     int newypos(void);
-    bool isFullyVisible() const { return _isvisible && !_ispartiallyvisible; }
-    bool isAtLeastPartiallyVisible() const { return _isvisible; }
+    bool isFullyVisible(void) const
+        { return _isvisible && !_ispartiallyvisible; }
+    bool isAtLeastPartiallyVisible(void) const { return _isvisible; }
     std::string versionStr(void) const;
     void loop(void);
     void loadConfiguration(std::vector<std::string> &argv);
@@ -57,8 +58,8 @@ private:
     void setCommandLineArgs(util::CLOpts &o);
     void draw(void);
     void drawIfNeeded(std::vector<Meter *> &mtrs);
-    std::string className(void) { return _xrm->className(); }
-    std::string instanceName(void) { return _xrm->instanceName(); }
+    std::string className(void) const;
+    std::string instanceName(void) const;
     void resize(void);
     void checkMeterResources(void);
     void figureSize(void);
