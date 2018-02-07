@@ -9,8 +9,6 @@
 
 #include "rdb.h"
 
-#include <string>
-#include <utility>
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
@@ -18,6 +16,9 @@ class Xrm : public ResDB {
 public:
     Xrm(const std::string &className, const std::string &instanceName);
     virtual ~Xrm(void);
+
+    Xrm(Xrm &) = delete;
+    Xrm &operator=(const Xrm &) = delete;
 
     virtual std::string className(void) const override
         { return std::string(XrmQuarkToString(_class)); }
@@ -41,21 +42,19 @@ private:
     XrmDatabase _db;
     XrmClass _class, _instance;
 
-    //void getArgs(int argc, char **argv);
+    void initialize(const std::string &className,
+      const std::string &instanceName);
+    void initQuarks(const std::string &className,
+      const std::string &instanceName);
+    void loadFromEnv(const std::string &vname, const std::string &post="");
+
     static Bool enumCB(XrmDatabase *, XrmBindingList bindings,
       XrmQuarkList quarks, XrmRepresentation *type,
       XrmValue *value, XPointer closure);
-    void initQuarks(const std::string &className,
-      const std::string &instanceName);
-    void initialize(void);
     static std::string fixValue(const std::string &val);
-
-    // Not implemented
-    Xrm(Xrm &);
-    Xrm &operator=(const Xrm &);
 };
 
-inline std::ostream &operator<<(std::ostream &os, const Xrm &xrm){
+inline std::ostream &operator<<(std::ostream &os, const Xrm &xrm) {
     return xrm.dump(os);
 }
 
