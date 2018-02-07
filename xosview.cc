@@ -18,6 +18,8 @@
 #include "xftfont.h"
 #endif
 
+#include <array>
+
 #include <sys/time.h>  //
 #include <sys/types.h> // All three for select()
 #include <unistd.h>    //

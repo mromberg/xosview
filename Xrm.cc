@@ -8,6 +8,8 @@
 #include "strutil.h"
 #include "log.h"
 
+#include <array>
+
 #include <unistd.h> // getenv()
 
 extern char *defaultXResourceString;  // from defaultstring.cc
@@ -207,8 +209,8 @@ std::ostream &Xrm::dump(std::ostream &os) const {
     os <<"--- Xrm --- class: " <<XrmQuarkToString(_class)
        <<", instance: " <<XrmQuarkToString(_instance) <<"\n";
 
-    std::array<XrmName, 2> names = { _instance, NULLQUARK };
-    std::array<XrmClass, 2> classes = { _class, NULLQUARK };
+    std::array<XrmName, 2> names = {{ _instance, NULLQUARK }};
+    std::array<XrmClass, 2> classes = {{ _class, NULLQUARK }};
 
     std::vector<std::string> rlist;
     XrmEnumerateDatabase(_db, names.data(), classes.data(), XrmEnumAllLevels,
