@@ -22,6 +22,9 @@ public:
       const std::string &sessionArg="--smid");
     ~XSessionClient(void);
 
+    XSessionClient(const XSessionClient &xsc) = delete;
+    XSessionClient &operator=(const XSessionClient &rhs) = delete;
+
     // returns false if no session manager found.
     bool init(void);
 
@@ -34,10 +37,6 @@ public:
 
 private:
     std::unique_ptr<XSCImp> _imp;
-
-    // Not implemented.
-    XSessionClient(const XSessionClient &xsc);
-    XSessionClient &operator=(const XSessionClient &rhs);
 };
 
 #endif

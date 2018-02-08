@@ -22,14 +22,16 @@ CLOpts::CLOpts(int argc, const char * const *argv)
 
 void CLOpts::add(const std::string &name, const std::string &shortOpt,
   const std::string &longOpt, const std::string &desc) {
-    _opts.push_back(CLOpt(name, shortOpt, longOpt, desc));
+    _opts.emplace_back(name, shortOpt, longOpt, desc);
 }
+
 
 void CLOpts::add(const std::string &name, const std::string &shortOpt,
   const std::string &longOpt, const std::string &value,
   const std::string &desc) {
-    _opts.push_back(CLOpt(name, shortOpt, longOpt, desc, true, value));
+    _opts.emplace_back(name, shortOpt, longOpt, desc, true, value);
 }
+
 
 std::string CLOpts::pname(void) const {
     std::string rval(_argv[0]);
@@ -40,6 +42,7 @@ std::string CLOpts::pname(void) const {
 
     return rval;
 }
+
 
 std::string CLOpts::useage(void) const {
     std::ostringstream os;
@@ -52,6 +55,7 @@ std::string CLOpts::useage(void) const {
 
     return os.str();
 }
+
 
 void CLOpts::parse(void) {
     if (_argv.empty())
@@ -95,6 +99,7 @@ void CLOpts::parse(void) {
     }
 }
 
+
 void CLOpts::fail(const std::string &msg) const {
     std::cerr << "ERROR: " << msg << "\n\n" << useage() << std::endl;
     exit(1);
@@ -107,6 +112,7 @@ CLOpt::CLOpt(const std::string &name, const std::string &shortOpt,
     : _name(name), _shortOpt(shortOpt), _longOpt(longOpt), _desc(desc),
       _isValue(isValue), _valDesc(valDesc) {
 }
+
 
 std::string CLOpt::usage(void) const {
     std::ostringstream os;
@@ -121,6 +127,7 @@ std::string CLOpt::usage(void) const {
 
     return rval + formatedDesc(30);
 }
+
 
 std::string CLOpt::formatedDesc(size_t offset) const {
     // Format the description so that it starts on column offset
@@ -192,6 +199,7 @@ std::ostream &CLOpt::printOn(std::ostream &os) const {
     return os;
 }
 
+
 std::ostream &CLOpts::printOn(std::ostream &os) const {
     os << "opts: [\n";
     for (auto it = _opts.cbegin() ; it != _opts.cend() ; ++it) {
@@ -210,6 +218,7 @@ std::ostream &CLOpts::printOn(std::ostream &os) const {
     return os;
 }
 
+
 const std::vector<std::string> &CLOpts::values(const std::string &name) const {
     static std::vector<std::string> rval;
     for (const auto &opt : _opts)
@@ -219,6 +228,7 @@ const std::vector<std::string> &CLOpts::values(const std::string &name) const {
     return rval;
 }
 
+
 const std::string &CLOpts::value(const std::string &name) const {
     static const std::string rval;
     for (const auto &opt : _opts)
@@ -227,6 +237,7 @@ const std::string &CLOpts::value(const std::string &name) const {
 
     return rval;
 }
+
 
 const std::string &CLOpts::value(const std::string &name,
   const std::string &defaultVal) const {
@@ -240,6 +251,7 @@ const std::string &CLOpts::value(const std::string &name,
     return defaultVal;
 }
 
+
 bool CLOpts::isTrue(const std::string &name) const {
     for (const auto &opt : _opts)
         if (opt.name() == name)
@@ -248,6 +260,7 @@ bool CLOpts::isTrue(const std::string &name) const {
     return false;
 }
 
+
 bool CLOpts::missing(const std::string &name) const {
     for (const auto &opt : _opts)
         if (opt.name() == name)
@@ -255,6 +268,7 @@ bool CLOpts::missing(const std::string &name) const {
 
     return true;
 }
+
 
 const std::string &CLOpt::value(void) const {
     static const std::string rval;
@@ -268,11 +282,13 @@ const std::string &CLOpt::value(void) const {
     return rval;
 }
 
+
 bool CLOpt::isTrue(void) const {
     if (isValue()) // make something up
         return !missing();
 
     return !(value() == "False");
 }
+
 
 } // end namespace util
