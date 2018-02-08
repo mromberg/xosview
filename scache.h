@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2016
+//  Copyright (c) 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -7,7 +7,8 @@
 #ifndef scache_h
 #define scache_h
 
-#include <stdint.h>
+#include <cstdint>
+
 
 
 // "Fancy" wrapper around a global var to invalidate the cached stat data.
@@ -34,9 +35,9 @@ public:
         validate();
     }
 
-    const X &get(void) { return _cache; }
+    const X &get(void) const { return _cache; }
 
-    bool valid(void) { return count() == _validCount; }
+    bool valid(void) const { return count() == _validCount; }
     void validate(void) { _validCount = count(); }
 
 private:

@@ -45,6 +45,7 @@ private:
 };
 
 
+
 class MCLabel : public Label {
 public:
     MCLabel(int x, int y, Anchor anchor=SW);
