@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -18,11 +18,12 @@
 
 
 X11ftFont::X11ftFont(Display *dsp, const std::string &name)
-    : _dsp(dsp), _font(0), _name(name) {
+    : _dsp(dsp), _font(nullptr), _name(name) {
     setFont(name);
 }
 
-X11ftFont::X11ftFont(Display *dsp): _dsp(dsp), _font(0) {
+
+X11ftFont::X11ftFont(Display *dsp): _dsp(dsp), _font(nullptr) {
     // std::string text("Hello World");
     // XGlyphInfo extents;
     // XftTextExtents8(_dsp, font, (XftChar8 *)text.c_str(), text.size(),
@@ -32,6 +33,7 @@ X11ftFont::X11ftFont(Display *dsp): _dsp(dsp), _font(0) {
     // logEvent << "height: " << extents.height << std::endl;
     // logEvent << "width: " << extents.xOff << std::endl;
 }
+
 
 X11ftFont::~X11ftFont(void) {
     // According to the man page:
@@ -47,12 +49,14 @@ X11ftFont::~X11ftFont(void) {
         XftFontClose(_dsp, _font);
 }
 
+
 bool X11ftFont::setFont(const std::string &name) {
     if (_font)
         XftFontClose(_dsp, _font);
     _font = XftFontOpenName(_dsp, DefaultScreen(_dsp), name.c_str());
-    return _font;
+    return good();
 }
+
 
 unsigned int X11ftFont::textWidth(const std::string &str) {
     if (good()) {
@@ -66,6 +70,7 @@ unsigned int X11ftFont::textWidth(const std::string &str) {
     return 0;
 }
 
+
 unsigned int X11ftFont::textHeight(void) const {
     if (good()) {
         XGlyphInfo extents;
@@ -78,19 +83,19 @@ unsigned int X11ftFont::textHeight(void) const {
     return 0;
 }
 
+
 int X11ftFont::textAscent(void) const {
-    if (good()) {
+    if (good())
         return _font->ascent;
-    }
 
     logBug << "textAscent() of bad font: " << name() << std::endl;
     return 0;
 }
 
+
 int X11ftFont::textDescent(void) const {
-    if (good()) {
+    if (good())
         return _font->descent;
-    }
 
     logBug << "textDescent() of bad font: " << name() << std::endl;
     return 0;
