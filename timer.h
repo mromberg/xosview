@@ -10,51 +10,38 @@
 //
 //                 General purpose interval timer class
 //
-//  Implemented using BSD derived function gettimeofday for greater resolution
-//
 //   Author : Mike Romberg
 
-#include <iostream>
+#include <chrono>
+#include <iosfwd>
 
-#include <sys/time.h>
-
-
-inline std::ostream &operator<<(std::ostream &os, const struct timeval &tv) {
-    return os << "(" << tv.tv_sec << ", " << tv.tv_usec << ")";
-}
 
 
 class Timer {
 public:
-    Timer(bool start=false) {
-        // in C++11 you can do _startTime({0, 0}) in the initializer list
-        _startTime.tv_sec = _startTime.tv_usec = 0;
-        _stopTime.tv_sec = _stopTime.tv_usec = 0;
-        if (start)
-            Timer::start();
-    }
+    Timer(bool start=false);
 
-    void start(void) { gettimeofday(&_startTime, nullptr); }
-    void stop(void) { gettimeofday(&_stopTime, nullptr);  }
+    void start(void) { _start = tclock::now(); }
+    void stop(void) { _stop = tclock::now(); }
+
     //  reports time intervall between calls to start and stop in usec
     //  This one uses doubles as the return value, to avoid
     //  overflow/sign problems.
-    double report_usecs(void) const {
-        return (_stopTime.tv_sec - _startTime.tv_sec) * 1000000.0
-            + _stopTime.tv_usec - _startTime.tv_usec;
-    }
+    double report_usecs(void) const;
 
-    double report(void) const { return report_usecs() / 1000000.0; } // sec
+    // in seconds.
+    double report(void) const;
 
-    std::ostream &printOn(std::ostream &os) const {
-        return os << "Timer : ["
-                  << "_startTime = " << _startTime << ", "
-                  << "_stopTime = " << _stopTime << ", "
-                  << "duration = " << report_usecs() <<" usecs]";
-    }
+    std::ostream &printOn(std::ostream &os) const;
 
 private:
-    struct timeval _startTime, _stopTime;
+    // Try and find the most suitable clock.
+    using tclock = std::conditional<
+        std::chrono::high_resolution_clock::is_steady,
+        std::chrono::high_resolution_clock,
+        std::chrono::steady_clock>::type;
+
+    std::chrono::time_point<tclock> _start, _stop;
 };
 
 

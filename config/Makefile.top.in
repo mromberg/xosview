@@ -24,6 +24,7 @@ x11pixmap.o \
 xsc.o \
 Xrm.o \
 rdb.o \
+timer.o \
 defaultstring.o \
 label.o \
 scache.o \
