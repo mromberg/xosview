@@ -9,7 +9,7 @@
 //    by Scott McNab ( jedi@tartarus.uwa.edu.au )
 //
 
-
+//---------------------------------------------------------------------------
 // In order to use the FieldMeterGraph class in place of a FieldMeter class in
 // a meter file (say, cpumeter.cc), make the following changes:
 //   1.  Change cpumeter.h to include fieldmetergraph.h instead of
@@ -21,7 +21,9 @@
 //   4.  Make the meter call FieldMeterGraph::checkResources(),
 //       to pick up graphNumCols resource.
 //   5.  Make the checkResources () function in the meter set the
-//	 _useGraph variable according to the, e.g., xosview*cpuGraph resource.
+//	 _useGraph variable according to the, e.g., xosview*cpuGraph
+//       resource.
+//---------------------------------------------------------------------------
 #include "fieldmetergraph.h"
 #include "x11pixmap.h"
 
@@ -33,17 +35,16 @@ FieldMeterGraph::FieldMeterGraph(size_t numfields, const std::string &title,
   const std::string &legend)
     : FieldMeterDecay (numfields, title, legend),
       _useGraph(false),
-      _graphNumCols(DEF_COLS), _graphPos(DEF_COLS-1),
-      _heightField(0) {
+      _graphNumCols(DEF_COLS), _graphPos(DEF_COLS - 1) {
 }
 
 
-FieldMeterGraph::~FieldMeterGraph(void) {
-}
+FieldMeterGraph::~FieldMeterGraph(void) = default;
 
 
 void FieldMeterGraph::drawfields(X11Graphics &g, bool mandatory) {
-    if( !_useGraph ) {
+
+    if (!_useGraph) {
         // Call FieldMeterDecay code if this meter should not be
         // drawn as a graph
         FieldMeterDecay::drawfields(g, mandatory);
@@ -52,7 +53,7 @@ void FieldMeterGraph::drawfields(X11Graphics &g, bool mandatory) {
 
     checkBackBuffer(g);
     // Repositon x_ and y_ relative to the pixmap
-    int oldx = x(), oldy = y();
+    const int oldx = x(), oldy = y();
     x(0);
     y(0);
 
@@ -70,13 +71,7 @@ void FieldMeterGraph::drawfields(X11Graphics &g, bool mandatory) {
 
 void FieldMeterGraph::checkBackBuffer(X11Graphics &g) {
     // Create a new Pixmap to match our area if needed
-    bool allocNew = false;
-    if (!_pmap
-      || _pmap->width() != width()
-      || _pmap->height() != height())
-        allocNew = true;
-
-    if (allocNew) {
+    if (!_pmap || _pmap->width() != width() || _pmap->height() != height()) {
         // the x_ and x_ if a FieldMeter are relative to
         // the parent window.  The width_ and height_ are for
         // the actual meter graphic display (where x_ and y_ are upper left
@@ -85,68 +80,62 @@ void FieldMeterGraph::checkBackBuffer(X11Graphics &g) {
                  << std::endl;
 
         // Fill is with the last "idle" color
-        _pmap->g().setBG(fieldcolor(numfields()-1));
-        _pmap->g().setFG(fieldcolor(numfields()-1));
+        _pmap->g().setBG(fieldcolor(numfields() - 1));
+        _pmap->g().setFG(fieldcolor(numfields() - 1));
         _pmap->g().drawFilledRectangle(0, 0, _pmap->width(), _pmap->height());
     }
 }
 
 
 void FieldMeterGraph::drawBars(X11Graphics &g) {
-    int i;
 
-    if( _total <= 0.0 )
+    if (_total <= 0.0)
         return;
 
     // allocate memory for height field graph storage
     // note: this is done here as it is not certain that both
     // numfields() and _graphNumCols are defined in the constructor
-    if( _heightField.size() == 0 ) {
-        if( numfields() > 0 && _graphNumCols > 0 ) {
-            _heightField.resize(numfields()*_graphNumCols);
+    if (_heightField.empty()) {
+        _heightField.resize(numfields() * _graphNumCols);
 
-            for( i = 0; i < _graphNumCols; i++ ) {
-                for( unsigned int j = 0; j < numfields(); j++ ) {
-                    if( j < numfields()-1 )
-                        _heightField[i*numfields()+j] = 0.0;
-                    else
-                        _heightField[i*numfields()+j] = 1.0;
-                }
+        for(size_t i = 0 ; i < _graphNumCols ; i++) {
+            for(size_t j = 0 ; j < numfields() ; j++) {
+                if (j + 1 < numfields())
+                    _heightField[i * numfields() + j] = 0.0;
+                else
+                    _heightField[i * numfields() + j] = 1.0;
             }
         }
     }
 
     // check current position here and slide graph if necessary
-    if( _graphPos >= _graphNumCols ) {
-        for( i = 0; i < _graphNumCols-1; i++ ) {
-            for( unsigned int j = 0; j < numfields(); j++ ) {
-                _heightField[i*numfields()+j] =
-                    _heightField[(i+1)*numfields()+j];
+    if (_graphPos >= _graphNumCols) {
+        for(size_t i = 0 ; i + 1 < _graphNumCols ; i++) {
+            for(size_t j = 0 ; j < numfields() ; j++) {
+                _heightField[i * numfields() + j] =
+                    _heightField[(i + 1) * numfields() + j];
             }
         }
         _graphPos = _graphNumCols - 1;
     }
 
     // get current values to be plotted
-    for( unsigned int i = 0; i < numfields(); i++ ) {
+    for(size_t i = 0 ; i < numfields() ; i++) {
         float a = _fields[i] / _total;
-        if( a <= 0.0 )
-            a = 0.0;
-        if( a >= 1.0 )
-            a = 1.0;
-        _heightField[_graphPos*numfields()+i] = a;
+        a = std::max(a, 0.0f);
+        a = std::min(a, 1.0f);
+        _heightField[_graphPos * numfields() + i] = a;
     }
 
-    // scroll area then draw new bar
-    int col_width = width() / _graphNumCols;
-    if( col_width < 1 )
-        col_width = 1;
+    // scroll area then draw new bar.
+    const int col_width = std::max(
+        width() / static_cast<int>(_graphNumCols), 1);
+    const int sx = x() + col_width;
+    const int swidth = width() - col_width;
+    const int sheight = height();
 
-    int sx = x() + col_width;
-    int swidth = width() - col_width;
-    int sheight = height();
-    if( swidth > 0 && sheight > 0 )
-        g.copyArea( sx, y(), swidth, sheight, x(), y() );
+    if (swidth > 0 && sheight > 0)
+        g.copyArea(sx, y(), swidth, sheight, x(), y());
 
     drawBar(g, _graphNumCols - 1);
 
@@ -157,29 +146,28 @@ void FieldMeterGraph::drawBars(X11Graphics &g) {
 
 void FieldMeterGraph::drawBar(X11Graphics &g, int i) const {
     int y = Meter::y() + height();
-    int x = Meter::x() + i * width() / _graphNumCols;
-    int barwidth = (Meter::x() + (i + 1) * width() / _graphNumCols) - x;
+    const int x = Meter::x() + i * width() / _graphNumCols;
+    const int barwidth = (Meter::x() + (i + 1) * width() / _graphNumCols) - x;
 
-    if( barwidth>0 ) {
-        int barheight;
-        for( unsigned int j = 0 ; j < numfields(); j++ ) {
-            /*  Round up, by adding 0.5 before
-             *  converting to an int.  */
-            barheight = (int)((_heightField[i*numfields()+j] * height()) + 0.5);
+    if (barwidth > 0) {
+        for (size_t j = 0 ; j < numfields() ; j++) {
+            //  Round up, by adding 0.5 before converting to an int.
+            int barheight = static_cast<int>((_heightField[i * numfields() + j]
+                * height()) + 0.5);
 
             g.setFG(fieldcolor(j));
             g.setStippleN(j % 4);
 
-            if( barheight > (y - Meter::y()) )
+            if (barheight > (y - Meter::y()))
                 barheight = (y - Meter::y());
 
             // hack to ensure last field always reaches top of graph area
-            if( j == numfields()-1 )
+            if (j + 1 == numfields())
                 barheight = (y - Meter::y());
 
             y -= barheight;
-            if( barheight>0 )
-                g.drawFilledRectangle( x, y, barwidth, barheight );
+            if (barheight > 0)
+                g.drawFilledRectangle(x, y, barwidth, barheight);
         }
     }
 }
@@ -188,23 +176,17 @@ void FieldMeterGraph::drawBar(X11Graphics &g, int i) const {
 void FieldMeterGraph::checkResources(const ResDB &rdb) {
     FieldMeterDecay::checkResources(rdb);
 
-    _useGraph = rdb.isResourceTrue( resName() + "Graph" );
+    _useGraph = rdb.isResourceTrue(resName() + "Graph");
 
     // exit(1) if does not exist
-    std::string ptr = rdb.getResource( "graphNumCols" );
-
-    int i;
-    if (util::fstr(ptr, i)) {
-        if( i>0 ) {
-            setNumCols( i );
-        }
-    }
+    size_t n = std::stoul(rdb.getResource("graphNumCols"));
+    if(n)
+        setNumCols(n);
 }
 
 
-void FieldMeterGraph::setNumCols(int n) {
+void FieldMeterGraph::setNumCols(size_t n) {
     _graphNumCols = n;
     _graphPos = _graphNumCols - 1;
-
     _heightField.resize(0);
 }

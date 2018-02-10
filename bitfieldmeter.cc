@@ -17,21 +17,15 @@ BitFieldMeter::BitFieldMeter(size_t numBits, size_t numfields,
 }
 
 
-BitFieldMeter::~BitFieldMeter( void ){
-}
-
-
-void BitFieldMeter::checkResources(const ResDB &rdb){
+void BitFieldMeter::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
     _dbits.borderColor(fgColor());
 }
 
 
-void BitFieldMeter::setNumBits(size_t n){
+void BitFieldMeter::setNumBits(size_t n) {
     _bits.resize(n);
-
-    for (size_t i = 0 ; i < _bits.size() ; i++)
-        _bits[i] = 0;
+    std::fill(_bits.begin(), _bits.end(), 0);
 }
 
 
@@ -47,9 +41,9 @@ void BitFieldMeter::drawIfNeeded( X11Graphics &g ) {
 }
 
 
-void BitFieldMeter::setBits(size_t startbit, unsigned char values){
+void BitFieldMeter::setBits(size_t startbit, unsigned char values) {
     unsigned char mask = 1;
-    for (size_t i = startbit ; i < startbit + 8 ; i++){
+    for (size_t i = startbit ; i < startbit + 8 ; i++) {
         _bits[i] = values & mask;
         mask = mask << 1;
     }
