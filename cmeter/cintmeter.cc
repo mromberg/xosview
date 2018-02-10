@@ -5,6 +5,7 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "cintmeter.h"
+#include "strutil.h"
 
 
 static const size_t ResIRQ = 15; // reserved irqs (always show 0 - ResIRQ bits)

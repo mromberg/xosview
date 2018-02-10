@@ -10,6 +10,7 @@
 #include "clopt.h"
 #include "MeterMaker.h"
 #include "fsutil.h"
+#include "strutil.h"
 #include "x11font.h"
 #include "xsc.h"
 #include "scache.h"

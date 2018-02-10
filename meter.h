@@ -8,8 +8,7 @@
 #define meter_h
 
 #include "label.h"
-#include "strutil.h"
-#include "rdb.h"
+#include "rdb.h"   // So every meter does not have to include this.
 
 
 
@@ -58,8 +57,7 @@ protected:
 
 private:
     int _x, _y, _width, _height;
-    int _priority;
-    int _counter;
+    size_t _priority, _counter;
     bool _docaptions, _dolegends, _dousedlegends, _metric;
     Label _title;
     MCLabel _legend;

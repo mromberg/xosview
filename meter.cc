@@ -13,34 +13,34 @@
 Meter::Meter(const std::string &title, const std::string &legend)
     : _x(0), _y(0), _width(1), _height(1),
       _priority(1), _counter(0),
-      _docaptions(false),
-      _dolegends(false), _dousedlegends(false), _metric(false),
+      _docaptions(false), _dolegends(false),
+      _dousedlegends(false), _metric(false),
       _title(_x, _y, title, Label::BLSW),
-      _legend(_x, _y, legend, "/"), _fgColor(0), _bgColor(0) {
+      _legend(_x, _y, legend, "/"),
+      _fgColor(0), _bgColor(0) {
 }
 
 
-Meter::~Meter( void ){
-}
+Meter::~Meter(void) = default;
 
 
 void Meter::checkResources(const ResDB &rdb) {
-    _priority = std::stoi(rdb.getResourceOrUseDefault(resName() + "Priority",
+    _priority = std::stoul(rdb.getResourceOrUseDefault(resName() + "Priority",
         "10"));
     _fgColor = rdb.getColor("foreground");
     _bgColor = rdb.getColor("background");
-    unsigned long tcolor = rdb.getColor("meterLabelColor");
+    auto tcolor = rdb.getColor("meterLabelColor");
     _title.color(tcolor);
     _legend.color(tcolor);
 }
 
 
-void Meter::resize( int x, int y, int width, int height ){
+void Meter::resize(int x, int y, int width, int height) {
     _x = x;
     _y = y;
-    _width = (width>=0) ? width : 0;    // fix for cosmetical bug:
-    _height = (height>=0) ? height : 0; // beware of values < 0 !
-    _width &= ~1;                       // only allow even _width values
+    _width = std::max(width, 0);
+    _height = std::max(height, 0);
+    _width &= ~1; // only allow even _width values
     _title.move(0, _y + _height + 2);
     _legend.move(_x, _y - 1);
 }
@@ -67,39 +67,39 @@ void Meter::drawIfNeeded(X11Graphics &g) {
 
 
 double Meter::scaleValue(double value, std::string &scale) const {
-    double scaled = ( value < 0 ? -value : value );
+    double scaled = std::abs(value);
     scale = "";
 
-    if (scaled >= 999.5*1e15){
+    if (scaled >= 999.5 * 1e15) {
         scale = "E";
-        scaled = value / ( metric() ? 1e18 : 1ULL<<60 );
+        scaled = value / (metric() ? 1e18 : 1ULL << 60);
     }
-    else if (scaled >= 999.5*1e12){
+    else if (scaled >= 999.5 * 1e12) {
         scale = "P";
-        scaled = value / ( metric() ? 1e15 : 1ULL<<50 );
+        scaled = value / (metric() ? 1e15 : 1ULL << 50);
     }
-    else if (scaled >= 999.5*1e9){
+    else if (scaled >= 999.5 * 1e9) {
         scale = "T";
-        scaled = value / ( metric() ? 1e12 : 1ULL<<40 );
+        scaled = value / (metric() ? 1e12 : 1ULL << 40);
     }
-    else if (scaled >= 999.5*1e6){
+    else if (scaled >= 999.5 * 1e6) {
         scale = "G";
-        scaled = value / ( metric() ? 1e9 : 1UL<<30 );
+        scaled = value / (metric() ? 1e9 : 1UL << 30);
     }
-    else if (scaled >= 999.5*1e3){
+    else if (scaled >= 999.5 * 1e3) {
         scale = "M";
-        scaled = value / ( metric() ? 1e6 : 1UL<<20 );
+        scaled = value / (metric() ? 1e6 : 1UL << 20);
     }
-    else if (scaled >= 999.5){
-        scale = ( metric() ? "k" : "K" );
-        scaled = value / ( metric() ? 1e3 : 1UL<<10 );
+    else if (scaled >= 999.5) {
+        scale = metric() ? "k" : "K";
+        scaled = value / (metric() ? 1e3 : 1UL << 10);
     }
-    else if (scaled < 0.9995 && metric()){
-        if (scaled >= 0.9995/1e3){
+    else if (scaled < 0.9995 && metric()) {
+        if (scaled >= 0.9995 / 1e3) {
             scale = "m";
             scaled = value * 1e3;
         }
-        else if (scaled >= 0.9995/1e6){
+        else if (scaled >= 0.9995 / 1e6) {
             scale = "\265";
             scaled = value * 1e6;
         }

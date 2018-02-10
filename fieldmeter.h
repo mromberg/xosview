@@ -10,6 +10,7 @@
 #include "meter.h"
 #include "timer.h"
 #include "log.h"
+#include "strutil.h"
 
 #include <string>
 #include <vector>
