@@ -8,6 +8,8 @@
 #include "meter.h"
 #include "log.h"
 
+#include <cmath>
+
 
 
 Meter::Meter(const std::string &title, const std::string &legend)
