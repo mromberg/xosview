@@ -27,12 +27,12 @@ private:
     unsigned long _bdColor;
 
     void resize(size_t n);
-    unsigned long getColor(const X &val);
+    unsigned long getColor(const X &val) const;
 };
 
 
 template <class X>
-unsigned long DrawBits<X>::getColor(const X &val) {
+unsigned long DrawBits<X>::getColor(const X &val) const {
     auto it = _cmap.find(val);
 
     if (it != _cmap.end())
@@ -55,18 +55,18 @@ void DrawBits<X>::draw(const std::vector<X> &bits, X11Graphics &g,
     // Borders.
     if (mandatory) {
         g.setFG(_bdColor);
-        g.drawFilledRectangle( x - 1, y - 1, width + 2, height + 2 );
+        g.drawFilledRectangle(x - 1, y - 1, width + 2, height + 2);
     }
 
     int x1 = x, x2 = 0;
 
-    for ( size_t i = 0 ; i < bits.size() ; i++ ){
-        if ( i + 1 != bits.size() )
+    for ( size_t i = 0 ; i < bits.size() ; i++ ) {
+        if (i + 1 != bits.size())
             x2 = x + ((i + 1) * (width + 1)) / bits.size() - 1;
         else
             x2 = x + (width + 1) - 1;
 
-        if ( (bits[i] != _lastbits[i]) || mandatory ){
+        if ((bits[i] != _lastbits[i]) || mandatory) {
             g.setFG(getColor(bits[i]));
             g.drawFilledRectangle( x1, y, x2 - x1, height);
         }
@@ -81,9 +81,7 @@ void DrawBits<X>::draw(const std::vector<X> &bits, X11Graphics &g,
 template <class X>
 void DrawBits<X>::resize(size_t n) {
     _lastbits.resize(n);
-    for (size_t i = 0 ; i < _lastbits.size() ; i++) {
-        _lastbits[i] = X();
-    }
+    std::fill(_lastbits.begin(), _lastbits.end(), X());
 }
 
 #endif

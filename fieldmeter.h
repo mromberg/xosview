@@ -12,17 +12,13 @@
 #include "log.h"
 #include "strutil.h"
 
-#include <string>
-#include <vector>
+
 
 class FieldMeter : public Meter {
 public:
     FieldMeter(size_t numfields, const std::string &title="",
       const std::string &legend="");
 
-    virtual ~FieldMeter(void);
-
-    // virtual from Meter
     virtual void draw(X11Graphics &g) override;
     virtual void drawIfNeeded(X11Graphics &g) override;
     virtual void checkResources(const ResDB &rdb) override;
@@ -47,15 +43,15 @@ protected:
     //  However, it suffers from wrap/overflow/sign-bit problems, so
     //  instead we use doubles for everything.
     double IntervalTimeInMicrosecs(void) { return _timer.report_usecs(); }
-    double IntervalTimeInSecs(void) { return _timer.report_usecs()/1e6; }
+    double IntervalTimeInSecs(void) { return _timer.report_usecs() / 1e6; }
 
     bool checkX(int x, int width) const;
 
     virtual void drawfields(X11Graphics &g, bool mandatory=false);
 
     // Values used to draw the fields only.
-    virtual int fldx(void) const { return x(); }
-    virtual int fldwidth(void) const { return width(); }
+    int fldx(void) const { return x(); }
+    int fldwidth(void) const { return width(); }
 
 private:
     enum UsedType { INVALID_0, FLOAT, PERCENT, AUTOSCALE, INVALID_TAIL };
@@ -71,8 +67,6 @@ private:
     Label _usedLabel;
 
     void setUsedFormat(const std::string &str);
-    bool decayUsed(void) const { return _decayUsed; }
-    void decayUsed(bool val) { _decayUsed = val; }
     void updateUsed(void);
 };
 
