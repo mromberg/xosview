@@ -106,6 +106,8 @@ public:
     }
 };
 
+
+
 // manipulator/object "thing" to save the state
 // of a stream and restore it.  Inserted
 // as first object into the real stream
@@ -113,7 +115,7 @@ public:
 // kludge would not be necessary.
 class ssave {
 public:
-    ssave(void) : _os(0), _state(0) {}
+    ssave(void) : _os(nullptr), _state(0) {}
     ~ssave(void) { if (_os) _os->copyfmt(_state); }
     void sets(std::ostream &os) const {
         // operator<<(ostream, ssave) explodes if ssave is not const.
@@ -127,10 +129,14 @@ private:
                        // to set the stream to default always
 };
 
-inline std::ostream &operator<<(std::ostream &os, const ssave &fs){
+
+
+inline std::ostream &operator<<(std::ostream &os, const ssave &fs) {
     fs.sets(os);
     return os;
 }
+
+
 
 #ifdef XOSVDEBUG
 class Log {
@@ -192,10 +198,10 @@ private:
 // condition : Expression that if false
 //             sinks message to logFatal
 // ------------------------------------
-#define logAssert(condition)                                \
-    if (XOSVLOGIT && (!(condition)))                        \
-        util::Fatal()<<= std::cerr << "ASSERT ("            \
-                     << #condition << ") false: "           \
-                     << __FILE__ << ":" << __LINE__ << ": "
+#define logAssert(condition)                                 \
+    if (XOSVLOGIT && (!(condition)))                         \
+        util::Fatal() <<= std::cerr << "ASSERT ("            \
+                      << #condition << ") false: "           \
+                      << __FILE__ << ":" << __LINE__ << ": "
 
 #endif
