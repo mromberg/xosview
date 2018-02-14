@@ -12,6 +12,7 @@
 #include <cmath>
 
 
+
 SensorFieldMeter::SensorFieldMeter(const std::string &title,
   const std::string &legend)
     : FieldMeter(3, title, legend),
@@ -21,94 +22,101 @@ SensorFieldMeter::SensorFieldMeter(const std::string &title,
     setMetric(true);
 }
 
-SensorFieldMeter::~SensorFieldMeter( void ){
-}
 
-void SensorFieldMeter::updateLegend( void ){
-    unsigned char lscale = ' ', tscale = ' ';
-    std::ostringstream l;
-    double limit = ( _negative ? _low : _high ), total;
-    total = scaleValue(_total, tscale);
-    if ( (!_negative && _hasHigh) || (_negative && _hasLow) ) {
-        if ( ( 0.1 <= fabs(_total) && fabs(_total) < 9.95 ) ||
-          ( 0.1 <= fabs(limit) && fabs(limit) < 9.95 ) ) {
-            if ( _unit.size() ) {
-                l << std::setprecision(1)
-                  << "ACT(" << _unit << ")/" << limit << "/" << _total;
+void SensorFieldMeter::updateLegend(void) {
+    std::ostringstream os;
+    unsigned char tscale = ' ';
+    const double total = scaleValue(_total, tscale);
+    const double limit = _negative ? _low : _high;
+    const bool hasUnit = !_unit.empty();
+    const double atotal = std::abs(_total);
+    const double alimit = std::abs(limit);
+
+    if ((!_negative && _hasHigh) || (_negative && _hasLow)) {
+        if ((0.1 <= atotal && atotal < 9.95)
+          || (0.1 <= alimit && alimit < 9.95)) {
+            if (hasUnit) {
+                os << std::setprecision(1)
+                   << "ACT(" << _unit << ")/" << limit << "/" << _total;
             }
             else
-                l << std::setprecision(1) << "ACT/" << limit << "/" << _total;
+                os << std::setprecision(1) << "ACT/" << limit << "/" << _total;
         }
-        else if ( ( 9.95 <= fabs(_total) && fabs(_total) < 10000 ) ||
-          ( 9.95 <= fabs(limit) && fabs(limit) < 10000 ) ) {
-            if ( _unit.size() ) {
-                l << std::setprecision(0)
-                  << "ACT(" << _unit << ")/" << limit << "/" << _total;
+        else if ((9.95 <= atotal && atotal < 10000)
+          || (9.95 <= alimit && alimit < 10000)) {
+            if (hasUnit) {
+                os << std::setprecision(0)
+                   << "ACT(" << _unit << ")/" << limit << "/" << _total;
             }
             else
-                l << std::setprecision(0) << "ACT/" << limit << "/" << _total;
+                os << std::setprecision(0) << "ACT/" << limit << "/" << _total;
         }
         else {
-            limit = scaleValue(limit, lscale);
-            if ( _unit.size() ) {
-                l << std::setprecision(0)
-                  << "ACT(" << _unit << ")/" << limit << lscale << "/"
-                  << total << tscale;
+            unsigned char lscale = ' ';
+            const double nlimit = scaleValue(limit, lscale);
+            if (!_unit.empty()) {
+                os << std::setprecision(0)
+                   << "ACT(" << _unit << ")/" << nlimit << lscale << "/"
+                   << total << tscale;
             }
             else {
-                l << std::setprecision(0)
-                  << "ACT/" << limit << lscale << "/" << total << tscale;
+                os << std::setprecision(0)
+                   << "ACT/" << limit << lscale << "/" << total << tscale;
             }
         }
     }
     else {
-        if ( ( 0.1 <= fabs(_total) && fabs(_total) < 9.95 ) ||
-          ( 0.1 <= fabs(limit) && fabs(limit) < 9.95 ) ) {
-            if ( _unit.size() ) {
-                l << std::setprecision(1)
-                  << "ACT(" << _unit << ")/" << ( _negative ? "LOW" : "HIGH" )
-                  << "/" << _total;
+        if ((0.1 <= atotal && atotal < 9.95)
+          || (0.1 <= alimit && alimit < 9.95)) {
+            if (hasUnit) {
+                os << std::setprecision(1)
+                   << "ACT(" << _unit << ")/" << (_negative ? "LOW" : "HIGH")
+                   << "/" << _total;
             }
             else {
-                l << std::setprecision(1)
-                  << "ACT/" << ( _negative ? "LOW" : "HIGH" )
-                  << "/" << _total;
+                os << std::setprecision(1)
+                   << "ACT/" << (_negative ? "LOW" : "HIGH")
+                   << "/" << _total;
             }
         }
-        else if ( ( 9.95 <= fabs(_total) && fabs(_total) < 10000 ) ||
-          ( 9.95 <= fabs(limit) && fabs(limit) < 10000 ) ) {
-            if ( _unit.size() ) {
-                l << std::setprecision(0)
-                  << "ACT(" << _unit << ")/" << ( _negative ? "LOW" : "HIGH" )
-                  << "/" << _total;
+        else if ((9.95 <= atotal && atotal < 10000)
+          || (9.95 <= alimit && alimit < 10000)) {
+            if (hasUnit) {
+                os << std::setprecision(0)
+                   << "ACT(" << _unit << ")/" << (_negative ? "LOW" : "HIGH")
+                   << "/" << _total;
             }
             else {
-                l << std::setprecision(0)
-                  << "ACT/" << ( _negative ? "LOW" : "HIGH" )
-                  << "/" << _total;
+                os << std::setprecision(0)
+                   << "ACT/" << (_negative ? "LOW" : "HIGH")
+                   << "/" << _total;
             }
         }
         else {
-            if ( _unit.size() ) {
-                l << std::setprecision(0)
-                  << "ACT(" << _unit << ")/" << ( _negative ? "LOW" : "HIGH" )
-                  << "/" << _total << tscale;
+            if (hasUnit) {
+                os << std::setprecision(0)
+                   << "ACT(" << _unit << ")/" << (_negative ? "LOW" : "HIGH")
+                   << "/" << _total << tscale;
             }
             else {
-                l << std::setprecision(0)
-                  << "ACT/" << ( _negative ? "LOW" : "HIGH" )
-                  << "/" << total << tscale;
+                os << std::setprecision(0)
+                   << "ACT/" << (_negative ? "LOW" : "HIGH")
+                   << "/" << total << tscale;
             }
         }
     }
 
-    legend(l.str());
+    legend(os.str());
 }
 
-/* Check if meter needs to be flipped, or total/limits changed. */
-/* Check also if alarm limit is reached. */
-/* This is to be called after the values have been read. */
-void SensorFieldMeter::checkFields( double low, double high ){
+
+// ---------------------------------------------------------------
+// Check if meter needs to be flipped, or total/limits changed.
+// Check also if alarm limit is reached.
+// This is to be called after the values have been read.
+// ---------------------------------------------------------------
+void SensorFieldMeter::checkFields(double low, double high) {
+
     // Most sensors stay at either positive or negative values. Consider the
     // actual value and alarm limits when deciding should the meter be showing
     // positive or negative scale.
@@ -117,10 +125,10 @@ void SensorFieldMeter::checkFields( double low, double high ){
     if (_negative) {  // negative at previous run
         if (_fields[0] >= 0 || low > 0) { // flip to positive
             _negative = false;
-            _total = fabs(_total);
-            _high = ( _hasHigh ? high : _total );
-            _low = ( _hasLow ? low : 0 );
-            setfieldcolor( 2, _highColor );
+            _total = std::abs(_total);
+            _high = _hasHigh ? high : _total;
+            _low = _hasLow ? low : 0;
+            setfieldcolor(2, _highColor);
             do_legend = true;
         }
         else {
@@ -132,15 +140,16 @@ void SensorFieldMeter::checkFields( double low, double high ){
                 _high = high;
         }
     }
-    else {  // positive at previous run
+    else {
+        // positive at previous run
         // flip to negative if value and either limit is < 0
-        if ( _fields[0] < 0 &&
-          ( (!_hasLow && !_hasHigh) || low < 0 || high < 0 ) ) {
+        if (_fields[0] < 0
+          && ((!_hasLow && !_hasHigh) || low < 0 || high < 0)) {
             _negative = true;
-            _total = -fabs(_total);
-            _high = ( _hasHigh ? high : 0 );
-            _low = ( _hasLow ? low : _total );
-            setfieldcolor( 2, _lowColor );
+            _total = -std::abs(_total);
+            _high = _hasHigh ? high : 0;
+            _low = _hasLow ? low : _total;
+            setfieldcolor(2, _lowColor);
             do_legend = true;
         }
         else {
@@ -154,17 +163,16 @@ void SensorFieldMeter::checkFields( double low, double high ){
     }
 
     // change total if value or alarms won't fit
-    double highest = fabs(_high);
-    if ( fabs(_fields[0]) > highest )
-        highest = fabs(_fields[0]);
-    if ( fabs(_low) > highest )
-        highest = fabs(_low);
-    if ( highest > fabs(_total) ) {
+    const double highest = std::max({std::abs(_high), std::abs(_low),
+        std::abs(static_cast<double>(_fields[0]))});
+
+    if (highest > std::abs(_total)) {
         do_legend = true;
-        int scale = floor(log10(highest));
-        _total = ceil((highest / pow(10.0, scale)) * 1.25) * pow(10.0, scale);
+        int scale = std::floor(std::log10(highest));
+        _total = std::ceil((highest / std::pow(10.0, scale)) * 1.25)
+            * std::pow(10.0, scale);
         if (_negative) {
-            _total = -fabs(_total);
+            _total = -std::abs(_total);
             if (!_hasLow)
                 _low = _total;
             if (!_hasHigh)
@@ -183,13 +191,13 @@ void SensorFieldMeter::checkFields( double low, double high ){
     // check for alarms
     if (_fields[0] > _high) { // alarm: T > max
         if (fieldcolor(0) != _highColor) {
-            setfieldcolor( 0, _highColor );
+            setfieldcolor(0, _highColor);
             do_legend = true;
         }
     }
     else if (_fields[0] < _low) { // alarm: T < min
         if (fieldcolor(0) != _lowColor) {
-            setfieldcolor( 0, _lowColor );
+            setfieldcolor(0, _lowColor);
             do_legend = true;
         }
     }
@@ -202,11 +210,11 @@ void SensorFieldMeter::checkFields( double low, double high ){
 
     setUsed(_fields[0], _total);
     if (_negative)
-        _fields[1] = ( _fields[0] < _low ? 0 : _low - _fields[0] );
+        _fields[1] = _fields[0] < _low ? 0 : _low - _fields[0];
     else {
         if (_fields[0] < 0)
             _fields[0] = 0;
-        _fields[1] = ( _fields[0] > _high ? 0 : _high - _fields[0] );
+        _fields[1] = _fields[0] > _high ? 0 : _high - _fields[0];
     }
 
     _fields[2] = _total - _fields[1] - _fields[0];
