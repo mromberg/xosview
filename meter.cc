@@ -92,7 +92,7 @@ double Meter::scaleValue(double value, unsigned char &scale) const {
         {
             {'E', 0.9995 * 1e18, 1ULL << 60},
             {'P', 0.9995 * 1e15, 1ULL << 50},
-            {'T', 0.9995 * 1e12, 1UL << 40},
+            {'T', 0.9995 * 1e12, 1ULL << 40},
             {'G', 0.9995 * 1e9, 1ULL << 30},
             {'M', 0.9995 * 1e6, 1ULL << 20},
             {'K', 0.9995 * 1e3, 1ULL << 10},
