@@ -8,9 +8,7 @@
 #include "x11graphics.h"
 
 #include <iomanip>
-#include <array>
-#include <tuple>
-#include <cmath>
+
 
 
 // Size in sample to use for decaying used labels.
@@ -137,48 +135,17 @@ void FieldMeter::updateUsed(void) {
     bufs << std::fixed;
 
     if (_usedFmt == PERCENT) {
-        bufs << static_cast<int>(dispUsed) << "%";
+        bufs << static_cast<int>(dispUsed) << '%';
     }
     else if (_usedFmt == AUTOSCALE) {
-        char scale = ' ';
-        float scaled_used = dispUsed;
-        //  Unfortunately, we have to do our comparisons by 1000s (otherwise
-        //  a value of 1020, which is smaller than 1K, could end up
-        //  being printed as 1020, which is wider than what can fit)  */
-        //  However, we do divide by 1024, so a K really is a K, and not
-        //  1000.
-        //  In addition, we need to compare against 999.5*1000, because
-        //  999.5, if not rounded up to 1.0 K, will be rounded by the
-        //  %.0f to be 1000, which is too wide.  So anything at or above
-        //  999.5 needs to be bumped up.
-        static const std::array<std::tuple<unsigned char, float, float>, 6>
-            scales = {
-            {
-                {'K', std::pow(1000.0, 0), std::pow(1024.0, 0 + 1)},
-                {'M', std::pow(1000.0, 1), std::pow(1024.0, 1 + 1)},
-                {'G', std::pow(1000.0, 2), std::pow(1024.0, 2 + 1)},
-                {'T', std::pow(1000.0, 3), std::pow(1024.0, 3 + 1)},
-                {'P', std::pow(1000.0, 4), std::pow(1024.0, 4 + 1)},
-                {'E', std::pow(1000.0, 5), std::pow(1024.0, 5 + 1)}
-            }};
-
-        for (size_t i = scales.size() ; i-- > 0 ;) {
-            if (dispUsed >= 999.5 * std::get<1>(scales[i])) {
-                scale = std::get<0>(scales[i]);
-                scaled_used = dispUsed / std::get<2>(scales[i]);
-                break;
-            }
-        }
+        unsigned char scale = ' ';
+        double scaled_used = scaleValue(dispUsed, scale);
 
         //  For now, we can only print 3 characters, plus the optional
         //  suffix, without overprinting the legends.  Thus, we can
         //  print 965, or we can print 34, but we can't print 34.7 (the
         //  decimal point takes up one character).  bgrayson
-        //  Also check for negative values, and just print "-" for
-        //  them.
-        if (scaled_used < 0.0)
-            bufs << "-" << scale;
-        else if (scaled_used == 0.0)
+        if (scaled_used == 0.0)
             bufs << "0" << scale;
         else if (scaled_used < 9.95) {
             //  9.95 or above would get

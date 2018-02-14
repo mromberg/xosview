@@ -25,7 +25,7 @@ SensorFieldMeter::~SensorFieldMeter( void ){
 }
 
 void SensorFieldMeter::updateLegend( void ){
-    std::string lscale, tscale;
+    unsigned char lscale = ' ', tscale = ' ';
     std::ostringstream l;
     double limit = ( _negative ? _low : _high ), total;
     total = scaleValue(_total, tscale);

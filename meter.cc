@@ -9,6 +9,9 @@
 #include "log.h"
 
 #include <cmath>
+#include <array>
+#include <tuple>
+#include <algorithm>
 
 
 
@@ -68,51 +71,45 @@ void Meter::drawIfNeeded(X11Graphics &g) {
 }
 
 
-double Meter::scaleValue(double value, std::string &scale) const {
+double Meter::scaleValue(double value, unsigned char &scale) const {
+    // defaults if value is not found in scales table.
+    scale = ' ';
     double scaled = std::abs(value);
-    scale = "";
 
-    if (scaled >= 999.5 * 1e15) {
-        scale = "E";
-        scaled = value / (metric() ? 1e18 : 1ULL << 60);
-    }
-    else if (scaled >= 999.5 * 1e12) {
-        scale = "P";
-        scaled = value / (metric() ? 1e15 : 1ULL << 50);
-    }
-    else if (scaled >= 999.5 * 1e9) {
-        scale = "T";
-        scaled = value / (metric() ? 1e12 : 1ULL << 40);
-    }
-    else if (scaled >= 999.5 * 1e6) {
-        scale = "G";
-        scaled = value / (metric() ? 1e9 : 1UL << 30);
-    }
-    else if (scaled >= 999.5 * 1e3) {
-        scale = "M";
-        scaled = value / (metric() ? 1e6 : 1UL << 20);
-    }
-    else if (scaled >= 999.5) {
-        scale = metric() ? "k" : "K";
-        scaled = value / (metric() ? 1e3 : 1UL << 10);
-    }
-    else if (scaled < 0.9995 && metric()) {
-        if (scaled >= 0.9995 / 1e3) {
-            scale = "m";
-            scaled = value * 1e3;
-        }
-        else if (scaled >= 0.9995 / 1e6) {
-            scale = "\265";
-            scaled = value * 1e6;
-        }
-        else {
-            scale = "n";
-            scaled = value * 1e9;
-        }
-        // add more if needed
-    }
-    else {
-        scaled = value;
+    //  * Unfortunately, we have to do our comparisons by 1000s (otherwise
+    //    a value of 1020, which is smaller than 1K, could end up
+    //    being printed as 1020, which is wider than what can fit)
+    //    However, we do divide by 1024, so a K really is a K, and not
+    //    1000.
+    //  * In addition, we need to compare against 999.5*1000, because
+    //    999.5, if not rounded up to 1.0 K, will be rounded by the
+    //    %.0f to be 1000, which is too wide.  So anything at or above
+    //    999.5 needs to be bumped up.
+
+    //label, SI scale, IEC (1024 = 1k) scale.
+    static const std::array<std::tuple<unsigned char, double, double>, 11>
+        scales = {
+        {
+            {'E', 0.9995 * 1e18, 1ULL << 60},
+            {'P', 0.9995 * 1e15, 1ULL << 50},
+            {'T', 0.9995 * 1e12, 1UL << 40},
+            {'G', 0.9995 * 1e9, 1ULL << 30},
+            {'M', 0.9995 * 1e6, 1ULL << 20},
+            {'K', 0.9995 * 1e3, 1ULL << 10},
+            {' ', 0.9995 * 1.0, 1.0},
+            {'m', 0.9995 * 1e-3, 1e-3},
+            {'u', 0.9995 * 1e-6, 1e-6},
+            {'n', 0.9995 * 1e-9, 1e-9},
+            {'p', 0.9995 * 1e-12, 1e-12}
+            // add more if needed.
+        }};
+
+    // Look for value in the scales table and set the scale.
+    auto sit = std::lower_bound(scales.begin(), scales.end(), value,
+      [](const auto &a, const auto &b) { return b < std::get<1>(a); });
+    if (sit != scales.end()) {
+        scale = std::get<0>(*sit);
+        scaled = value / (metric() ? std::get<1>(*sit) : std::get<2>(*sit));
     }
 
     return scaled;
