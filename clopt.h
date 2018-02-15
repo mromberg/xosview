@@ -88,6 +88,8 @@ private:
     std::string pname(void) const;
 };
 
+
+
 inline std::ostream &operator<<(std::ostream &os, const CLOpt &c) {
     return c.printOn(os);
 }

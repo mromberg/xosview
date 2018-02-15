@@ -56,8 +56,14 @@ private:
     std::unique_ptr<XftImp> _imp;
 };
 
-// color printing operators.
-std::ostream &operator<<(std::ostream &os, const XColor &c);
 
+inline void XftGraphics::setFG(const std::string &color, unsigned short alpha) {
+    setFG(allocColor(color), alpha);
+}
+
+
+inline void XftGraphics::setBG(const std::string &color, unsigned short alpha) {
+    setBG(allocColor(color), alpha);
+}
 
 #endif

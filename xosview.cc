@@ -15,6 +15,7 @@
 #include "xsc.h"
 #include "scache.h"
 #include "x11graphics.h"
+#include "log.h"
 #ifdef HAVE_XFT
 #include "xftfont.h"
 #endif

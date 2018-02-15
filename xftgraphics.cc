@@ -11,8 +11,11 @@
 
 #include <X11/Xft/Xft.h>
 
+// color printing operators.
+static std::ostream &operator<<(std::ostream &os, const XColor &c);
 static std::ostream &operator<<(std::ostream &os, const XRenderColor &c);
 static std::ostream &operator<<(std::ostream &os, const XftColor &c);
+
 
 
 class XftImp {
@@ -38,6 +41,7 @@ public:
     bool _bgAlloced = false;
     XftColor _bgxftc = {};
 };
+
 
 
 XftGraphics::XftGraphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
@@ -70,6 +74,7 @@ XftGraphics::XftGraphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
     }
 }
 
+
 XftGraphics::~XftGraphics(void) {
     if (_imp->_draw)
         XftDrawDestroy(_imp->_draw);
@@ -81,9 +86,11 @@ XftGraphics::~XftGraphics(void) {
         XftColorFree(_dsp, _vis, _cmap, _imp->bg());
 }
 
+
 void XftGraphics::setFont(const std::string &name) {
     _font.setFont(name);
 }
+
 
 unsigned int XftGraphics::depth(void) {
     Window root;
@@ -96,6 +103,7 @@ unsigned int XftGraphics::depth(void) {
     return depth;
 }
 
+
 unsigned long XftGraphics::allocColor(const std::string &name) {
     XColor exact, closest;
 
@@ -105,18 +113,17 @@ unsigned long XftGraphics::allocColor(const std::string &name) {
         return WhitePixel(_dsp, DefaultScreen(_dsp));
     }
 
+    logDebug << "allocColor(" << name << "): " << exact << std::endl;
     return exact.pixel;
 }
 
-void XftGraphics::setFG(const std::string &color, unsigned short alpha) {
-    setFG(allocColor(color), alpha);
-}
 
 inline static unsigned short premul(unsigned short c, unsigned short alpha) {
     unsigned int ic = c;
     ic = (ic * alpha) / 0xffff;
     return ic;
 }
+
 
 void XftGraphics::setFG(unsigned long pixVal, unsigned short alpha) {
     //
@@ -142,9 +149,6 @@ void XftGraphics::setFG(unsigned long pixVal, unsigned short alpha) {
     XftColorAllocValue(_dsp, _vis, _cmap, &xrc, _imp->fg(true));
 }
 
-void XftGraphics::setBG(const std::string &color, unsigned short alpha) {
-    setBG(allocColor(color), alpha);
-}
 
 void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
     _bgPixVal = pixVal;
@@ -164,6 +168,7 @@ void XftGraphics::setBG(unsigned long pixVal, unsigned short alpha) {
 
     XftColorAllocValue(_dsp, _vis, _cmap, &xrc, _imp->bg(true));
 }
+
 
 void XftGraphics::drawString(int x, int y, const std::string &str) {
     XftDrawString8(_imp->_draw, &_imp->_fgxftc, _font.font(), x, y,
@@ -196,6 +201,7 @@ std::ostream &operator<<(std::ostream &os, const XColor &c) {
     return os;
 }
 
+
 std::ostream &operator<<(std::ostream &os, const XRenderColor &c) {
     os << std::hex << std::showbase
        << "( " << std::setw(6) << c.red
@@ -206,6 +212,7 @@ std::ostream &operator<<(std::ostream &os, const XRenderColor &c) {
     os << std::dec << std::noshowbase;
     return os;
 }
+
 
 std::ostream &operator<<(std::ostream &os, const XftColor &c) {
     os << std::hex << std::showbase

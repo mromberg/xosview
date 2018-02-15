@@ -73,10 +73,12 @@ inline ExampleMeter::ExampleMeter(void)
     readWarpCoreTemp();
 }
 
+
 // Usual dtor stuff.  If you dynamically allocated
 // things destroy them here.  Etc...
 inline ExampleMeter::~ExampleMeter(void) {
 }
+
 
 // Called when the rest of the system is ready
 // for you to check any resources.  It is now
@@ -121,6 +123,7 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
     setfieldcolor(0, _normColor);
 }
 
+
 // Called when we have scheduled our data collection
 // time.  The xosview clock ticks 10 times /sec and
 // our priority is 10.  So, we should be called around
@@ -161,11 +164,13 @@ inline void ExampleMeter::checkevent( void ) {
     setUsed(percentVal, _total);
 }
 
+
 // What is your name?  This is the prefix for resource names
 // that will be used by the parent classes.  For example "wcorePriority"
 inline std::string ExampleMeter::resName( void ) const {
     return "wcore";
 }
+
 
 inline void ExampleMeter::readWarpCoreTemp(void) {
     // Here is where you would collect real data

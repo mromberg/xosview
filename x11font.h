@@ -8,7 +8,6 @@
 #define x11font_h
 
 #include "font.h"
-#include "log.h"
 
 #include <X11/Xlib.h>
 
@@ -37,28 +36,9 @@ private:
     XFontStruct *_font;
 };
 
-inline Font X11Font::id(void) const {
-    logAssert(good()) << "can't use an uninitialized font." << std::endl;
-    return _font->fid;
-}
 
-inline unsigned int X11Font::textWidth(const std::string &str) {
-    logAssert(good()) << "can't use an uninitialized font." << std::endl;
-    return XTextWidth(_font, str.c_str(), str.size());
-}
-
-inline int X11Font::textAscent(void) const {
-    logAssert(good()) << "can't use an uninitialized font." << std::endl;
-    return _font->ascent;
-}
-
-inline int X11Font::textDescent(void) const {
-    logAssert(good()) << "can't use an uninitialized font." << std::endl;
-    return _font->descent;
-}
 
 inline unsigned int X11Font::textHeight(void) const {
-    logAssert(good()) << "can't use an uninitialized font." << std::endl;
     return textAscent() + textDescent();
 }
 
