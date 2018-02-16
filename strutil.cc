@@ -1,47 +1,45 @@
 #include "strutil.h"
 #include "log.h"
 
-#include <algorithm>
-#include <iostream>
 #include <cerrno>
 #include <cstring>
-#include <cassert>
-#include <stdexcept>
 #include <set>
-#include <cctype>
-
-#include <locale.h>
+#include <locale>
 
 
 namespace util {
 
+
 const char *WHITE_SPACE = " \f\n\r\t\v";
+
+
 
 std::string join(const std::vector<std::string> &v,
   const std::string &sep) {
     std::string rval;
-    for (size_t i = 0 ; i < v.size() ; i ++) {
-        rval += v[i];
-        if (i + 1 < v.size())
+    for (auto it = v.cbegin() ; it != v.cend() ; ++it) {
+        if (it != v.cbegin())
             rval += sep;
+        rval += *it;
     }
 
     return rval;
 }
 
+
 std::vector<std::string> split(const std::string& s,
   const std::string& delim, size_t maxsplit) {
+
     std::vector<std::string> result;
     if (delim.empty()) {
-        std::string wsdelim(WHITE_SPACE);
+        const std::string wsdelim(WHITE_SPACE);
         size_t pos = 0;
         while (pos < s.size() && result.size() < maxsplit) {
             if (wsdelim.find(s[pos]) != std::string::npos) {
-                size_t epos = s.find_first_not_of(wsdelim, pos);
-                pos = epos;
+                pos = s.find_first_not_of(wsdelim, pos);
             }
             else {
-                size_t epos = s.find_first_of(wsdelim, pos);
+                const size_t epos = s.find_first_of(wsdelim, pos);
                 if (epos == std::string::npos)
                     result.push_back(s.substr(pos));
                 else
@@ -55,7 +53,7 @@ std::vector<std::string> split(const std::string& s,
     else {
         size_t pos = 0;
         while (pos < s.size() && result.size() < maxsplit) {
-            size_t epos = s.find(delim, pos);
+            const size_t epos = s.find(delim, pos);
             if (epos != std::string::npos) {
                 result.push_back(s.substr(pos, epos - pos));
                 pos = epos + delim.size();
@@ -75,7 +73,7 @@ std::vector<std::string> split(const std::string& s,
 static void setLocale(void) {
     static bool first = true;
     if (first) {
-        setlocale(LC_CTYPE, "");  // for s2ws() and ws2s()
+        std::setlocale(LC_CTYPE, "");  // for s2ws() and ws2s()
         first = false;
     }
 }
@@ -101,7 +99,7 @@ std::wstring s2ws(const std::string& s) {
         return L"";
     }
 
-    assert(cs == nullptr); // successful conversion
+    logAssert(cs == nullptr) << "unsuccessful conversion." << std::endl;
 
     return std::wstring(buf.data(), wn);
 }
@@ -125,7 +123,7 @@ std::string ws2s(const std::wstring &s) {
         return "";
     }
 
-    assert(cs == nullptr); // successful conversion
+    logAssert(cs == nullptr) << "unsuccessful conversion." << std::endl;
 
     return std::string(buf.data(), wn);
 }
@@ -142,7 +140,7 @@ std::string strerror(void) {
 
 
 template <class X>
-inline std::ostream &operator<<(std::ostream &os, const std::set<X> &s) {
+std::ostream &operator<<(std::ostream &os, const std::set<X> &s) {
     os << "(";
     for (auto it = s.cbegin() ; it != s.cend() ; ++it) {
         if (it != s.begin())
@@ -154,55 +152,20 @@ inline std::ostream &operator<<(std::ostream &os, const std::set<X> &s) {
 }
 
 
+
 class GlobRange {
 public:
-    GlobRange(const std::string &str) : _inverse(false), _good(false) {
-        if (str.size() >= 3 && str[0] == '[') {
-            size_t findEnd = 2;  // look for ']' starting at 2 (empty not valid)
-            for (size_t i = 0 ; i < str.size() ; i++) {
-                _pattern += str[i];
-                if (i == 1 && str[i] == '!') {
-                    _inverse = true;
-                    findEnd = 3;  // '!' does not count as first char
-                    continue;
-                }
-                if (i > 1 && i < str.size() - 2 && str[i] == '-') {
-                    unsigned char from = std::min((unsigned char)str[i-1],
-                      (unsigned char)str[i+1]);
-                    unsigned char to = std::max((unsigned char)str[i-1],
-                      (unsigned char)str[i+1]);
-                    for (unsigned char c = from ; c <= to ; c++)
-                        _classtbl.insert(c);
-                    i++;
-                    _pattern += str[i];
-                    continue;
-                }
-                if (i >= findEnd && str[i] == ']') {
-                    _good = true;
-                    break;
-                }
-                if (i >= 1)
-                    _classtbl.insert(str[i]);
-            }
-        }
-    }
+    GlobRange(const std::string &str);
 
     bool match(char c) const {
         bool rval = _classtbl.count(c);
-        if (_inverse)
-            return !rval;
-        return rval;
+        return _inverse ? !rval : rval;
     }
 
     bool good(void) const { return _good; }
     const std::string &pattern(void) const { return _pattern; }
 
-    std::ostream &printOn(std::ostream &os) const {
-        os << "GlobRange(" << pattern() << "): "
-           << "inv=" << _inverse << ", "
-           << "tbl=" << _classtbl;
-        return os;
-    }
+    std::ostream &printOn(std::ostream &os) const;
 
 private:
     std::string _pattern;
@@ -210,6 +173,49 @@ private:
     bool _inverse;
     bool _good;
 };
+
+
+
+GlobRange::GlobRange(const std::string &str)
+    : _inverse(false), _good(false) {
+
+    if (str.size() >= 3 && str[0] == '[') {
+        size_t findEnd = 2;  // look for ']' starting at 2 (empty not valid)
+        for (size_t i = 0 ; i < str.size() ; i++) {
+            _pattern += str[i];
+            if (i == 1 && str[i] == '!') {
+                _inverse = true;
+                findEnd = 3;  // '!' does not count as first char
+                continue;
+            }
+            if (i > 1 && i < str.size() - 2 && str[i] == '-') {
+                const unsigned char from = std::min((unsigned char)str[i-1],
+                  (unsigned char)str[i+1]);
+                const unsigned char to = std::max((unsigned char)str[i-1],
+                  (unsigned char)str[i+1]);
+                for (unsigned char c = from ; c <= to ; c++)
+                    _classtbl.insert(c);
+                i++;
+                _pattern += str[i];
+                continue;
+            }
+            if (i >= findEnd && str[i] == ']') {
+                _good = true;
+                break;
+            }
+            if (i >= 1)
+                _classtbl.insert(str[i]);
+        }
+    }
+}
+
+
+std::ostream &GlobRange::printOn(std::ostream &os) const {
+    os << "GlobRange(" << pattern() << "): "
+       << "inv=" << _inverse << ", "
+       << "tbl=" << _classtbl;
+    return os;
+}
 
 
 inline std::ostream &operator<<(std::ostream &os, const GlobRange &gr) {
@@ -277,8 +283,7 @@ util::sink::sink(const std::string &pattern, bool greedy)
 
 
 std::istream &util::sink::consume(std::istream &is) const {
-
-    if (!_pattern.size())
+    if (_pattern.empty())
         return is;
 
     std::string buf;
@@ -316,6 +321,15 @@ std::istream &util::sink::consume(std::istream &is) const {
     }
 
     return is;
+}
+
+
+std::vector<std::string> vargv(int argc, const char * const *argv) {
+    std::vector<std::string> rval;
+    rval.reserve(argc);
+    for (int i = 0 ; i < argc ; i++)
+        rval.push_back(argv[i]);
+    return rval;
 }
 
 

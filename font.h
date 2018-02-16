@@ -34,7 +34,7 @@ inline unsigned int XOSVFont::maxCharWidth(void) {
     // expensive!  Loops through all printable ASCII characters
     // and returns the widest width.
     for (char c = 32 ; c < 127 ; c++)
-        rval = std::max(rval, textWidth(std::string() + c));
+        rval = std::max(rval, textWidth(std::string(&c, 1)));
 
     return rval;
 }
