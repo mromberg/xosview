@@ -25,8 +25,6 @@ public:
     FieldMeterDecay(size_t numfields, const std::string &title="",
       const std::string &legend="");
 
-    virtual ~FieldMeterDecay(void);
-
     virtual void checkResources(const ResDB &rdb) override;
 
 protected:
@@ -37,6 +35,8 @@ private:
     bool _firsttime;  //Used to set up decaying fields right the first time.
     std::vector<float> _decay;
     std::vector<float> _lastDecayVal;
+
+    void firstTimeInit(void);
 };
 
 
