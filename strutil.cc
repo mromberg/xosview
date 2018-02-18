@@ -5,6 +5,7 @@
 #include <cerrno>
 #include <cstring>
 #include <locale>
+#include <clocale>
 
 
 namespace util {
