@@ -90,17 +90,17 @@ double Meter::scaleValue(double value, unsigned char &scale) const {
     static const std::array<std::tuple<unsigned char, double, double>, 11>
         scales = {
         {
-            {'E', 0.9995 * 1e18, 1ULL << 60},
-            {'P', 0.9995 * 1e15, 1ULL << 50},
-            {'T', 0.9995 * 1e12, 1ULL << 40},
-            {'G', 0.9995 * 1e9, 1ULL << 30},
-            {'M', 0.9995 * 1e6, 1ULL << 20},
-            {'K', 0.9995 * 1e3, 1ULL << 10},
-            {' ', 0.9995 * 1.0, 1.0},
-            {'m', 0.9995 * 1e-3, 1e-3},
-            {'u', 0.9995 * 1e-6, 1e-6},
-            {'n', 0.9995 * 1e-9, 1e-9},
-            {'p', 0.9995 * 1e-12, 1e-12}
+            std::make_tuple('E', 0.9995 * 1e18, 1ULL << 60),
+            std::make_tuple('P', 0.9995 * 1e15, 1ULL << 50),
+            std::make_tuple('T', 0.9995 * 1e12, 1ULL << 40),
+            std::make_tuple('G', 0.9995 * 1e9, 1ULL << 30),
+            std::make_tuple('M', 0.9995 * 1e6, 1ULL << 20),
+            std::make_tuple('K', 0.9995 * 1e3, 1ULL << 10),
+            std::make_tuple(' ', 0.9995 * 1.0, 1.0),
+            std::make_tuple('m', 0.9995 * 1e-3, 1e-3),
+            std::make_tuple('u', 0.9995 * 1e-6, 1e-6),
+            std::make_tuple('n', 0.9995 * 1e-9, 1e-9),
+            std::make_tuple('p', 0.9995 * 1e-12, 1e-12)
             // add more if needed.
         }};
 
