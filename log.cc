@@ -5,6 +5,7 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "log.h"
+#include "glob.h"
 
 #ifdef XOSVDEBUG
 #include "strutil.h"

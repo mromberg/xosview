@@ -39,6 +39,7 @@ clopt.o \
 xosview.o \
 strutil.o \
 fsutil.o \
+glob.o \
 log.o \
 @XFT_OBJS@ \
 main.o
