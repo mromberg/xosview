@@ -14,15 +14,12 @@ PrcDiskMeter::PrcDiskMeter(void)
     : ComDiskMeter(), _last(getTotals()) {
 }
 
-PrcDiskMeter::~PrcDiskMeter(void) {
-}
-
 
 std::pair<double, double> PrcDiskMeter::getRate(void) {
-    _timer.stop();
-    double etime = _timer.report_usecs() / 1000000.0;
+    IntervalTimerStop();
+    const double etime = IntervalTimeInSecs();
 
-    std::pair<uint64_t, uint64_t> totals(getTotals());
+    const auto totals = getTotals();
 
     std::pair<double, double> rval((totals.first - _last.first) / etime,
       (totals.second - _last.second) / etime);
@@ -44,10 +41,9 @@ std::pair<uint64_t, uint64_t> PrcDiskMeter::getTotals(void) {
             logFatal << "failed to find /sys/block or /proc/diskstats.\n";
     }
 
-    std::pair<uint64_t, uint64_t> totals = useSys ? getSysTotals()
-        : getPrcTotals();
+    const auto totals = useSys ? getSysTotals() : getPrcTotals();
 
-    _timer.start();
+    IntervalTimerStart();
 
     return totals;
 }
@@ -67,13 +63,14 @@ inline static void skip(std::ifstream &ifs, size_t count) {
     }
 }
 
+
 std::pair<uint64_t, uint64_t> PrcDiskMeter::getSysTotals(void) const {
     // just sum up everything in /sys/block/*/stat
     std::pair<uint64_t, uint64_t> rval(0, 0);
     const std::string dname("/sys/block/");
 
     for (const auto &dev : util::fs::listdir(dname)) {
-        std::string statFile(dname + dev + "/stat");
+        const std::string statFile(dname + dev + "/stat");
         std::ifstream ifs(statFile.c_str());
         if (ifs) {
             // 3rd field is read sectors and 7th is write
@@ -98,15 +95,15 @@ std::pair<uint64_t, uint64_t> PrcDiskMeter::getPrcTotals(void) const {
     std::pair<uint64_t, uint64_t> rval(0, 0);
 
     std::ifstream ifs("/proc/diskstats");
-
-    int major, minor;
-    uint64_t read, write;
     while (ifs) {
+        int major, minor;
         ifs >> major >> minor;
         if (ifs && minor == 0) {
             skip(ifs, 3);
+            uint64_t read;
             ifs >> read;
             skip(ifs, 3);
+            uint64_t write;
             ifs >> write;
             ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             if (ifs) {

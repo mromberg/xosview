@@ -1,12 +1,12 @@
 //
-//  Copyright (c) 1999, 2006, 2015
+//  Copyright (c) 1999, 2006, 2015, 2018
 //  by Mike Romberg (mike-romberg@comcast.net)
 //
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef CDISKMETER_H
-#define CDISKMETER_H
+#ifndef cdiskmeter_h
+#define cdiskmeter_h
 
 #include "fieldmetergraph.h"
 
@@ -14,20 +14,18 @@
 
 class ComDiskMeter : public FieldMeterGraph {
 public:
-    ComDiskMeter( void );
-    ~ComDiskMeter( void );
+    ComDiskMeter(void);
 
-    std::string resName( void ) const { return "disk"; }
-    void checkevent( void );
-
-    void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override { return "disk"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
     // bytes/sec (read, write)
     virtual std::pair<double, double> getRate(void) = 0;
 
 private:
-    float maxspeed_;
+    float _maxspeed;
 };
 
 
