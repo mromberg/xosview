@@ -38,9 +38,11 @@ std::vector<std::string> fs::listdir(const std::string &path) {
         }
         if (errno != 0) {
             logBug << "readdir(" << path << ") failed: "
-                   << util::strerror(errno) << std::endl;
+                   << util::strerror() << std::endl;
         }
-        closedir(d);
+        if (closedir(d) != 0)
+            logBug << "closedir(" << path << ") failed: "
+                   << util::strerror() << std::endl;
     }
 
     return rval;
