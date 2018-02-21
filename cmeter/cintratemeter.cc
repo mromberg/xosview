@@ -8,13 +8,9 @@
 
 
 
-ComIrqRateMeter::ComIrqRateMeter( void )
-    : FieldMeterGraph( 2, "IRQR", "IRQs per sec/IDLE" ),
+ComIrqRateMeter::ComIrqRateMeter(void)
+    : FieldMeterGraph(2, "IRQR", "IRQs per sec/IDLE"),
       _peak(1000) {
-}
-
-
-ComIrqRateMeter::~ComIrqRateMeter( void ) {
 }
 
 
@@ -28,7 +24,7 @@ void ComIrqRateMeter::checkResources(const ResDB &rdb) {
 }
 
 
-void ComIrqRateMeter::checkevent( void ){
+void ComIrqRateMeter::checkevent(void) {
 
     float rate = getIrqRate();
 

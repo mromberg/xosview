@@ -1,21 +1,22 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 
-#ifndef CTZONEMETER_H
-#define CTZONEMETER_H
+#ifndef ctzonemeter_h
+#define ctzonemeter_h
 
 #include "fieldmetergraph.h"
+
+
 
 class ComTZoneMeter : public FieldMeterGraph {
 public:
     ComTZoneMeter(size_t zoneNum);
-    virtual ~ComTZoneMeter(void);
 
-    virtual std::string resName( void ) const { return "tzone"; }
-    virtual void checkevent( void );
-    virtual void checkResources(const ResDB &rdb);
+    virtual std::string resName( void ) const override { return "tzone"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
     virtual float getTemp(void) = 0;  // degrees Celsius

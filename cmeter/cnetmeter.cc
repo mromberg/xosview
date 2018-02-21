@@ -8,28 +8,24 @@
 
 
 
-ComNetMeter::ComNetMeter( void )
+ComNetMeter::ComNetMeter(void)
     : FieldMeterGraph( 3, "NET", "IN/OUT/IDLE" ), _maxBandwidth(0) {
 }
 
 
-ComNetMeter::~ComNetMeter( void ){
-}
-
-
-void ComNetMeter::checkResources(const ResDB &rdb){
+void ComNetMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
-    _maxBandwidth = std::stof(rdb.getResource( "netBandwidth" ));
-    setfieldcolor( 0, rdb.getColor( "netInColor" ) );
-    setfieldcolor( 1, rdb.getColor( "netOutColor" ) );
-    setfieldcolor( 2, rdb.getColor( "netBackground" ) );
+    _maxBandwidth = std::stof(rdb.getResource("netBandwidth"));
+    setfieldcolor(0, rdb.getColor( "netInColor"));
+    setfieldcolor(1, rdb.getColor( "netOutColor"));
+    setfieldcolor(2, rdb.getColor( "netBackground"));
 }
 
 
 void ComNetMeter::checkevent(void) {
 
-    std::pair<float, float> rates(getRates());
+    const auto rates = getRates();
 
     if ((rates.first + rates.second) > _maxBandwidth) { // display percentages
         _total = rates.first + rates.second;

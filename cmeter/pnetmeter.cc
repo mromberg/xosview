@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -20,9 +20,9 @@ PrcNetMeter::PrcNetMeter(void)
 
 
 std::pair<float, float> PrcNetMeter::getRates(void) {
-    _timer.stop();
-    double etime = _timer.report();
-    std::pair<uint64_t, uint64_t> counts(getStats());
+    IntervalTimerStop();
+    const double etime = IntervalTimeInSecs();
+    const auto counts = getStats();
 
     std::pair<float, float> rval((counts.first - _last.first) / etime,
       (counts.second - _last.second) / etime);
@@ -73,6 +73,6 @@ std::pair<uint64_t, uint64_t> PrcNetMeter::getStats(void) {
         write += trans;
     }
 
-    _timer.start();
+    IntervalTimerStart();
     return std::make_pair(read, write);
 }

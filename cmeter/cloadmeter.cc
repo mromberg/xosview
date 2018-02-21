@@ -16,76 +16,72 @@
 
 
 
-ComLoadMeter::ComLoadMeter( void )
-    : FieldMeterGraph( 2, "LOAD", "PROCS/MIN" ),
-      _alarmstate(NORM), _lastalarmstate(NORM), _do_cpu_speed(false) {
+ComLoadMeter::ComLoadMeter(void)
+    : FieldMeterGraph(2, "LOAD", "PROCS/MIN"),
+      _alarmstate(NORM), _lastalarmstate(NORM), _doCPUSpeed(false) {
 }
 
 
-ComLoadMeter::~ComLoadMeter( void ){
-}
-
-
-void ComLoadMeter::checkResources(const ResDB &rdb){
+void ComLoadMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
-    _procloadcol = rdb.getColor("loadProcColor" );
-    _warnloadcol = rdb.getColor("loadWarnColor" );
-    _critloadcol = rdb.getColor("loadCritColor" );
+    _procloadcol = rdb.getColor("loadProcColor");
+    _warnloadcol = rdb.getColor("loadWarnColor");
+    _critloadcol = rdb.getColor("loadCritColor");
 
-    setfieldcolor( 0, _procloadcol );
-    setfieldcolor( 1, rdb.getColor( "loadIdleColor" ) );
-    setLegendColor( 1, _procloadcol ); // so cpu speed uses same color.
+    setfieldcolor(0, _procloadcol);
+    setfieldcolor(1, rdb.getColor("loadIdleColor"));
+    setLegendColor(1, _procloadcol); // so cpu speed uses same color.
 
-    _warnThreshold = std::stoi (rdb.getResource("loadWarnThreshold"));
-    _critThreshold = std::stoi (rdb.getResource("loadCritThreshold"));
+    _warnThreshold = std::stoi(rdb.getResource("loadWarnThreshold"));
+    _critThreshold = std::stoi(rdb.getResource("loadCritThreshold"));
 
     // The max displayed on the bar will be the crit
     // legend still displays total load.
     _total = _critThreshold;
 
-    _do_cpu_speed  = rdb.isResourceTrue( "loadCpuSpeed" );
+    _doCPUSpeed = rdb.isResourceTrue("loadCpuSpeed");
 }
 
 
-void ComLoadMeter::checkevent( void ){
+void ComLoadMeter::checkevent(void) {
     setLoadInfo(getLoad());
 
-    if ( _do_cpu_speed ) {
-        uint64_t speed = getCPUSpeed();
+    if (_doCPUSpeed) {
+        const uint64_t speed = getCPUSpeed();
+        logDebug << "SPEED: " << speed << std::endl;
         if (speed) {
             // update the legend:
             std::ostringstream legnd;
-            logDebug << "SPEED: " << speed << std::endl;
             legnd << "PROCS/MIN" << " "
                   << std::setfill(' ') << std::setw(5) << speed / 1000000
                   << " MHz";
-            legend( legnd.str() );
+            legend(legnd.str());
         }
     }
 }
 
 
-void ComLoadMeter::setLoadInfo(float load){
+void ComLoadMeter::setLoadInfo(float load) {
 
-    if ( load <  _warnThreshold )
+    if (load <  _warnThreshold)
         _alarmstate = NORM;
     else
-        if ( load >= _critThreshold )
+        if (load >= _critThreshold)
             _alarmstate = CRIT;
         else // load >= warnThreshold
             _alarmstate = WARN;
 
-    if ( _alarmstate != _lastalarmstate ){
+    if (_alarmstate != _lastalarmstate) {
         switch (_alarmstate) {
         case NORM:
-            setfieldcolor( 0, _procloadcol );
+            setfieldcolor(0, _procloadcol);
             break;
         case WARN:
-            setfieldcolor( 0, _warnloadcol );
+            setfieldcolor(0, _warnloadcol);
             break;
         case CRIT:
-            setfieldcolor( 0, _critloadcol );
+            setfieldcolor(0, _critloadcol);
             break;
         default:
             logBug << "Unknown alarm state: " << _alarmstate << std::endl;

@@ -16,8 +16,9 @@ ComIntMeter::ComIntMeter(const std::string &title)
     : BitMeter(title, "") {
 }
 
+
 void ComIntMeter::checkevent(void) {
-    const std::map<size_t, uint64_t> newc = getStats();
+    const auto newc = getStats();
     auto itn = newc.cbegin();
     auto itl = _last.begin();
 
@@ -57,9 +58,9 @@ void ComIntMeter::initIMap(void) {
         _imap[i] = i;
 
     size_t next = ResIRQ + 1;
-    for (auto it = _last.cbegin() ; it != _last.cend() ; ++it) {
-        if (it->first > ResIRQ)
-            _imap[it->first] = next++;
+    for (const auto &last : _last) {
+        if (last.first > ResIRQ)
+            _imap[last.first] = next++;
     }
 }
 
@@ -69,8 +70,7 @@ void ComIntMeter::initUI(void) {
     initIMap();
 
     // parent handles the bit display
-    const size_t nbits = _imap.empty() ? 1 : _imap.size();
-    setNumBits(nbits);
+    setNumBits(_imap.empty() ? 1 : _imap.size());
 
     // set the legend
     legend(makeLegend());
@@ -83,11 +83,11 @@ std::string ComIntMeter::makeLegend(void) const {
     ostr << "IRQS: (";
     size_t last = -1;
     bool inrange = false;
-    for (auto it = _imap.cbegin() ; it != _imap.cend() ; ++it) {
+    for (const auto &i : _imap) {
         if (last == static_cast<size_t>(-1))
-            ostr << it->first;
+            ostr << i.first;
         else {
-            if (it->first == last + 1) {
+            if (i.first == last + 1) {
                 if (!inrange) {
                     inrange = true;
                     ostr << "-";
@@ -98,10 +98,10 @@ std::string ComIntMeter::makeLegend(void) const {
                     inrange = false;
                     ostr << last;
                 }
-                ostr << "," << it->first;
+                ostr << "," << i.first;
             }
         }
-        last = it->first;
+        last = i.first;
     }
     if (inrange)
         ostr << last;

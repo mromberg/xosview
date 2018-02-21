@@ -9,29 +9,24 @@
 
 
 
-
-ComPageMeter::ComPageMeter( void )
-    : FieldMeterGraph( 3, "PAGE", "IN/OUT/IDLE" ), _maxspeed(0) {
+ComPageMeter::ComPageMeter(void)
+    : FieldMeterGraph(3, "PAGE", "IN/OUT/IDLE"), _maxspeed(0) {
 }
 
 
-ComPageMeter::~ComPageMeter( void ){
-}
-
-
-void ComPageMeter::checkResources(const ResDB &rdb){
+void ComPageMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
     _maxspeed = std::stof(rdb.getResource("pageBandwidth"));
-    setfieldcolor( 0, rdb.getColor( "pageInColor" ) );
-    setfieldcolor( 1, rdb.getColor( "pageOutColor" ) );
-    setfieldcolor( 2, rdb.getColor( "pageIdleColor" ) );
+    setfieldcolor(0, rdb.getColor( "pageInColor"));
+    setfieldcolor(1, rdb.getColor( "pageOutColor"));
+    setfieldcolor(2, rdb.getColor( "pageIdleColor"));
 }
 
 
-void ComPageMeter::checkevent( void ){
+void ComPageMeter::checkevent(void) {
 
-    std::pair<float, float> rates(getPageRate());
+    const auto rates = getPageRate();
 
     setUsed(rates.first + rates.second, 1.0);
 

@@ -14,10 +14,6 @@ ComTZoneMeter::ComTZoneMeter(size_t zoneNum)
 }
 
 
-ComTZoneMeter::~ComTZoneMeter(void) {
-}
-
-
 void ComTZoneMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
@@ -36,10 +32,10 @@ void ComTZoneMeter::checkResources(const ResDB &rdb) {
 }
 
 
-void ComTZoneMeter::checkevent( void ) {
+void ComTZoneMeter::checkevent(void) {
 
     // Read the temperature.
-    float ctemp = getTemp();
+    const float ctemp = getTemp();
 
     // set the fields
     _total = _peak;

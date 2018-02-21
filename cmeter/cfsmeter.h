@@ -5,27 +5,26 @@
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef CFSMETER_H
-#define CFSMETER_H
+#ifndef cfsmeter_h
+#define cfsmeter_h
 
 #include "fieldmetergraph.h"
 
 #include <fstream>
 
+constexpr const char *MOUNT_FNAME = "/proc/mounts";
 
-#define MOUNT_FNAME "/proc/mounts"
 
 
 class ComFSMeter : public FieldMeterGraph {
 public:
     ComFSMeter(const std::string &path);
-    virtual ~ComFSMeter(void);
 
-    virtual std::string name( void ) const { return "FSMeter"; }
-    virtual void checkevent( void );
+    virtual std::string name(void) const override { return "FSMeter"; }
+    virtual void checkevent(void) override;
 
-    virtual std::string resName(void) const { return "filesys"; }
-    virtual void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override { return "filesys"; }
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
     virtual bool isMount(const std::string &path);
@@ -37,6 +36,7 @@ private:
 
     void setBGColor(unsigned long c);
 };
+
 
 
 template <class X>
@@ -100,8 +100,8 @@ std::vector<std::string> FSMFactory<X>::getAuto(void) {
         ifs >> dev >> path >> type;
         std::getline(ifs, line);
         if (ifs) {
-            if (dev[0] == '/' && path[0] == '/')
-                rval.push_back(path);
+            if (dev.front() == '/' && path.front() == '/')
+                rval.push_back(std::move(path));
         }
     }
 

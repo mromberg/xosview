@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017
+//  Copyright (c) 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -13,9 +13,9 @@
 
 class ComIntMeter : public BitMeter {
 public:
-    virtual void checkevent(void);
-    virtual std::string resName(void) const { return "int"; }
-    virtual void checkResources(const ResDB &rdb);
+    virtual void checkevent(void) override;
+    virtual std::string resName(void) const override { return "int"; }
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
     ComIntMeter(const std::string &title);
