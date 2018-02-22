@@ -9,21 +9,16 @@
 
 #include "fieldmeter.h"
 
-#include <string>
 
 
 class BtryMeter : public FieldMeter {
 public:
     BtryMeter(void);
-    ~BtryMeter(void);
 
-    std::string resName(void) const { return "battery"; }
-    void checkevent(void);
+    virtual std::string resName(void) const override { return "battery"; }
+    virtual void checkevent(void) override;
 
-    void checkResources(const ResDB &rdb);
-
-protected:
-    bool getpwrinfo(void);
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     // Reading battery stats is a mess
@@ -34,25 +29,23 @@ private:
     unsigned long _critColor, _lowColor, _leftColor, _chargeColor;
     unsigned long _fullColor, _noneColor;
 
-    StatType statType(void);
-
-    bool has_sys(void);
+    bool getpwrinfo(void);
+    StatType statType(void) const;
+    bool has_sys(void) const;
     bool getsysinfo(void);
     bool getcapacity(const std::string &batDir, unsigned int &capacity) const;
     float getHoursLeft(const std::string &batDir) const;
-
     std::string getBatDir(void) const;
-    std::string timeStr(float &hours) const;
+    std::string timeStr(float hours) const;
 
     //--------------------------------------------------
     // Depricated APM and ACPI members beyond this point
     //--------------------------------------------------
-private:
     int apm_battery_state;
     int old_apm_battery_state;
 
-    bool has_apm(void);
-    bool getapminfo( void );
+    bool has_apm(void) const;
+    bool getapminfo(void);
 
     int acpi_charge_state;
     int old_acpi_charge_state;
@@ -61,7 +54,6 @@ private:
     int acpi_sum_rate;
     int acpi_sum_alarm;
     // some basic fields of 'info','alarm','state'
-    // XXX: should be private
     struct acpi_batt {
         int alarm;              // in mWh
         int design_capacity;    // in mWh
@@ -72,11 +64,12 @@ private:
     };
     acpi_batt battery;
 
-    bool has_acpi(void);
-    bool getacpiinfo( void );
-    bool battery_present(const std::string& filename);
-
-    bool parse_battery(const std::string& filename);
+    bool getacpiinfo(void);
+    bool parse_battery(const std::string &dirname);
+    void parse_alarm(const std::string &dirname);
+    void parse_info(const std::string &dirname);
+    bool has_acpi(void) const;
+    bool battery_present(const std::string& filename) const;
 };
 
 
