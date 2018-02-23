@@ -1,19 +1,19 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef PERFCOUNT_H
-#define PERFCOUNT_H
+#ifndef perfcount_h
+#define perfcount_h
 
-#include <pdh.h>
 
 #include <string>
 #include <vector>
 #include <map>
+#include <cstdint>
 
-#include <stdint.h>
+#include <pdh.h>
 
 
 
@@ -23,6 +23,7 @@ public:
     PerfCounter(const std::string &path);
 
     const std::string &path(void) const { return _path; }
+    const HCOUNTER &counter(void) const { return _counter; }
     HCOUNTER &counter(void) { return _counter; }
 
     double doubleVal(void);
@@ -51,7 +52,6 @@ public:
 
     static std::vector<std::string> expand(const std::string &path);
     static std::map<std::string, std::string> parse(const std::string &path);
-
 
 private:
     HQUERY _query;

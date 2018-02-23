@@ -1,14 +1,14 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef NETMETER_H
-#define NETMETER_H
+#ifndef netmeter_h
+#define netmeter_h
 
-#include "perfcount.h"
 #include "cnetmeter.h"
+#include "perfcount.h"
 
 
 
@@ -17,7 +17,7 @@ public:
     NetMeter(void);
 
 protected:
-    virtual std::pair<float, float> getRates(void);
+    virtual std::pair<float, float> getRates(void) override;
 
 private:
     float _maxBandwidth;  // in bytes/sec

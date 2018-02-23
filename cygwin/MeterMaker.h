@@ -5,8 +5,8 @@
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef METERMAKER_H
-#define METERMAKER_H
+#ifndef MeterMaker_h
+#define MeterMaker_h
 
 #include "cmetermaker.h"
 

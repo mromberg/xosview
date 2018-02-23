@@ -5,10 +5,7 @@
 //  This file may be distributed under terms of the GPL
 //
 
-#include <windows.h>
-
 #include "MeterMaker.h"
-
 #include "loadmeter.h"
 #include "cpumeter.h"
 #include "memmeter.h"
@@ -22,6 +19,7 @@
 #include "btrymeter.h"
 #include "example.h"  // The example meter
 
+#include <windows.h>
 
 
 ComMeterMaker::mlist MeterMaker::makeMeters(const ResDB &rdb) {
