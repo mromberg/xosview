@@ -113,14 +113,17 @@ void MeterMaker::cpuFactory(const ResDB &rdb,
 
 void MeterMaker::serialFactory(const ResDB &rdb, mlist  &meters) const {
 // these architectures have no ioperm()
-#if defined (__arm__) || defined(__mc68000__) || defined(__powerpc__) || defined(__sparc__) || defined(__s390__) || defined(__s390x__)
+#if defined(__arm__) || defined(__mc68000__) ||   \
+    defined(__powerpc__) || defined(__sparc__) || \
+    defined(__s390__) || defined(__s390x__)
 #else
     for (size_t i = 0 ; i < SerialMeter::numDevices() ; i++) {
-        bool ok ;  unsigned long val ;
-        std::string res = SerialMeter::getResourceName(
-            (SerialMeter::Device)i);
-        if ( !(ok = rdb.isResourceTrue(res)) ) {
+        const std::string res = SerialMeter::getResourceName(
+            static_cast<SerialMeter::Device>(i));
+        bool ok;
+        if (!(ok = rdb.isResourceTrue(res))) {
             std::istringstream is(rdb.getResource(res));
+            unsigned long val;
             is >> std::setbase(0) >> val;
             if (!is)
                 ok = false;
@@ -137,8 +140,8 @@ void MeterMaker::serialFactory(const ResDB &rdb, mlist  &meters) const {
 
 
 void MeterMaker::intFactory(const ResDB &rdb, mlist &meters) const {
+    const size_t cpuCount = CPUMeter::countCPUs();
     size_t start = 0, end = 0;
-    size_t cpuCount = CPUMeter::countCPUs();
     getRange(rdb.getResource("intFormat"), cpuCount, start, end);
 
     logDebug << "int range: " << start << ", " << end << std::endl;
@@ -149,11 +152,11 @@ void MeterMaker::intFactory(const ResDB &rdb, mlist &meters) const {
 
 
 void MeterMaker::lmsTempFactory(const ResDB &rdb, mlist &meters) const {
-    std::string caption = "ACT/HIGH/"
+    const std::string caption = "ACT/HIGH/"
         + rdb.getResourceOrUseDefault("lmstempHighest", "100");
     for (int i = 0 ; ; i++) {
-        std::string istr = std::to_string(i);
-        std::string res = rdb.getResourceOrUseDefault("lmstemp" + istr,
+        const std::string istr = std::to_string(i);
+        const std::string res = rdb.getResourceOrUseDefault("lmstemp" + istr,
           "<nil>");
         if(res == "<nil>")
             break;

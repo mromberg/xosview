@@ -9,13 +9,11 @@
 
 #include "fieldmetergraph.h"
 
-#include <stdint.h>
 
 
 class CPUMeter : public FieldMeterGraph {
 public:
     CPUMeter(size_t cpu=0);
-    virtual ~CPUMeter(void);
 
     virtual std::string resName(void) const override { return "cpu"; }
     virtual void checkevent(void) override;
@@ -30,8 +28,7 @@ private:
     std::vector<uint64_t> _oldStats;
 
     void getStats(std::vector<uint64_t> &stats) const;
-
-    std::vector<std::vector<uint64_t> > readStats(void) const;
+    std::vector<std::vector<uint64_t>> readStats(void) const;
 };
 
 

@@ -16,15 +16,13 @@ public:
     enum Device { S0, S1, S2, S3, S4, S5, S6, S7, S8, S9 };
 
     SerialMeter(Device device);
-    virtual ~SerialMeter(void);
+
+    virtual void checkevent(void) override;
+    virtual std::string resName(void) const override { return "serial"; }
+    virtual void checkResources(const ResDB &rdb) override;
 
     static size_t numDevices(void) { return 10; }
     static std::string getResourceName(Device dev);
-
-    virtual void checkevent(void) override;
-
-    virtual std::string resName(void) const override { return "serial"; }
-    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     unsigned short int _port;
