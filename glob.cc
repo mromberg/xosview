@@ -35,10 +35,10 @@ private:
 };
 
 
-// clang complains if this is unused.  Uncomment if needed for debugging.
-//inline std::ostream &operator<<(std::ostream &os, const GlobRange &gr) {
-//    return gr.printOn(os);
-//}
+
+inline std::ostream &operator<<(std::ostream &os, const GlobRange &gr) {
+    return gr.printOn(os);
+}
 
 
 template <class X>
@@ -89,6 +89,10 @@ GlobRange::GlobRange(const std::string &str)
                 _classtbl.insert(str[i]);
         }
     }
+
+    // gcc and clang warn on unused debug functions.  So...
+    if (false)
+        std::cout << *this;
 }
 
 
