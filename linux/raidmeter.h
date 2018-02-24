@@ -14,12 +14,9 @@
 class RAIDMeter : public BitFieldMeter {
 public:
     RAIDMeter(const std::string &device);
-    virtual ~RAIDMeter(void);
 
     virtual void checkevent(void) override;
-
     virtual std::string resName(void) const override { return "RAID"; }
-
     virtual void checkResources(const ResDB &rdb) override;
 
     static std::vector<std::string> devices(const ResDB &rdb);
@@ -34,10 +31,11 @@ private:
     std::map<std::string, unsigned long> _actionColors;
     std::map<std::string, unsigned long> _driveColors;
 
-    std::vector<std::string> scanDevs(void); // list of devices found in _dir.
+    std::vector<std::string> scanDevs(void) const; // list devices in _dir.
     size_t setDevBits(void);         // returns number of active devices.
     std::string setSyncAction(void); // returns current sync_action.
     std::string filterState(const std::string &state) const;
+
     static std::vector<std::string> scanMDDevs(void);
     static const std::map<std::string, unsigned char> &devState(void);
 };

@@ -27,7 +27,7 @@ std::string IntMeter::makeTitle(size_t cpu) const {
     // set the CPU in the title
     std::ostringstream os;
     os << "INT";
-    if (cpu != 0) {
+    if (cpu > 0) {
         os << "(";
         os << cpu - 1 << ")";
     }

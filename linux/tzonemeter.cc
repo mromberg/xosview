@@ -10,10 +10,8 @@ static const char * const TZSDIR = "thermal_zone";
 
 
 TZoneMeter::TZoneMeter(size_t zoneNum)
-    : ComTZoneMeter(zoneNum) {
-
-    _tempFName = std::string(TZDIR) + "/" + TZSDIR + std::to_string(zoneNum)
-        + "/" + "temp";
+    : ComTZoneMeter(zoneNum), _tempFName(std::string(TZDIR) + "/"
+      + TZSDIR + std::to_string(zoneNum) + "/" + "temp") {
 }
 
 
@@ -21,7 +19,7 @@ float TZoneMeter::getTemp(void) {
     try {
         // Read the temperature.  The docs say.
         // Unit: millidegree Celsius
-        unsigned long long temp = 0;
+        uint64_t temp = 0;
         if (!util::fs::readFirst(_tempFName, temp)) {
             logProblem << "error reading: " << _tempFName << std::endl;
             return 0.0;
@@ -52,5 +50,6 @@ size_t TZoneMeter::count(void) {
     }
     else
         logProblem << "directory does not exist: " << TZDIR << std::endl;
+
     return 0;
 }

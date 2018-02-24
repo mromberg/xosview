@@ -12,7 +12,6 @@
 class WLinkMeter : public FieldMeterGraph {
 public:
     WLinkMeter(void);
-    virtual ~WLinkMeter(void);
 
     virtual std::string resName( void ) const override { return "wlink"; }
     virtual void checkevent(void) override;

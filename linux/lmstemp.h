@@ -14,15 +14,14 @@
 #include "fieldmeter.h"
 
 
+
 class LmsTemp : public FieldMeter {
 public:
     LmsTemp(const std::string &filename, const std::string &label,
       const std::string &caption);
-    virtual ~LmsTemp(void);
 
     virtual std::string resName(void) const override { return "lmstemp"; }
     virtual void checkevent(void) override;
-
     virtual void checkResources(const ResDB &rdb) override;
 
 private:
