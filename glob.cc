@@ -35,10 +35,10 @@ private:
 };
 
 
-
-inline std::ostream &operator<<(std::ostream &os, const GlobRange &gr) {
-    return gr.printOn(os);
-}
+// clang complains if this is unused.  Uncomment if needed for debugging.
+//inline std::ostream &operator<<(std::ostream &os, const GlobRange &gr) {
+//    return gr.printOn(os);
+//}
 
 
 template <class X>
