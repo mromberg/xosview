@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -34,17 +34,17 @@ PageMeter::PageMeter( void )
     : ComPageMeter(), _psize(sysconf(_SC_PAGESIZE)), _previnfo(2, 0) {
 
     getPageStats(_previnfo);
-    IntervalTimerStart();
+    timerStart();
 }
 
 
 std::pair<float, float> PageMeter::getPageRate(void) {
 
-    IntervalTimerStop();
-    double t = IntervalTimeInSecs();
+    timerStop();
+    double t = etimeSecs();
     std::vector<uint64_t> info;
     getPageStats(info);
-    IntervalTimerStart();
+    timerStart();
 
     std::pair<float, float> rval(((info[0] - _previnfo[0]) * _psize) / t ,
       ((info[1] - _previnfo[1]) * _psize) / t);

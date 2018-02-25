@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -76,16 +76,16 @@ std::pair<float, float> NetMeter::getRates(void) {
     if (first) {
         first = false;
         getNetInOut(_lastBytesIn, _lastBytesOut, _netIface, _ignored);
-        IntervalTimerStart();
+        timerStart();
         return std::make_pair(0.0, 0.0);
     }
 
     uint64_t nowBytesIn, nowBytesOut;
 
-    IntervalTimerStop();
+    timerStop();
     getNetInOut(nowBytesIn, nowBytesOut, _netIface, _ignored);
-    double t = (1.0) / IntervalTimeInSecs();
-    IntervalTimerStart();
+    double t = 1.0 / etimeSecs();
+    timerStart();
 
     std::pair<float, float> rval((nowBytesIn - _lastBytesIn) * t,
       (nowBytesOut - _lastBytesOut) * t);
