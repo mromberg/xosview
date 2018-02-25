@@ -20,8 +20,8 @@ PrcIrqRateMeter::PrcIrqRateMeter(void)
 
 
 float PrcIrqRateMeter::getIrqRate(void) {
-    IntervalTimerStop();
-    const double etime = IntervalTimeInSecs();
+    timerStop();
+    const double etime = etimeSecs();
 
     float rval = 0.0;
     if (etime >= 0.001) {
@@ -56,7 +56,7 @@ uint64_t PrcIrqRateMeter::getIntCount(void) {
                 if (ifs.fail())
                     logFatal << "failed parsing: " << STATFNAME
                              << std::endl;
-                IntervalTimerStart();
+                timerStart();
                 return count;
             }
             ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -64,6 +64,6 @@ uint64_t PrcIrqRateMeter::getIntCount(void) {
     }
 
     logProblem << "failed to find intr line in: " << STATFNAME << std::endl;
-    IntervalTimerStart();
+    timerStart();
     return 0;
 }

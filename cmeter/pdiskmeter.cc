@@ -16,8 +16,8 @@ PrcDiskMeter::PrcDiskMeter(void)
 
 
 std::pair<double, double> PrcDiskMeter::getRate(void) {
-    IntervalTimerStop();
-    const double etime = IntervalTimeInSecs();
+    timerStop();
+    const double etime = etimeSecs();
 
     const auto totals = getTotals();
 
@@ -43,7 +43,7 @@ std::pair<uint64_t, uint64_t> PrcDiskMeter::getTotals(void) {
 
     const auto totals = useSys ? getSysTotals() : getPrcTotals();
 
-    IntervalTimerStart();
+    timerStart();
 
     return totals;
 }

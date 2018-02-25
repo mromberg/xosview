@@ -25,8 +25,8 @@ PrcPageMeter::PrcPageMeter(bool useVMStat)
 
 
 std::pair<float, float> PrcPageMeter::getPageRate(void) {
-    IntervalTimerStop();
-    const double etime = IntervalTimeInSecs();
+    timerStop();
+    const double etime = etimeSecs();
     const auto counts = getPageCount();
 
     std::pair<float, float> rval((counts.first - _last.first) * _pageSize,
@@ -102,6 +102,6 @@ std::pair<uint64_t, uint64_t> PrcPageMeter::getVMStatPageCount(void) {
     if (!ifs || !foundIn || !foundOut)
         logFatal << "failed to parse " << VMSTATFILE << std::endl;
 
-    IntervalTimerStart();
+    timerStart();
     return rval;
 }

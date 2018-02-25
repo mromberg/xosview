@@ -31,7 +31,7 @@ void NFSMeter::checkResources(const ResDB &rdb) {
 
 NFSDStats::NFSDStats(void)
     : NFSMeter("NFSD", 4, "BAD/UDP/TCP/IDLE", NFSSVCSTAT) {
-    IntervalTimerStart();
+    timerStart();
 }
 
 
@@ -53,7 +53,7 @@ void NFSDStats::checkevent(void) {
         return;
 
     std::fill(_fields.begin(), _fields.end(), 0); // network activity
-    IntervalTimerStop();
+    timerStop();
 
     std::string name;
     unsigned long netcnt = 0, netudpcnt = 0, nettcpcnt = 0, nettcpconn = 0;
@@ -74,7 +74,7 @@ void NFSDStats::checkevent(void) {
         }
     }
 
-    float t = 1000000.0 / IntervalTimeInMicrosecs();
+    float t = 1000000.0 / etimeUsecs();
     if (t < 0)
         t = 0.1;
 
@@ -98,7 +98,7 @@ void NFSDStats::checkevent(void) {
     if (_total)
         setUsed(_fields[0] + _fields[1] + _fields[2], _total);
 
-    IntervalTimerStart();
+    timerStart();
 
     _lastNetCnt = std::max(netcnt, calls);
     _lastTcp = nettcpcnt;
@@ -109,7 +109,7 @@ void NFSDStats::checkevent(void) {
 
 NFSStats::NFSStats(void)
     : NFSMeter("NFS", 4, "RETRY/AUTH/CALL/IDLE", NFSCLTSTAT) {
-    IntervalTimerStart();
+    timerStart();
 }
 
 
@@ -130,7 +130,7 @@ void NFSStats::checkevent(void) {
         return;
 
     std::fill(_fields.begin(), _fields.end(), 0);
-    IntervalTimerStop();
+    timerStop();
 
     std::string name;
     unsigned long calls = 0, retrns = 0, authrefresh = 0, _maxpackets = 0;
@@ -144,7 +144,7 @@ void NFSStats::checkevent(void) {
         break;
     }
 
-    float t = 1000000.0 / IntervalTimeInMicrosecs();
+    float t = 1000000.0 / etimeUsecs();
     if (t < 0)
         t = 0.1;
 
@@ -168,7 +168,7 @@ void NFSStats::checkevent(void) {
     if (_total)
         setUsed(_fields[0] + _fields[1] + _fields[2], _total);
 
-    IntervalTimerStart();
+    timerStart();
 
     _lastcalls = calls;
     _lastretrns = retrns;

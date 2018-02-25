@@ -37,13 +37,13 @@ protected:
 
     void setUsed (float val, float total);
 
-    void IntervalTimerStart(void) { _timer.start(); }
-    void IntervalTimerStop(void) { _timer.stop(); }
+    void timerStart(void) { _timer.start(); }
+    void timerStop(void) { _timer.stop(); }
     //  Before, we simply called _timer.report(), which returns usecs.
     //  However, it suffers from wrap/overflow/sign-bit problems, so
     //  instead we use doubles for everything.
-    double IntervalTimeInMicrosecs(void) { return _timer.report_usecs(); }
-    double IntervalTimeInSecs(void) { return _timer.report_usecs() / 1e6; }
+    double etimeUsecs(void) { return _timer.report_usecs(); }
+    double etimeSecs(void) { return _timer.report_usecs() / 1e6; }
 
     bool checkX(int x, int width) const;
 

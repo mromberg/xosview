@@ -20,8 +20,8 @@ PrcNetMeter::PrcNetMeter(void)
 
 
 std::pair<float, float> PrcNetMeter::getRates(void) {
-    IntervalTimerStop();
-    const double etime = IntervalTimeInSecs();
+    timerStop();
+    const double etime = etimeSecs();
     const auto counts = getStats();
 
     std::pair<float, float> rval((counts.first - _last.first) / etime,
@@ -73,6 +73,6 @@ std::pair<uint64_t, uint64_t> PrcNetMeter::getStats(void) {
         write += trans;
     }
 
-    IntervalTimerStart();
+    timerStart();
     return std::make_pair(read, write);
 }
