@@ -12,8 +12,8 @@
 //    authors for a copy.
 //
 
-#ifndef METERMAKER_H
-#define METERMAKER_H
+#ifndef MeterMaker_h
+#define MeterMaker_h
 
 #include "cmetermaker.h"
 

@@ -12,8 +12,7 @@
 
 class CPUMeter : public FieldMeterGraph {
 public:
-    CPUMeter(unsigned int nbr);
-    ~CPUMeter(void);
+    CPUMeter(size_t nbr);
 
     virtual std::string resName(void) const override { return "cpu"; }
     virtual void checkevent(void) override;

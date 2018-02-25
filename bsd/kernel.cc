@@ -1,6 +1,6 @@
 //
 //  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016
+//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016, 2018
 //  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -18,10 +18,10 @@
 //
 #include "kernel.h"
 #include "log.h"
-#include "strutil.h"
 #include "sctl.h"
-
-#include <cerrno>
+#if defined(XOSVIEW_FREEBSD)
+#include "cpumeter.h"
+#endif
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -43,9 +43,6 @@
 #endif
 
 
-// Number of elements in a static array.
-#define ASIZE(ar) (sizeof(ar) / sizeof(ar[0]))
-
 
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 static const char * const ACPIDEV = "/dev/acpi";
@@ -53,49 +50,35 @@ static const char * const APMDEV = "/dev/apm";
 #endif
 
 
-#if defined(XOSVIEW_FREEBSD)
-static size_t BSDCountCpus(void) {
-
-    static SysCtl ncpu_sc("hw.ncpu");
-    static int cpus = -1;
-
-    if (cpus == -1) {
-        if (!ncpu_sc.get(cpus))
-            logFatal << "sysctl(" << ncpu_sc.id() << "failed." << std::endl;
-    }
-
-    return cpus;
-}
-#endif
-
 
 //  ---------------------- Sensor Meter stuff  -------------------------------
 
 #if defined(__i386__) || defined(__x86_64__)
-static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,
+static size_t BSDGetCPUTemperatureMap(std::map<int, float> &temps,
   std::map<int, float> &tjmax) {
     temps.clear();
     tjmax.clear();
-    unsigned int nbr = 0;
+    size_t nbr = 0;
 #if defined(XOSVIEW_OPENBSD) || defined(XOSVIEW_DFBSD)
     (void)tjmax; // Avoid the warning
 #endif
+
 #if defined(XOSVIEW_NETBSD)
     // All kinds of sensors are read with libprop. We have to go through them
     // to find either Intel Core 2 or AMD ones. Actual temperature is in
     // cur-value and TjMax, if present, in critical-max.
     // Values are in microdegrees Kelvin.
-    int fd;
-    const char *name = NULL;
-    prop_dictionary_t pdict;
+    const char *name = nullptr;
+
     prop_object_t pobj, pobj1, pobj2;
     prop_object_iterator_t piter, piter2;
     prop_array_t parray;
-
+    int fd;
     if ( (fd = open(_PATH_SYSMON, O_RDONLY)) == -1 ) {
         logProblem << "Could not open " << _PATH_SYSMON << std::endl;
         return 0;  // this seems to happen occasionally, so only warn
     }
+    prop_dictionary_t pdict;
     if (prop_dictionary_recv_ioctl(fd, ENVSYS_GETDICTIONARY, &pdict))
         logFatal << "Could not get sensor dictionary" << std::endl;
     if (close(fd) == -1)
@@ -143,23 +126,15 @@ static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,
     }
     prop_object_iterator_release(piter);
     prop_object_release(pdict);
-#else  /* XOSVIEW_NETBSD */
-    int val = 0;
-    size_t size = sizeof(val);
 
-#if defined(XOSVIEW_OPENBSD) || defined(XOSVIEW_DFBSD)
+#elif defined(XOSVIEW_OPENBSD) || defined(XOSVIEW_DFBSD)
     // All kinds of sensors are read with sysctl. We have to go through them
     // to find either Intel Core 2 or AMD ones.
     // Values are in microdegrees Kelvin.
-    struct sensordev sd;
-    struct sensor s;
-    int cpu = 0;
-    int mib_sen[] = { CTL_HW, HW_SENSORS, 0, 0, 0 };
-
-    for (int dev = 0; dev < 1024; dev++) {  // go through all sensor devices
-        mib_sen[2] = dev;
-        size = sizeof(sd);
-        if ( sysctl(mib_sen, 3, &sd, &size, NULL, 0) < 0 ) {
+    for (int dev = 0 ; dev < 1024 ; dev++) {  // go through all sensor devices
+        SysCtl sc = { CTL_HW, HW_SENSORS, dev };
+        struct sensordev sd;
+        if (!sc.get(sd)) {
             if (errno == ENOENT)
                 break;  // no more sensors
             if (errno == ENXIO)
@@ -169,30 +144,33 @@ static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,
         if (std::string(sd.xname, 0, 3) != "cpu")
             continue;  // not CPU sensor
         std::istringstream is(sd.xname);
+        int cpu = 0;
         is >> util::sink("*[!0-9]", true) >> cpu;
 
-        mib_sen[3] = SENSOR_TEMP;  // for each device, get temperature sensors
-        for (int i = 0; i < sd.maxnumt[SENSOR_TEMP]; i++) {
-            mib_sen[4] = i;
-            size = sizeof(s);
-            if ( sysctl(mib_sen, 5, &s, &size, NULL, 0) < 0 )
+        // for each device, get temperature sensors.
+        for (int i = 0 ; i < sd.maxnumt[SENSOR_TEMP] ; i++) {
+            SysCtl sc_temp = { CTL_HW, HW_SENSORS, dev, SENSOR_TEMP, i };
+            struct sensor sen;
+            if (!sc_temp.get(sen))
                 continue;  // no sensor on this core?
-            if (s.flags & SENSOR_FINVALID)
+            if (sen.flags & SENSOR_FINVALID)
                 continue;
-            temps[cpu] = (float)(s.value - 273150000) / 1000000.0;
+            temps[cpu] = static_cast<float>(sen.value - 273150000) / 1000000.0;
             nbr++;
         }
     }
-#else  /* XOSVIEW_FREEBSD */
+#else  // XOSVIEW_FREEBSD
     // Temperatures can be read with sysctl dev.cpu.%d.temperature on both
     // Intel Core 2 and AMD K8+ processors.
     // Values are in degrees Celsius (FreeBSD < 7.2) or in
     // 10*degrees Kelvin (FreeBSD >= 7.3).
+    int val = 0;
+    size_t size = sizeof(val);
     std::string name;
-    int cpus = BSDCountCpus();
+    int cpus = CPUMeter::countCPUs();
     for (int i = 0; i < cpus; i++) {
         name = "dev.cpu." + util::repr(i) + ".temperature";
-        if ( sysctlbyname(name.c_str(), &val, &size, NULL, 0) == 0) {
+        if ( sysctlbyname(name.c_str(), &val, &size, nullptr, 0) == 0) {
             nbr++;
 #if __FreeBSD_version >= 702106
             temps[i] = ((float)val - 2732.0) / 10.0;
@@ -204,7 +182,7 @@ static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,
             logProblem << "sysctl " << name << " failed" << std::endl;
 
         name = "dev.cpu." + util::repr(i) + ".coretemp.tjmax";
-        if ( sysctlbyname(name.c_str(), &val, &size, NULL, 0) == 0 )
+        if ( sysctlbyname(name.c_str(), &val, &size, nullptr, 0) == 0 )
 #if __FreeBSD_version >= 702106
             tjmax[i] = ((float)val - 2732.0) / 10.0;
 #else
@@ -214,16 +192,16 @@ static unsigned int BSDGetCPUTemperatureMap(std::map<int, float> &temps,
             logProblem << "sysctl " << name << " failed\n";
     }
 #endif
-#endif
+
     return nbr;
 }
 
 
-unsigned int BSDGetCPUTemperature(std::vector<float> &temps,
+size_t BSDGetCPUTemperature(std::vector<float> &temps,
   std::vector<float> &tjmax) {
     std::map<int, float> tempM;
     std::map<int, float> tjmxM;
-    unsigned int count = BSDGetCPUTemperatureMap(tempM, tjmxM);
+    size_t count = BSDGetCPUTemperatureMap(tempM, tjmxM);
     if (tempM.size() != count || tjmxM.size() != count)
         logFatal << "Internal core temp logic failure." << std::endl;
 
@@ -235,15 +213,15 @@ unsigned int BSDGetCPUTemperature(std::vector<float> &temps,
     // somehow be in the range [0-count].  We will populate the
     // vectors here and check this.  If it is not the case then
     // the train stops here.
-    for (std::map<int,float>::iterator it=tempM.begin(); it!=tempM.end(); ++it)
-        if (it->first >= 0 && it->first < (int)temps.size())
-            temps[it->first] = it->second;
+    for (const auto &tm : tempM)
+        if (tm.first >= 0 && tm.first < static_cast<int>(temps.size()))
+            temps[tm.first] = tm.second;
         else
             logFatal << "Internal core temp logic failure." << std::endl;
 
-    for (std::map<int,float>::iterator it=tjmxM.begin(); it!=tjmxM.end(); ++it)
-        if (it->first >= 0 && it->first < (int)temps.size())
-            tjmax[it->first] = it->second;
+    for (const auto &tj : tjmxM)
+        if (tj.first >= 0 && tj.first < static_cast<int>(temps.size()))
+            tjmax[tj.first] = tj.second;
         else
             logFatal << "Internal core temp logic failure." << std::endl;
 
@@ -257,7 +235,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
   float &value, std::string &unit) {
 
     logAssert(name.size() && valname.size()
-      && value) << "'NULL' pointer passed to BSDGetSensor()." << std::endl;
+      && value) << "'nullptr' passed to BSDGetSensor()." << std::endl;
 
 #if defined(XOSVIEW_NETBSD)
     /* Adapted from envstat. */
@@ -350,7 +328,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
         int val = 0;
         size = sizeof(val);
         dummy = "hw.acpi.thermal." + name + "." + valname;
-        if ( sysctlbyname(dummy.c_str(), &val, &size, NULL, 0) < 0 )
+        if ( sysctlbyname(dummy.c_str(), &val, &size, nullptr, 0) < 0 )
             logFatal << "sysctl " << dummy << " failed" << std::endl;
         value = ((float)val - 2732.0) / 10.0;
         if (unit.size())
@@ -373,7 +351,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
     for (int dev = 0; dev < 1024; dev++) {  // go through all sensor devices
         mib_sen[2] = dev;
         size = sizeof(sd);
-        if ( sysctl(mib_sen, 3, &sd, &size, NULL, 0) < 0 ) {
+        if ( sysctl(mib_sen, 3, &sd, &size, nullptr, 0) < 0 ) {
             if (errno == ENOENT)
                 break;  // no more devices
             if (errno == ENXIO)
@@ -394,7 +372,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
             if (index < sd.maxnumt[t]) {
                 mib_sen[4] = index;
                 size = sizeof(s);
-                if ( sysctl(mib_sen, 5, &s, &size, NULL, 0) < 0 ) {
+                if ( sysctl(mib_sen, 5, &s, &size, nullptr, 0) < 0 ) {
                     if (errno != ENOENT)
                         logFatal << "sysctl hw.sensors."
                                  << dev << "." << t << "." << index
@@ -495,7 +473,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
 
 //  ---------------------- Battery Meter stuff ---------------------------------
 
-bool BSDHasBattery() {
+bool BSDHasBattery(void) {
 #if defined(XOSVIEW_NETBSD)
     int fd;
     prop_dictionary_t pdict;
@@ -562,7 +540,7 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
     // charge/discharge status.
     int fd;
     int total_capacity = 0, total_charge = 0, total_low = 0, total_crit = 0;
-    const char *name = NULL;
+    const char *name = nullptr;
     prop_dictionary_t pdict;
     prop_object_t pobj, pobj1;
     prop_object_iterator_t piter, piter2;
@@ -701,18 +679,18 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
     if (total_capacity < total_crit)
         state |= XOSVIEW_BATT_CRITICAL;
 #else // XOSVIEW_FREEBSD || XOSVIEW_DFBSD
-    /* Adapted from acpiconf and apm. */
+    // Adapted from acpiconf and apm.
     int fd;
-    if ( (fd = open(ACPIDEV, O_RDONLY)) == -1 ) {
-        // No ACPI -> try APM
-        if ( (fd = open(APMDEV, O_RDONLY)) == -1 )
+    if ((fd = open(ACPIDEV, O_RDONLY)) == -1) {
+        // No ACPI -> try APM.
+        if ((fd = open(APMDEV, O_RDONLY)) == -1)
             logFatal << "could not open " << ACPIDEV << " or " << APMDEV
                      << std::endl;
 
         struct apm_info aip;
-        if ( ioctl(fd, APMIO_GETINFO, &aip) == -1 )
+        if (ioctl(fd, APMIO_GETINFO, &aip) == -1)
             logFatal << "failed to get APM battery info" << std::endl;
-        if ( close(fd) == -1 )
+        if (close(fd) == -1)
             logFatal << "Could not close " << APMDEV << std::endl;
         if (aip.ai_batt_life <= 100)
             remaining = aip.ai_batt_life; // only 0-100 are valid values
@@ -733,9 +711,9 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
     // ACPI
     union acpi_battery_ioctl_arg battio;
     battio.unit = ACPI_BATTERY_ALL_UNITS;
-    if ( ioctl(fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1 )
+    if (ioctl(fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1)
         logFatal << "failed to get ACPI battery info" << std::endl;
-    if ( close(fd) == -1 )
+    if (close(fd) == -1)
         logFatal << "Could not close " << ACPIDEV << std::endl;
     remaining = battio.battinfo.cap;
     if (battio.battinfo.state != ACPI_BATT_STAT_NOT_PRESENT) {
