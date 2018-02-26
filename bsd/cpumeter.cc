@@ -215,11 +215,8 @@ std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
     //    Similar to KERN_CPTIME, but obtains information from only the
     //    single CPU specified by the third level name given.
     //---- OpenBSD docs ----
-
-    const std::array<int, 2> mib_cpt = {{ CTL_KERN, KERN_CPTIME }};
-    const std::array<int, 3> mib_cpt2 = {{ CTL_KERN, KERN_CPTIME2, 0 }};
-    static SysCtl cp_time_sc(mib_cpt.data(), mib_cpt.size());
-    static SysCtl cp_time2_sc(mib_cpt2.data(), mib_cpt2.size());
+    static SysCtl cp_time_sc = { CTL_KERN, KERN_CPTIME };
+    static SysCtl cp_time2_sc = { CTL_KERN, KERN_CPTIME2, 0 };
 
     const size_t ncpus = countCPUs();
     // index0 = aggregate, index1 = first cpu, ...
