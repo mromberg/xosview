@@ -167,32 +167,23 @@ static size_t BSDGetCPUTemperatureMap(std::map<int, float> &temps,
     // Intel Core 2 and AMD K8+ processors.
     // Values are in degrees Celsius (FreeBSD < 7.2) or in
     // 10*degrees Kelvin (FreeBSD >= 7.3).
-    int val = 0;
-    size_t size = sizeof(val);
-    std::string name;
-    int cpus = CPUMeter::countCPUs();
-    for (int i = 0; i < cpus; i++) {
-        name = "dev.cpu." + util::repr(i) + ".temperature";
-        if ( sysctlbyname(name.c_str(), &val, &size, nullptr, 0) == 0) {
+    const size_t cpus = CPUMeter::countCPUs();
+
+    for (size_t i = 0 ; i < cpus ; i++) {
+        SysCtl sc_cput("dev.cpu." + std::to_string(i) + ".temperature");
+        int val = 0;
+        if (sc_cput.get(val)) {
             nbr++;
-#if __FreeBSD_version >= 702106
-            temps[i] = ((float)val - 2732.0) / 10.0;
-#else
-            temps[i] = (float)val;
-#endif
+            temps[i] = (static_cast<float>(val) - 2732.0) / 10.0;
         }
         else
-            logProblem << "sysctl " << name << " failed" << std::endl;
+            logProblem << "sysctl " << sc_cput.id() << " failed" << std::endl;
 
-        name = "dev.cpu." + util::repr(i) + ".coretemp.tjmax";
-        if ( sysctlbyname(name.c_str(), &val, &size, nullptr, 0) == 0 )
-#if __FreeBSD_version >= 702106
-            tjmax[i] = ((float)val - 2732.0) / 10.0;
-#else
-            tjmax[i] = (float)val;
-#endif
+        SysCtl sc_core("dev.cpu." + std::to_string(i) + ".coretemp.tjmax");
+        if (sc_core.get(val))
+            tjmax[i] = (static_cast<float>(val) - 2732.0) / 10.0;
         else
-            logProblem << "sysctl " << name << " failed\n";
+            logProblem << "sysctl " << sc_core.id() << " failed\n";
     }
 #endif
 
@@ -322,15 +313,14 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
     // FreeBSD has no sensor framework, but ACPI thermal zones might work.
     // They are readable through sysctl (also works in Dragonfly).
     // Values are in 10 * degrees Kelvin.
-    if ( name == "tz" ) {
+    if (name == "tz") {
         int val = 0;
-        size = sizeof(val);
-        const std::string dummy = "hw.acpi.thermal." + name + "." + valname;
-        if ( sysctlbyname(dummy.c_str(), &val, &size, nullptr, 0) < 0 )
-            logFatal << "sysctl " << dummy << " failed" << std::endl;
-        value = ((float)val - 2732.0) / 10.0;
-        if (unit.size())
-            unit = "\260C";
+        SysCtl sc_thrm("hw.acpi.thermal.tz." + valname);
+        if (!sc_thrm.get(val))
+            logFatal << "sysctl " << sc_thrm.id() << " failed" << std::endl;
+        value = (static_cast<float>(val) - 2732.0) / 10.0;
+        if (!unit.empty())
+            unit = "uC";
         return;
     }
     // If Dragonfly and tzN specified, return. Otherwise, fall through.
@@ -466,7 +456,7 @@ bool BSDHasBattery(void) {
             return false;
 
         struct apm_info aip;
-        if ( ioctl(fd, APMIO_GETINFO, &aip) == -1)
+        if (ioctl(fd, APMIO_GETINFO, &aip) == -1)
             return false;
         if (close(fd) == -1)
             logFatal << "Could not close " << APMDEV << std::endl;
@@ -655,7 +645,7 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
     if (total_capacity < total_crit)
         state |= XOSVIEW_BATT_CRITICAL;
 #else // XOSVIEW_FREEBSD || XOSVIEW_DFBSD
-    // Adapted from acpiconf and apm.
+    // Adapted from acpiconf and APM.
     int fd;
     if ((fd = open(ACPIDEV, O_RDONLY)) == -1) {
         // No ACPI -> try APM.
@@ -682,25 +672,26 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
             state |= XOSVIEW_BATT_CHARGING;
         else
             state = XOSVIEW_BATT_NONE;
-        return;
     }
-    // ACPI
-    union acpi_battery_ioctl_arg battio;
-    battio.unit = ACPI_BATTERY_ALL_UNITS;
-    if (ioctl(fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1)
-        logFatal << "failed to get ACPI battery info" << std::endl;
-    if (close(fd) == -1)
-        logFatal << "Could not close " << ACPIDEV << std::endl;
-    remaining = battio.battinfo.cap;
-    if (battio.battinfo.state != ACPI_BATT_STAT_NOT_PRESENT) {
-        if (battio.battinfo.state == 0)
-            state |= XOSVIEW_BATT_FULL;
-        if (battio.battinfo.state & ACPI_BATT_STAT_CRITICAL)
-            state |= XOSVIEW_BATT_CRITICAL;
-        if (battio.battinfo.state & ACPI_BATT_STAT_DISCHARG)
-            state |= XOSVIEW_BATT_DISCHARGING;
-        if (battio.battinfo.state & ACPI_BATT_STAT_CHARGING)
-            state |= XOSVIEW_BATT_CHARGING;
+    else { // ACPI
+        union acpi_battery_ioctl_arg battio;
+        battio.unit = ACPI_BATTERY_ALL_UNITS;
+        if (ioctl(fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1)
+            logFatal << "failed to get ACPI battery info" << std::endl;
+        if (close(fd) == -1)
+            logFatal << "Could not close " << ACPIDEV << std::endl;
+
+        remaining = battio.battinfo.cap;
+        if (battio.battinfo.state != ACPI_BATT_STAT_NOT_PRESENT) {
+            if (battio.battinfo.state == 0)
+                state |= XOSVIEW_BATT_FULL;
+            if (battio.battinfo.state & ACPI_BATT_STAT_CRITICAL)
+                state |= XOSVIEW_BATT_CRITICAL;
+            if (battio.battinfo.state & ACPI_BATT_STAT_DISCHARG)
+                state |= XOSVIEW_BATT_DISCHARGING;
+            if (battio.battinfo.state & ACPI_BATT_STAT_CHARGING)
+                state |= XOSVIEW_BATT_CHARGING;
+        }
     }
 #endif
 }
