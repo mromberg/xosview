@@ -23,11 +23,9 @@
 #endif
 
 #if defined(XOSVIEW_NETBSD)
-#include <cstring>
 #include <unistd.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
-#include <machine/int_fmtio.h>
 #endif
 
 #if defined(XOSVIEW_OPENBSD)
@@ -107,13 +105,12 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
     inbytes = outbytes = 0;
     struct if_nameindex *iflist = if_nameindex();
 
-    for (const struct if_nameindex *p = iflist; p->if_index > 0; p++) {
-        struct ifdatareq ifdr;
-        memset(&ifdr, 0, sizeof(ifdr));
-        std::string p_if_name(p->if_name);
-        memcpy(ifdr.ifdr_name, p_if_name.c_str(), p_if_name.length());
+    for (const struct if_nameindex *p = iflist ; p->if_index > 0 ; p++) {
+        struct ifdatareq ifdr = {};
+        const std::string p_if_name(p->if_name);
+        std::copy(p_if_name.cbegin(), p_if_name.cend(), ifdr.ifdr_name);
         if (ioctl(_socket, SIOCGIFDATA, &ifdr) == -1) {
-            logFatal << "ioctl(SIOCGIFDATA) failed for: " << p->if_name
+            logFatal << "ioctl(SIOCGIFDATA) failed for: " << p_if_name
                      << std::endl;
         }
         const std::string ifname(ifdr.ifdr_name);
