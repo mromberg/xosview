@@ -14,10 +14,9 @@
 //    authors for a copy.
 //
 #include "netmeter.h"
-
-#if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 #include "sctl.h"
 
+#if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 #include <net/if.h>
 #include <net/if_mib.h>
 #endif
@@ -29,7 +28,6 @@
 #endif
 
 #if defined(XOSVIEW_OPENBSD)
-#include <sys/sysctl.h>
 #include <sys/socket.h>
 #include <net/if.h>
 #include <net/route.h>
@@ -138,37 +136,47 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
     inbytes = outbytes = 0;
 
-    const int mib_ifl[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
-    const size_t mibsize = sizeof(mib_ifl) / sizeof(mib_ifl[0]);
+    //------------------------------------------------------------
+    // Get ready for a ride.   An array of stucts will be written
+    // into a char buffer by sysctl().  The structs are of
+    // variable size and type.  Each struct has a header struct
+    // which holds the type and length.  So, try to read the
+    // interesting ones and skip the others.
+    //------------------------------------------------------------
 
-    size_t size;
-    if ( sysctl(mib_ifl, mibsize, NULL, &size, NULL, 0) < 0 )
+    // First get the size and create a buffer to hold the blob.
+    size_t size = 0;
+    SysCtl sc_ifl = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
+    if (!sc_ifl.getsize(size))
         logFatal << "sysctl() failed." << std::endl;
-
     std::vector<char> bufv(size, 0);
-    if ( sysctl(mib_ifl, mibsize, bufv.data(), &size, NULL, 0) < 0 )
+
+    // fill the blob with data by calling again.
+    if (!sc_ifl.get(bufv.data(), bufv.size()))
         logFatal << "sysctl() failed." << std::endl;
 
+    // Now the fugly begins.   bufp move forward through bufp
+    // and rtm is the message header.
     const char *bufp = bufv.data();
-    const struct rt_msghdr *rtm =
-        reinterpret_cast<const struct rt_msghdr *>(bufp);
+    auto rtm = reinterpret_cast<const struct rt_msghdr *>(bufp);
 
-    for ( ; bufp < bufv.data() + size ; bufp += rtm->rtm_msglen) {
+    // walk one rtm_msglen increment as long as we don't go out of bounds.
+    for ( ; bufp + rtm->rtm_msglen <= &bufv.back() ; bufp += rtm->rtm_msglen) {
 
         rtm = reinterpret_cast<const struct rt_msghdr *>(bufp);
+
         if (rtm->rtm_version != RTM_VERSION)
-            continue;
+            continue;  // skip ones we don't understand.
 
         if (rtm->rtm_type == RTM_IFINFO) {
-            const struct if_msghdr *ifm =
-                reinterpret_cast<const struct if_msghdr *>(bufp);
-            const struct sockaddr_dl *sdl =
-                reinterpret_cast<const struct sockaddr_dl *>(ifm + 1); // voodoo
+            auto ifm = reinterpret_cast<const struct if_msghdr *>(bufp);
+            // Advance past the message header (+1 if_msghdr).
+            auto sdl = reinterpret_cast<const struct sockaddr_dl *>(ifm + 1);
 
             if (sdl->sdl_family != AF_LINK)
                 continue;
 
-            std::string ifname(sdl->sdl_data, 0, sdl->sdl_nlen);
+            const std::string ifname(sdl->sdl_data, sdl->sdl_nlen);
             if (ifskip(ifname, netIface, ignored))
                 continue;
 
