@@ -374,18 +374,18 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
                 // Where value = (float)val / X + Y
                 const std::map<int, std::tuple<double, double, std::string>>
                     umap = {
-                    {SENSOR_TEMP, {1e6, -273.15, "C"}},
-                    {SENSOR_FANRPM, {1, 0, "RPM"}},
-                    {SENSOR_VOLTS_DC, {1e6, 0, "Vdc"}},
-                    {SENSOR_VOLTS_AC, {1e6, 0, "Vac"}},
-                    {SENSOR_OHMS, {1e6, 0, "Ohm"}},
-                    {SENSOR_WATTS, {1e6, 0, "W"}},
-                    {SENSOR_AMPS, {1e6, 0, "A"}},
-                    {SENSOR_AMPHOUR, {1e6, 0, "Ah"}},
-                    {SENSOR_WATTHOUR, {1e6, 0, "Wh"}},
-                    {SENSOR_PERCENT, {1e3, 0, "%"}},
-                    {SENSOR_LUX, {1e6, 0, "lx"}},
-                    {SENSOR_TIMEDELTA, {1e9, 0, "s"}},
+                    {SENSOR_TEMP, std::make_tuple(1e6, -273.15, "C")},
+                    {SENSOR_FANRPM, std::make_tuple(1, 0, "RPM")},
+                    {SENSOR_VOLTS_DC, std::make_tuple(1e6, 0, "Vdc")},
+                    {SENSOR_VOLTS_AC, std::make_tuple(1e6, 0, "Vac")},
+                    {SENSOR_OHMS, std::make_tuple(1e6, 0, "Ohm")},
+                    {SENSOR_WATTS, std::make_tuple(1e6, 0, "W")},
+                    {SENSOR_AMPS, std::make_tuple(1e6, 0, "A")},
+                    {SENSOR_AMPHOUR, std::make_tuple(1e6, 0, "Ah")},
+                    {SENSOR_WATTHOUR, std::make_tuple(1e6, 0, "Wh")},
+                    {SENSOR_PERCENT, std::make_tuple(1e3, 0, "%")},
+                    {SENSOR_LUX, std::make_tuple(1e6, 0, "lx")},
+                    {SENSOR_TIMEDELTA, std::make_tuple(1e9, 0, "s")},
 #if defined(XOSVIEW_OPENBSD)
                     {SENSOR_HUMIDITY, {1e3, 0, "%"}},
                     {SENSOR_FREQ, {1e6, 0, "Hz"}},
@@ -394,7 +394,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
                     {SENSOR_PRESSURE, {1e3, 0, "Pa"}},
                     {SENSOR_ACCEL, {1e6, 0, "m/s^2"}},
 #endif
-                    };
+                };
 
                 const auto &it = umap.find(t);
                 if (it != umap.end()) {
