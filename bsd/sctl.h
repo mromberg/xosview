@@ -30,7 +30,7 @@ public:
     const std::string &id(void) const { return _id; }
 
     bool get(void *dst, size_t dsize) const {
-        if (sysctl(_mib.data(), _mib.size(), dst, &dsize, NULL, 0) < 0)
+        if (sysctl(_mib.data(), _mib.size(), dst, &dsize, nullptr, 0) < 0)
             {
             logDebug << "sysctl(" << id() << ") failed: "
                      << util::strerror() << std::endl;
@@ -41,7 +41,7 @@ public:
     }
 
     bool getsize(size_t &size) const {
-        if (sysctl(_mib.data(), _mib.size(), NULL, &size, NULL, 0) < 0)
+        if (sysctl(_mib.data(), _mib.size(), nullptr, &size, nullptr, 0) < 0)
             return false;
 
         return true;
@@ -68,7 +68,7 @@ private:
     void init(void) {
 #if !defined(XOSVIEW_OPENBSD)
         size_t sizep = 0;
-        if (sysctlnametomib(_id.c_str(), NULL, &sizep) < 0) {
+        if (sysctlnametomib(_id.c_str(), nullptr, &sizep) < 0) {
             std::cerr << "sysctlnametomib(" << _id << ") failed." << std::endl;
         }
 

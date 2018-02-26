@@ -39,7 +39,7 @@
 #endif
 
 
-NetMeter::NetMeter( void )
+NetMeter::NetMeter(void)
     : ComNetMeter(),
       _lastBytesIn(0), _lastBytesOut(0),
       _netIface("False"), _ignored(false) {
@@ -64,7 +64,7 @@ void NetMeter::checkResources(const ResDB &rdb) {
     ComNetMeter::checkResources(rdb);
 
     _netIface = rdb.getResource("netIface");
-    if (_netIface[0] == '-') {
+    if (_netIface.front() == '-') {
         _ignored = true;
         _netIface.erase(0, _netIface.find_first_not_of("- "));
     }
@@ -84,7 +84,7 @@ std::pair<float, float> NetMeter::getRates(void) {
 
     timerStop();
     getNetInOut(nowBytesIn, nowBytesOut, _netIface, _ignored);
-    double t = 1.0 / etimeSecs();
+    const double t = 1.0 / etimeSecs();
     timerStart();
 
     std::pair<float, float> rval((nowBytesIn - _lastBytesIn) * t,
@@ -106,7 +106,6 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
     inbytes = outbytes = 0;
     struct if_nameindex *iflist = if_nameindex();
-//    int s = socket(AF_LOCAL, SOCK_DGRAM, 0);
 
     for (const struct if_nameindex *p = iflist; p->if_index > 0; p++) {
         struct ifdatareq ifdr;
@@ -117,7 +116,7 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
             logFatal << "ioctl(SIOCGIFDATA) failed for: " << p->if_name
                      << std::endl;
         }
-        std::string ifname(ifdr.ifdr_name);
+        const std::string ifname(ifdr.ifdr_name);
 
         if (ifskip(ifname, netIface, ignored))
             continue;
@@ -131,7 +130,6 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
                  << " out: " << ifi->ifi_obytes << std::endl;
     }
 
-//    close(s);
     if_freenameindex(iflist);
 }
 #endif
@@ -221,7 +219,7 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
         if (!(ifmd.ifmd_flags & IFF_UP))
             continue;
 
-        std::string ifname(ifmd.ifmd_name);
+        const std::string ifname(ifmd.ifmd_name);
         if (ifskip(ifname, netIface, ignored))
             continue;
 
