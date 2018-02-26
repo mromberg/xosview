@@ -294,10 +294,10 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
         // Where value = (float)val / X + Y
         const std::map<std::string, std::tuple<double, double, std::string>>
             umap = {
-            {"Temperature", {1e6, -273.15, "uC"}},
+            {"Temperature", {1e6, -273.15, "C"}},
             {"Fan", {1, 0, "RPM"}},
             {"Integer", {1, 0, ""}},
-            {"Voltage", {1e6, 0, "uV"}},
+            {"Voltage", {1e6, 0, "V"}},
             {"Ampere hour", {1e6, 0, "Ah"}},
             {"Ampere", {1e6, 0, "A"}},
             {"Watt hour", {1e6, 0, "Wh"}},
@@ -317,8 +317,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
     prop_object_release(pdict);
 
 #else  // everything not XOSVIEW_NETBSD
-    size_t size;
-    std::string dummy;
+
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
     // FreeBSD has no sensor framework, but ACPI thermal zones might work.
     // They are readable through sysctl (also works in Dragonfly).
@@ -326,7 +325,7 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
     if ( name == "tz" ) {
         int val = 0;
         size = sizeof(val);
-        dummy = "hw.acpi.thermal." + name + "." + valname;
+        const std::string dummy = "hw.acpi.thermal." + name + "." + valname;
         if ( sysctlbyname(dummy.c_str(), &val, &size, nullptr, 0) < 0 )
             logFatal << "sysctl " << dummy << " failed" << std::endl;
         value = ((float)val - 2732.0) / 10.0;
@@ -337,41 +336,38 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
     // If Dragonfly and tzN specified, return. Otherwise, fall through.
 #endif
 #if defined(XOSVIEW_OPENBSD) || defined(XOSVIEW_DFBSD)
-    /* Adapted from systat. */
+    // Adapted from systat.
     // All kinds of sensors are read with sysctl. We have to go through them
     // to find the required device and value. Parameter 'name' is the device
     // name and 'valname' consists of type and sensor index (e.g. it0.temp1).
     //  Values are transformed to suitable units.
-    int index = -1;
-    struct sensordev sd;
-    struct sensor s;
-    int mib_sen[] = { CTL_HW, HW_SENSORS, 0, 0, 0 };
 
-    for (int dev = 0; dev < 1024; dev++) {  // go through all sensor devices
-        mib_sen[2] = dev;
-        size = sizeof(sd);
-        if ( sysctl(mib_sen, 3, &sd, &size, nullptr, 0) < 0 ) {
+    for (int dev = 0 ; dev < 1024 ; dev++) {  // go through all sensor devices
+        struct sensordev sd;
+        SysCtl sc_dev = { CTL_HW, HW_SENSORS, dev };
+        if (!sc_dev.get(sd)) {
             if (errno == ENOENT)
                 break;  // no more devices
             if (errno == ENXIO)
                 continue;  // no device with this mib
             logFatal << "sysctl hw.sensors." << dev << " failed" << std::endl;
         }
-        std::string sname(name);
-        if (std::string(sd.xname).substr(0, sname.size()) == name)
-            continue;  // sensor name does not match
 
-        for (int t = 0; t < SENSOR_MAX_TYPES; t++) {
-            std::string stype_s(sensor_type_s[t]);
-            if (stype_s != valname.substr(0, stype_s.size()))
+        if (std::string(sd.xname) != name)
+            continue;
+
+        for (int t = 0 ; t < SENSOR_MAX_TYPES ; t++) {
+            const std::string stype(sensor_type_s[t]);
+            if (stype != valname)
                 continue;  // wrong type
-            mib_sen[3] = t;
+
             std::istringstream is(valname);
+            int index;
             is >> util::sink("*[!0-9]", true) >> index;
             if (index < sd.maxnumt[t]) {
-                mib_sen[4] = index;
-                size = sizeof(s);
-                if ( sysctl(mib_sen, 5, &s, &size, nullptr, 0) < 0 ) {
+                SysCtl sc_sen = { CTL_HW, HW_SENSORS, dev, t, index };
+                struct sensor sen;
+                if (!sc_sen.get(sen)) {
                     if (errno != ENOENT)
                         logFatal << "sysctl hw.sensors."
                                  << dev << "." << t << "." << index
@@ -379,88 +375,47 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
 
                     continue;  // no more sensors
                 }
-                if (s.flags & SENSOR_FINVALID)
+
+                if (sen.flags & SENSOR_FINVALID)
                     continue;
-                switch (t) {
-                case SENSOR_TEMP:
-                    value = (float)(s.value - 273150000) / 1000000.0;
-                    unit = "\260C";
-                    break;
-                case SENSOR_FANRPM:
-                    value = (float)s.value;
-                    unit = "RPM";
-                    break;
-                case SENSOR_VOLTS_DC:
-                case SENSOR_VOLTS_AC:
-                    value = (float)s.value / 1000000.0;
-                    unit = "V";
-                    break;
-                case SENSOR_OHMS:
-                    value = (float)s.value;
-                    unit = "Ohm";
-                    break;
-                case SENSOR_WATTS:
-                    value = (float)s.value / 1000000.0;
-                    unit = "W";
-                    break;
-                case SENSOR_AMPS:
-                    value = (float)s.value / 1000000.0;
-                    unit = "A";
-                    break;
-                case SENSOR_WATTHOUR:
-                    value = (float)s.value / 1000000.0;
-                    unit = "Wh";
-                    break;
-                case SENSOR_AMPHOUR:
-                    value = (float)s.value / 1000000.0;
-                    unit = "Ah";
-                    break;
-                case SENSOR_PERCENT:
-                    value = (float)s.value / 1000.0;
-                    unit = "%";
-                    break;
-                case SENSOR_LUX:
-                    value = (float)s.value / 1000000.0;
-                    unit = "lx";
-                    break;
-                case SENSOR_TIMEDELTA:
-                    value = (float)s.value / 1000000000.0;
-                    unit = "s";
-                    break;
+
+                // Assign value and unit based on the following table:
+                // key : {X, Y, Unit}
+                // Where value = (float)val / X + Y
+                const std::map<int, std::tuple<double, double, std::string>>
+                    umap = {
+                    {SENSOR_TEMP, {1e6, -273.15, "C"}},
+                    {SENSOR_FANRPM, {1, 0, "RPM"}},
+                    {SENSOR_VOLTS_DC, {1e6, 0, "Vdc"}},
+                    {SENSOR_VOLTS_AC, {1e6, 0, "Vac"}},
+                    {SENSOR_OHMS, {1e6, 0, "Ohm"}},
+                    {SENSOR_WATTS, {1e6, 0, "W"}},
+                    {SENSOR_AMPS, {1e6, 0, "A"}},
+                    {SENSOR_AMPHOUR, {1e6, 0, "Ah"}},
+                    {SENSOR_WATTHOUR, {1e6, 0, "Wh"}},
+                    {SENSOR_PERCENT, {1e3, 0, "%"}},
+                    {SENSOR_LUX, {1e6, 0, "lx"}},
+                    {SENSOR_TIMEDELTA, {1e9, 0, "s"}},
 #if defined(XOSVIEW_OPENBSD)
-                case SENSOR_HUMIDITY:
-                    value = (float)s.value / 1000.0;
-                    unit = "%";
-                    break;
-                case SENSOR_FREQ:
-                    value = (float)s.value / 1000000.0;
-                    unit = "Hz";
-                    break;
-                case SENSOR_ANGLE:
-                    value = (float)s.value / 1000000.0;
-                    unit = "\260";
-                    break;
-#if OpenBSD > 201211
-                case SENSOR_DISTANCE:
-                    value = (float)s.value / 1000000.0;
-                    unit = "m";
-                    break;
-                case SENSOR_PRESSURE:
-                    value = (float)s.value / 1000.0;
-                    unit = "Pa";
-                    break;
-                case SENSOR_ACCEL:
-                    value = (float)s.value / 1000000.0;
-                    unit = "m\\/s\262"; // m/sÂ²
-                    break;
+                    {SENSOR_HUMIDITY, {1e3, 0, "%"}},
+                    {SENSOR_FREQ, {1e6, 0, "Hz"}},
+                    {SENSOR_ANGLE, {1e6, 0, "d"}},
+                    {SENSOR_DISTANCE, {1e6, 0, "m"}},
+                    {SENSOR_PRESSURE, {1e3, 0, "Pa"}},
+                    {SENSOR_ACCEL, {1e6, 0, "m/s^2"}},
 #endif
-#endif
-                case SENSOR_INDICATOR:
-                case SENSOR_INTEGER:
-                case SENSOR_DRIVE:
-                default:
-                    value = (float)s.value;
-                    break;
+                    };
+
+                const auto &it = umap.find(t);
+                if (it != umap.end()) {
+                    const auto &tpl = it->second;
+                    value = static_cast<double>(sen.value) / std::get<0>(tpl)
+                        + std::get<1>(tpl);
+                    unit = std::get<2>(tpl);
+                }
+                else { // default
+                    value = static_cast<double>(sen.value);
+                    unit.clear();
                 }
             }
         }
@@ -505,14 +460,15 @@ bool BSDHasBattery(void) {
     return true;
 #else // XOSVIEW_FREEBSD || XOSVIEW_DFBSD
     int fd;
-    if ( (fd = open(ACPIDEV, O_RDONLY)) == -1 ) {
+    if ((fd = open(ACPIDEV, O_RDONLY)) == -1) {
         // No ACPI -> try APM
-        if ( (fd = open(APMDEV, O_RDONLY)) == -1 )
+        if ((fd = open(APMDEV, O_RDONLY)) == -1)
             return false;
+
         struct apm_info aip;
-        if ( ioctl(fd, APMIO_GETINFO, &aip) == -1 )
+        if ( ioctl(fd, APMIO_GETINFO, &aip) == -1)
             return false;
-        if ( close(fd) == -1 )
+        if (close(fd) == -1)
             logFatal << "Could not close " << APMDEV << std::endl;
         if (aip.ai_batt_stat == 0xff || aip.ai_batt_life == 0xff)
             return false;
@@ -521,11 +477,12 @@ bool BSDHasBattery(void) {
 
     union acpi_battery_ioctl_arg battio;
     battio.unit = ACPI_BATTERY_ALL_UNITS;
-    if ( ioctl(fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1 )
+    if (ioctl(fd, ACPIIO_BATT_GET_BATTINFO, &battio) == -1)
         return false;
-    if ( close(fd) == -1 )
+    if (close(fd) == -1)
         logFatal << "Could not close " << ACPIDEV << std::endl;
-    return ( battio.battinfo.state != ACPI_BATT_STAT_NOT_PRESENT );
+
+    return battio.battinfo.state != ACPI_BATT_STAT_NOT_PRESENT;
 #endif
 }
 
@@ -533,7 +490,7 @@ bool BSDHasBattery(void) {
 void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
     state = XOSVIEW_BATT_NONE;
 #if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_OPENBSD)
-    int batteries = 0;
+
 #if defined(XOSVIEW_NETBSD)
     // Again adapted from envstat.
     // All kinds of sensors are read with libprop. We have to go through them
@@ -541,6 +498,7 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
     // status and discharge rate for each battery for the calculations.
     // For simplicity, assume all batteries have the same
     // charge/discharge status.
+    int batteries = 0;
 
     int fd = -1;
     if ((fd = open(_PATH_SYSMON, O_RDONLY)) == -1) {
@@ -650,31 +608,35 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
     prop_object_release(pdict);
 
 #else // XOSVIEW_OPENBSD
+
     float total_capacity = 0, total_charge = 0, total_low = 0, total_crit = 0;
-    std::string battery;
+
+    int batteries = 0;
     while (batteries < 1024) {
+        const std::string battery = "acpibat" + util::repr(batteries);
         float val = -1.0;
-        battery = "acpibat" + util::repr(batteries);
         std::string emptyStr;
         BSDGetSensor(battery, "amphour0", val, emptyStr); // full capacity
+
         if (val < 0) // no more batteries
             break;
+
         batteries++;
         total_capacity += val;
-        emptyStr = "";
+        emptyStr.clear();
         BSDGetSensor(battery, "amphour1", val, emptyStr); // warning capacity
         total_low += val;
-        emptyStr = "";
+        emptyStr.clear();
         BSDGetSensor(battery, "amphour2", val, emptyStr); // low capacity
         total_crit += val;
-        emptyStr = "";
+        emptyStr.clear();
         BSDGetSensor(battery, "amphour3", val, emptyStr); // remaining
         total_charge += val;
-        emptyStr = "";
+        emptyStr.clear();
         BSDGetSensor(battery, "raw0", val, emptyStr); // state
-        if ((int)val == 1)
+        if (static_cast<int>(val) == 1)
             state |= XOSVIEW_BATT_DISCHARGING;
-        else if ((int)val == 2)
+        else if (static_cast<int>(val) == 2)
             state |= XOSVIEW_BATT_CHARGING;
         // there's also 0 state for idle/full
     }
@@ -685,8 +647,8 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
         return;
     }
     remaining = 100 * total_charge / total_capacity;
-    if ( !(state & XOSVIEW_BATT_CHARGING) &&
-      !(state & XOSVIEW_BATT_DISCHARGING) )
+    if (!(state & XOSVIEW_BATT_CHARGING) &&
+      !(state & XOSVIEW_BATT_DISCHARGING))
         state |= XOSVIEW_BATT_FULL;  // full when not charging nor discharging
     if (total_capacity < total_low)
         state |= XOSVIEW_BATT_LOW;
