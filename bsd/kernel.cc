@@ -68,59 +68,62 @@ static size_t BSDGetCPUTemperatureMap(std::map<int, float> &temps,
     // to find either Intel Core 2 or AMD ones. Actual temperature is in
     // cur-value and TjMax, if present, in critical-max.
     // Values are in microdegrees Kelvin.
-    const char *name = nullptr;
 
-    prop_object_t pobj, pobj1, pobj2;
-    prop_object_iterator_t piter, piter2;
-    prop_array_t parray;
     int fd;
-    if ( (fd = open(_PATH_SYSMON, O_RDONLY)) == -1 ) {
+    if ((fd = open(_PATH_SYSMON, O_RDONLY)) == -1) {
         logProblem << "Could not open " << _PATH_SYSMON << std::endl;
         return 0;  // this seems to happen occasionally, so only warn
     }
+
     prop_dictionary_t pdict;
     if (prop_dictionary_recv_ioctl(fd, ENVSYS_GETDICTIONARY, &pdict))
         logFatal << "Could not get sensor dictionary" << std::endl;
     if (close(fd) == -1)
         logFatal << "Could not close " << _PATH_SYSMON << std::endl;
-
     if (prop_dictionary_count(pdict) == 0) {
         logProblem << "No sensors found" << std::endl;
         return 0;
     }
-    if ( !(piter = prop_dictionary_iterator(pdict)) )
+    const prop_object_iterator_t piter = prop_dictionary_iterator(pdict);
+    if (!piter)
         logFatal << "Could not get sensor iterator" << std::endl;
 
-    while ( (pobj = prop_object_iterator_next(piter)) ) {
-        parray = (prop_array_t)prop_dictionary_get_keysym(pdict,
-          (prop_dictionary_keysym_t)pobj);
+    prop_object_t pobj = nullptr;
+    while ((pobj = prop_object_iterator_next(piter))) {
+        prop_array_t parray = static_cast<prop_array_t>(
+            prop_dictionary_get_keysym(pdict,
+              static_cast<prop_dictionary_keysym_t>(pobj)));
         if (prop_object_type(parray) != PROP_TYPE_ARRAY)
             continue;
-        name = prop_dictionary_keysym_cstring_nocopy(
-            (prop_dictionary_keysym_t)pobj);
-        if (std::string(name, 0, 8) != "coretemp"
-          && std::string(name, 0, 7) != "amdtemp")
+        const std::string name(prop_dictionary_keysym_cstring_nocopy(
+              static_cast<prop_dictionary_keysym_t>(pobj)));
+        if (name.substr(0, 8) != "coretemp" && name.substr(0, 7) != "amdtemp")
             continue;
-        if ( !(piter2 = prop_array_iterator(parray)) )
+
+        const prop_object_iterator_t piter2 = prop_array_iterator(parray);
+        if (!piter2)
             logFatal << "Could not get sensor iterator" << std::endl;
 
-        int i = 0;
         std::istringstream is(name);
+        size_t i = 0;
         is >> util::sink("*[!0-9]", true) >> i;
-        while ( (pobj = prop_object_iterator_next(piter2)) ) {
-            if ( !(pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                  "type")) )
+
+        while ((pobj = prop_object_iterator_next(piter2))) {
+            prop_object_t pobj1 = prop_dictionary_get(
+                static_cast<prop_dictionary_t>(pobj), "type");
+            if (!pobj1)
                 continue;
-            if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                  "cur-value")) ) {
-                temps[i] = (prop_number_integer_value((prop_number_t)pobj1)
-                  / 1000000.0) - 273.15;
+            if ((pobj1 = prop_dictionary_get(
+                    static_cast<prop_dictionary_t>(pobj), "cur-value"))) {
+                temps[i] = (prop_number_integer_value(
+                      static_cast<prop_number_t>(pobj1)) / 1e6) - 273.15;
                 nbr++;
             }
-            if ( (pobj2 = prop_dictionary_get((prop_dictionary_t)pobj,
-                  "critical-max")))
+            const prop_object_t pobj2 = prop_dictionary_get(
+                static_cast<prop_dictionary_t>(pobj), "critical-max");
+            if (pobj2)
                 tjmax[i] = (prop_number_integer_value(
-                      (prop_number_t)pobj2) / 1000000.0) - 273.15;
+                      static_cast<prop_number_t>(pobj2)) / 1e6) - 273.15;
         }
         prop_object_iterator_release(piter2);
     }
@@ -238,18 +241,16 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
       && value) << "'nullptr' passed to BSDGetSensor()." << std::endl;
 
 #if defined(XOSVIEW_NETBSD)
-    /* Adapted from envstat. */
+    // Adapted from envstat.
     // All kinds of sensors are read with libprop. Specific device and value
     // can be asked for. Values are transformed to suitable units.
-    int fd, val = 0;
-    prop_dictionary_t pdict;
-    prop_object_t pobj, pobj1;
-    prop_object_iterator_t piter;
 
-    if ( (fd = open(_PATH_SYSMON, O_RDONLY)) == -1 ) {
+    int fd = -1;
+    if ((fd = open(_PATH_SYSMON, O_RDONLY)) == -1) {
         logProblem << "Could not open " << _PATH_SYSMON << std::endl;
         return;  // this seems to happen occasionally, so only warn
     }
+    prop_dictionary_t pdict;
     if (prop_dictionary_recv_ioctl(fd, ENVSYS_GETDICTIONARY, &pdict))
         logFatal << "Could not get sensor dictionary" << std::endl;
     if (close(fd) == -1)
@@ -259,65 +260,63 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
         logProblem << "No sensors found" << std::endl;
         return;
     }
-    pobj = prop_dictionary_get(pdict, name.c_str());
+
+    prop_object_t pobj = prop_dictionary_get(pdict, name.c_str());
     if (prop_object_type(pobj) != PROP_TYPE_ARRAY)
         logFatal << "Device " << name << " does not exist" << std::endl;
 
-    if ( !(piter = prop_array_iterator((prop_array_t)pobj)) )
+    const prop_object_iterator_t piter = prop_array_iterator(
+        static_cast<prop_array_t>(pobj));
+    if (!piter)
         logFatal << "Could not get sensor iterator" << std::endl;
 
-    while ( (pobj = prop_object_iterator_next(piter)) ) {
-        if ( !(pobj1 = prop_dictionary_get((prop_dictionary_t)pobj, "type")) )
+    while ((pobj = prop_object_iterator_next(piter))) {
+        prop_object_t pobj1 = prop_dictionary_get(
+            static_cast<prop_dictionary_t>(pobj), "type");
+        if (!pobj1)
             continue;
 
-        std::string ptype(prop_string_cstring_nocopy((prop_string_t)pobj1));
+        const std::string ptype(prop_string_cstring_nocopy(
+              static_cast<prop_string_t>(pobj1)));
 
-        if ( ptype == "Indicator" || ptype == "Battery"
-          || ptype == "Drive" )
+        if (ptype == "Indicator" || ptype == "Battery" || ptype == "Drive")
             continue;  // these are string values
-        if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-              valname.c_str())) )
-            val = prop_number_integer_value((prop_number_t)pobj1);
+
+        int val = 0;
+        if ((pobj1 = prop_dictionary_get(static_cast<prop_dictionary_t>(pobj),
+              valname.c_str())))
+            val = prop_number_integer_value(static_cast<prop_number_t>(pobj1));
         else
             logFatal << "Value " << valname << " does not exist\n";
-        if ( ptype == "Temperature" ) {
-            value = (val / 1000000.0) - 273.15;  // temps are in microkelvins
-            unit = "\260C";
-        }
-        else if ( ptype == "Fan") {
-            value = (float)val;                  // plain integer value
-            unit = "RPM";
-        }
-        else if ( ptype == "Integer" )
-            value = (float)val;                  // plain integer value
-        else if ( ptype == "Voltage" ) {
-            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
-            unit = "V";
-        }
-        else if ( ptype == "Ampere hour" ) {
-            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
-            unit = "Ah";
-        }
-        else if ( ptype == "Ampere" ) {
-            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
-            unit = "A";
-        }
-        else if ( ptype == "Watt hour" ) {
-            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
-            unit = "Wh";
-        }
-        else if ( ptype == "Watts" ) {
-            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
-            unit = "W";
-        }
-        else if ( ptype == "Ohms" ) {
-            value = (float)val / 1000000.0;      // units are micro{V,A,W,Ohm}
-            unit = "Ohm";
+
+        // Assign value and unit based on the following table:
+        // key : {X, Y, Unit}
+        // Where value = (float)val / X + Y
+        const std::map<std::string, std::tuple<double, double, std::string>>
+            umap = {
+            {"Temperature", {1e6, -273.15, "uC"}},
+            {"Fan", {1, 0, "RPM"}},
+            {"Integer", {1, 0, ""}},
+            {"Voltage", {1e6, 0, "uV"}},
+            {"Ampere hour", {1e6, 0, "Ah"}},
+            {"Ampere", {1e6, 0, "A"}},
+            {"Watt hour", {1e6, 0, "Wh"}},
+            {"Watts", {1e6, 0, "W"}},
+            {"Ohms", {1e6, 0, "Ohm"}}
+        };
+
+        const auto &it = umap.find(ptype);
+        if (it != umap.end()) {
+            const auto &tpl = it->second;
+            value = static_cast<double>(val) / std::get<0>(tpl)
+                + std::get<1>(tpl);
+            unit = std::get<2>(tpl);
         }
     }
     prop_object_iterator_release(piter);
     prop_object_release(pdict);
-#else  /* XOSVIEW_NETBSD */
+
+#else  // everything not XOSVIEW_NETBSD
     size_t size;
     std::string dummy;
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
@@ -475,23 +474,27 @@ void BSDGetSensor(const std::string &name, const std::string &valname,
 
 bool BSDHasBattery(void) {
 #if defined(XOSVIEW_NETBSD)
-    int fd;
-    prop_dictionary_t pdict;
-    prop_object_t pobj;
 
-    if ( (fd = open(_PATH_SYSMON, O_RDONLY)) == -1 )
+    int fd = -1;
+    if ((fd = open(_PATH_SYSMON, O_RDONLY)) == -1)
         return false;
-    if ( prop_dictionary_recv_ioctl(fd, ENVSYS_GETDICTIONARY, &pdict) )
+
+    prop_dictionary_t pdict;
+    if (prop_dictionary_recv_ioctl(fd, ENVSYS_GETDICTIONARY, &pdict))
         logFatal << "Could not get sensor dictionary" << std::endl;
-    if ( close(fd) == -1 )
+    if (close(fd) == -1)
         logFatal << "Could not close " << _PATH_SYSMON << std::endl;
 
-    if ( prop_dictionary_count(pdict) == 0 )
+    if (prop_dictionary_count(pdict) == 0)
         return false;
-    pobj = prop_dictionary_get(pdict, "acpibat0"); // just check for 1st battery
-    if ( prop_object_type(pobj) != PROP_TYPE_ARRAY )
+
+    // just check for 1st battery.
+    const prop_object_t pobj = prop_dictionary_get(pdict, "acpibat0");
+    if (prop_object_type(pobj) != PROP_TYPE_ARRAY)
         return false;
+
     return true;
+
 #elif defined(XOSVIEW_OPENBSD)
     // check if we can get full capacity of the 1st battery
     float val = -1.0;
@@ -532,98 +535,108 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
 #if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_OPENBSD)
     int batteries = 0;
 #if defined(XOSVIEW_NETBSD)
-    /* Again adapted from envstat. */
+    // Again adapted from envstat.
     // All kinds of sensors are read with libprop. We have to go through them
     // to find the batteries. We need capacity, charge, presence, charging
     // status and discharge rate for each battery for the calculations.
     // For simplicity, assume all batteries have the same
     // charge/discharge status.
-    int fd;
-    int total_capacity = 0, total_charge = 0, total_low = 0, total_crit = 0;
-    const char *name = nullptr;
-    prop_dictionary_t pdict;
-    prop_object_t pobj, pobj1;
-    prop_object_iterator_t piter, piter2;
-    prop_array_t parray;
 
-    if ( (fd = open(_PATH_SYSMON, O_RDONLY)) == -1 ) {
+    int fd = -1;
+    if ((fd = open(_PATH_SYSMON, O_RDONLY)) == -1) {
         logProblem << "Could not open " << _PATH_SYSMON << std::endl;
         return;  // this seems to happen occasionally, so only warn
     }
-    if ( prop_dictionary_recv_ioctl(fd, ENVSYS_GETDICTIONARY, &pdict) )
-        logFatal << "Could not get sensor dictionary" << std::endl;
-    if ( close(fd) == -1 )
-        logFatal << "Could not close " << _PATH_SYSMON << std::endl;
 
-    if ( prop_dictionary_count(pdict) == 0 ) {
+    prop_dictionary_t pdict;
+    if (prop_dictionary_recv_ioctl(fd, ENVSYS_GETDICTIONARY, &pdict))
+        logFatal << "Could not get sensor dictionary" << std::endl;
+    if (close(fd) == -1)
+        logFatal << "Could not close " << _PATH_SYSMON << std::endl;
+    if (prop_dictionary_count(pdict) == 0) {
         logProblem << "No sensors found" << std::endl;
         return;
     }
-    if ( !(piter = prop_dictionary_iterator(pdict)) )
+
+    const prop_object_iterator_t piter = prop_dictionary_iterator(pdict);
+    if (!piter)
         logFatal << "Could not get sensor iterator" << std::endl;
 
-    while ( (pobj = prop_object_iterator_next(piter)) ) {
-        int present = 0, capacity = 0, charge = 0, low = 0, crit = 0;
-        name = prop_dictionary_keysym_cstring_nocopy(
-            (prop_dictionary_keysym_t)pobj);
-        if ( std::string(name, 0, 7) != "acpibat" )
+    // This snippet is repeated often below.  Macro it here.
+    const auto setIfFound = [](prop_dictionary_t d, const char *k, int &v) {
+        auto pobj = prop_dictionary_get(d, k);
+        if (pobj) {
+            v = prop_number_integer_value(static_cast<prop_number_t>(pobj));
+            return true;
+        }
+        return false;
+    };
+
+    // Sum of all batteries.
+    int total_capacity = 0, total_charge = 0, total_low = 0, total_crit = 0;
+
+    prop_object_t pobj = nullptr;
+    while ((pobj = prop_object_iterator_next(piter))) {
+        std::string name(prop_dictionary_keysym_cstring_nocopy(
+              static_cast<prop_dictionary_keysym_t>(pobj)));
+        if (name.substr(0, 7) != "acpibat")
             continue;
-        parray = (prop_array_t)prop_dictionary_get_keysym(pdict,
-          (prop_dictionary_keysym_t)pobj);
-        if ( prop_object_type(parray) != PROP_TYPE_ARRAY )
+
+        const prop_array_t parray = static_cast<prop_array_t>(
+            prop_dictionary_get_keysym(pdict,
+              static_cast<prop_dictionary_keysym_t>(pobj)));
+        if (prop_object_type(parray) != PROP_TYPE_ARRAY)
             continue;
-        if ( !(piter2 = prop_array_iterator(parray)) )
+
+        const prop_object_iterator_t piter2 = prop_array_iterator(parray);
+        if (!piter2)
             logFatal << "Could not get sensor iterator" << std::endl;
 
-        while ( (pobj = prop_object_iterator_next(piter2)) ) {
-            if ( !(pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                  "state")) )
+        // For each battery find.
+        int present = 0, capacity = 0, charge = 0, low = 0, crit = 0;
+
+        while ((pobj = prop_object_iterator_next(piter2))) {
+            const prop_dictionary_t pdict =
+                static_cast<prop_dictionary_t>(pobj);
+            prop_object_t pobj1 = prop_dictionary_get(pdict, "state");
+            if (!pobj1)
                 continue;
-            if ( prop_string_equals_cstring((prop_string_t)pobj1, "invalid")
-              || prop_string_equals_cstring((prop_string_t)pobj1, "unknown") )
+
+            if (prop_string_equals_cstring(static_cast<prop_string_t>(pobj1),
+                "invalid")
+              || prop_string_equals_cstring(static_cast<prop_string_t>(pobj1),
+                "unknown"))
                 continue; // skip sensors without valid data
-            if ( !(pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                  "description")) )
+            if (!(pobj1 = prop_dictionary_get(pdict, "description")))
                 continue;
-            name = prop_string_cstring_nocopy((prop_string_t)pobj1);
-            if ( std::string(name, 0, 7) == "present" ) { // is battery present
-                if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                      "cur-value")) )
-                    present = prop_number_integer_value((prop_number_t)pobj1);
-            }
-            else if ( std::string(name, 0, 10) == "design cap" ) {
-                // get full capacity
-                if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                      "cur-value")) )
-                    capacity = prop_number_integer_value((prop_number_t)pobj1);
-            }
-            else if ( std::string(name, 0, 7) == "charge" ) {
+
+            name = prop_string_cstring_nocopy(
+                static_cast<prop_string_t>(pobj1));
+
+            if (name.substr(0, 7) == "present") // is battery present
+                setIfFound(pdict, "cur-value", present);
+            else if (name.substr(0, 10) == "design cap") // get full capacity
+                setIfFound(pdict, "cur-value", capacity);
+            else if (name.substr(0, 7) == "charge") {
                 // get present charge, low and critical levels
-                if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                      "cur-value")) )
-                    charge = prop_number_integer_value((prop_number_t)pobj1);
-                if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                      "warning-capacity")) )
-                    low = prop_number_integer_value((prop_number_t)pobj1);
-                if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                      "critical-capacity")) )
-                    crit = prop_number_integer_value((prop_number_t)pobj1);
+                setIfFound(pdict, "cur-value", charge);
+                setIfFound(pdict, "warning-capacity", low);
+                setIfFound(pdict, "critical-capacity", crit);
             }
-            else if ( std::string(name, 0, 8) == "charging" ) {
+            else if (name.substr(0, 8) == "charging") {
                 // charging or not?
-                if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                      "cur-value")) )
-                    if ( prop_number_integer_value((prop_number_t)pobj1) )
-                        state |= XOSVIEW_BATT_CHARGING;
+                int unused = 0;
+                if (setIfFound(pdict, "cur-value", unused))
+                    state |= XOSVIEW_BATT_CHARGING;
             }
-            else if (std::string(name, 0, 14) == "discharge rate") {
+            else if (name.substr(0, 14) == "discharge rate") {
                 // discharging or not?
-                if ( (pobj1 = prop_dictionary_get((prop_dictionary_t)pobj,
-                      "cur-value")) )
-                    if ( prop_number_integer_value((prop_number_t)pobj1) )
-                        state |= XOSVIEW_BATT_DISCHARGING;
+                int unused = 0;
+                if (setIfFound(pdict, "cur-value", unused))
+                    state |= XOSVIEW_BATT_DISCHARGING;
             }
         }
+
         if (present) {
             total_capacity += capacity;
             total_charge += charge;
@@ -635,6 +648,7 @@ void BSDGetBatteryInfo(int &remaining, unsigned int &state) {
     }
     prop_object_iterator_release(piter);
     prop_object_release(pdict);
+
 #else // XOSVIEW_OPENBSD
     float total_capacity = 0, total_charge = 0, total_low = 0, total_crit = 0;
     std::string battery;
