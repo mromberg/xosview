@@ -23,7 +23,7 @@ protected:
 
 class FSMeterFactory : public FSMFactory<FSMeter> {
 public:
-    virtual std::vector<std::string> getAuto(void);
+    virtual std::vector<std::string> getAuto(void) override;
 };
 
 

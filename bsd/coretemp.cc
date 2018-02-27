@@ -15,11 +15,13 @@
 #include "coretemp.h"
 #include "kernel.h"
 
+#include <numeric>
+
 
 
 CoreTemp::CoreTemp( const std::string &label, const std::string &caption,
   int cpu)
-    : FieldMeter( 3, label, caption ),
+    : FieldMeter(3, label, caption),
       _cpu(cpu), _cpuCount(countCpus()),
       _high(0), _temps(_cpuCount, 0),
       _actColor(0), _highColor(0) {
@@ -28,32 +30,28 @@ CoreTemp::CoreTemp( const std::string &label, const std::string &caption,
 }
 
 
-CoreTemp::~CoreTemp( void ) {
-}
-
-
 void CoreTemp::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
 
-    _actColor  = rdb.getColor("coretempActColor");
+    _actColor = rdb.getColor("coretempActColor");
     _highColor = rdb.getColor("coretempHighColor");
 
-    setfieldcolor( 0, _actColor );
-    setfieldcolor( 1, rdb.getColor( "coretempIdleColor") );
-    setfieldcolor( 2, _highColor );
+    setfieldcolor(0, _actColor);
+    setfieldcolor(1, rdb.getColor("coretempIdleColor"));
+    setfieldcolor(2, _highColor);
 
-    std::string highest = rdb.getResourceOrUseDefault(
-        "coretempHighest", "100" );
-    _total = std::stoi( highest );
-    std::string high = rdb.getResourceOrUseDefault("coretempHigh", "");
+    const std::string highest = rdb.getResourceOrUseDefault(
+        "coretempHighest", "100");
+    _total = std::stoi(highest);
+    const std::string high = rdb.getResourceOrUseDefault("coretempHigh", "");
 
     // Get tjMax here and use as total.
-    float total = -300.0;
     std::vector<float> tjmax(_cpuCount, 0.0);
     BSDGetCPUTemperature(_temps, tjmax);
-    for (int i = 0; i < _cpuCount; i++) {
-        if (tjmax[i] > total)
-            total = tjmax[i];
+    float total = -300.0;
+    for (const auto &tjm : tjmax) {
+        if (tjm > total)
+            total = tjm;
     }
 
     if (total > 0.0)
@@ -62,51 +60,24 @@ void CoreTemp::checkResources(const ResDB &rdb) {
     std::string lgnd;
     if (!high.size()) {
         _high = _total;
-        lgnd = "ACT(\260C)/HIGH/" + util::repr((int)_total);
+        lgnd = "ACT(uC)/HIGH/" + std::to_string(static_cast<int>(_total));
     }
     else {
-        _high = std::stoi( high );
-        lgnd = "ACT(\260C)/" + util::repr((int)_high)
-            + "/" + util::repr((int)_total);
+        _high = std::stoi(high);
+        lgnd = "ACT(uC)/" + std::to_string(static_cast<int>(_high))
+            + "/" + std::to_string(static_cast<int>(_total));
     }
     legend(lgnd);
 }
 
 
-unsigned int CoreTemp::countCpus( void ) {
+unsigned int CoreTemp::countCpus(void) {
     return BSDGetCPUTemperature();
 }
 
 
-void CoreTemp::checkevent( void ) {
+void CoreTemp::checkevent(void) {
     getcoretemp();
-}
-
-
-void CoreTemp::getcoretemp( void ) {
-    BSDGetCPUTemperature(_temps);
-
-    _fields[0] = 0.0;
-    if ( _cpu >= 0 && _cpu < _cpuCount ) {  // one core
-        _fields[0] = _temps[_cpu];
-    }
-    else if ( _cpu == -1 ) {  // average
-        float tempval = 0.0;
-        for (int i = 0; i < _cpuCount; i++)
-            tempval += _temps[i];
-        _fields[0] = tempval / (float)_cpuCount;
-    }
-    else if ( _cpu == -2 ) {  // maximum
-        float tempval = -300.0;
-        for (int i = 0; i < _cpuCount; i++) {
-            if (_temps[i] > tempval)
-                tempval = _temps[i];
-        }
-        _fields[0] = tempval;
-    }
-    else {    // should not happen
-        logFatal << "Unknown CPU core number in coretemp." << std::endl;
-    }
 
     setUsed(_fields[0], _total);
     if (_fields[0] < 0)
@@ -121,12 +92,34 @@ void CoreTemp::getcoretemp( void ) {
     if (_fields[1] < 0) { // alarm: T > high
         _fields[1] = 0;
         if (fieldcolor(0) != _highColor) {
-            setfieldcolor( 0, _highColor );
+            setfieldcolor(0, _highColor);
         }
     }
     else {
         if (fieldcolor(0) != _actColor) {
-            setfieldcolor( 0, _actColor );
+            setfieldcolor(0, _actColor);
         }
+    }
+}
+
+
+void CoreTemp::getcoretemp(void) {
+    BSDGetCPUTemperature(_temps);
+
+    _fields[0] = 0.0;
+    if (_cpu >= 0 && static_cast<size_t>(_cpu) < _cpuCount) { // one core
+        _fields[0] = _temps[_cpu];
+    }
+    else if (_cpu == -1) {  // average
+        const float sum = std::accumulate(_temps.cbegin(), _temps.cend(), 0.0);
+        _fields[0] = _temps.empty() ? 0.0
+            : sum / static_cast<float>(_temps.size());
+    }
+    else if (_cpu == -2) {  // maximum
+        const auto it = std::max_element(_temps.cbegin(), _temps.cend());
+        _fields[0] = (it == _temps.cend()) ? 0 : *it;
+    }
+    else {    // should not happen
+        logFatal << "Unknown CPU core number in coretemp." << std::endl;
     }
 }
