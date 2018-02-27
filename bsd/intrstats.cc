@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2016
+//  Copyright (c) 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -88,11 +88,10 @@ std::map<size_t, uint64_t> IntrStats::readCounts(void) const {
 #endif
 
 
-// Note: combine scan() and counts() using lambdas when C++11 support
-//       can be assumed to be widely supported.
 #if defined(XOSVIEW_NETBSD)
-void IntrStats::scan(void) {
-
+namespace /* {anonymous} */ {
+template <class F>
+static void ScanTable(const F &func) {
     static SysCtl evcnt_sc = {
         CTL_KERN, KERN_EVCNT, EVCNT_TYPE_INTR, KERN_EVCNT_COUNT_ANY
     };
@@ -112,10 +111,26 @@ void IntrStats::scan(void) {
     size_t i = 0;
     while (evs->ev_len && evs < evsend &&
       reinterpret_cast<const struct evcnt_sysctl *>(
-          static_cast<char *>(evs) + evs->ev_len * 8) < evsend ) {
+          reinterpret_cast<const char *>(evs) + evs->ev_len * 8) < evsend ) {
 
-        // ------- lambda -----
-        // extract the "pin" number from the name.
+        // DO STUFF
+        func(evs, i);
+
+        evs = reinterpret_cast<const struct evcnt_sysctl *>(
+            reinterpret_cast<const char *>(evs) + 8 * evs->ev_len);
+
+        i++;
+    }
+}
+
+} // namespace {anonymous}
+#endif
+
+
+#if defined(XOSVIEW_NETBSD)
+void IntrStats::scan(void) {
+
+    auto lam = [this](const struct evcnt_sysctl *evs, int i) {
         const std::string name(evs->ev_strings + evs->ev_grouplen + 1);
         std::istringstream is(name);
         std::string dummy;
@@ -124,13 +139,8 @@ void IntrStats::scan(void) {
 
         if (is)
             _irqMap[nbr] = i;
-        // ------- lambda -----
-
-        evs = reinterpret_cast<const struct evcnt_sysctl *>(
-            static_cast<const char *>(evs) + 8 * evs->ev_len);
-
-        i++;
-    }
+    };
+    ScanTable(lam);
 }
 #endif
 
@@ -138,39 +148,14 @@ void IntrStats::scan(void) {
 #if defined(XOSVIEW_NETBSD)
 std::map<size_t, uint64_t> IntrStats::readCounts(void) const {
 
-    static SysCtl evcnt_sc = {
-        CTL_KERN, KERN_EVCNT, EVCNT_TYPE_INTR, KERN_EVCNT_COUNT_ANY
-    };
-
-    size_t evsize = 0;
-    if (!evcnt_sc.getsize(evsize))
-        logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
-
-    std::vector<char> buf(evsize, 0);
-    if (!evcnt_sc.get(buf))
-        logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
-
-    auto evs = reinterpret_cast<const struct evcnt_sysctl *>(buf.data());
-    auto evsend = reinterpret_cast<const struct evcnt_sysctl *>(buf.data()
-      + buf.size());
-
     std::map<size_t, uint64_t> rval;
-    size_t i = 0;
-    while (evs->ev_len && evs < evsend &&
-      reinterpret_cast<const struct evcnt_sysctl *>(
-          static_cast<char *>(evs) + evs->ev_len * 8) < evsend ) {
 
-        // ------- lambda -----
-        std::map<size_t, size_t>::const_iterator it = _irqMap.find(i);
+    auto lam = [this, &rval](const struct evcnt_sysctl *evs, int i) {
+        auto it = _irqMap.find(i);
         if (it != _irqMap.end())
             rval[i] = evs->ev_count;
-        // ------- lambda -----
-
-        evs = reinterpret_cast<const struct evcnt_sysctl *>(
-            static_cast<const char *>(evs) + 8 * evs->ev_len);
-
-        i++;
-    }
+    };
+    ScanTable(lam);
 
     return rval;
 }
