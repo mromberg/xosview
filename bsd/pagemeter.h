@@ -32,7 +32,7 @@ private:
     std::vector<uint64_t> _previnfo;
 
     // layout: { pages_in, pages_out }
-    static void getPageStats(std::vector<uint64_t> &pageinfo);
+    void getPageStats(std::vector<uint64_t> &pageinfo) const;
 };
 
 

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016, 2018 by Mike Romberg ( romberg@fsl.noaa.gov )
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
+//  by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
 //  Most of this code was written by Werner Fink <werner@suse.de>.
@@ -21,7 +22,7 @@
 #endif
 
 
-LoadMeter::LoadMeter( void )
+LoadMeter::LoadMeter(void)
     : ComLoadMeter() {
 }
 
@@ -45,30 +46,10 @@ static uint64_t GetCPUSpeed(const std::string &sysname) {
 
     return speed;
 }
-#endif
+#else // XOSVIEW_OPENBSD
+static uint64_t GetCPUSpeed(void) {
 
-
-#if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD)
-
-uint64_t LoadMeter::getCPUSpeed(void) {
-    return GetCPUSpeed("machdep.tsc_freq");
-}
-
-#elif defined(XOSVIEW_DFBSD)
-
-uint64_t LoadMeter::getCPUSpeed(void) {
-    return GetCPUSpeed("hw.tsc_frequency");
-}
-
-#elif defined(XOSVIEW_OPENBSD)
-
-uint64_t LoadMeter::getCPUSpeed(void) {
-
-    static SysCtl speed_sc;
-    if (speed_sc.mib().empty()) {
-        speed_sc.mib().push_back(CTL_HW);
-        speed_sc.mib().push_back(HW_CPUSPEED);
-    }
+    static SysCtl speed_sc = { CTL_HW, HW_CPUSPEED };
 
     int speed = 0;
     if (!speed_sc.get(speed))
@@ -76,5 +57,14 @@ uint64_t LoadMeter::getCPUSpeed(void) {
 
     return static_cast<uint64_t>(speed) * 1000000;
 }
-
 #endif
+
+uint64_t LoadMeter::getCPUSpeed(void) {
+#if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_FREEBSD)
+    return GetCPUSpeed("machdep.tsc_freq");
+#elif defined(XOSVIEW_DFBSD)
+    return GetCPUSpeed("hw.tsc_frequency");
+#elif defined(XOSVIEW_OPENBSD)
+    return GetCPUSpeed();
+#endif
+}

@@ -26,7 +26,7 @@ protected:
     virtual std::pair<uint64_t, uint64_t> getswapinfo(void) override;
 
 private:
-    static void getSwapInfo(uint64_t &total, uint64_t &used);
+    void getSwapInfo(uint64_t &total, uint64_t &used) const;
 };
 
 
