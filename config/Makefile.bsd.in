@@ -30,6 +30,7 @@ swapmeter.o \
 fsmeter.o \
 sensor.o \
 coretemp.o \
+sctl.o \
 MeterMaker.o
 
 

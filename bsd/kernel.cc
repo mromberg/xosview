@@ -19,9 +19,12 @@
 #include "kernel.h"
 #include "log.h"
 #include "sctl.h"
+#include "strutil.h"
 #if defined(XOSVIEW_FREEBSD)
 #include "cpumeter.h"
 #endif
+
+#include <map>
 
 #include <unistd.h>
 #include <fcntl.h>

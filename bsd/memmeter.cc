@@ -39,13 +39,9 @@ static size_t NFIELDS = 5;
 
 
 
-MemMeter::MemMeter( void )
-    : FieldMeterGraph( NFIELDS, "MEM", LEGEND ),
+MemMeter::MemMeter(void)
+    : FieldMeterGraph(NFIELDS, "MEM", LEGEND),
       _meminfo(5, 0) {
-}
-
-
-MemMeter::~MemMeter( void ) {
 }
 
 
@@ -53,42 +49,44 @@ void MemMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getColor("memActiveColor") );
-    setfieldcolor( 1, rdb.getColor("memInactiveColor") );
-    setfieldcolor( 2, rdb.getColor("memWiredColor") );
+    setfieldcolor(0, rdb.getColor("memActiveColor"));
+    setfieldcolor(1, rdb.getColor("memInactiveColor"));
+    setfieldcolor(2, rdb.getColor("memWiredColor"));
 #if defined(HAVE_UVM)
-    setfieldcolor( 3, rdb.getColor("memFreeColor") );
+    setfieldcolor(3, rdb.getColor("memFreeColor"));
 #else
-    setfieldcolor( 3, rdb.getColor("memCacheColor") );
-    setfieldcolor( 4, rdb.getColor("memFreeColor") );
+    setfieldcolor(3, rdb.getColor("memCacheColor"));
+    setfieldcolor(4, rdb.getColor("memFreeColor"));
 #endif
 }
 
 
-void MemMeter::checkevent( void ) {
+void MemMeter::checkevent(void) {
     getmeminfo();
 }
 
 
-void MemMeter::getmeminfo( void ) {
+void MemMeter::getmeminfo(void) {
     getMemStats(_meminfo);
-    _fields[0] = (double)_meminfo[0];
-    _fields[1] = (double)_meminfo[1];
-    _fields[2] = (double)_meminfo[2];
+    _fields[0] = static_cast<double>(_meminfo[0]);
+    _fields[1] = static_cast<double>(_meminfo[1]);
+    _fields[2] = static_cast<double>(_meminfo[2]);
 #if defined(HAVE_UVM)
-    _fields[3] = (double)_meminfo[4];
+    _fields[3] = static_cast<double>(_meminfo[4]);
 #else
-    _fields[3] = (double)_meminfo[3];
-    _fields[4] = (double)_meminfo[4];
+    _fields[3] = static_cast<double>(_meminfo[3]);
+    _fields[4] = static_cast<double>(_meminfo[4]);
 #endif
-    _total = (double)(_meminfo[0] + _meminfo[1] + _meminfo[2] + _meminfo[3]
-      + _meminfo[4]);
+
+    _total = static_cast<double>(_meminfo[0] + _meminfo[1] + _meminfo[2]
+      + _meminfo[3] + _meminfo[4]);
+
     setUsed(_total - (double)_meminfo[4], _total);
 }
 
 
 #if defined(XOSVIEW_DFBSD)
-void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) {
+void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) const {
 
     static SysCtl vmstats_sc("vm.vmstats");
 
@@ -97,20 +95,21 @@ void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) {
         logFatal << "sysctl(" << vmstats_sc.id() << ") failed." << std::endl;
 
     meminfo.resize(5);
-    meminfo[0] = (uint64_t)vms.v_active_count * vms.v_page_size;
-    meminfo[1] = (uint64_t)vms.v_inactive_count * vms.v_page_size;
-    meminfo[2] = (uint64_t)vms.v_wire_count * vms.v_page_size;
-    meminfo[3] = (uint64_t)vms.v_cache_count * vms.v_page_size;
-    meminfo[4] = (uint64_t)vms.v_free_count * vms.v_page_size;
+    meminfo[0] = static_cast<uint64_t>(vms.v_active_count) * vms.v_page_size;
+    meminfo[1] = static_cast<uint64_t>(vms.v_inactive_count) * vms.v_page_size;
+    meminfo[2] = static_cast<uint64_t>(vms.v_wire_count) * vms.v_page_size;
+    meminfo[3] = static_cast<uint64_t>(vms.v_cache_count) * vms.v_page_size;
+    meminfo[4] = static_cast<uint64_t>(vms.v_free_count) * vms.v_page_size;
 }
 #endif
 
 
 #if defined(XOSVIEW_FREEBSD)
-void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) {
+void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) const {
 
     struct vmmeter vm;
 
+    // GET_VM_STAT defined in sctl.h.
     GET_VM_STAT(vm, v_active_count);
     GET_VM_STAT(vm, v_inactive_count);
     GET_VM_STAT(vm, v_wire_count);
@@ -119,17 +118,17 @@ void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) {
     GET_VM_STAT(vm, v_page_size);
 
     meminfo.resize(5);
-    meminfo[0] = (uint64_t)vm.v_active_count * vm.v_page_size;
-    meminfo[1] = (uint64_t)vm.v_inactive_count * vm.v_page_size;
-    meminfo[2] = (uint64_t)vm.v_wire_count * vm.v_page_size;
-    meminfo[3] = (uint64_t)vm.v_cache_count * vm.v_page_size;
-    meminfo[4] = (uint64_t)vm.v_free_count * vm.v_page_size;
+    meminfo[0] = static_cast<uint64_t>(vm.v_active_count) * vm.v_page_size;
+    meminfo[1] = static_cast<uint64_t>(vm.v_inactive_count) * vm.v_page_size;
+    meminfo[2] = static_cast<uint64_t>(vm.v_wire_count) * vm.v_page_size;
+    meminfo[3] = static_cast<uint64_t>(vm.v_cache_count) * vm.v_page_size;
+    meminfo[4] = static_cast<uint64_t>(vm.v_free_count) * vm.v_page_size;
 }
 #endif
 
 
 #if defined(XOSVIEW_NETBSD)
-void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) {
+void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) const {
     static SysCtl uvmexp2_sc("vm.uvmexp2");
 
     struct uvmexp_sysctl uvm;
@@ -138,23 +137,23 @@ void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) {
 
     meminfo.resize(5);
     // UVM excludes kernel memory -> assume it is active mem
-    meminfo[0] = (uint64_t)(uvm.npages - uvm.inactive - uvm.wired
+    meminfo[0] = static_cast<uint64_t>(uvm.npages - uvm.inactive - uvm.wired
       - uvm.free) * uvm.pagesize;
-    meminfo[1] = (uint64_t)uvm.inactive * uvm.pagesize;
-    meminfo[2] = (uint64_t)uvm.wired * uvm.pagesize;
+    meminfo[1] = static_cast<uint64_t>(uvm.inactive) * uvm.pagesize;
+    meminfo[2] = static_cast<uint64_t>(uvm.wired) * uvm.pagesize;
 
     // cache is already included in active and inactive memory and
     // there's no way to know how much is in which -> disable cache
     meminfo[3] = 0;
-    meminfo[4] = (uint64_t)uvm.free * uvm.pagesize;
+    meminfo[4] = static_cast<uint64_t>(uvm.free) * uvm.pagesize;
 }
 #endif
 
 
 #if defined(XOSVIEW_OPENBSD)
-void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) {
-    const int mib_uvm[] = { CTL_VM, VM_UVMEXP };
-    static SysCtl uvmexp_sc(mib_uvm, 2);
+void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) const {
+
+    static SysCtl uvmexp_sc = { CTL_VM, VM_UVMEXP };
 
     struct uvmexp uvm;
     if (!uvmexp_sc.get(uvm))
@@ -162,14 +161,14 @@ void MemMeter::getMemStats(std::vector<uint64_t> &meminfo) {
 
     meminfo.resize(5);
     // UVM excludes kernel memory -> assume it is active mem
-    meminfo[0] = (uint64_t)(uvm.npages - uvm.inactive - uvm.wired
+    meminfo[0] = static_cast<uint64_t>(uvm.npages - uvm.inactive - uvm.wired
       - uvm.free) * uvm.pagesize;
-    meminfo[1] = (uint64_t)uvm.inactive * uvm.pagesize;
-    meminfo[2] = (uint64_t)uvm.wired * uvm.pagesize;
+    meminfo[1] = static_cast<uint64_t>(uvm.inactive) * uvm.pagesize;
+    meminfo[2] = static_cast<uint64_t>(uvm.wired) * uvm.pagesize;
 
     // cache is already included in active and inactive memory and
     // there's no way to know how much is in which -> disable cache
     meminfo[3] = 0;
-    meminfo[4] = (uint64_t)uvm.free * uvm.pagesize;
+    meminfo[4] = static_cast<uint64_t>(uvm.free) * uvm.pagesize;
 }
 #endif
