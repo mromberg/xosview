@@ -56,7 +56,7 @@ std::pair<float, float> NetMeter::getRates(void) {
     struct lifreq lfr;
     _nets->update(_kc);
 
-    IntervalTimerStop();
+    timerStop();
     for (unsigned int i = 0; i < _nets->count(); i++) {
 
         ksp = (*_nets)[i];
@@ -143,11 +143,11 @@ std::pair<float, float> NetMeter::getRates(void) {
     if(_lastBytesOut == 0)
         _lastBytesOut = nowBytesOut;
 
-    double t = IntervalTimeInSecs();
+    double t = etimeSecs();
     std::pair<float, float> rval((nowBytesIn - _lastBytesIn) / t,
       (nowBytesOut - _lastBytesOut) / t);
 
-    IntervalTimerStart();
+    timerStart();
     _lastBytesIn = nowBytesIn;
     _lastBytesOut = nowBytesOut;
 

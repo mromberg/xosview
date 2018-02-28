@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2015
+//  Copyright (c) 1999, 2015, 2018
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
@@ -19,7 +19,7 @@ PageMeter::PageMeter(kstat_ctl_t *_kc)
       cpustats(KStatList::getList(_kc, KStatList::CPU_STAT)),
       kc(_kc) {
 
-    IntervalTimerStart();
+    timerStart();
 }
 
 
@@ -47,9 +47,9 @@ std::pair<float, float> PageMeter::getPageRate(void) {
 
     pageindex_ = (pageindex_ + 1) % 2;
 
-    IntervalTimerStop();
-    double t = IntervalTimeInSecs();
-    IntervalTimerStart();
+    timerStop();
+    double t = etimeSecs();
+    timerStart();
 
     std::pair<float, float> rval((piov[0] * _psize) / t,
       (piov[1] * _psize) / t);

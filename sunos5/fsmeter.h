@@ -26,6 +26,4 @@ public:
     virtual std::vector<std::string> getAuto(void) override;
 };
 
-#undef MOUNT_FNAME
-
 #endif // end FSMETER_H

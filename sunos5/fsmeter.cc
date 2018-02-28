@@ -8,7 +8,7 @@
 
 
 
-static const char * const MOUNT_FNAME = "/etc/mnttab";
+static const char * const MNTTAB_FNAME = "/etc/mnttab";
 
 
 
@@ -23,9 +23,9 @@ std::vector<std::string> FSMeterFactory::getAuto(void) {
 
     std::vector<std::string> rval;
 
-    std::ifstream ifs(MOUNT_FNAME);
+    std::ifstream ifs(MNTTAB_FNAME);
     if (!ifs) {
-        logProblem << "Could not open: " << MOUNT_FNAME << std::endl;
+        logProblem << "Could not open: " << MNTTAB_FNAME << std::endl;
         return rval;
     }
 
@@ -43,9 +43,9 @@ std::vector<std::string> FSMeterFactory::getAuto(void) {
 
 
 bool FSMeter::isMount(const std::string &path) {
-    std::ifstream ifs(MOUNT_FNAME);
+    std::ifstream ifs(MNTTAB_FNAME);
     if (!ifs) {
-        logProblem << "Could not open: " << MOUNT_FNAME << std::endl;
+        logProblem << "Could not open: " << MNTTAB_FNAME << std::endl;
         return false;
     }
 

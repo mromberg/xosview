@@ -25,7 +25,7 @@ float IrqRateMeter::getIrqRate(void) {
     uint64_t irqcount = 0;
 
     _cpus->update(_kc);
-    IntervalTimerStop();
+    timerStop();
     for (size_t i = 0; i < _cpus->count(); i++) {
         if (kstat_read(_kc, (*_cpus)[i], nullptr) == -1) {
             logFatal << "kstat_read() failed." << std::endl;
@@ -40,9 +40,9 @@ float IrqRateMeter::getIrqRate(void) {
     if (_lastirqcount == 0)
         _lastirqcount = irqcount;
 
-    float rval = (irqcount - _lastirqcount) / IntervalTimeInSecs();
+    float rval = (irqcount - _lastirqcount) / etimeSecs();
     _lastirqcount = irqcount;
-    IntervalTimerStart();
+    timerStart();
 
     return rval;
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2015
+//  Copyright (c) 1999, 2015, 2018
 //  Rewritten for Solaris by Arno Augustin 1999
 //  augustin@informatik.uni-erlangen.de
 //
@@ -23,7 +23,7 @@ std::pair<double, double> DiskMeter::getRate(void) {
     uint64_t read_curr = 0, write_curr = 0;
     _disks->update(_kc);
 
-    IntervalTimerStop();
+    timerStop();
     for (unsigned int i = 0; i < _disks->count(); i++) {
         if ( kstat_read(_kc, (*_disks)[i], &kio) == -1 )
             continue;
@@ -38,12 +38,12 @@ std::pair<double, double> DiskMeter::getRate(void) {
     if (_write_prev == 0)
         _write_prev = write_curr;
 
-    double t = IntervalTimeInSecs();
+    double t = etimeSecs();
     std::pair<double, double> rval(0, 0);
     rval.first = (double)(read_curr - _read_prev) / t;
     rval.second = (double)(write_curr - _write_prev) / t;
 
-    IntervalTimerStart();
+    timerStart();
     _read_prev = read_curr;
     _write_prev = write_curr;
 
