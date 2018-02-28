@@ -20,9 +20,9 @@ public:
     virtual void checkResources(const ResDB &rdb) override;
 
 private:
-    int pageSize;
-    kstat_ctl_t *kc;
-    kstat_t *ksp_sp, *ksp_zfs;
+    const size_t _pageSize;
+    kstat_ctl_t *_kc;
+    kstat_t *_ksp_sp, *_ksp_zfs;
 
     void getmeminfo(void);
 };

@@ -22,10 +22,10 @@ protected:
 
 private:
     const size_t _psize;
-    std::vector<std::vector<float> > pageinfo_;
-    int pageindex_;
-    KStatList *cpustats;
-    kstat_ctl_t *kc;
+    std::vector<std::vector<float>> _pageinfo;
+    size_t _pageindex;
+    KStatList *_cpustats;
+    kstat_ctl_t *_kc;
 };
 
 

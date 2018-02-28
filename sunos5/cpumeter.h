@@ -31,6 +31,7 @@ private:
     kstat_ctl_t *_kc;
     kstat_t *_ksp;
 
+    KStatList &cpustats(void) const { return *_cpustats; };
     void getcputime(void);
 };
 

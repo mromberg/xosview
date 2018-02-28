@@ -27,6 +27,8 @@ private:
     uint64_t _lastirqcount;
     kstat_ctl_t *_kc;
     KStatList *_cpus;
+
+    KStatList &cpus(void) const { return *_cpus; }
 };
 
 

@@ -24,6 +24,8 @@ private:
     uint64_t _read_prev, _write_prev;
     kstat_ctl_t *_kc;
     KStatList *_disks;
+
+    KStatList &disks(void) const { return *_disks; }
 };
 
 

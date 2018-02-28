@@ -74,7 +74,7 @@ ComMeterMaker::mlist MeterMaker::makeMeters(const ResDB &rdb) {
 void MeterMaker::cpuFactory(const ResDB &rdb, kstat_ctl_t *kc,
   mlist &meters)  const {
 
-    int cpuCount = sysconf(_SC_NPROCESSORS_ONLN);
+    const int cpuCount = sysconf(_SC_NPROCESSORS_ONLN);
 
     size_t start = 0, end = 0;
     getRange(rdb.getResource("cpuFormat"), cpuCount, start, end);

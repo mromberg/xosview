@@ -21,9 +21,11 @@ protected:
     virtual uint64_t getCPUSpeed(void) override;
 
 private:
-    KStatList *cpulist;
-    kstat_ctl_t *kc;
-    kstat_t *ksp;
+    KStatList *_cpulist;
+    kstat_ctl_t *_kc;
+    kstat_t *_ksp;
+
+    KStatList &cpulist(void) const { return *_cpulist; }
 };
 
 

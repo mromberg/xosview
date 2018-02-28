@@ -168,8 +168,6 @@ case $host_os in
             AC_CHECK_LIB(kstat, kstat_open,
             [AC_DEFINE(HAVE_KSTAT,[1],[Have libkstat])
              XO_CONCAT(LIBS,$LIBS,[-lkstat])],,))
-        AC_CHECK_HEADER(sys/loadavg.h,
-            AC_CHECK_FUNCS(getloadavg))
 	host_dir=sunos5
 	host_os=sunos5
         ;;

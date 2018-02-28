@@ -30,6 +30,8 @@ private:
     std::string _netIface;
     bool _ignored;
     int _socket;
+
+    KStatList &nets(void) const { return *_nets; }
 };
 
 

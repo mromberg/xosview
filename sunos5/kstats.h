@@ -33,8 +33,10 @@ public:
     kstat_t *operator[](size_t i)
         { return i < _stats.size() ? _stats[i] : nullptr; }
 
-    size_t count(void) { return _stats.size(); }
+    size_t count(void) const { return _stats.size(); }
     void update(kstat_ctl_t *kcp);
+
+    static kstat_named_t *lookup(kstat_t *ksp, const std::string &name);
 
 private:
     kid_t _chain;
@@ -100,6 +102,13 @@ inline unsigned long long kstat_to_ui64(kstat_named_t *k) {
     }
 
     return 0;
+}
+
+
+inline kstat_named_t *KStatList::lookup(kstat_t *ksp,
+  const std::string &name) {
+    return static_cast<kstat_named_t *>(kstat_data_lookup(ksp,
+        const_cast<char *>(name.c_str())));
 }
 
 

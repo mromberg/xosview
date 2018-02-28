@@ -21,17 +21,17 @@ IrqRateMeter::IrqRateMeter(kstat_ctl_t *kc)
 
 
 float IrqRateMeter::getIrqRate(void) {
-    kstat_named_t *k;
+
     uint64_t irqcount = 0;
 
     _cpus->update(_kc);
     timerStop();
-    for (size_t i = 0; i < _cpus->count(); i++) {
-        if (kstat_read(_kc, (*_cpus)[i], nullptr) == -1) {
+
+    for (size_t i = 0 ; i < _cpus->count() ; i++) {
+        if (kstat_read(_kc, cpus()[i], nullptr) == -1)
             logFatal << "kstat_read() failed." << std::endl;
-        }
-        k = (kstat_named_t *)kstat_data_lookup((*_cpus)[i],
-          const_cast<char *>("intr"));
+
+        kstat_named_t *k = KStatList::lookup(cpus()[i], "intr");
         if (k == nullptr)
             logFatal << "kstat_data_lookup() failed." << std::endl;
 
