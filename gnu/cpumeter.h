@@ -9,26 +9,26 @@
 
 #include "fieldmetergraph.h"
 
+
+
 class CPUMeter : public FieldMeterGraph {
 public:
-    CPUMeter(unsigned int cpu=0);
-    ~CPUMeter(void);
+    CPUMeter(size_t cpu=0);
 
     virtual std::string resName(void) const override { return "cpu"; }
     virtual void checkevent(void) override;
-
     virtual void checkResources(const ResDB &rdb) override;
 
     static size_t countCPUs(void);
     static std::string cpuStr(size_t num);
 
 private:
+    size_t _cpu;
     size_t _lineNum;
     std::vector<unsigned long long> _oldStats;
-    unsigned int _cpu;
 
     void getcputime(void);
-    size_t findLine(void);
+    size_t findLine(void) const;
     void getStats(std::vector<unsigned long long> &stats) const;
 };
 

@@ -18,7 +18,6 @@ public:
 
     virtual std::string resName(void) const override { return "mem"; }
     virtual void checkevent(void) override;
-
     virtual void checkResources(const ResDB &rdb) override;
 };
 
