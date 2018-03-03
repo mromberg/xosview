@@ -7,11 +7,9 @@
 #include "fsmeter.h"
 
 
-
 std::vector<std::string> FSMeterFactory::getAuto(void) {
     //  Create a list of entries in mounts where the device
     //  and mount point are absolute paths.
-
     std::vector<std::string> rval;
 
     std::ifstream ifs(MOUNT_FNAME);
@@ -25,8 +23,8 @@ std::vector<std::string> FSMeterFactory::getAuto(void) {
         ifs >> dev >> fill >> path >> fill >> type;
         std::getline(ifs, line);
         if (ifs) {
-            if (dev[0] == '/' && path[0] == '/')
-                rval.push_back(path);
+            if (dev.front() == '/' && path.front() == '/')
+                rval.push_back(std::move(path));
         }
     }
 

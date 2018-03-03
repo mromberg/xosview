@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include <stdint.h>  // for uint64_t for 32 bit systems
+#include <cstdint>  // for uint64_t for 32 bit systems
 
 
 //---------------------------------------------------------------
@@ -44,6 +44,7 @@ struct XOSVProc {
 
     std::istream &load(std::istream &is);
     std::ostream &dump(std::ostream &os) const;
+
     static std::vector<XOSVProc> ptable(void);
 };
 

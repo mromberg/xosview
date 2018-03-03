@@ -6,7 +6,6 @@
 //
 
 #include "cpumeter.h"
-#include "xosvproc.h"
 
 #include <fstream>
 
@@ -28,8 +27,8 @@
 //--------------------------------------------------------------
 
 
-CPUMeter::CPUMeter(unsigned int cpu)
-    : FieldMeterGraph( 7, util::toupper(CPUMeter::cpuStr(cpu)),
+CPUMeter::CPUMeter(size_t cpu)
+    : FieldMeterGraph(7, util::toupper(CPUMeter::cpuStr(cpu)),
       "USR/NI/KERN/KIPC/KCALL/SYS/IDL"), _cpu(cpu) {
 
     // Suppress the warning about _cpu being unused.  In the future
@@ -40,41 +39,39 @@ CPUMeter::CPUMeter(unsigned int cpu)
 }
 
 
-void CPUMeter::checkResources(const ResDB &rdb){
+void CPUMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getColor( "cpuUserColor" ) );
-    setfieldcolor( 1, rdb.getColor( "cpuNiceColor" ) );
-    setfieldcolor( 2, rdb.getColor( "cpuSystemColor" ) );
-    setfieldcolor( 3, rdb.getColor( "cpuWaitColor" ) );
-    setfieldcolor( 4, rdb.getColor( "cpuSoftIntColor" ) );
-    setfieldcolor( 5, rdb.getColor( "cpuInterruptColor" ) );
-    setfieldcolor( 6, rdb.getColor( "cpuFreeColor" ) );
+    setfieldcolor(0, rdb.getColor( "cpuUserColor"));
+    setfieldcolor(1, rdb.getColor( "cpuNiceColor"));
+    setfieldcolor(2, rdb.getColor( "cpuSystemColor"));
+    setfieldcolor(3, rdb.getColor( "cpuWaitColor"));
+    setfieldcolor(4, rdb.getColor( "cpuSoftIntColor"));
+    setfieldcolor(5, rdb.getColor( "cpuInterruptColor"));
+    setfieldcolor(6, rdb.getColor( "cpuFreeColor"));
 }
 
 
-void CPUMeter::checkevent( void ){
+void CPUMeter::checkevent(void) {
 
-    std::vector<uint64_t> ticks(getTicks());
+    const auto ticks = getTicks();
 
-    //logDebug << ticks << std::endl;
-
-    float ticktotal = (float)ticks[7];
+    const float ticktotal = static_cast<float>(ticks[7]);
 
     for (size_t i = 0 ; i + 1 < ticks.size() ; i++)
-        _fields[i] = (float)ticks[i] / ticktotal;
+        _fields[i] = static_cast<float>(ticks[i]) / ticktotal;
 
     _total = 1.0;
     setUsed(_total - _fields[6], _total);
 }
 
 
-size_t CPUMeter::countCPUs(void){
+size_t CPUMeter::countCPUs(void) {
     return 1;
 }
 
 
-std::string CPUMeter::cpuStr(size_t /* num */){
+std::string CPUMeter::cpuStr(size_t /* num */) {
     return "cpu";
 }
 
@@ -86,37 +83,33 @@ std::vector<uint64_t> CPUMeter::getTicks(void) {
     std::vector<XOSVProc> procs(XOSVProc::ptable());
     std::map<pid_t, XOSVProc> nptable;
 
-    for (size_t i = 0 ; i < procs.size() ; i++) {
-
+    for (const auto &proc : procs) {
         // get current total ticks, subtract last count
         // and save new count.  Build new ptable (in case a process
         // goes away).
-        pid_t pid = procs[i].pid;
-        uint64_t uticks = procs[i].execycles;
-        uint64_t kiticks = procs[i].kerncycles;
-        uint64_t kcticks = procs[i].kcallcycles;
+        const pid_t pid = proc.pid;
         const XOSVProc &last = _ptable[pid];
-        nptable[pid] = procs[i];
-        uticks -= last.execycles;
-        kiticks -= last.kerncycles;
-        kcticks -= last.kcallcycles;
+	const uint64_t uticks = proc.execycles - last.execycles;
+        const uint64_t kiticks = proc.kerncycles - last.kerncycles;
+        const uint64_t kcticks = proc.kcallcycles - last.kcallcycles;
+        nptable[pid] = proc;
 
         rval[4] += kiticks;
         rval[5] += kcticks;
         rval[7] += uticks + kiticks + kcticks;
 
         // put the execycles into a bin based on ptype.
-        if (procs[i].ptype == TYPE_TASK) {
-            if (procs[i].pid == IDLE)
+        if (proc.ptype == TYPE_TASK) {
+            if (proc.pid == IDLE)
                 rval[6] += uticks; // idle
-            else if (procs[i].pid == KERNEL)
+            else if (proc.pid == KERNEL)
                 rval[3] += uticks; // kernel
         }
         else {
-            if (procs[i].ptype == TYPE_SYSTEM)
+            if (proc.ptype == TYPE_SYSTEM)
                 rval[2] += uticks; // sys
             else {
-                if (procs[i].nice >= 19)
+                if (proc.nice >= 19)
                     rval[1] += uticks; // nice
                 else
                     rval[0] += uticks; // user
