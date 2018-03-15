@@ -50,7 +50,7 @@ XWin::~XWin(void) {
 }
 
 
-void XWin::openDisplay( void ){
+void XWin::openDisplay(void) {
     // Open connection to display selected by user
     const char *dname = displayName().empty() ? nullptr : displayName().c_str();
     if ((_display = XOpenDisplay(dname)) == nullptr) {
@@ -123,7 +123,7 @@ void XWin::createWindow(void) {
 
     // add the events
     for (const auto &event : _events)
-        selectEvents(event._mask);
+        selectEvents(event.mask());
 
     // Map the main window
     map();
@@ -191,9 +191,9 @@ bool XWin::isDBE(Visual *v) const {
 
 void XWin::setEvents(void) {
     // Set up the default Events
-    addEvent(ConfigureNotify, this, &XWin::configureEvent);
-    addEvent(ClientMessage, this, &XWin::deleteEvent);
-    addEvent(MappingNotify, this, &XWin::mappingNotify);
+    addEvent(ConfigureNotify, [this](auto e){ configureEvent(e); });
+    addEvent(ClientMessage, [this](auto e){ deleteEvent(e); });
+    addEvent(MappingNotify, [this](auto e){ mappingNotify(e); });
 }
 
 
@@ -209,7 +209,7 @@ void XWin::swapBB(void) const {
 }
 
 
-void XWin::setHints(XSizeHints *szHints){
+void XWin::setHints(XSizeHints *szHints) {
     // Set up the window manager hints
     XWMHints      *wmhints;      //  Hints for the window manager
     if ((wmhints = XAllocWMHints()) == nullptr) {
@@ -231,11 +231,10 @@ void XWin::setHints(XSizeHints *szHints){
         logFatal << "Error creating XTextProperty!" << std::endl;
     }
 
-    // Set up class hint
-    XClassHint    *classhints;   //  Class hint for window manager
-    if((classhints = XAllocClassHint()) == nullptr) {
+    // Set up class hint for window manager.
+    XClassHint *classhints = XAllocClassHint();
+    if(classhints == nullptr)
         logFatal << "Error allocating class hint!" << std::endl;
-    }
     const std::string cname = resdb().className();
     const std::string iname = resdb().instanceName();
     classhints->res_name = const_cast<char *>(iname.c_str());
@@ -296,7 +295,6 @@ void XWin::setColors(void) {
 
 
 XSizeHints *XWin::getGeometry(void) {
-
     // Fill out a XsizeHints structure to inform the window manager
     // of desired size and location of main window.
     XSizeHints *szHints = nullptr;
@@ -308,8 +306,8 @@ XSizeHints *XWin::getGeometry(void) {
     szHints->min_height = szHints->height;
     szHints->width = width();
     szHints->min_width = szHints->width;
-    szHints->x = x();
-    szHints->y = y();
+    szHints->x = _x;
+    szHints->y = _y;
 
     // Construct a default geometry string
     std::ostringstream defgs;
@@ -340,8 +338,8 @@ XSizeHints *XWin::getGeometry(void) {
 
     if (bitmask & (XValue | YValue)) {
         szHints->flags |= USPosition;
-        x(szHints->x);
-        y(szHints->y);
+        _x = szHints->x;
+        _y = szHints->y;
     }
 
     return szHints;
@@ -393,20 +391,20 @@ void XWin::checkevent(void) {
 }
 
 
-void XWin::addEvent(int eventType, XWin *xwin, EventCallBack callBack) {
-    _events.push_back(Event(xwin, eventType, callBack));
+void XWin::addEvent(int eventType, const Callback &cb) {
+    _events.emplace_back(eventType, cb);
 }
 
 
-void XWin::configureEvent(XEvent &event) {
-    x(event.xconfigure.x);
-    y(event.xconfigure.y);
+void XWin::configureEvent(const XEvent &event) {
+    _x = event.xconfigure.x;
+    _y = event.xconfigure.y;
     width(event.xconfigure.width);
     height(event.xconfigure.height);
 }
 
 
-void XWin::deleteEvent( XEvent &event ) {
+void XWin::deleteEvent(const XEvent &event) {
     if ((event.xclient.message_type == _wm) &&
       ((unsigned)event.xclient.data.l[0] == _wmdelete)) {
         logDebug << "calling done(true)..." << std::endl;
@@ -415,38 +413,36 @@ void XWin::deleteEvent( XEvent &event ) {
 }
 
 
-XWin::Event::Event(XWin *parent, int event, EventCallBack callBack)
-    : _parent(parent), _callBack(callBack), _event(event),
-      _mask(NoEventMask) {
-
+long XWin::Event::mask(void) const {
+    long mask = NoEventMask;
     switch (_event) {
     case ButtonPress:
-        _mask = ButtonPressMask;
+        mask = ButtonPressMask;
         break;
     case ButtonRelease:
-        _mask = ButtonReleaseMask;
+        mask = ButtonReleaseMask;
         break;
     case EnterNotify:
-        _mask = EnterWindowMask;
+        mask = EnterWindowMask;
         break;
     case LeaveNotify:
-        _mask = LeaveWindowMask;
+        mask = LeaveWindowMask;
         break;
     case MotionNotify:
-        _mask = PointerMotionMask;
+        mask = PointerMotionMask;
         break;
     case FocusIn:
     case FocusOut:
-        _mask = FocusChangeMask;
+        mask = FocusChangeMask;
         break;
     case KeymapNotify:
-        _mask = KeymapStateMask;
+        mask = KeymapStateMask;
         break;
     case KeyPress:
-        _mask = KeyPressMask;
+        mask = KeyPressMask;
         break;
     case KeyRelease:
-        _mask = KeyReleaseMask;
+        mask = KeyReleaseMask;
         break;
     case MapNotify:
     case SelectionClear:
@@ -454,18 +450,18 @@ XWin::Event::Event(XWin *parent, int event, EventCallBack callBack)
     case SelectionRequest:
     case ClientMessage:
     case MappingNotify:
-        _mask = NoEventMask;
+        mask = NoEventMask;
         break;
     case Expose:
     case GraphicsExpose:
     case NoExpose:
-        _mask = ExposureMask;
+        mask = ExposureMask;
         break;
     case ColormapNotify:
-        _mask = ColormapChangeMask;
+        mask = ColormapChangeMask;
         break;
     case PropertyNotify:
-        _mask = PropertyChangeMask;
+        mask = PropertyChangeMask;
         break;
     case UnmapNotify:
     case ReparentNotify:
@@ -473,29 +469,30 @@ XWin::Event::Event(XWin *parent, int event, EventCallBack callBack)
     case DestroyNotify:
     case CirculateNotify:
     case ConfigureNotify:
-        _mask = StructureNotifyMask | SubstructureNotifyMask;
+        mask = StructureNotifyMask | SubstructureNotifyMask;
         break;
     case CreateNotify:
-        _mask = SubstructureNotifyMask;
+        mask = SubstructureNotifyMask;
         break;
     case VisibilityNotify:
-        _mask = VisibilityChangeMask;
+        mask = VisibilityChangeMask;
         break;
         // The following are used by window managers
     case CirculateRequest:
     case ConfigureRequest:
     case MapRequest:
-        _mask = SubstructureRedirectMask;
+        mask = SubstructureRedirectMask;
         break;
     case ResizeRequest:
-        _mask = ResizeRedirectMask;
+        mask = ResizeRedirectMask;
         break;
     default:
-        logBug << "XWin::Event::Event() : unknown event type : "
-               << _event << std::endl;
-        _mask = NoEventMask;
+        logBug << "Unknown event type: " << _event << std::endl;
+        mask = NoEventMask;
         break;
     }
+
+    return mask;
 }
 
 
@@ -608,4 +605,24 @@ static std::ostream &operator<<(std::ostream &os, const XEvent &e) {
     };
 
     return os;
+}
+
+
+void XWin::resize(int width, int height) {
+    XResizeWindow(display(), window(), width, height);
+}
+
+
+void XWin::map(void) {
+    XMapWindow(display(), window());
+}
+
+
+void XWin::unmap(void) {
+    XUnmapWindow(display(), window());
+}
+
+
+void XWin::mappingNotify(const XEvent &event) {
+    XRefreshKeyboardMapping(const_cast<XMappingEvent *>(&event.xmapping));
 }

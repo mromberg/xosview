@@ -138,31 +138,28 @@ void XOSView::createMeters(void) {
 void XOSView::setEvents(void) {
     XWin::setEvents();
 
-    addEvent(ConfigureNotify, this,
-      static_cast<EventCallBack>(&XOSView::configureEvent));
-    addEvent(Expose, this,
-      reinterpret_cast<EventCallBack>(&XOSView::exposeEvent));
-    addEvent(KeyPress, this,
-      reinterpret_cast<EventCallBack>(&XOSView::keyPressEvent));
-    addEvent(VisibilityNotify, this,
-      reinterpret_cast<EventCallBack>(&XOSView::visibilityEvent));
-    addEvent(UnmapNotify, this,
-      reinterpret_cast<EventCallBack>(&XOSView::unmapEvent));
+    addEvent(ConfigureNotify, [this](auto e){ configureEvent(e); });
+    addEvent(Expose, [this](auto e){ exposeEvent(e); });
+    addEvent(KeyPress, [this](auto e){ keyPressEvent(e); });
+    addEvent(VisibilityNotify, [this](auto e){ visibilityEvent(e); });
+    addEvent(UnmapNotify, [this](auto e){ unmapEvent(e); });
 }
 
 
-void XOSView::keyPressEvent(XKeyEvent &event) {
+void XOSView::keyPressEvent(const XEvent &e) {
+    const XKeyEvent &event = e.xkey;
     char c = 0;
     KeySym key;
 
-    XLookupString(&event, &c, 1, &key, nullptr);
+    XLookupString(const_cast<XKeyEvent *>(&event), &c, 1, &key, nullptr);
 
     if ((c == 'q') || (c == 'Q'))
         done(true);
 }
 
 
-void XOSView::exposeEvent(XExposeEvent &event) {
+void XOSView::exposeEvent(const XEvent &e) {
+    const XExposeEvent &event = e.xexpose;
     logDebug << "XOSView::exposeEvent(): count=" << event.count << std::endl;
     _isvisible = true;
     if (event.count == 0)
@@ -170,7 +167,7 @@ void XOSView::exposeEvent(XExposeEvent &event) {
 }
 
 
-void XOSView::configureEvent(XEvent &e) {
+void XOSView::configureEvent(const XEvent &e) {
     unsigned int ew = e.xconfigure.width;
     unsigned int eh = e.xconfigure.height;
     logDebug << "configure event: " << ew << '/' << eh << std::endl;
@@ -182,7 +179,8 @@ void XOSView::configureEvent(XEvent &e) {
 }
 
 
-void XOSView::visibilityEvent(XVisibilityEvent &event) {
+void XOSView::visibilityEvent(const XEvent &e) {
+    const XVisibilityEvent &event = e.xvisibility;
     _ispartiallyvisible = false;
     if (event.state == VisibilityPartiallyObscured)
         _ispartiallyvisible = true;
@@ -194,7 +192,7 @@ void XOSView::visibilityEvent(XVisibilityEvent &event) {
 }
 
 
-void XOSView::unmapEvent(XUnmapEvent &) {
+void XOSView::unmapEvent(const XEvent &) {
     _isvisible = false;
 }
 
@@ -298,23 +296,20 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
     _xrm->loadResources(display());
 
     // Now load any resouce files specified on the command line
-    const std::vector<std::string> &cfiles = clopts.values("configFile");
-    for (const auto &cfile : cfiles)
+    for (const auto &cfile : clopts.values("configFile"))
         if (!_xrm->loadResources(cfile)) {
             logProblem << "Could not read file: " << cfile << std::endl;
         }
 
-
     // load all of the command line options into the
     // resouce database.  First the ones speced by -xrm
-    const std::vector<std::string> &xrml = clopts.values("xrm");
-    for (const auto &xrm : xrml) {
+    for (const auto &xrm : clopts.values("xrm")) {
         _xrm->putResource(xrm);
         logDebug << "ADD: " << xrm << std::endl;
     }
     // And then those from -o
     for (const auto &o : clopts.values("xosvxrm")) {
-        std::string res(instanceName() + "*" + o);
+        const std::string res(instanceName() + "*" + o);
         _xrm->putResource(res);
         logDebug << "ADD: " << res << std::endl;
     }
@@ -324,7 +319,7 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
     for (const auto &opt : clopts.opts()) {
         if (opt.name() != "xrm" && opt.name() != "xosvxrm"
           && !opt.missing()) {
-            std::string rname("." + instanceName() + "*" + opt.name());
+            const std::string rname("." + instanceName() + "*" + opt.name());
             _xrm->putResource(rname, opt.value());
             logDebug << "ADD: "
                      << rname << " : " << opt.value()
@@ -502,8 +497,8 @@ std::string XOSView::winname(void) {
         host.back() = '\0';  //POSIX.1-2001 says truncated names not terminated.
         hname = std::string(host.data());
     }
-    std::string name = std::string(NAME) + hname;
-    return resdb().getResourceOrUseDefault("title", name);
+
+    return resdb().getResourceOrUseDefault("title", NAME + hname);
 }
 
 
@@ -511,7 +506,7 @@ void  XOSView::resize(void) {
     //-----------------------------------
     // Width
     //-----------------------------------
-    unsigned int rightmargin = _hmargin;
+    const unsigned int rightmargin = _hmargin;
     unsigned int xpad = _xoff + rightmargin; // reserved for padding.
     xpad = xpad > width() ? width() : xpad;  // clamp to width().
 
@@ -559,7 +554,6 @@ std::string XOSView::instanceName(void) const {
 
 
 void XOSView::setCommandLineArgs(util::CLOpts &o) {
-
     //------------------------------------------------------
     // Define ALL of the command line options here.
     //

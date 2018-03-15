@@ -69,14 +69,14 @@ private:
     void checkResources(void);
     void createMeters(void);
     void dolegends(void);
-    void configureEvent(XEvent &event);
-    void exposeEvent(XExposeEvent &event);
-    void keyPressEvent(XKeyEvent &event);
-    void visibilityEvent(XVisibilityEvent &event);
-    void unmapEvent(XUnmapEvent &event);
     void scheduleDraw(bool full) { _doFullDraw = full; }
     void slumber(void) const;
     void usleep_via_select(unsigned long usec);
+    void configureEvent(const XEvent &event);
+    void exposeEvent(const XEvent &event);
+    void keyPressEvent(const XEvent &event);
+    void visibilityEvent(const XEvent &event);
+    void unmapEvent(const XEvent &event);
 };
 
 #endif

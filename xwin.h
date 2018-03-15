@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <functional>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -24,68 +25,62 @@ public:
     XWin(void);
     virtual ~XWin(void);
 
-    int x(void) const { return _x; }
-    void x(int val) { _x = val; }
-    int y(void) const { return _y; }
-    void y(int val) { _y = val; }
     unsigned int width(void) const { return _width; }
-    void width(unsigned int val) { _width = val; }
     unsigned int height(void) const { return _height; }
-    void height(unsigned int val) { _height = val; }
-
-    void title(const std::string &str)
-        { XStoreName(display(), window(), str.c_str()); }
-    void iconname(const std::string &str)
-        { XSetIconName(display(), window(), str.c_str()); }
     const std::string &appName(void) const { return _name; }
 
 protected:
     X11Graphics &g(void) { return *_graphics; }
     const X11Graphics &g(void) const { return *_graphics; }
 
+    void width(unsigned int val) { _width = val; }
+    void height(unsigned int val) { _height = val; }
     Visual *visual(void) const { return _visual; }
     Display *display(void) const { return _display; }
+    int screen(void) { return DefaultScreen(display()); }
     Window window(void) const { return _window; }
-    virtual void setEvents(void);
+    Colormap colormap(void) { return _colormap; }
+
+    void appName(const std::string &name) { _name = name; }
+    void title(const std::string &str)
+        { XStoreName(display(), window(), str.c_str()); }
+    void iconname(const std::string &str)
+        { XSetIconName(display(), window(), str.c_str()); }
+
     void createWindow(void);
     void setDisplayName(const std::string &name)
         { _displayName = name; }
     const std::string &displayName(void) const { return _displayName; }
     void setColors(void);
     void openDisplay(void);
-    Colormap colormap(void) { return _colormap; }
-    int screen(void) { return DefaultScreen(display()); }
-    void appName(const std::string &name) { _name = name; }
+
     bool done(void) const { return _done; }
     void done(bool val) { _done = val; }
-    void resize(int width, int height)
-        { XResizeWindow(display(), window(), width, height); }
-    void map(void) { XMapWindow(display(), window()); }
-    void unmap(void) { XUnmapWindow(display(), window()); }
+    void resize(int width, int height);
+    void map(void);
+    void unmap(void);
     void swapBB(void) const;
 
     // These return the configured color.  Not the current color.
     unsigned long foreground(void) { return _fgColor; }
     unsigned long background(void) { return _bgColor; }
 
-    //------------------------------------------------------
     // Resouce interface
-    //------------------------------------------------------
     virtual ResDB &resdb(void) = 0;
-    //------------------------------------------------------
 
     //-----------------------------------
     //--- Events ------------------------
     //-----------------------------------
-    typedef void (XWin::*EventCallBack)(XEvent &event);
+    using Callback = std::function<void(const XEvent &)>;
 
-    void addEvent(int eventType, XWin *xwin, EventCallBack callBack);
+    virtual void setEvents(void);
+
+    void addEvent(int eventType, const Callback &callback);
     void selectEvents(long mask);
     void ignoreEvents(long mask);
-    void configureEvent(XEvent &event);
-    void mappingNotify(XEvent &event)
-        { XRefreshKeyboardMapping(&event.xmapping); }
-    void deleteEvent(XEvent &event);
+    void configureEvent(const XEvent &event);
+    void mappingNotify(const XEvent &event);
+    void deleteEvent(const XEvent &event);
     virtual void checkevent(void);
     //-----------------------------------
 
@@ -113,19 +108,17 @@ private:
 
     class Event {
     public:
-        Event(void) : _parent(nullptr), _callBack(nullptr),
-                      _event(0), _mask(NoEventMask) {}
-        Event(XWin *parent, int event, EventCallBack callBack);
+        Event(int event, const Callback &cb) : _cb(cb), _event(event) {}
 
         // use compiler generated copy ctor and op
 
-        void callBack(XEvent &event)
-            { if (event.type == _event) (_parent->*_callBack)(event); }
+        void callBack(const XEvent &event)
+            { if (event.type == _event) _cb(event); }
 
-        XWin *_parent;
-        EventCallBack _callBack;
+        Callback _cb;
         int _event;
-        long _mask;
+
+        long mask(void) const;
     };
 
 
