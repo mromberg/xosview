@@ -155,8 +155,8 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
     if (!sc_ifl.get(bufv.data(), bufv.size()))
         logFatal << "sysctl() failed." << std::endl;
 
-    // Now the fugly begins.   bufp move forward through bufp
-    // and rtm is the message header.
+    // Now the fugly begins.   bufp move forward through bufv
+    // and rtm is the message header. They both start at the front.
     const char *bufp = bufv.data();
     auto rtm = reinterpret_cast<const struct rt_msghdr *>(bufp);
 
