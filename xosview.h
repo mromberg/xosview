@@ -28,7 +28,7 @@ public:
     void run(int argc, const char * const *argv);
 
 protected:
-    virtual ResDB &resdb(void) override;
+    virtual ResDB &resdb(void) const override;
     virtual void setEvents(void) override;
 
 private:

@@ -538,7 +538,7 @@ void  XOSView::resize(void) {
 }
 
 
-ResDB &XOSView::resdb(void) {
+ResDB &XOSView::resdb(void) const {
     return *_xrm;
 }
 

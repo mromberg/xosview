@@ -39,7 +39,7 @@ protected:
     Display *display(void) const { return _display; }
     int screen(void) { return DefaultScreen(display()); }
     Window window(void) const { return _window; }
-    Colormap colormap(void) { return _colormap; }
+    Colormap colormap(void) const { return _colormap; }
 
     void appName(const std::string &name) { _name = name; }
     void title(const std::string &str)
@@ -62,11 +62,11 @@ protected:
     void swapBB(void) const;
 
     // These return the configured color.  Not the current color.
-    unsigned long foreground(void) { return _fgColor; }
-    unsigned long background(void) { return _bgColor; }
+    unsigned long foreground(void) const { return _fgColor; }
+    unsigned long background(void) const { return _bgColor; }
 
     // Resouce interface
-    virtual ResDB &resdb(void) = 0;
+    virtual ResDB &resdb(void) const = 0;
 
     //-----------------------------------
     //--- Events ------------------------
@@ -122,10 +122,22 @@ private:
     };
 
 
+    // Some smart pointers for dealing with Xlib.
+    template <class T>
+    using x_unique_ptr = std::unique_ptr<T, int(*)(void *)>;
+
+    template <class T>
+    using x2_unique_ptr = std::unique_ptr<T, void(*)(T*)>;
+
     Visual *getVisual(void);
+    int depth(Visual *v) const;
     bool isDBE(Visual *v) const;
-    XSizeHints *getGeometry(void);
-    void setHints(XSizeHints *szHints);
+    Drawable createBB(void) const;
+    x_unique_ptr<XSizeHints> getGeometry(void);
+    void setHints(x_unique_ptr<XSizeHints> &&szHints);
+    std::unique_ptr<X11Graphics> createGraphics(void) const;
+    void setPixmapBG(void);
+    void equipWindow(x_unique_ptr<XSizeHints> &&szHints);
 };
 
 #endif
