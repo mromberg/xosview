@@ -138,11 +138,12 @@ void XOSView::createMeters(void) {
 void XOSView::setEvents(void) {
     XWin::setEvents();
 
-    addEvent(ConfigureNotify, [this](auto e){ configureEvent(e); });
-    addEvent(Expose, [this](auto e){ exposeEvent(e); });
-    addEvent(KeyPress, [this](auto e){ keyPressEvent(e); });
-    addEvent(VisibilityNotify, [this](auto e){ visibilityEvent(e); });
-    addEvent(UnmapNotify, [this](auto e){ unmapEvent(e); });
+    // (the this->METHOD() thing is a gcc bug workaround.
+    addEvent(ConfigureNotify, [this](auto e){ this->configureEvent(e); });
+    addEvent(Expose, [this](auto e){ this->exposeEvent(e); });
+    addEvent(KeyPress, [this](auto e){ this->keyPressEvent(e); });
+    addEvent(VisibilityNotify, [this](auto e){ this->visibilityEvent(e); });
+    addEvent(UnmapNotify, [this](auto e){ this->unmapEvent(e); });
 }
 
 

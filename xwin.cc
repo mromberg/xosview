@@ -214,10 +214,11 @@ bool XWin::isDBE(Visual *v) const {
 
 
 void XWin::setEvents(void) {
-    // Set up the default Events
-    addEvent(ConfigureNotify, [this](auto e){ configureEvent(e); });
-    addEvent(ClientMessage, [this](auto e){ deleteEvent(e); });
-    addEvent(MappingNotify, [this](auto e){ mappingNotify(e); });
+    // Set up the default Events.
+    // (the this->METHOD() thing is a gcc bug workaround.
+    addEvent(ConfigureNotify, [this](auto e){ this->configureEvent(e); });
+    addEvent(ClientMessage, [this](auto e){ this->deleteEvent(e); });
+    addEvent(MappingNotify, [this](auto e){ this->mappingNotify(e); });
 }
 
 
