@@ -38,19 +38,13 @@ private:
     int _hmargin, _vmargin, _vspacing;
     unsigned long _sleeptime, _usleeptime;
     bool _isvisible;
-    bool _ispartiallyvisible;
     std::vector<std::unique_ptr<Meter>> _meters;
     double _sampleRate;   // samples/sec
     bool _doFullDraw;     // schedule full clear/draw
     std::unique_ptr<XSessionClient> _xsc; // session management client.
 
-    double sampleRate(void) const { return _sampleRate; } // samples/sec max
     std::string winname(void);
-    int xoff(void) const { return _xoff; }
     int newypos(void);
-    bool isFullyVisible(void) const
-        { return _isvisible && !_ispartiallyvisible; }
-    bool isAtLeastPartiallyVisible(void) const { return _isvisible; }
     std::string versionStr(void) const;
     void loop(void);
     void loadConfiguration(std::vector<std::string> &argv);
@@ -71,6 +65,7 @@ private:
     void dolegends(void);
     void scheduleDraw(bool full) { _doFullDraw = full; }
     void slumber(void) const;
+    void slumberOld(void) const;
     void usleep_via_select(unsigned long usec);
     void configureEvent(const XEvent &event);
     void exposeEvent(const XEvent &event);

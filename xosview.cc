@@ -21,6 +21,7 @@
 #endif
 
 #include <array>
+#include <thread>  // for std::this_thread::sleep_for() only.
 
 #include <sys/time.h>  //
 #include <sys/types.h> // All three for select()
@@ -39,7 +40,7 @@ XOSView::XOSView(void)
       _xoff(0), _yoff(0),
       _hmargin(0), _vmargin(0), _vspacing(0),
       _sleeptime(1), _usleeptime(1000),
-      _isvisible(false), _ispartiallyvisible(false), _sampleRate(10),
+      _isvisible(false), _sampleRate(10),
       _doFullDraw(true) {
 }
 
@@ -132,7 +133,7 @@ void XOSView::createMeters(void) {
 
 
 //-----------------------------------------------------------------
-// ** Events
+// Events
 //-----------------------------------------------------------------
 
 void XOSView::setEvents(void) {
@@ -148,11 +149,10 @@ void XOSView::setEvents(void) {
 
 
 void XOSView::keyPressEvent(const XEvent &e) {
-    const XKeyEvent &event = e.xkey;
     char c = 0;
     KeySym key;
 
-    XLookupString(const_cast<XKeyEvent *>(&event), &c, 1, &key, nullptr);
+    XLookupString(const_cast<XKeyEvent *>(&e.xkey), &c, 1, &key, nullptr);
 
     if ((c == 'q') || (c == 'Q'))
         done(true);
@@ -160,18 +160,20 @@ void XOSView::keyPressEvent(const XEvent &e) {
 
 
 void XOSView::exposeEvent(const XEvent &e) {
-    const XExposeEvent &event = e.xexpose;
-    logDebug << "XOSView::exposeEvent(): count=" << event.count << std::endl;
+    logDebug << "XOSView::exposeEvent(): count=" << e.xexpose.count
+             << std::endl;
     _isvisible = true;
-    if (event.count == 0)
+    if (e.xexpose.count == 0)
         scheduleDraw(true);
 }
 
 
 void XOSView::configureEvent(const XEvent &e) {
-    unsigned int ew = e.xconfigure.width;
-    unsigned int eh = e.xconfigure.height;
+
+    const unsigned int ew = e.xconfigure.width;
+    const unsigned int eh = e.xconfigure.height;
     logDebug << "configure event: " << ew << '/' << eh << std::endl;
+
     if ((g().width() != ew) || (g().height() != eh)) {
         logDebug << "XOSView::configureEvent(): set sizes..." << std::endl;
         g().resize(ew, eh);
@@ -181,15 +183,10 @@ void XOSView::configureEvent(const XEvent &e) {
 
 
 void XOSView::visibilityEvent(const XEvent &e) {
-    const XVisibilityEvent &event = e.xvisibility;
-    _ispartiallyvisible = false;
-    if (event.state == VisibilityPartiallyObscured)
-        _ispartiallyvisible = true;
 
-    _isvisible = (event.state == VisibilityFullyObscured) ? false : true;
+    _isvisible = e.xvisibility.state != VisibilityFullyObscured;
 
-    logDebug << "Got visibility event; " << _ispartiallyvisible
-             << " and " << _isvisible << std::endl;
+    logDebug << "Got visibility event: " << _isvisible << std::endl;
 }
 
 
@@ -199,14 +196,14 @@ void XOSView::unmapEvent(const XEvent &) {
 
 
 void XOSView::drawIfNeeded(std::vector<Meter *> &mtrs) {
-    if (isAtLeastPartiallyVisible())
+    if (_isvisible)
         for (auto &mtr : mtrs)
             mtr->drawIfNeeded(g());
 }
 
 
 void XOSView::draw(void) {
-    if (isAtLeastPartiallyVisible()) {
+    if (_isvisible) {
         logDebug << "Doing full clear/draw." << std::endl;
         g().clear();
 
@@ -214,9 +211,9 @@ void XOSView::draw(void) {
             meter->draw(g());
     }
     else {
-        logDebug << "********** FIXME ************\n";
-        logDebug << "DRAW CALLED WHILE NOT VISIBLE\n";
-        logDebug << "*****************************\n";
+        logDebug << "********** FIXME ************\n"
+                 << "DRAW CALLED WHILE NOT VISIBLE\n"
+                 << "*****************************" << std::endl;;
     }
 }
 
@@ -232,6 +229,11 @@ void XOSView::usleep_via_select(unsigned long usec) {
 
 
 void XOSView::slumber(void) const {
+    std::this_thread::sleep_for(std::chrono::microseconds(_usleeptime));
+}
+
+
+void XOSView::slumberOld(void) const {
 #ifdef HAVE_USLEEP
     //  First, sleep for the proper integral number of seconds --
     //  usleep only deals with times less than 1 sec.
@@ -366,7 +368,6 @@ void XOSView::checkResources(void) {
     _yoff = 0;
     appName("xosview");
     _isvisible = false;
-    _ispartiallyvisible = false;
 
     //  Set 'off' value.  This is not necessarily a default value --
     //    the value in the defaultXResourceString is the default value.
