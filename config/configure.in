@@ -22,6 +22,7 @@ m4_include([xo_define_dir.m4])
 m4_include([xo_smlibs.m4])
 m4_pattern_allow(AC_MSG_WARN)
 m4_include([m4_ax_cxx_compile_stdcxx.m4])
+m4_include([xo_cxx_thread_sleep.m4])
 
 AC_CANONICAL_HOST
 
@@ -95,8 +96,9 @@ AC_PROG_INSTALL
 # XO_MIN_CXX_CHECK
 AX_CXX_COMPILE_STDCXX([14],[noext],[mandatory])
 
-#  Check for usleep().  Currently, only HP-UX doesn't have it.
-AC_CHECK_FUNCS(usleep)
+# Can we use a modern c++ sleep?
+XO_CXX_THREAD_SLEEP
+
 
 # =============================================
 # AC_PATH_XTRA sets these.  AC_PATH_X does not!
