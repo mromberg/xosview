@@ -16,7 +16,7 @@ AC_DEFUN(XO_CXX_THREAD_SLEEP, [
     )],
     [
         AC_MSG_RESULT(yes)
-        AC_DEFINE(HAVE_TRHEAD_SLEEP,[1],[Have std::thread::sleep_for])
+        AC_DEFINE(HAVE_THREAD_SLEEP,[1],[Have std::thread::sleep_for])
         sleep_for=yes
     ],
     [
