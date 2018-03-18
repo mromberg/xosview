@@ -25,9 +25,11 @@
 #include <thread>  // for std::this_thread::sleep_for() only.
 #endif
 
-#include <sys/time.h>  //
-#include <sys/types.h> // All three for select()
-#include <unistd.h>    //
+#include <unistd.h>
+#if !defined(HAVE_THREAD_SLEEP) && !defined(HAVE_USLEEP)
+#include <sys/time.h>
+#include <sys/types.h>
+#endif
 
 
 
@@ -220,18 +222,10 @@ void XOSView::draw(void) {
 }
 
 
-void XOSView::usleep_via_select(unsigned long usec) const {
-    struct timeval time;
-
-    time.tv_sec = static_cast<int>(usec / 1000000);
-    time.tv_usec = usec - time.tv_sec * 1000000;
-
-    select(0, 0, 0, 0, &time);
-}
-
-
-void XOSView::slumberOld(void) const {
-#ifdef HAVE_USLEEP
+void XOSView::slumber(void) const {
+#ifdef HAVE_THREAD_SLEEP
+    std::this_thread::sleep_for(std::chrono::microseconds(_usleeptime));
+#elif defined(HAVE_USLEEP)
     //  First, sleep for the proper integral number of seconds --
     //  usleep only deals with times less than 1 sec.
     if (_sleeptime)
@@ -239,16 +233,11 @@ void XOSView::slumberOld(void) const {
     if (_usleeptime)
         usleep(static_cast<unsigned int>(_usleeptime));
 #else
-    usleep_via_select(_usleeptime);
-#endif
-}
+    struct timeval time;
+    time.tv_sec = static_cast<int>(_usleeptime / 1000000);
+    time.tv_usec = _usleeptime - time.tv_sec * 1000000;
 
-
-void XOSView::slumber(void) const {
-#ifdef HAVE_THREAD_SLEEP
-    std::this_thread::sleep_for(std::chrono::microseconds(_usleeptime));
-#else
-    slumberOld();
+    select(0, nullptr, nullptr, nullptr, &time);
 #endif
 }
 

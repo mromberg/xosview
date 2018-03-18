@@ -65,8 +65,6 @@ private:
     void dolegends(void);
     void scheduleDraw(bool full) { _doFullDraw = full; }
     void slumber(void) const;
-    void slumberOld(void) const;
-    void usleep_via_select(unsigned long usec) const;
     void configureEvent(const XEvent &event);
     void exposeEvent(const XEvent &event);
     void keyPressEvent(const XEvent &event);
