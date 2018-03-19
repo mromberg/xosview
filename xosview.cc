@@ -247,10 +247,9 @@ void XOSView::openSession(const std::vector<std::string> &argv) {
     // sessionID (if it exists will be the old ID from the cmdline.
     _xsc = std::make_unique<XSessionClient>(argv, "--smid",
       resdb().getResourceOrUseDefault("sessionID", ""));
-    if (_xsc->init()) {
+    if (_xsc->init())
         logDebug << "session ID: " << _xsc->sessionID()
                  << std::endl;
-    }
 
     // Set the sessionID in the resdb in case we have a new one.
     _xrm->putResource("." + instanceName() + "*sessionID",
@@ -259,7 +258,7 @@ void XOSView::openSession(const std::vector<std::string> &argv) {
 
 
 //-----------------------------------------------------------------
-// ** Configure
+// Configure
 //-----------------------------------------------------------------
 
 void XOSView::loadConfiguration(std::vector<std::string> &argv) {
@@ -295,9 +294,8 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
 
     // Now load any resouce files specified on the command line
     for (const auto &cfile : clopts.values("configFile"))
-        if (!_xrm->loadResources(cfile)) {
+        if (!_xrm->loadResources(cfile))
             logProblem << "Could not read file: " << cfile << std::endl;
-        }
 
     // load all of the command line options into the
     // resouce database.  First the ones speced by -xrm
@@ -315,8 +313,8 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
     // Now all the rest that are set by the user.
     // defaults dealt with by getResourceOrUseDefault()
     for (const auto &opt : clopts.opts()) {
-        if (opt.name() != "xrm" && opt.name() != "xosvxrm"
-          && !opt.missing()) {
+        if (!opt.missing() && opt.name() != "xrm"
+          && opt.name() != "xosvxrm") {
             const std::string rname("." + instanceName() + "*" + opt.name());
             _xrm->putResource(rname, opt.value());
             logDebug << "ADD: "
@@ -364,21 +362,14 @@ void XOSView::checkResources(void) {
     appName("xosview");
     _isvisible = false;
 
-    //  Set 'off' value.  This is not necessarily a default value --
-    //    the value in the defaultXResourceString is the default value.
-    _usedlabels = _legend = _caption = false;
-
     // use captions
-    if (resdb().isResourceTrue("captions"))
-        _caption = true;
+    _caption = resdb().isResourceTrue("captions");
 
     // use labels
-    if (resdb().isResourceTrue("labels"))
-        _legend = true;
+    _legend = resdb().isResourceTrue("labels");
 
     // use "free" labels
-    if (resdb().isResourceTrue("usedlabels"))
-        _usedlabels = true;
+    _usedlabels = resdb().isResourceTrue("usedlabels");
 }
 
 
@@ -442,9 +433,9 @@ void XOSView::figureSize(void) {
         firsttime = false;
         width(findx(font));
         height(findy());
-        logDebug << "number of meters: " << _meters.size() << std::endl;
-        logDebug << "text height: " << font.textHeight() << std::endl;
-        logDebug << "Width/Height set to: " << width() << '/' << height()
+        logDebug << "number of meters: " << _meters.size() << std::endl
+                 << "text height: " << font.textHeight() << std::endl
+                 << "Width/Height set to: " << width() << '/' << height()
                  << std::endl;
     }
 }
@@ -485,7 +476,7 @@ void XOSView::dolegends(void) {
 
 
 std::string XOSView::winname(void) {
-    std::array<char, 100> host;
+    std::array<char, 256> host;
     std::string hname("unknown");
     if (gethostname(host.data(), host.size())) {
         logProblem << "gethostname() failed" << std::endl;
@@ -500,22 +491,16 @@ std::string XOSView::winname(void) {
 
 
 void  XOSView::resize(void) {
-    //-----------------------------------
     // Width
-    //-----------------------------------
     const unsigned int rightmargin = _hmargin;
-    unsigned int xpad = _xoff + rightmargin; // reserved for padding.
-    xpad = xpad > width() ? width() : xpad;  // clamp to width().
+    const unsigned int xpad = std::min(_xoff + rightmargin, width());
+    const int newwidth = std::max(static_cast<int>(width() - xpad), 2);
 
-    int newwidth = width() - xpad;
-    newwidth = (newwidth >= 2) ? newwidth : 2; // clamp to 2.
-
-    //-----------------------------------
     // Height
-    //-----------------------------------
     const size_t nmeters = std::max(_meters.size(), (size_t)1);  // don't / by 0
     const int minmh = 2 + _yoff + _vspacing;
-    const int mh = std::max((int)((height() - _vmargin * 2) / nmeters), minmh);
+    const int mh = std::max(static_cast<int>((height() - _vmargin * 2)
+        / nmeters), minmh);
     const int newheight = std::max(mh - _yoff - _vspacing, 2);
 
     logDebug << "-- meter height --\n"

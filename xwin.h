@@ -68,9 +68,7 @@ protected:
     // Resouce interface
     virtual ResDB &resdb(void) const = 0;
 
-    //-----------------------------------
     //--- Events ------------------------
-    //-----------------------------------
     using Callback = std::function<void(const XEvent &)>;
 
     virtual void setEvents(void);
