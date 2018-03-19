@@ -26,11 +26,6 @@
 #endif
 
 #include <unistd.h>
-#if !defined(HAVE_THREAD_SLEEP) && !defined(HAVE_USLEEP)
-#include <sys/time.h>
-#include <sys/types.h>
-#endif
-
 
 
 static const char * const VersionString = "xosview version: " PACKAGE_VERSION;
@@ -233,11 +228,7 @@ void XOSView::slumber(void) const {
     if (_usleeptime)
         usleep(static_cast<unsigned int>(_usleeptime));
 #else
-    struct timeval time;
-    time.tv_sec = static_cast<int>(_usleeptime / 1000000);
-    time.tv_usec = _usleeptime - time.tv_sec * 1000000;
-
-    select(0, nullptr, nullptr, nullptr, &time);
+#error "Missing all supported sleep methods."
 #endif
 }
 
