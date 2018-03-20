@@ -1,7 +1,13 @@
 //
+//  Copyright (c) 2018
+//  by Mike Romberg ( mike-romberg@comcast.net )
+//
+//  This file may be distributed under terms of the GPL
+//
+// --------------------------------------------------------------------
 // String manipulations that probably won't be in the standard library
 // before the 32 bit time clock rolls over.
-//
+// --------------------------------------------------------------------
 #ifndef strutil_H
 #define strutil_H
 

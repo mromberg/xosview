@@ -84,7 +84,7 @@ void XWin::createWindow(void) {
 }
 
 
-void XWin::equipWindow(x_unique_ptr<XSizeHints> &&szHints) {
+void XWin::equipWindow(util::x_unique_ptr<XSizeHints> &&szHints) {
     _bb = createBB();
 
     setHints(std::move(szHints));
@@ -145,8 +145,8 @@ int XWin::depth(Visual *v) const {
     XVisualInfo tmplt;
     tmplt.visualid = XVisualIDFromVisual(v);
     int ninfo = 0;
-    x_unique_ptr<XVisualInfo> vinfo(XGetVisualInfo(display(), VisualIDMask,
-        &tmplt, &ninfo), XFree);
+    util::x_unique_ptr<XVisualInfo> vinfo(XGetVisualInfo(display(),
+        VisualIDMask, &tmplt, &ninfo), XFree);
 
     if (!vinfo || ninfo != 1)
         logFatal << "Failed to locate XVisualInfo for: "
@@ -194,7 +194,7 @@ bool XWin::isDBE(Visual *v) const {
 
         Window rootWindow = XDefaultRootWindow(display());
         int numsp = 1;
-        x2_unique_ptr<XdbeScreenVisualInfo> dbeVisuals(XdbeGetVisualInfo(
+        util::x2_unique_ptr<XdbeScreenVisualInfo> dbeVisuals(XdbeGetVisualInfo(
               display(), &rootWindow, &numsp), XdbeFreeVisualInfo);
 
         if (dbeVisuals)
@@ -234,9 +234,9 @@ void XWin::swapBB(void) const {
 }
 
 
-void XWin::setHints(x_unique_ptr<XSizeHints> &&szHints) {
+void XWin::setHints(util::x_unique_ptr<XSizeHints> &&szHints) {
     // Set up the window manager hints
-    x_unique_ptr<XWMHints> wmhints(XAllocWMHints(), XFree);
+    util::x_unique_ptr<XWMHints> wmhints(XAllocWMHints(), XFree);
     if (!wmhints)
         logFatal << "Error allocating Window Manager hints!" << std::endl;
 
@@ -258,7 +258,7 @@ void XWin::setHints(x_unique_ptr<XSizeHints> &&szHints) {
         logFatal << "Error creating XTextProperty!" << std::endl;
 
     // Set up class hint for window manager.
-    x_unique_ptr<XClassHint> classhints(XAllocClassHint(), XFree);
+    util::x_unique_ptr<XClassHint> classhints(XAllocClassHint(), XFree);
     if(!classhints)
         logFatal << "Error allocating class hint!" << std::endl;
     const std::string cname = resdb().className();
@@ -319,10 +319,10 @@ void XWin::setColors(void) {
 }
 
 
-XWin::x_unique_ptr<XSizeHints> XWin::getGeometry(void) {
+util::x_unique_ptr<XSizeHints> XWin::getGeometry(void) {
     // Fill out a XsizeHints structure to inform the window manager
     // of desired size and location of main window.
-    x_unique_ptr<XSizeHints> szHints(XAllocSizeHints(), XFree);
+    util::x_unique_ptr<XSizeHints> szHints(XAllocSizeHints(), XFree);
     if(!szHints)
         logFatal << "Error allocating size hints!" << std::endl;
 

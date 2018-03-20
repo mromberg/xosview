@@ -6,6 +6,7 @@
 //
 #include "Xrm.h"
 #include "strutil.h"
+#include "ptrutil.h"
 #include "log.h"
 
 #include <array>
@@ -138,12 +139,11 @@ void Xrm::loadResources(Display* display) {
     }
 
     //  And check this screen of the display...
-    char *screenString =
-        XScreenResourceString(DefaultScreenOfDisplay(display));
-    if (screenString != nullptr) {
-        XrmDatabase screenrdb = XrmGetStringDatabase(screenString);
+    util::x_unique_ptr<char> screenString(XScreenResourceString(
+          DefaultScreenOfDisplay(display)), XFree);
+    if (screenString) {
+        XrmDatabase screenrdb = XrmGetStringDatabase(screenString.get());
         XrmMergeDatabases(screenrdb, &_db);  //  Destroys screenrdb when done.
-        XFree(screenString); // unlike XResourceManagerString() we must free
         logDebug << "loaded screen resources." << std::endl;
     }
 

@@ -7,9 +7,10 @@
 #ifndef xwin_h
 #define xwin_h
 
+#include "ptrutil.h"
+
 #include <string>
 #include <vector>
-#include <memory>
 #include <functional>
 
 #include <X11/Xlib.h>
@@ -119,23 +120,24 @@ private:
         long mask(void) const;
     };
 
-
+#if 0
     // Some smart pointers for dealing with Xlib.
     template <class T>
     using x_unique_ptr = std::unique_ptr<T, int(*)(void *)>;
 
     template <class T>
     using x2_unique_ptr = std::unique_ptr<T, void(*)(T*)>;
+#endif
 
     Visual *getVisual(void);
     int depth(Visual *v) const;
     bool isDBE(Visual *v) const;
     Drawable createBB(void) const;
-    x_unique_ptr<XSizeHints> getGeometry(void);
-    void setHints(x_unique_ptr<XSizeHints> &&szHints);
+    util::x_unique_ptr<XSizeHints> getGeometry(void);
+    void setHints(util::x_unique_ptr<XSizeHints> &&szHints);
     std::unique_ptr<X11Graphics> createGraphics(void) const;
     void setPixmapBG(void);
-    void equipWindow(x_unique_ptr<XSizeHints> &&szHints);
+    void equipWindow(util::x_unique_ptr<XSizeHints> &&szHints);
 };
 
 #endif

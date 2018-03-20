@@ -1,3 +1,9 @@
+//
+//  Copyright (c) 2018
+//  by Mike Romberg ( mike-romberg@comcast.net )
+//
+//  This file may be distributed under terms of the GPL
+//
 #include "strutil.h"
 #include "glob.h"
 #include "log.h"
