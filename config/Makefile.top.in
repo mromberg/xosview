@@ -28,13 +28,6 @@ timer.o \
 defaultstring.o \
 label.o \
 scache.o \
-meter.o \
-fieldmeter.o \
-sensorfieldmeter.o \
-fieldmeterdecay.o \
-fieldmetergraph.o \
-bitfieldmeter.o \
-bitmeter.o \
 clopt.o \
 xosview.o \
 strutil.o \
@@ -104,12 +97,9 @@ headercheck:
           | sort - | uniq | cut -d " " -f2 - | cut -d "<" -f2 - \
           | cut -d ">" -f1 -
 
-checksource:
-	$(TOP)/chk-src.sh
-
 PKG_NAME = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
-distrib: checksource
+distrib:
 	git archive --prefix=stage/ master | tar xf -
 	cd stage && ./autogen.sh
 	rm -rf stage/config/autom4te.cache

@@ -14,6 +14,13 @@ include ../Makefile.config
 # File lists
 #-------------------------------------------------------------------------
 OBJS = \
+meter.o \
+fieldmeter.o \
+fieldmeterdecay.o \
+fieldmetergraph.o \
+bitmeter.o \
+bitfieldmeter.o \
+sensorfieldmeter.o \
 cswapmeter.o \
 pswapmeter.o \
 cloadmeter.o \
