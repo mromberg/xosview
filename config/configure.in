@@ -157,17 +157,19 @@ DOC_FILES="README"
 
 case $host_os in
     linux*)
-        AX_APPEND_FLAG(doc/README.linux, DOC_FILES)
         AC_XOSV_MSG_SECTION([Linux specific features])
+        AX_APPEND_FLAG(doc/README.linux, DOC_FILES)
         AC_XOSV_LINUX()
 
 	host_dir=linux
         ;;
     netbsd*|freebsd*|openbsd*|bsdi*|dragonfly*)
+        AC_XOSV_MSG_SECTION([BSD specific features])
         AX_APPEND_FLAG(doc/README.bsd, DOC_FILES)
         XO_BSD_CONFIG()
         ;;
     solaris2*)
+        AC_XOSV_MSG_SECTION([Solaris specific features])
         AC_CHECK_HEADER(kstat.h,
             AC_CHECK_LIB(kstat, kstat_open,
             [AC_DEFINE(HAVE_KSTAT,[1],[Have libkstat])
@@ -179,6 +181,7 @@ case $host_os in
 	host_dir=gnu
         ;;
     cygwin)
+        AC_XOSV_MSG_SECTION([Cygwin specific features])
         AC_CHECK_HEADER(pdh.h)
         AC_CHECK_LIB(pdh, PdhOpenQuery,
             [AC_DEFINE(HAVE_PDH,[1],[Have libpdh])
