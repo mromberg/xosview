@@ -15,15 +15,10 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+
 #include <sys/ioctl.h>
 #ifdef HAVE_SYS_IO_H
 #include <sys/io.h>
-#endif
-#ifdef HAVE_SYS_PERM_H
-#include <sys/perm.h>
-#endif
-#ifdef HAVE_ASM_IO_H
-#include <asm/io.h>
 #endif
 #include <linux/serial.h>
 

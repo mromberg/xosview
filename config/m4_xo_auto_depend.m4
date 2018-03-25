@@ -36,7 +36,7 @@ __EOF
 # If not "yes" still AC_SUBST the vars for no support
 #
 
-AC_DEFUN([XO_GCC_AUTO_DEPEND],[ dnl
+AC_DEFUN([XO_AUTO_DEPEND],[ dnl
 CPP_DEP=''
 AUTODEPEND='#-include $(DEPFILES)'
 
@@ -54,6 +54,6 @@ if test "$1" = "yes"; then
     fi
 fi
 
-AC_SUBST(CPP_DEP)
+AX_APPEND_FLAG($CPP_DEP, CPPFLAGS)
 AC_SUBST(AUTODEPEND)
 ])

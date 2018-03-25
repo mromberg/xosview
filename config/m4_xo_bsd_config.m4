@@ -14,7 +14,7 @@ AC_CHECK_HEADER(sys/swap.h,[dnl
 AC_CHECK_HEADER(prop/proplib.h,[dnl
     AC_CHECK_LIB(prop, prop_object_release,[dnl
         AC_DEFINE(HAVE_PROP,[1],[Have libprop])
-        XO_CONCAT(LIBS,$LIBS,[-lprop])])])
+        AX_APPEND_FLAG(-lprop, LIBS)])])
 ])
 
 

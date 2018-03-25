@@ -10,7 +10,8 @@ AC_DEFUN([XO_CHECK_SM_LIBS],[dnl
         AC_CHECK_LIB(ICE, IceConnectionNumber,[dnl
             AC_CHECK_LIB(SM, SmsClientID,[dnl
                 AC_DEFINE(HAVE_LIB_SM,[1],[Have libSM])],,-lICE)
-                XO_CONCAT(LIBS,$LIBS,[-lSM -lICE])
+                AX_APPEND_FLAG(-lSM, LIBS)
+                AX_APPEND_FLAG(-lICE, LIBS)
         ])
     CPPFLAGS="$xo_cppflags"
     LDFLAGS="$xo_ldflags"
