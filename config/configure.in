@@ -46,6 +46,8 @@ AC_XOSV_MSG_SECTION([C++ compiler])
 AC_PROG_CXX([c++ clang++ c++-5 c++-6 c++-7f g++-5 g++-6 g++-7 g++])
 AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX([14],[noext],[mandatory])
+XO_CXXFLAGS_DEFAULT()
+
 
 #------------------------------------------------
 # Enable features (which are compiler related)
@@ -72,7 +74,6 @@ XO_AUTO_DEPEND($enable_auto_depend)
 
 #-------End Features -----------------------------------------
 
-XO_CXXFLAGS_DEFAULT()
 
 # Let the user have a stab at app-defaults if they don't
 # like the default (${datarootdir}/X11/app-defaults)
