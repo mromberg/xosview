@@ -1,6 +1,8 @@
-# Test if CXX compiler supports flag.
-# $xo_cxx_flag_check will be either "yes" or "no".
+dnl XO_CXX_FLAG_CHECK(flag)
+dnl sets xo_cxx_flag_check to yes or no if CXX takes it.
 AC_DEFUN([XO_CXX_FLAG_CHECK],[
+    # Test if CXX compiler supports flag.
+    # $xo_cxx_flag_check will be either "yes" or "no".
     AC_MSG_CHECKING([if $CXX supports $1])
     AC_LANG_PUSH([C++])
     xo_saved_cxxflags="$CXXFLAGS"
@@ -13,14 +15,17 @@ AC_DEFUN([XO_CXX_FLAG_CHECK],[
     AC_LANG_POP([C++])
 ])
 
-#----------------------------------------------------------------------
-# Sets up AC_SUBST vars for gcc's auto depend
-#
-# Argument is a test that is "yes" or anything else false
-# If "yes" then attempt to enable auto depend (if compiler supports it)
-# If not "yes" still AC_SUBST the vars for no support
-#----------------------------------------------------------------------
+
+dnl XO_AUTO_DEPEND()
+dnl Check if GXX supports auto dependencies via the pre-processor.
 AC_DEFUN([XO_AUTO_DEPEND],[
+    #----------------------------------------------------------------------
+    # Sets up AC_SUBST vars for gcc's auto depend
+    #
+    # Argument is a test that is "yes" or anything else false
+    # If "yes" then attempt to enable auto depend (if compiler supports it)
+    # If not "yes" still AC_SUBST the vars for no support
+    #----------------------------------------------------------------------
     CPP_DEP=''
     AUTODEPEND='#-include $(DEPFILES)'
 
