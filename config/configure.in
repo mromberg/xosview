@@ -12,6 +12,7 @@ m4_include([m4_xo_msg.m4])
 m4_include([m4_ax_append_flag.m4])
 m4_include([m4_ax_define_dir.m4])
 m4_include([m4_ax_config_feature.m4])
+m4_include([m4_xo_cxx_guess.m4])
 m4_include([m4_ax_cxx_compile_stdcxx.m4])
 m4_include([m4_xo_cxxflags_default.m4])
 m4_include([m4_xo_auto_depend.m4])
@@ -46,7 +47,8 @@ LIBS=${LIBS:-}
 # Everything is C++ no need to change this again.
 #-------------------------------------------------
 XO_MSG_SECTION([C++ compiler])
-AC_PROG_CXX([c++ g++ clang++ c++-8 g++-8 c++-7 g++-7 c++-6 g++-6 c++-5 g++-5])
+XO_CXX_GUESS()
+AC_PROG_CXX([$xo_cxx_guess_list])
 AC_LANG([C++])
 AX_CXX_COMPILE_STDCXX([14],[noext],[mandatory])
 
