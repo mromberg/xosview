@@ -11,9 +11,9 @@ include ../Makefile.config
 #-------------------------------------------------------------------------
 # File lists
 #-------------------------------------------------------------------------
-OBJS = \
-cpumeter.o \
-memmeter.o \
+OBJS =\
+cpumeter.o\
+memmeter.o\
 MeterMaker.o
 
 CFILES := $(OBJS:.o=.cc)

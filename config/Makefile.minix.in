@@ -11,11 +11,11 @@ include ../Makefile.config
 #-------------------------------------------------------------------------
 # File lists
 #-------------------------------------------------------------------------
-OBJS = \
-xosvproc.o \
-cpumeter.o \
-memmeter.o \
-fsmeter.o \
+OBJS =\
+xosvproc.o\
+cpumeter.o\
+memmeter.o\
+fsmeter.o\
 MeterMaker.o
 
 CFILES := $(OBJS:.o=.cc)

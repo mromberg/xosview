@@ -59,14 +59,15 @@ AS_VAR_SET_IF(FLAGS,[
   AS_CASE([" AS_VAR_GET(FLAGS) "],
     [*" $1 "*], [AC_RUN_LOG([: FLAGS already contains $1])],
     [
-     if test -n "$1"; then
-         if test -z "$FLAGS"; then
-             AS_VAR_SET(FLAGS, ["$1"])
-         else
-             AS_VAR_APPEND(FLAGS,[" $1"])
-         fi
-         AC_RUN_LOG([: FLAGS="$FLAGS"])
-     fi
+    xo_flag="$(echo $1)"  # strip whitespace off ends.
+    if test -n "$xo_flag"; then
+        if test -z "$FLAGS"; then
+            AS_VAR_SET(FLAGS, ["$xo_flag"])
+        else
+            AS_VAR_APPEND(FLAGS,[" $xo_flag"])
+        fi
+        AC_RUN_LOG([: FLAGS="$FLAGS"])
+    fi
     ])
   ],
   [

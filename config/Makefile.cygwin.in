@@ -11,17 +11,17 @@ include ../Makefile.config
 #-------------------------------------------------------------------------
 # File lists
 #-------------------------------------------------------------------------
-OBJS = \
-loadmeter.o \
-cpumeter.o \
-memmeter.o \
-fsmeter.o \
-diskmeter.o \
-winders.o \
-perfcount.o \
-netmeter.o \
-btrymeter.o \
-tzonemeter.o \
+OBJS =\
+loadmeter.o\
+cpumeter.o\
+memmeter.o\
+fsmeter.o\
+diskmeter.o\
+winders.o\
+perfcount.o\
+netmeter.o\
+btrymeter.o\
+tzonemeter.o\
 MeterMaker.o
 
 CFILES := $(OBJS:.o=.cc)
