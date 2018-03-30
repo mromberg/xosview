@@ -3,7 +3,7 @@ dnl Append program to var if program is found on  PATH
 AC_DEFUN(XO_PROG,[
     AS_VAR_PUSHDEF([FLAGS], [m4_default($2,_AC_LANG_PREFIX[FLAGS])])
     xo_prog_var=`which $1 2>/dev/null`
-    if test -n "$xo_prog_var"; then
+    if test $? -eq 0 -a -n "$xo_prog_var"; then
         AX_APPEND_FLAG($1, FLAGS)
     fi
     AS_VAR_POPDEF([FLAGS])
