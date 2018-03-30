@@ -18,6 +18,8 @@ AC_DEFUN([XO_CXX_FLAG_CHECK],[
 
 dnl XO_AUTO_DEPEND()
 dnl Check if GXX supports auto dependencies via the pre-processor.
+dnl sets AUTODEPEND to a Makefile line to include the fragments.
+dnl sets CPP_DEP to the CPPFLAGS to use to create them.
 AC_DEFUN([XO_AUTO_DEPEND],[
     #----------------------------------------------------------------------
     # Sets up AC_SUBST vars for gcc's auto depend
@@ -42,7 +44,4 @@ AC_DEFUN([XO_AUTO_DEPEND],[
             m4_popdef([my_dep_name])dnl
         fi
     fi
-
-    AX_APPEND_FLAG($CPP_DEP, CPPFLAGS)
-    AC_SUBST(AUTODEPEND)
 ])

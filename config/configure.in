@@ -241,8 +241,9 @@ AC_DEFINE_UNQUOTED([PACKAGE_CLASSNAME],["$PACKAGE_CLASSNAME"],
     [X11 resource class name])
 
 #-----------------------------------------------
-# Finalize LIBS
+# Finalize LIBS and flags.
 #-----------------------------------------------
+AX_APPEND_FLAG($CPP_DEP, CPPFLAGS)
 #AX_APPEND_FLAG($X_PRE_LIBS, LIBS)
 AX_APPEND_FLAG(-lX11, LIBS)
 AX_APPEND_FLAG($X_EXTRA_LIBS, LIBS)
@@ -264,6 +265,7 @@ XO_MSG_VAR([LIBS])
 #---------------------------------------------------------
 # Shell Variables exported to makefiles via @VAR@
 #---------------------------------------------------------
+AC_SUBST(AUTODEPEND)
 AC_SUBST(PACKAGE_CLASSNAME)
 AC_SUBST(xapploaddir)
 AC_SUBST(XFT_OBJS)
