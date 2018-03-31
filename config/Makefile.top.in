@@ -65,7 +65,7 @@ defaultstring.cc: Xdefaults defresources.awk
 ##  CXX_BUILD_FLAGS is here 'cause gcc (and other compilers)
 ## can optimize at link time (using profiler data etc).
 xosview: $(OBJS) $(TOP)/@host_dir@/libmeter.a $(TOP)/cmeter/libcmeter.a
-	$(CXX) $(CXX_BUILD_FLAGS) -o xosview $(OBJS) $(LDFLAGS) $(LIBS)
+	$(CXX) -o xosview $(OBJS) $(LDFLAGS) $(LIBS)
 
 clean:
 	@echo "***  Cleaning..."
