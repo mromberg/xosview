@@ -25,6 +25,7 @@ cswapmeter.o\
 pswapmeter.o\
 cloadmeter.o\
 ploadmeter.o\
+pmemmeter.o\
 cintratemeter.o\
 pintratemeter.o\
 cfsmeter.o\
