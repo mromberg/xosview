@@ -86,6 +86,8 @@ void util::Fatal::operator <<=(std::ostream &os) {
         // throw again to log it.
         ExcLog([&exc](){ std::rethrow_exception(exc); });
     }
+    else
+        logBug << "std::terminate() called.  Aborting..." << std::endl;
 
     std::abort();
 }
