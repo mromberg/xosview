@@ -87,7 +87,6 @@
 #include "configxosv.h"
 
 #include <iostream>
-#include <cstdlib>
 #ifdef XOSVDEBUG
 #include <vector>
 #include <utility>
@@ -100,10 +99,7 @@ namespace util {
 // be filled first.  We can then flush it and exit.
 class Fatal {
 public:
-    void operator <<=(std::ostream &os) {
-        os.flush();
-        exit(1);
-    }
+    void operator <<=(std::ostream &os);
 };
 
 

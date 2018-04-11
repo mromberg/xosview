@@ -75,6 +75,12 @@ bool Log::suppress(const std::string &file, size_t) {
 #endif  // XOSVDEBUG
 
 
+void util::Fatal::operator <<=(std::ostream &os) {
+    os.flush();
+    std::exit(1);
+}
+
+
 [[noreturn]] void util::ExcLog::terminate_cb(void) noexcept {
     if(auto exc = std::current_exception()) {
         // throw again to log it.
