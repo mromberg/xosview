@@ -9,18 +9,12 @@
 #include "log.h"
 
 
-
 int main(int argc, char **argv) {
 
-    try {
+    std::set_terminate(util::ExcLog::terminate_cb);
 
-        XOSView xosview;
-        xosview.run(argc, argv);
+    auto xosv = [&]() { XOSView().run(argc, argv); };
 
-    } catch (...) {
-        logBug << "Unhandled exception." << std::endl;
-        return 1;
-    }
-
-    return 0;
+    return util::ExcLog(xosv).threw();
+//    xosv();  return 0;  // use instead of above to dump core.
 }

@@ -204,4 +204,41 @@ private:
                       << #condition << ") false: "           \
                       << __FILE__ << ":" << __LINE__ << ": "
 
+
+namespace util {
+
+//-----------------------------------------------------
+// RAII style wrapper around a callable.
+// Logs any exception thrown by f().
+// ex: ExcLog([](){ std::map<int,int>().at(1); });
+// > BUG: foo.cc:123: Uncaught exception: map::at
+//-----------------------------------------------------
+class ExcLog {
+public:
+    template <class Func>
+    ExcLog(const Func &f) : _threw(true) {
+        try {
+            f();
+            _threw = false;
+        }
+        catch (const std::exception &e) {
+            logBug << "Uncaught exception: " << e.what() << std::endl;
+        }
+        catch (...) {
+            logBug << "Uncaught unknown exception." << std::endl;
+        }
+    }
+
+    bool threw(void) const { return _threw; }
+
+    // terminate_handler that logs exceptions.  Use with std::set_terminate().
+    [[noreturn]] static void terminate_cb(void) noexcept;
+
+private:
+    bool _threw;
+};
+
+
+} // namespace util
+
 #endif

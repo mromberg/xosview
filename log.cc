@@ -69,5 +69,17 @@ bool Log::suppress(const std::string &file, size_t) {
     return suppress;
 }
 
+
 } // end namespace util
+
 #endif  // XOSVDEBUG
+
+
+[[noreturn]] void util::ExcLog::terminate_cb(void) noexcept {
+    if(auto exc = std::current_exception()) {
+        // throw again to log it.
+        ExcLog([&exc](){ std::rethrow_exception(exc); });
+    }
+
+    std::abort();
+}
