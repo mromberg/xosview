@@ -46,7 +46,10 @@ std::map<size_t, uint64_t> IntMeter::getStats(void) {
 }
 
 
-std::vector<std::map<size_t, uint64_t> > IntMeter::readStats(void) const {
+const std::vector<std::map<size_t, uint64_t>> &IntMeter::readStats(void) const {
+
+    static std::vector<std::map<size_t, uint64_t>> rval;
+
     std::ifstream ifs(INTFILE);
     if (!ifs)
         logFatal << "could not open: " << INTFILE << std::endl;
@@ -56,8 +59,16 @@ std::vector<std::map<size_t, uint64_t> > IntMeter::readStats(void) const {
     std::string ln;
     std::getline(ifs, ln);
 
-    // size it one larger for the cummulative stats.
-    std::vector<std::map<size_t, uint64_t> > rval(util::split(ln).size() + 1);
+    if (rval.empty()) {
+        // size it one larger for the cummulative stats.
+        rval.resize(util::split(ln).size() + 1);
+    }
+    else {
+        // avoid the calls to malloc by just zeroing last values.
+        for (auto &m : rval)
+            for (auto &p : m)
+                p.second = 0;
+    }
 
     // Each line is label: count0 count1 ... description.
     // Put the counts for labels that are numbers into the map for that cpu.

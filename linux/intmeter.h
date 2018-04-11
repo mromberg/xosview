@@ -21,7 +21,7 @@ protected:
 private:
     size_t _cpu;                      // which cpu are we displaying.
 
-    std::vector<std::map<size_t, uint64_t> > readStats(void) const;
+    const std::vector<std::map<size_t, uint64_t>> &readStats(void) const;
     std::string makeTitle(size_t cpu) const;
 };
 
