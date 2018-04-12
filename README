@@ -20,7 +20,7 @@
 
 * Current known working platforms:
    
-  - Linux (tested on fedora-26 but almost anything should work)
+  - Linux (tested on fedora-27 but almost anything should work)
 
   - Gnu Hurd (debian 2018-01-12)
 
@@ -53,37 +53,32 @@
     may be used to help locate optional (or required) libraries
     if the configure script is unable to do so by itself.
 
+    A C++ compiler which supports c++14 or better is required to build xosview.
+    The configure script will attempt to test the compiler for this support and
+    set any flags that may be needed.  If the configure script does not locate
+    the correct compiler, you may specify another one with
+    'configure CXX=path_to_your_compiler'.
+
     The configure script will attempt to look for the xpm library to load
     background images with.  It will also look for the Xft library for freetype2
-    font support.  If it finds the SM/ICE libraries it will configure support
-    for working as a session client.  If configure fails to find any of these
-    libraries and you wish to have the xosview features they depend on you may
-    need to use your systems package manager to install "dev" packages for these
-    libraries.
-
+    font support.  If configure fails to find any of these libraries and you
+    wish to have the xosview features they depend on you may need to use your
+    systems package manager to install "dev" packages for these libraries.  If
+    they are installed in locations configure can not find an option to the
+    configure script may help locate them (see configure --help).
+    
     Please see the README file for the platform you are building on for
     further details.
 
     Edit Makefile.config for your setup, if you wish to change
     anything from the default settings, such as the optimization
     flags.  This of course, should be done before one runs make.
+    This step should rarely be needed.
 
-* To run xosview :
-
-    The binary should start up and run without any fuss after being
-    built.  If you give it a -h or --help command line option it
-    will show a brief list of all the command line options.  For
-    more information (see the man page)
-
-    The xosview binary contains a complete set of default options.  It
-    should run right out of the box from anywhere.  But, it does
-    search for other options in standard locations.  See the man page
-    for full details.  Note: you can read the man page without installing
-    it by running 'zcat xosview.1 | groff -lascii -mandoc - | less -R' or
-    'man ./xosview.1'.
-
-    Please see the README file for your platform for any special 
-    instructions for running xosview on that platform.
+    Run make to build xosview.  The makefiles use features that are supported
+    by GNU make and BSD make.  If your make reports errors with the Makefiles
+    (probably solaris make) then you will need to install and use gnu make to
+    do the build.
 
 
 * To install xosview
@@ -107,6 +102,25 @@
     *at comiple time*.  If you are later going to change this prefix (by
     say changing it when you run make install) then you can set the compiled
     in location with the configure option --with-app-defaults=DIR
+
+
+* To run xosview :
+
+    The binary should start up and run without any fuss after being
+    built.  If you give it a -h or --help command line option it
+    will show a brief list of all the command line options.  For
+    more information (see the man page)
+
+    The xosview binary contains a complete set of default options.  It
+    should run right out of the box from anywhere.  But, it does
+    search for other options in standard locations.  See the man page
+    for full details.  Note: you can read the man page without installing
+    it by running 'zcat xosview.1 | groff -lascii -mandoc - | less -R' or
+    'man ./xosview.1'.
+
+    Please see the README file for your platform for any special 
+    instructions for running xosview on that platform.
+
 
 * To configure xosview
 
@@ -140,4 +154,3 @@
 
   See the file README.devel which contains details about git, autoconf
   gcc, makefiles and internal workings of the code.
-  

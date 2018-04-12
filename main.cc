@@ -13,7 +13,10 @@ int main(int argc, char **argv) {
 
     std::set_terminate(util::ExcLog::terminate_cb);
 
-    auto xosv = [&]() { XOSView().run(argc, argv); };
+    auto xosv = [&](void) {
+        XOSView x;
+        x.run(argc, argv);
+    };
 
     return util::ExcLog(xosv).threw();
 //    xosv();  return 0;  // use instead of above to dump core.
