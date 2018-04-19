@@ -29,14 +29,13 @@ CPPFLAGS = @CPPFLAGS@ -I$(TOP) -I$(TOP)/cmeter -I$(TOP)/@host_dir@
 CXXFLAGS = @CXXFLAGS@
 LDFLAGS  = -L$(TOP)/cmeter -L$(TOP)/@host_dir@ @LDFLAGS@
 LIBS     = -lmeter -lcmeter @LIBS@
-CPP_DEP  = @CPP_DEP@
 
 
 #-----------------------------------------------------------------
 # Rules
 #-----------------------------------------------------------------
 
-CXX_BUILD_FLAGS = $(CXXFLAGS) $(DEFS) $(CPP_DEP) $(CPPFLAGS)
+CXX_BUILD_FLAGS = $(CXXFLAGS) $(CPPFLAGS) $(DEFS)
 
 .cc.o:
 	$(CXX) $(CXX_BUILD_FLAGS) -c $< -o $@

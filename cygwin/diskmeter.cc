@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2006, 2015
+//  Copyright (c) 1999, 2006, 2015, 2018
 //  by Mike Romberg (mike-romberg@comcast.net)
 //
 //  This file may be distributed under terms of the GPL
@@ -19,13 +19,10 @@ DiskMeter::DiskMeter(void)
     _query.query();
 }
 
+
 std::pair<double, double> DiskMeter::getRate(void) {
-
-    std::pair<double, double> rval;
-
     _query.query();
-    rval.first = _query.counters()[0].doubleVal();
-    rval.second = _query.counters()[1].doubleVal();
 
-    return rval;
+    return std::make_pair(_query.counters()[0].doubleVal(),
+      _query.counters()[1].doubleVal());
 }

@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016, 2018 by Mike Romberg ( mike-romberg@comcast.net )
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
+//  by Mike Romberg ( mike-romberg@comcast.net )
 //  2007 by Samuel Thibault ( samuel.thibault@ens-lyon.org )
 //
 //  This file may be distributed under terms of the GPL
@@ -7,33 +8,33 @@
 #include "memmeter.h"
 
 #include <fstream>
-#include <sstream>
 
 extern "C" {
+#include <mach/vm_statistics.h>
 #include <mach/mach_traps.h>
 #include <mach/mach_interface.h>
 }
 
-MemMeter::MemMeter( void )
-    : FieldMeterGraph( 4, "MEM", "ACT/INACT/WIRE/FREE" ){
+
+MemMeter::MemMeter(void)
+    : FieldMeterGraph(4, "MEM", "ACT/INACT/WIRE/FREE") {
 }
 
-MemMeter::~MemMeter( void ){
-}
 
-void MemMeter::checkResources(const ResDB &rdb){
+void MemMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getColor( "memActiveColor" ) );
-    setfieldcolor( 1, rdb.getColor( "memInactiveColor" ) );
-    setfieldcolor( 2, rdb.getColor( "memCacheColor" ) );
-    setfieldcolor( 3, rdb.getColor( "memFreeColor" ) );
+    setfieldcolor(0, rdb.getColor( "memActiveColor"));
+    setfieldcolor(1, rdb.getColor( "memInactiveColor"));
+    setfieldcolor(2, rdb.getColor( "memCacheColor"));
+    setfieldcolor(3, rdb.getColor( "memFreeColor"));
 }
 
-void MemMeter::checkevent( void ){
-    kern_return_t err;
 
-    err = vm_statistics (mach_task_self(), &vmstats);
+void MemMeter::checkevent(void) {
+
+    struct vm_statistics vmstats;
+    const auto err = vm_statistics (mach_task_self(), &vmstats);
     if (err)
         logFatal << "vm_statistics(): " << util::strerror(err) << std::endl;
 
@@ -43,8 +44,9 @@ void MemMeter::checkevent( void ){
     _fields[3] = vmstats.free_count;
     _total = _fields[0] + _fields[1] + _fields[2] + _fields[3];
 
-    float used = static_cast<double>(_total - _fields[3]) * vmstats.pagesize;
-    float total = static_cast<double>(_total) * vmstats.pagesize;
+    const float used = static_cast<double>(_total - _fields[3])
+        * vmstats.pagesize;
+    const float total = static_cast<double>(_total) * vmstats.pagesize;
 
     FieldMeterDecay::setUsed(used, total);
 }

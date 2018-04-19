@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -14,24 +14,20 @@
 //    authors for a copy.
 //
 #include "netmeter.h"
-
-#if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 #include "sctl.h"
 
+#if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 #include <net/if.h>
 #include <net/if_mib.h>
 #endif
 
 #if defined(XOSVIEW_NETBSD)
-#include <cstring>
 #include <unistd.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
-#include <machine/int_fmtio.h>
 #endif
 
 #if defined(XOSVIEW_OPENBSD)
-#include <sys/sysctl.h>
 #include <sys/socket.h>
 #include <net/if.h>
 #include <net/route.h>
@@ -39,7 +35,7 @@
 #endif
 
 
-NetMeter::NetMeter( void )
+NetMeter::NetMeter(void)
     : ComNetMeter(),
       _lastBytesIn(0), _lastBytesOut(0),
       _netIface("False"), _ignored(false) {
@@ -64,7 +60,7 @@ void NetMeter::checkResources(const ResDB &rdb) {
     ComNetMeter::checkResources(rdb);
 
     _netIface = rdb.getResource("netIface");
-    if (_netIface[0] == '-') {
+    if (_netIface.front() == '-') {
         _ignored = true;
         _netIface.erase(0, _netIface.find_first_not_of("- "));
     }
@@ -76,16 +72,16 @@ std::pair<float, float> NetMeter::getRates(void) {
     if (first) {
         first = false;
         getNetInOut(_lastBytesIn, _lastBytesOut, _netIface, _ignored);
-        IntervalTimerStart();
+        timerStart();
         return std::make_pair(0.0, 0.0);
     }
 
     uint64_t nowBytesIn, nowBytesOut;
 
-    IntervalTimerStop();
+    timerStop();
     getNetInOut(nowBytesIn, nowBytesOut, _netIface, _ignored);
-    double t = (1.0) / IntervalTimeInSecs();
-    IntervalTimerStart();
+    const double t = 1.0 / etimeSecs();
+    timerStart();
 
     std::pair<float, float> rval((nowBytesIn - _lastBytesIn) * t,
       (nowBytesOut - _lastBytesOut) * t);
@@ -106,18 +102,16 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
     inbytes = outbytes = 0;
     struct if_nameindex *iflist = if_nameindex();
-//    int s = socket(AF_LOCAL, SOCK_DGRAM, 0);
 
-    for (const struct if_nameindex *p = iflist; p->if_index > 0; p++) {
-        struct ifdatareq ifdr;
-        memset(&ifdr, 0, sizeof(ifdr));
-        std::string p_if_name(p->if_name);
-        memcpy(ifdr.ifdr_name, p_if_name.c_str(), p_if_name.length());
+    for (const struct if_nameindex *p = iflist ; p->if_index > 0 ; p++) {
+        struct ifdatareq ifdr = {};
+        const std::string p_if_name(p->if_name);
+        std::copy(p_if_name.cbegin(), p_if_name.cend(), ifdr.ifdr_name);
         if (ioctl(_socket, SIOCGIFDATA, &ifdr) == -1) {
-            logFatal << "ioctl(SIOCGIFDATA) failed for: " << p->if_name
+            logFatal << "ioctl(SIOCGIFDATA) failed for: " << p_if_name
                      << std::endl;
         }
-        std::string ifname(ifdr.ifdr_name);
+        const std::string ifname(ifdr.ifdr_name);
 
         if (ifskip(ifname, netIface, ignored))
             continue;
@@ -131,7 +125,6 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
                  << " out: " << ifi->ifi_obytes << std::endl;
     }
 
-//    close(s);
     if_freenameindex(iflist);
 }
 #endif
@@ -143,37 +136,47 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
 
     inbytes = outbytes = 0;
 
-    const int mib_ifl[] = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
-    const size_t mibsize = sizeof(mib_ifl) / sizeof(mib_ifl[0]);
+    //------------------------------------------------------------
+    // Get ready for a ride.   An array of stucts will be written
+    // into a char buffer by sysctl().  The structs are of
+    // variable size and type.  Each struct has a header struct
+    // which holds the type and length.  So, try to read the
+    // interesting ones and skip the others.
+    //------------------------------------------------------------
 
-    size_t size;
-    if ( sysctl(mib_ifl, mibsize, NULL, &size, NULL, 0) < 0 )
+    // First get the size and create a buffer to hold the blob.
+    size_t size = 0;
+    SysCtl sc_ifl = { CTL_NET, PF_ROUTE, 0, 0, NET_RT_IFLIST, 0 };
+    if (!sc_ifl.getsize(size))
         logFatal << "sysctl() failed." << std::endl;
-
     std::vector<char> bufv(size, 0);
-    if ( sysctl(mib_ifl, mibsize, bufv.data(), &size, NULL, 0) < 0 )
+
+    // fill the blob with data by calling again.
+    if (!sc_ifl.get(bufv.data(), bufv.size()))
         logFatal << "sysctl() failed." << std::endl;
 
+    // Now the fugly begins.   bufp move forward through bufv
+    // and rtm is the message header. They both start at the front.
     const char *bufp = bufv.data();
-    const struct rt_msghdr *rtm =
-        reinterpret_cast<const struct rt_msghdr *>(bufp);
+    auto rtm = reinterpret_cast<const struct rt_msghdr *>(bufp);
 
-    for ( ; bufp < bufv.data() + size ; bufp += rtm->rtm_msglen) {
+    // walk one rtm_msglen increment as long as we don't go out of bounds.
+    for ( ; bufp + rtm->rtm_msglen <= &bufv.back() ; bufp += rtm->rtm_msglen) {
 
         rtm = reinterpret_cast<const struct rt_msghdr *>(bufp);
+
         if (rtm->rtm_version != RTM_VERSION)
-            continue;
+            continue;  // skip ones we don't understand.
 
         if (rtm->rtm_type == RTM_IFINFO) {
-            const struct if_msghdr *ifm =
-                reinterpret_cast<const struct if_msghdr *>(bufp);
-            const struct sockaddr_dl *sdl =
-                reinterpret_cast<const struct sockaddr_dl *>(ifm + 1); // voodoo
+            auto ifm = reinterpret_cast<const struct if_msghdr *>(bufp);
+            // Advance past the message header (+1 if_msghdr).
+            auto sdl = reinterpret_cast<const struct sockaddr_dl *>(ifm + 1);
 
             if (sdl->sdl_family != AF_LINK)
                 continue;
 
-            std::string ifname(sdl->sdl_data, 0, sdl->sdl_nlen);
+            const std::string ifname(sdl->sdl_data, sdl->sdl_nlen);
             if (ifskip(ifname, netIface, ignored))
                 continue;
 
@@ -221,7 +224,7 @@ void NetMeter::getNetInOut(uint64_t &inbytes, uint64_t &outbytes,
         if (!(ifmd.ifmd_flags & IFF_UP))
             continue;
 
-        std::string ifname(ifmd.ifmd_name);
+        const std::string ifname(ifmd.ifmd_name);
         if (ifskip(ifname, netIface, ignored))
             continue;
 

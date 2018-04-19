@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -11,7 +11,7 @@
 
 
 PerfCounter::PerfCounter(const std::string &path)
-    : _path(path), _counter(0) {
+    : _path(path), _counter(nullptr) {
 }
 
 
@@ -53,12 +53,12 @@ int64_t PerfCounter::llongVal(void) {
 
 
 PerfQuery::PerfQuery(void)
-  : _query(0) {
+  : _query(nullptr) {
 
-    PDH_STATUS status = PdhOpenQuery(NULL, 0, &_query);
+    PDH_STATUS status = PdhOpenQuery(nullptr, 0, &_query);
     if(status != ERROR_SUCCESS) {
         logProblem << "PdhOpenQuery() failed" << std::endl;
-        _query = 0;
+        _query = nullptr;
     }
 }
 
@@ -95,11 +95,11 @@ std::vector<std::string> PerfQuery::expand(const std::string &path) {
     std::vector<std::string> rval;
 
     DWORD plistLen = 0;
-    PDH_STATUS status = PdhExpandWildCardPath(NULL, path.c_str(),
-      NULL, &plistLen, 0);
+    PDH_STATUS status = PdhExpandWildCardPath(nullptr, path.c_str(),
+      nullptr, &plistLen, 0);
     if (status == (PDH_STATUS)PDH_MORE_DATA) {
         std::vector<TCHAR> plist(plistLen);
-        status = PdhExpandWildCardPath(NULL, path.c_str(),
+        status = PdhExpandWildCardPath(nullptr, path.c_str(),
           plist.data(), &plistLen, 0);
 
         if (status == ERROR_SUCCESS) {
@@ -127,16 +127,17 @@ std::map<std::string, std::string> PerfQuery::parse(
     std::map<std::string, std::string> rval;
 
     DWORD pSize = 0;
-    PDH_STATUS status = PdhParseCounterPath(path.c_str(), NULL, &pSize, 0);
+    PDH_STATUS status = PdhParseCounterPath(path.c_str(), nullptr, &pSize, 0);
 
-    if (status == (PDH_STATUS)PDH_MORE_DATA) {
+    if (status == static_cast<PDH_STATUS>(PDH_MORE_DATA)) {
         std::vector<BYTE> pbuf(pSize);
         status = PdhParseCounterPath(path.c_str(),
-          (PDH_COUNTER_PATH_ELEMENTS *)pbuf.data(), &pSize, 0);
+          reinterpret_cast<PDH_COUNTER_PATH_ELEMENTS *>(pbuf.data()),
+          &pSize, 0);
 
         if (status == ERROR_SUCCESS) {
             PDH_COUNTER_PATH_ELEMENTS *pe =
-                (PDH_COUNTER_PATH_ELEMENTS *)pbuf.data();
+                reinterpret_cast<PDH_COUNTER_PATH_ELEMENTS *>(pbuf.data());
             if (pe->szMachineName)
                 rval["mname"] = pe->szMachineName;
             if (pe->szObjectName)

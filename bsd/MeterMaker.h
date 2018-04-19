@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016
+//  Copyright (c) 1994, 1995, 2015, 2016, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //  Copyright (c) 1995, 1996, 1997-2002 by Brian Grayson (bgrayson@netbsd.org)
 //
@@ -12,8 +12,8 @@
 //    authors for a copy.
 //
 
-#ifndef METERMAKER_H
-#define METERMAKER_H
+#ifndef MeterMaker_h
+#define MeterMaker_h
 
 #include "cmetermaker.h"
 
@@ -22,15 +22,12 @@ class ResDB;
 
 class MeterMaker : public ComMeterMaker {
 public:
-    MeterMaker(void);
-
-    std::vector<Meter *> makeMeters(const ResDB &rdb);
+    mlist makeMeters(const ResDB &rdb);
 
 private:
-    void cpuFactory(const ResDB &rdb);
-    void coreTempFactory(const ResDB &rdb);
-    void sensorFactory(const ResDB &rdb);
+    void cpuFactory(const ResDB &rdb, mlist &meters) const;
+    void coreTempFactory(const ResDB &rdb, mlist &meters) const;
+    void sensorFactory(const ResDB &rdb, mlist &meters) const;
 };
-
 
 #endif

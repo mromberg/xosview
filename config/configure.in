@@ -1,5 +1,3 @@
-#!/bin/bash
-
 AC_INIT([xosview],[2.2.3],
         [https://sourceforge.net/p/xosview/_list/tickets],
         [xosview2],
@@ -7,21 +5,29 @@ AC_INIT([xosview],[2.2.3],
 AC_CONFIG_HEADERS(config.h:config.h.in)
 AC_CONFIG_AUX_DIR(config)
 
-#------------------------------------------------
-# Support macros
-#------------------------------------------------
-m4_include([xo_concat.m4])
+dnl ------------------------------------------------
+dnl    Support macros
+dnl ------------------------------------------------
+m4_include([m4_xo_msg.m4])
+m4_include([m4_ax_append_flag.m4])
+m4_include([m4_ax_define_dir.m4])
 m4_include([m4_ax_config_feature.m4])
-m4_include([xo_min_cxx_check.m4])
-m4_include([xo_gcc_auto_depend.m4])
-m4_include([xo_linux_config.m4])
-m4_include([xo_bsd_config.m4])
-m4_include([xo_xft_support.m4])
-m4_include([xo_define_dir.m4])
-m4_include([xo_smlibs.m4])
+m4_include([m4_xo_cxx_guess.m4])
+m4_include([m4_ax_cxx_compile_stdcxx.m4])
+m4_include([m4_xo_cxxflags_default.m4])
+m4_include([m4_xo_auto_depend.m4])
+m4_include([m4_xo_lib_cxx_thread_sleep.m4])
+m4_include([m4_xo_lib_xft.m4])
+m4_include([m4_xo_lib_xsm.m4])
+m4_include([m4_xo_linux_config.m4])
+m4_include([m4_xo_bsd_config.m4])
 
-AC_CANONICAL_HOST
 
+AC_MSG_NOTICE([------- checking host os ----------])
+AC_CANONICAL_HOST()
+AC_MSG_NOTICE([host_os : $host_os])
+
+#-------------------------------------------------
 # These are the only variables exported
 # to and used by the Makefiles.   So,
 # Everything configure does must
@@ -30,28 +36,35 @@ AC_CANONICAL_HOST
 # in that it can be overrided at build time.
 # Put nothing into CXXFLAGS that is important
 # to a proper build.
+#-------------------------------------------------
 CPPFLAGS=${CPPFLAGS:-}
 CXXFLAGS=${CXXFLAGS:-}
 LDFLAGS=${LDFLAGS:-}
 LIBS=${LIBS:-}
 
+#-------------------------------------------------
 # Find and set the C++ compiler.
 # Everything is C++ no need to change this again.
-AC_PROG_CXX([c++ g++])
+#-------------------------------------------------
+XO_MSG_SECTION([C++ compiler])
+XO_CXX_GUESS()
+AC_PROG_CXX([$xo_cxx_guess_list])
 AC_LANG([C++])
+AX_CXX_COMPILE_STDCXX([14],[noext],[mandatory])
+
 
 #------------------------------------------------
 # Enable features (which are compiler related)
 #------------------------------------------------
 
-AX_CONFIG_FEATURE_DEFAULT_DISABLED
+AX_CONFIG_FEATURE_DEFAULT_DISABLED()
 
 AX_CONFIG_FEATURE(devel, [turns on debug and auto-depend],
        HAVE_DEVEL, [Does nothing.  autoconf noise],
        [AS_IF([true],[AX_CONFIG_FEATURE_ENABLE(debug)
                       AX_CONFIG_FEATURE_ENABLE(auto-depend)])])
 
-AX_CONFIG_FEATURE_VERBOSE
+AX_CONFIG_FEATURE_VERBOSE()
 
 AX_CONFIG_FEATURE(debug, [turns on/off debug support],
                   XOSVDEBUG, [Define if you want debug support],
@@ -60,73 +73,50 @@ AX_CONFIG_FEATURE(debug, [turns on/off debug support],
 AX_CONFIG_FEATURE(auto-depend, [turns on/off auto-depend support],
                   AUTO_DEPEND, [Does nothing autoconf noise],
                   [enable_auto_depend="yes"])
-XO_GCC_AUTO_DEPEND($enable_auto_depend)
+
+XO_AUTO_DEPEND($enable_auto_depend)
 
 #-------End Features -----------------------------------------
 
-XO_GCC_CXXFLAGS
-
-# Let the user have a stab at app-defaults if they don't
-# like the default (${datarootdir}/X11/app-defaults)
-xapploaddir="\${datarootdir}/X11/app-defaults"
-AC_ARG_WITH([app-defaults],
-            [AS_HELP_STRING([--with-app-defaults=DIR],dnl
-                [X resource directory [DATAROOTDIR/X11/app-defaults]])],
-            [xapploaddir="$with_app_defaults"])
-AC_DEFINE_DIR([XAPPLOADDIR],[xapploaddir],dnl
-    [location of xosview Xdefaults])
-
-
-# Programs
-AC_PROG_AWK
-AC_PROG_RANLIB
-AC_PROG_INSTALL
+# depends on above features.
+XO_CXXFLAGS_DEFAULT()
 
 
 #------------------------------------------------
-# Run some tests.  We don't work around failures.
-# But if the configure script fails then so will
-# the build.  So... early warning.
+# Build Programs
 #------------------------------------------------
-XO_MIN_CXX_CHECK
+XO_MSG_SECTION([programs needed for build])
+AC_PROG_AWK()
+AC_PROG_RANLIB()
+AC_PROG_INSTALL()
+AC_PROG_EGREP()
+AC_PROG_CXXCPP()
 
-#  Check for usleep().  Currently, only HP-UX doesn't have it.
-AC_CHECK_FUNCS(usleep)
 
-# =============================================
+#------------------------------------------------
+# Libraries
+#------------------------------------------------
+XO_MSG_SECTION([library support])
+
+XO_CXX_THREAD_SLEEP()
+
+#------------------------------------------------
 # AC_PATH_XTRA sets these.  AC_PATH_X does not!
 # X_CFLAGS (-I/where/is/X)
 # X_LIBS (-L/where/is/X -R/where/is/X)
 # X_LIBS is just flags.  Not libraries.
-# =============================================
-AC_PATH_XTRA
+#------------------------------------------------
+AC_PATH_XTRA()
 
 # First add what comes from AC_PATH_XTRA
-XO_CONCAT(CPPFLAGS,$CPPFLAGS,"$X_CFLAGS")
-XO_CONCAT(LDFLAGS,$LDFLAGS,"$X_LIBS")
+AX_APPEND_FLAG($X_CFLAGS, CPPFLAGS)
+AX_APPEND_FLAG($X_LIBS, LDFLAGS)
 
 # This takes care of the paths.  The libraries themselves (like -lX11)
 # will be added later.  First need to check for Xpm, Xft etc.
-# Any checks for X11 depended LIBS will need to add
+# Any checks for X11 dependent LIBS will need to add
 # $X_PRE_LIBS -lX11 $X_EXTRA_LIBS to thier checks.
 
-
-#---------------------------------------------------
-# Session management library support (-lSM -lICE).
-#---------------------------------------------------
-AC_ARG_WITH([xsm],
-            [AS_HELP_STRING([--with-xsm],
-              [enable experimental X11R6 session management support])],
-            [XO_CHECK_SM_LIBS],
-            [with_xsm=no])
-
-#------------------------------------------------
-# Used for pixmap backgrounds.
-#------------------------------------------------
-AC_CHECK_HEADER(X11/xpm.h,
-AC_CHECK_LIB(Xpm, XpmCreateImageFromData,
-   [AC_DEFINE(HAVE_XPM,[1],[Have libXpm])
-   XO_CONCAT(LIBS,$LIBS,[-lXpm])],,-lX11))
 
 #------------------------------------------------
 # Double buffering extension
@@ -134,13 +124,38 @@ AC_CHECK_LIB(Xpm, XpmCreateImageFromData,
 AC_CHECK_HEADER(X11/extensions/Xdbe.h,
 AC_CHECK_LIB(Xext,XdbeQueryExtension,
     [AC_DEFINE(HAVE_DBE,[1],[Have X11 dbe extension])
-    XO_CONCAT(LIBS,$LIBS,[-lXext])],,-lX11),[],[#include <X11/Xlib.h>])
+     AX_APPEND_FLAG(-lXext, LIBS)],,-lX11),[],[#include <X11/Xlib.h>])
 
-XO_XFT_SUPPORT
+#------------------------------------------------
+# Used for pixmap backgrounds.
+#------------------------------------------------
+XO_MSG_SECTION([xpm support])
+AC_CHECK_HEADER(X11/xpm.h,
+AC_CHECK_LIB(Xpm, XpmCreateImageFromData,
+   [AC_DEFINE(HAVE_XPM,[1],[Have libXpm])
+    AX_APPEND_FLAG(-lXpm, LIBS)],,-lX11))
+
+#---------------------------------------------------
+# Freetype Fonts
+#---------------------------------------------------
+XO_MSG_SECTION([X freetype2 support])
+XO_XFT_SUPPORT()
+
+#---------------------------------------------------
+# Session management library support (-lSM -lICE).
+#---------------------------------------------------
+AC_ARG_WITH([xsm],
+            [AS_HELP_STRING([--with-xsm],
+                [enable experimental X11R6 session management support])],
+            [XO_MSG_SECTION([X session management])
+             XO_CHECK_SM_LIBS()],
+            [with_xsm=no])
+
 
 #----------------------------------------------------
-# Call each ports macro so that it can set up its own
-# options / configuration.
+# Host OS specific configuration.
+#   - set host_dir used for the xosview build.
+#   - do any os specific configuration checks.
 #----------------------------------------------------
 
 # list of docs to install.  files to place in ${docdir} (See Makefile.top.in)
@@ -148,44 +163,43 @@ DOC_FILES="README"
 
 case $host_os in
     linux*)
-        XO_CONCAT(DOC_FILES,$DOC_FILES,doc/README.linux)
-        AC_XOSV_LINUX
-
-	host_dir=linux
-        host_os=linux
+        XO_MSG_SECTION([Linux specific features])
+        AX_APPEND_FLAG(doc/README.linux, DOC_FILES)
+        XO_LINUX()
+        host_dir=linux
         ;;
     netbsd*|freebsd*|openbsd*|bsdi*|dragonfly*)
-        XO_CONCAT(DOC_FILES,$DOC_FILES,doc/README.bsd)
-        XO_BSD_CONFIG
+        XO_MSG_SECTION([BSD specific features])
+        AX_APPEND_FLAG(doc/README.bsd, DOC_FILES)
+        XO_BSD_CONFIG()
+        host_dir=bsd
         ;;
     solaris2*)
+        XO_MSG_SECTION([Solaris specific features])
         AC_CHECK_HEADER(kstat.h,
             AC_CHECK_LIB(kstat, kstat_open,
             [AC_DEFINE(HAVE_KSTAT,[1],[Have libkstat])
-             XO_CONCAT(LIBS,$LIBS,[-lkstat])],,))
-        AC_CHECK_HEADER(sys/loadavg.h,
-            AC_CHECK_FUNCS(getloadavg))
+             AX_APPEND_FLAG(-lkstat, LIBS)],,))
 	host_dir=sunos5
-	host_os=sunos5
         ;;
     gnu*)
-        XO_CONCAT(DOC_FILES,$DOC_FILES,doc/README.gnu)
+        AX_APPEND_FLAG(doc/README.gnu, DOC_FILES)
 	host_dir=gnu
-	host_os=gnu
         ;;
     cygwin)
+        XO_MSG_SECTION([Cygwin specific features])
         AC_CHECK_HEADER(pdh.h)
         AC_CHECK_LIB(pdh, PdhOpenQuery,
             [AC_DEFINE(HAVE_PDH,[1],[Have libpdh])
-             XO_CONCAT(LIBS,$LIBS,[-lpdh])])
+             AX_APPEND_FLAG(-lpdh, LIBS)])
         AC_CHECK_LIB(iphlpapi, GetAdaptersAddresses,
             [AC_DEFINE(HAVE_IPHLPAPI,[1],[Have libiphlpapi])
-            XO_CONCAT(LIBS,$LIBS,[-liphlpapi])])
-        XO_CONCAT(DOC_FILES,$DOC_FILES,doc/README.cygwin)
+             AX_APPEND_FLAG(-liphlpapi, LIBS)])
+        AX_APPEND_FLAG(doc/README.cygwin, DOC_FILES)
         host_dir=cygwin
         ;;
     minix)
-        XO_CONCAT(DOC_FILES,$DOC_FILES,doc/README.minix)
+        AX_APPEND_FLAG(doc/README.minix, DOC_FILES)
         host_dir=minix
         ;;
     hpux*|irix6.5*)
@@ -195,7 +209,6 @@ case $host_os in
         AC_MSG_WARN([*************************************************])
         AC_MSG_WARN([configuring as default platform...])
         host_dir=default
-        host_os=default
         ;;
     *)
         AC_MSG_WARN([*************************************************])
@@ -203,10 +216,19 @@ case $host_os in
         AC_MSG_WARN([*************************************************])
         AC_MSG_WARN([configuring as default platform...])
         host_dir=default
-        host_os=default
         ;;
 esac
 
+
+# Let the user have a stab at app-defaults if they don't
+# like the default (${datarootdir}/X11/app-defaults)
+xapploaddir="\${datarootdir}/X11/app-defaults"
+AC_ARG_WITH([app-defaults],
+            [AS_HELP_STRING([--with-app-defaults=DIR],
+            [X resource directory [DATAROOTDIR/X11/app-defaults]])],
+            [xapploaddir="$with_app_defaults"])
+AX_DEFINE_DIR([XAPPLOADDIR],[xapploaddir],
+              [location of xosview Xdefaults])
 
 #---------------------------------------------------------------
 # Set the X resource class name based on the PACKAGE_TARNAME
@@ -215,20 +237,39 @@ esac
 xclass_first=`echo $PACKAGE_TARNAME | cut -c1-2 | tr [a-z] [A-Z]`
 xclass_second=`echo $PACKAGE_TARNAME | cut -c3-`
 PACKAGE_CLASSNAME="$xclass_first$xclass_second"
-AC_DEFINE_UNQUOTED([PACKAGE_CLASSNAME],["$PACKAGE_CLASSNAME"],dnl
+AC_DEFINE_UNQUOTED([PACKAGE_CLASSNAME],["$PACKAGE_CLASSNAME"],
     [X11 resource class name])
 
+#-----------------------------------------------
+# Finalize LIBS and flags.
+#-----------------------------------------------
+AX_APPEND_FLAG($CPP_DEP, CPPFLAGS)
+#AX_APPEND_FLAG($X_PRE_LIBS, LIBS)
+AX_APPEND_FLAG(-lX11, LIBS)
+AX_APPEND_FLAG($X_EXTRA_LIBS, LIBS)
+
+
+#-----------------------------------------------
+#  Display the flags.
+#-----------------------------------------------
+XO_MSG_SECTION([Build Flags])
+XO_MSG_VAR([host_os])
+XO_MSG_VAR([host_dir])
+XO_MSG_VAR([DEFS])
+XO_MSG_VAR([CPPFLAGS])
+XO_MSG_VAR([CXXFLAGS])
+XO_MSG_VAR([LDFLAGS])
+XO_MSG_VAR([LIBS])
+
 
 #---------------------------------------------------------
-# The netbsd and linux ports modify these variables which
-# are exported by AC_OUTPUT.
+# Shell Variables exported to makefiles via @VAR@
 #---------------------------------------------------------
+AC_SUBST(AUTODEPEND)
 AC_SUBST(PACKAGE_CLASSNAME)
 AC_SUBST(xapploaddir)
 AC_SUBST(XFT_OBJS)
 AC_SUBST(XOSV_FONT)
-AC_SUBST(BTRYMETER)
-AC_SUBST(INSTALL_ARGS)
 AC_SUBST(host_dir)
 AC_SUBST(DOC_FILES)
 
@@ -239,22 +280,9 @@ AC_CONFIG_FILES([Makefile.config:config/Makefile.config.in])
 AC_CONFIG_FILES([Xdefaults:Xdefaults.in])
 AC_CONFIG_FILES([xosview.1:xosview.1.in])
 
-#-----------------------------------------------
-# Finalize LIBS
-#-----------------------------------------------
-dnl XO_CONCAT(LIBS,$LIBS,$X_PRE_LIBS)
-XO_CONCAT(LIBS,$LIBS,-lX11)
-XO_CONCAT(LIBS,$LIBS,$X_EXTRA_LIBS)
 
 #-----------------------------------------------
-#  Display the flags and then create the files
+# Generate the build files.
 #-----------------------------------------------
-if true; then
-    echo "DEFS          : $DEFS"
-    echo "CPPFLAGS      : $CPPFLAGS"
-    echo "CXXFLAGS      : $CXXFLAGS"
-    echo "LDFLAGS       : $LDFLAGS"
-    echo "LIBS          : $LIBS"
-fi
-
+XO_MSG_SECTION([Build Files])
 AC_OUTPUT

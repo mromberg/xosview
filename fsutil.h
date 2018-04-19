@@ -16,9 +16,9 @@
 #include <string>
 #include <vector>
 #include <fstream>
-//#include <cstdint>  // c++11 for uint64_t for 32 bit systems
+#include <cstdint>  // for uint64_t for 32 bit systems
 
-#include <stdint.h>  // for uint64_t for 32 bit systems
+
 
 namespace util {
 
@@ -75,6 +75,8 @@ public:
         const std::string &path, bool privileged=false);
 };
 
+
+
 template<class X>
 bool fs::readFirst(const std::string &file, X &x) {
     x = X();
@@ -91,6 +93,7 @@ bool fs::readFirst(const std::string &file, X &x) {
 
     return true;
 }
+
 
 } // end namespace util
 

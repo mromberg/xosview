@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016
+//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016, 2018
 //  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -25,21 +25,21 @@
 #endif
 
 
-DiskMeter::DiskMeter( void )
+DiskMeter::DiskMeter(void)
     : ComDiskMeter(),
       prevreads_(0), prevwrites_(0) {
 
     getDiskXFerBytes(prevreads_, prevwrites_);
-    IntervalTimerStart();
+    timerStart();
 }
 
 
 std::pair<double, double> DiskMeter::getRate(void) {
+    timerStop();
+    const double t = etimeSecs();
     uint64_t reads = 0, writes = 0;
-    IntervalTimerStop();
-    double t = IntervalTimeInSecs();
     getDiskXFerBytes(reads, writes);
-    IntervalTimerStart();
+    timerStart();
 
     std::pair<double, double> rval((reads - prevreads_) / t,
       (writes - prevwrites_) / t);
@@ -52,7 +52,7 @@ std::pair<double, double> DiskMeter::getRate(void) {
 
 #if defined(XOSVIEW_FREEBSD) || defined(XOSVIEW_DFBSD)
 void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
-  uint64_t &wbytes) {
+  uint64_t &wbytes) const {
 
     static SysCtl numdevs_sc("kern.devstat.numdevs");
     static SysCtl devstat_sc("kern.devstat.all");
@@ -100,10 +100,9 @@ void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
 
 #if defined(XOSVIEW_NETBSD)
 void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
-  uint64_t &wbytes) {
+  uint64_t &wbytes) const {
 
-    const int mib_dsk[] = { CTL_HW, HW_IOSTATS, sizeof(struct io_sysctl) };
-    static SysCtl iostats_sc(mib_dsk, 3);
+    static SysCtl iostats_sc = { CTL_HW, HW_IOSTATS, sizeof(struct io_sysctl) };
 
     rbytes = wbytes = 0;
 
@@ -111,7 +110,7 @@ void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
     if (!iostats_sc.getsize(size))
         logFatal << "sysctl(" << iostats_sc.id() << ") failed." << std::endl;
 
-    size_t ndrives = size / sizeof(struct io_sysctl);
+    const size_t ndrives = size / sizeof(struct io_sysctl);
     std::vector<struct io_sysctl> drive_stats(ndrives);
 
     // Get the stats.
@@ -129,12 +128,10 @@ void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
 
 #if defined(XOSVIEW_OPENBSD)
 void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
-  uint64_t &wbytes) {
+  uint64_t &wbytes) const {
 
-    const int mib1[] = {CTL_HW, HW_DISKCOUNT};
-    static SysCtl dskcount_sc(mib1, 2);
-    const int mib2[] = {CTL_HW, HW_DISKSTATS};
-    static SysCtl dskstats_sc(mib2, 2);
+    static SysCtl dskcount_sc = {CTL_HW, HW_DISKCOUNT};
+    static SysCtl dskstats_sc = {CTL_HW, HW_DISKSTATS};
 
     rbytes = wbytes = 0;
 
@@ -146,9 +143,9 @@ void DiskMeter::getDiskXFerBytes(uint64_t &rbytes,
     if (!dskstats_sc.get(dstats))
         logFatal << "sysctl(" << dskstats_sc.id() << ") failed." << std::endl;
 
-    for (size_t i = 0 ; i < dstats.size() ; i++) {
-        rbytes += dstats[i].ds_rbytes;
-        wbytes += dstats[i].ds_wbytes;
+    for (const auto &stat : dstats) {
+        rbytes += stat.ds_rbytes;
+        wbytes += stat.ds_wbytes;
     }
 }
 #endif

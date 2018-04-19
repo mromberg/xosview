@@ -8,8 +8,7 @@
 #define meter_h
 
 #include "label.h"
-#include "strutil.h"
-#include "rdb.h"
+#include "rdb.h"   // So every meter does not have to include this.
 
 
 
@@ -42,13 +41,8 @@ protected:
     bool docaptions(void) const { return _docaptions; }
     bool dolegends(void) const { return _dolegends; }
     bool dousedlegends(void) const { return _dousedlegends; }
-    bool metric(void) const { return _metric; }
-    void setMetric(bool val) { _metric = val; }
-    double scaleValue(double value, std::string &scale) const;
     void setLegendColor(size_t index, unsigned long color)
         { _legend.setColor(index, color); }
-    virtual void drawLabels(X11Graphics &g);
-
     int x(void) const { return _x; }
     int y(void) const { return _y; }
     void x(int v) { _x = v; }
@@ -56,10 +50,16 @@ protected:
     int width(void) const { return _width; }
     int height(void) const { return _height; }
 
+    // metric == true means use SI scales and not 1024=1k scales.
+    bool metric(void) const { return _metric; }
+    void setMetric(bool val) { _metric = val; }
+    double scaleValue(double value, unsigned char &scale) const;
+
+    virtual void drawLabels(X11Graphics &g);
+
 private:
     int _x, _y, _width, _height;
-    int _priority;
-    int _counter;
+    size_t _priority, _counter;
     bool _docaptions, _dolegends, _dousedlegends, _metric;
     Label _title;
     MCLabel _legend;

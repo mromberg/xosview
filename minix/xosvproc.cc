@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2017
+//  Copyright (c) 2015, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -48,7 +48,6 @@ std::ostream &XOSVProc::dump(std::ostream &os) const {
 // 	    uid					/* effective user ID */
 // 	);
 //--------------------------------------------------------------------------
-
 std::istream &XOSVProc::load(std::istream &is) {
     // The theory is that the first value PSINFO_VERSION will be incremented
     // when the contents of the file change.   This did not seem to happen
@@ -75,23 +74,20 @@ std::vector<XOSVProc> XOSVProc::ptable(void) {
 
     std::vector<XOSVProc> rval;
 
-    std::vector<std::string> dir(util::fs::listdir("/proc"));
-    rval.reserve(dir.size());
-
-    for (size_t i = 0 ; i < dir.size() ; i++) {
+    for (const auto &fname : util::fs::listdir("/proc")) {
         // Skip directory entires that are not numbers.
-        if (!std::isdigit(dir[i][0]) && dir[i][0] != '-')
+        if (!std::isdigit(fname.front()) && fname.front() != '-')
             continue;
 
-        std::string psinfo("/proc/" + dir[i] + "/psinfo");
-        std::ifstream ifs(psinfo.c_str());
+        const std::string psinfo("/proc/" + fname + "/psinfo");
+        std::ifstream ifs(psinfo);
         if (ifs.good()) {
             XOSVProc p;
             ifs >> p;
             if (ifs.good()) {
-                pid_t pid = util::stoi(dir[i]);
+                pid_t pid = std::stoi(fname);
                 p.pid = pid;
-                rval.push_back(p);
+                rval.push_back(std::move(p));
             }
         }
     }

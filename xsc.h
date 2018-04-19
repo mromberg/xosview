@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2016
+//  Copyright (c) 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 class XSCImp;
 
@@ -21,6 +22,9 @@ public:
       const std::string &sessionArg="--smid");
     ~XSessionClient(void);
 
+    XSessionClient(const XSessionClient &xsc) = delete;
+    XSessionClient &operator=(const XSessionClient &rhs) = delete;
+
     // returns false if no session manager found.
     bool init(void);
 
@@ -32,11 +36,7 @@ public:
     const std::string &sessionID(void) const;
 
 private:
-    XSCImp *_imp;
-
-    // Not implemented.
-    XSessionClient(const XSessionClient &xsc);
-    XSessionClient &operator=(const XSessionClient &rhs);
+    std::unique_ptr<XSCImp> _imp;
 };
 
 #endif

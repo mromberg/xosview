@@ -25,18 +25,18 @@ public:
     FieldMeterDecay(size_t numfields, const std::string &title="",
       const std::string &legend="");
 
-    virtual ~FieldMeterDecay(void);
-
-    virtual void checkResources(const ResDB &rdb);
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
-    virtual void drawfields(X11Graphics &g, bool mandatory=false);
+    virtual void drawfields(X11Graphics &g, bool mandatory=false) override;
 
 private:
     bool _dodecay;
     bool _firsttime;  //Used to set up decaying fields right the first time.
     std::vector<float> _decay;
     std::vector<float> _lastDecayVal;
+
+    void firstTimeInit(void);
 };
 
 

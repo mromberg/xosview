@@ -27,39 +27,36 @@
 #endif
 
 
-CPUMeter::CPUMeter( unsigned int nbr )
-    : FieldMeterGraph( 5, "CPU", "USR/NICE/SYS/INT/FREE" ),
+CPUMeter::CPUMeter(size_t nbr)
+    : FieldMeterGraph(5, "CPU", "USR/NICE/SYS/INT/FREE"),
       _cputime(2, std::vector<uint64_t>(5, 0)),
       _cpuindex(0), _nbr(nbr) {
 
     if (_nbr)
-        title(std::string("CPU") + util::repr(_nbr - 1));
-}
-
-
-CPUMeter::~CPUMeter( void ) {
+        title("CPU" + std::to_string(_nbr - 1));
 }
 
 
 void CPUMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getColor("cpuUserColor") );
-    setfieldcolor( 1, rdb.getColor("cpuNiceColor") );
-    setfieldcolor( 2, rdb.getColor("cpuSystemColor") );
-    setfieldcolor( 3, rdb.getColor("cpuInterruptColor") );
-    setfieldcolor( 4, rdb.getColor("cpuFreeColor") );
+    setfieldcolor(0, rdb.getColor("cpuUserColor"));
+    setfieldcolor(1, rdb.getColor("cpuNiceColor"));
+    setfieldcolor(2, rdb.getColor("cpuSystemColor"));
+    setfieldcolor(3, rdb.getColor("cpuInterruptColor"));
+    setfieldcolor(4, rdb.getColor("cpuFreeColor"));
 }
 
 
-void CPUMeter::checkevent( void ) {
-    const std::vector<uint64_t> &tempCPU = getStats();
+void CPUMeter::checkevent(void) {
+    const auto tempCPU = getStats();
     _total = 0;
 
-    int oldindex = (_cpuindex + 1) % 2;
-    for (size_t i = 0 ; i < _cputime[_cpuindex].size() ; i++) {
-        _cputime[_cpuindex][i] = tempCPU[i];
-        _fields[i] = _cputime[_cpuindex][i] - _cputime[oldindex][i];
+    auto &oldcput = _cputime[(_cpuindex + 1) % 2];
+    auto &cput = _cputime[_cpuindex];
+    for (size_t i = 0 ; i < cput.size() ; i++) {
+        cput[i] = tempCPU[i];
+        _fields[i] = cput[i] - oldcput[i];
         _total += _fields[i];
     }
     if (_total) {
@@ -71,8 +68,7 @@ void CPUMeter::checkevent( void ) {
 
 size_t CPUMeter::countCPUs(void) {
 
-    const int mib_cpu[2] = { CTL_HW, HW_NCPU };
-    static SysCtl ncpu_sc(mib_cpu, 2);
+    static SysCtl ncpu_sc = { CTL_HW, HW_NCPU };
     static int cpus = -1;
 
     if (cpus == -1) {
@@ -86,7 +82,7 @@ size_t CPUMeter::countCPUs(void) {
 
 const std::vector<uint64_t> &CPUMeter::getStats(void) const {
 
-    static StatCache<std::vector<std::vector<uint64_t> > > sc;
+    static StatCache<std::vector<std::vector<uint64_t>>> sc;
 
     if (!sc.valid())
         sc.set(readStats());
@@ -103,9 +99,8 @@ std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
 
     const size_t ncpus = countCPUs();
     // index0 = aggregate, index1 = first cpu, ...
-    std::vector<std::vector<uint64_t> > rval(ncpus + 1,
+    std::vector<std::vector<uint64_t>> rval(ncpus + 1,
       std::vector<uint64_t>(CPUSTATES));
-
 
     std::vector<struct kinfo_cputime> times(countCPUs(),
       kinfo_cputime());
@@ -142,7 +137,7 @@ std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
 
     const size_t ncpus = countCPUs();
     // index0 = aggregate, index1 = first cpu, ...
-    std::vector<std::vector<uint64_t> > rval(ncpus + 1,
+    std::vector<std::vector<uint64_t>> rval(ncpus + 1,
       std::vector<uint64_t>(CPUSTATES));
 
 
@@ -170,7 +165,7 @@ std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
 
 
 #if defined(XOSVIEW_NETBSD)
-std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
+std::vector<std::vector<uint64_t>> CPUMeter::readStats(void) const {
 
     //------- NetBSD docs ------
     // Returns an array of CPUSTATES uint64_ts.  This array contains the
@@ -185,7 +180,7 @@ std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
 
     const size_t ncpus = countCPUs();
     // index0 = aggregate, index1 = first cpu, ...
-    std::vector<std::vector<uint64_t> > rval(ncpus + 1,
+    std::vector<std::vector<uint64_t>> rval(ncpus + 1,
       std::vector<uint64_t>(CPUSTATES));
 
     cp_time_sc.mib().resize(3);
@@ -220,15 +215,12 @@ std::vector<std::vector<uint64_t> > CPUMeter::readStats(void) const {
     //    Similar to KERN_CPTIME, but obtains information from only the
     //    single CPU specified by the third level name given.
     //---- OpenBSD docs ----
-
-    const int mib_cpt[] = { CTL_KERN, KERN_CPTIME };
-    const int mib_cpt2[] = { CTL_KERN, KERN_CPTIME2, 0 };
-    static SysCtl cp_time_sc(mib_cpt, 2);
-    static SysCtl cp_time2_sc(mib_cpt2, 3);
+    static SysCtl cp_time_sc = { CTL_KERN, KERN_CPTIME };
+    static SysCtl cp_time2_sc = { CTL_KERN, KERN_CPTIME2, 0 };
 
     const size_t ncpus = countCPUs();
     // index0 = aggregate, index1 = first cpu, ...
-    std::vector<std::vector<uint64_t> > rval(ncpus + 1,
+    std::vector<std::vector<uint64_t>> rval(ncpus + 1,
       std::vector<uint64_t>(CPUSTATES));
 
     for (size_t cpu = 0 ; cpu < ncpus ; cpu++) {

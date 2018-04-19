@@ -24,10 +24,10 @@ public:
     NetMeter(void);
     ~NetMeter(void);
 
-    void checkResources(const ResDB &rdb);
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
-    virtual std::pair<float, float> getRates(void);
+    virtual std::pair<float, float> getRates(void) override;
 
 private:
     uint64_t _lastBytesIn, _lastBytesOut;

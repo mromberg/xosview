@@ -17,14 +17,13 @@
 
 class BSDSensor : public SensorFieldMeter {
 public:
-    BSDSensor( const std::string &name, const std::string &high,
+    BSDSensor(const std::string &name, const std::string &high,
       const std::string &low, const std::string &label,
-      const std::string &caption, int nbr );
-    ~BSDSensor(void);
+      const std::string &caption, int nbr);
 
-    virtual std::string resName(void) const { return "bsdsensor"; }
-    void checkevent( void );
-    void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override { return "bsdsensor"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     std::string _name, _val, _highName, _lowName, _highVal, _lowVal;

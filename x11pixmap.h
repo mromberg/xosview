@@ -38,14 +38,14 @@ public:
     bool load(const std::string &fileName, bool logfail=true);
 
 private:
-    Pixmap _pmap;
     Display *_dsp;
     Visual *_vis;
     Drawable _parent;
     Colormap _cmap;
-    X11Graphics *_g;
     int _width;
     int _height;
+    Pixmap _pmap;
+    std::unique_ptr<X11Graphics> _g;
 
     void freeObjs(void);
     bool queryDrawable(Drawable d, unsigned int &width, unsigned int &height,

@@ -1,25 +1,22 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef METERMAKER_H
-#define METERMAKER_H
+#ifndef MeterMaker_h
+#define MeterMaker_h
 
-#include "rdb.h"
+#include "cmetermaker.h"
 
-#include <vector>
-
-class Meter;
+class ResDB;
 
 
-class MeterMaker {
+
+class MeterMaker : public ComMeterMaker {
 public:
-    MeterMaker(void) {}
-
-    std::vector<Meter *> makeMeters(const ResDB &rdb);
+    mlist makeMeters(const ResDB &rdb);
 };
 
 

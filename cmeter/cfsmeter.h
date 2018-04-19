@@ -1,31 +1,30 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
 
-#ifndef CFSMETER_H
-#define CFSMETER_H
+#ifndef cfsmeter_h
+#define cfsmeter_h
 
 #include "fieldmetergraph.h"
 
 #include <fstream>
 
+constexpr const char *MOUNT_FNAME = "/proc/mounts";
 
-#define MOUNT_FNAME "/proc/mounts"
 
 
 class ComFSMeter : public FieldMeterGraph {
 public:
     ComFSMeter(const std::string &path);
-    virtual ~ComFSMeter(void);
 
-    virtual std::string name( void ) const { return "FSMeter"; }
-    virtual void checkevent( void );
+    virtual std::string name(void) const override { return "FSMeter"; }
+    virtual void checkevent(void) override;
 
-    virtual std::string resName(void) const { return "filesys"; }
-    virtual void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override { return "filesys"; }
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
     virtual bool isMount(const std::string &path);
@@ -39,26 +38,26 @@ private:
 };
 
 
+
 template <class X>
 class FSMFactory {
 public:
-    virtual std::vector<Meter *> make(const ResDB &rdb);
+    virtual std::vector<std::unique_ptr<Meter>> make(const ResDB &rdb);
     virtual std::vector<std::string> mounts(const ResDB &rdb);
     virtual std::vector<std::string> getAuto(void);
 };
 
 
-typedef FSMFactory<ComFSMeter> ComFSMeterFactory;
+using ComFSMeterFactory = FSMFactory<ComFSMeter>;
 
 
 template <class X>
-std::vector<Meter *> FSMFactory<X>::make(const ResDB &rdb) {
+std::vector<std::unique_ptr<Meter>> FSMFactory<X>::make(const ResDB &rdb) {
 
-    std::vector<Meter *> rval;
+    std::vector<std::unique_ptr<Meter>> rval;
 
-    std::vector<std::string> fs(mounts(rdb));
-    for (size_t i = 0 ; i < fs.size() ; i++)
-        rval.push_back(new X(fs[i]));
+    for (const auto &fs : mounts(rdb))
+        rval.push_back(std::make_unique<X>(fs));
 
     return rval;
 }
@@ -101,8 +100,8 @@ std::vector<std::string> FSMFactory<X>::getAuto(void) {
         ifs >> dev >> path >> type;
         std::getline(ifs, line);
         if (ifs) {
-            if (dev[0] == '/' && path[0] == '/')
-                rval.push_back(path);
+            if (dev.front() == '/' && path.front() == '/')
+                rval.push_back(std::move(path));
         }
     }
 

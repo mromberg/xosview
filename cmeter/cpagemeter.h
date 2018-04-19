@@ -1,11 +1,11 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef CPAGEMETER_H
-#define CPAGEMETER_H
+#ifndef cpagemeter_h
+#define cpagemeter_h
 
 #include "fieldmetergraph.h"
 
@@ -13,13 +13,12 @@
 
 class ComPageMeter : public FieldMeterGraph {
 public:
-    ComPageMeter( void );
-    ~ComPageMeter( void );
+    ComPageMeter(void);
 
-    std::string resName( void ) const { return "page"; }
-    void checkevent( void );
+    virtual std::string resName(void) const override { return "page"; }
+    virtual void checkevent(void) override;
 
-    void checkResources(const ResDB &rdb);
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
     // (in, out) bytes/sec

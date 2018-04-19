@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2016
+//  Copyright (c) 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -7,12 +7,11 @@
 #include "xsc.h"
 #include "configxosv.h"
 #include "fsutil.h"
-#include "log.h"
 #include "strutil.h"
+#include "log.h"
 
-#include <iostream>
-#include <sstream>
-#include <cerrno>
+#include <array>
+
 
 
 #ifdef HAVE_LIB_SM
@@ -22,10 +21,15 @@
 #include <pwd.h>
 #include <poll.h>
 
+
+
 class IceClient {
 public:
     IceClient(void);
     ~IceClient(void);
+
+    IceClient(const IceClient &ic) = delete;
+    IceClient &operator=(const IceClient &rhs) = delete;
 
     bool init(void);
 
@@ -43,11 +47,8 @@ private:
 
     static void addConnCB(IceConn ice_conn, IcePointer client_data,
       Bool opening, IcePointer *watch_data);
-
-    // Not implemented.
-    IceClient(const IceClient &ic);
-    IceClient &operator=(const IceClient &rhs);
 };
+
 
 
 class XSCImp {
@@ -57,6 +58,9 @@ public:
     XSCImp(const std::vector<std::string> &argv,
       const std::string &sessionArg, const std::string &lastID);
     ~XSCImp(void);
+
+    XSCImp(const XSCImp &xsci) = delete;
+    XSCImp &operator=(const XSCImp &rhs) = delete;
 
     // returns false if no session manager found.
     bool init(void);
@@ -74,10 +78,14 @@ private:
     const std::string _sessionArg;
     std::string _lastSessionID;
     std::string _sessionID;
-    IceClient *_iceClient;
+    std::unique_ptr<IceClient> _iceClient;
     SmcConn _smcConn;
 
+    // For debug.  getProperties requests them.
+    // A callback prints to logDebug.
+    void getProperties(void);
     std::vector<std::string> prune(const std::vector<std::string> &argv) const;
+
     static std::string getuser(void);
 
     // xsl protocol callbacks.
@@ -88,15 +96,8 @@ private:
     static void shutdownCancelledCB(SmcConn smc_conn, SmPointer client_data);
     static void propReplyCB(SmcConn smc_conn, SmPointer client_data,
       int num_props, SmProp **props);
-
-    // For debug.  getProperties requests them.
-    // A callback prints to logDebug.
-    void getProperties(void);
-
-    // Not implemented.
-    XSCImp(const XSCImp &xsci);
-    XSCImp &operator=(const XSCImp &rhs);
 };
+
 
 
 class XSVar {
@@ -119,6 +120,8 @@ private:
     std::vector<SmPropValue> _pvals;
 };
 
+#else
+class XSCImp {};
 #endif
 
 
@@ -126,33 +129,33 @@ private:
 // XSessionClient
 //-----------------------------------------------------------------------
 XSessionClient::XSessionClient(const std::vector<std::string> &argv,
-  const std::string &sessionArg) : _imp(0) {
+  const std::string &sessionArg)
+#ifdef HAVE_LIB_SM
+    : _imp(std::make_unique<XSCImp>(argv, sessionArg))
+#endif
+{
 #ifndef HAVE_LIB_SM
     (void)argv;
     (void)sessionArg;
-#else
-    _imp = new XSCImp(argv, sessionArg);
 #endif
 }
 
 
 XSessionClient::XSessionClient(const std::vector<std::string> &argv,
-  const std::string &sessionArg, const std::string &lastID) : _imp(0) {
+  const std::string &sessionArg, const std::string &lastID)
+#ifdef HAVE_LIB_SM
+    : _imp(std::make_unique<XSCImp>(argv, sessionArg, lastID))
+#endif
+{
 #ifndef HAVE_LIB_SM
     (void)argv;
     (void)sessionArg;
     (void)lastID;
-#else
-    _imp = new XSCImp(argv, sessionArg, lastID);
 #endif
 }
 
 
-XSessionClient::~XSessionClient(void) {
-#ifdef HAVE_LIB_SM
-    delete _imp;
-#endif
-}
+XSessionClient::~XSessionClient(void) = default;
 
 
 bool XSessionClient::init(void) {
@@ -263,7 +266,7 @@ void IceClient::process(void) {
         return;
 
     IceProcessMessagesStatus status = IceProcessMessages(_iceConn,
-      NULL, NULL);
+      nullptr, nullptr);
 
     if (status == IceProcessMessagesSuccess)
         ; // it worked.
@@ -312,10 +315,10 @@ SmProp *XSVar::prop(void) {
     _prop.name = const_cast<char *>(_name.c_str());
     _prop.type = const_cast<char *>(_type.c_str());
     _pvals.clear();
-    for (size_t i = 0 ; i < _values.size() ; i++) {
+    for (auto &value : _values) {
         SmPropValue pv;
-        pv.length = _values[i].size();
-        pv.value = (SmPointer)_values[i].c_str();
+        pv.length = value.size();
+        pv.value = (SmPointer)value.c_str();
         _pvals.push_back(pv);
     }
     if (_type == SmCARD8) {
@@ -336,7 +339,7 @@ SmProp *XSVar::prop(void) {
 //------------------------------------------------------------------------
 XSCImp::XSCImp(const std::vector<std::string> &argv,
   const std::string &sessionArg)
-    : _die(false), _sessionArg(sessionArg), _iceClient(0), _smcConn(0) {
+    : _die(false), _sessionArg(sessionArg), _smcConn(nullptr) {
 
     _argv.reserve(argv.size());
     for (size_t i = 0 ; i < argv.size() ; i++) {
@@ -363,15 +366,14 @@ XSCImp::XSCImp(const std::vector<std::string> &argv,
 
 XSCImp::XSCImp(const std::vector<std::string> &argv,
   const std::string &sessionArg, const std::string &lastID)
-    : _die(false), _argv(argv),
-      _sessionArg(sessionArg), _lastSessionID(lastID),
-      _iceClient(0), _smcConn(0) {
+    : _die(false), _argv(argv), _sessionArg(sessionArg),
+      _lastSessionID(lastID), _smcConn(nullptr) {
 }
 
 
 XSCImp::~XSCImp(void) {
     if (_smcConn) {
-        SmcCloseStatus status = SmcCloseConnection(_smcConn, 0, NULL);
+        SmcCloseStatus status = SmcCloseConnection(_smcConn, 0, nullptr);
         if (status == SmcClosedNow) {
             logDebug << "SmcClosedNow" << std::endl;
         }
@@ -384,22 +386,13 @@ XSCImp::~XSCImp(void) {
         else
             logProblem << "Unknown status: " << status << std::endl;
     }
-
-    delete _iceClient;
 }
 
 
 bool XSCImp::init(void) {
-    _iceClient = new IceClient();
+    _iceClient = std::make_unique<IceClient>();
     if (!_iceClient->init())
         return false;
-
-    // Setup params for SmcOpenConnection()
-    std::vector<char> errorBuf(256, 0);
-    char *clientID = NULL;
-    char *prevID = NULL;
-    if (_lastSessionID.size())
-        prevID = const_cast<char *>(_lastSessionID.c_str());
 
     SmcCallbacks callbacks;
     callbacks.save_yourself.callback = saveCB;
@@ -416,7 +409,13 @@ bool XSCImp::init(void) {
         SmcSaveCompleteProcMask |
         SmcShutdownCancelledProcMask;
 
-    _smcConn = SmcOpenConnection(NULL, NULL, SmProtoMajor, SmProtoMinor,
+    // Setup params for SmcOpenConnection()
+    const char *prevID = _lastSessionID.empty() ? nullptr :
+        _lastSessionID.c_str();
+    char *clientID = nullptr;
+    std::array<char, 256> errorBuf{};
+
+    _smcConn = SmcOpenConnection(nullptr, nullptr, SmProtoMajor, SmProtoMinor,
       mask, &callbacks, prevID, &clientID,
       errorBuf.size() - 1, errorBuf.data());
 
@@ -497,13 +496,13 @@ void XSCImp::saveCB(SmcConn smc_conn, void *client_data,
     resvar.addVal(xsc->_sessionArg);
     resvar.addVal(xsc->_sessionID);
     xsvars.push_back(resvar);
-    xsvars.push_back(XSVar(SmUserID, getuser()));
-    xsvars.push_back(XSVar(SmProgram,
-        util::fs::findCommand(xsc->_argv[0])));
+    xsvars.emplace_back(SmUserID, getuser());
+    xsvars.emplace_back(SmProgram, util::fs::findCommand(xsc->_argv[0]));
+
     // Optional.
-    xsvars.push_back(XSVar(SmCurrentDirectory, util::fs::cwd()));
-    xsvars.push_back(XSVar(SmRestartStyleHint, SmRestartIfRunning));
-    xsvars.push_back(XSVar(SmProcessID, util::repr(getpid())));
+    xsvars.emplace_back(SmCurrentDirectory, util::fs::cwd());
+    xsvars.emplace_back(SmRestartStyleHint, SmRestartIfRunning);
+    xsvars.emplace_back(SmProcessID, std::to_string(getpid()));
 
     std::vector<SmProp *> propsp(xsvars.size(), 0);
     for (size_t i = 0 ; i < xsvars.size() ; i++)
@@ -560,6 +559,7 @@ std::string XSCImp::getuser(void) {
     os << uid;
     return os.str();
 }
+
 
 void XSCImp::getProperties(void) {
     if (_smcConn)

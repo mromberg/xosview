@@ -4,22 +4,21 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef BTRYMETER_H
-#define BTRYMETER_H
+#ifndef btrymeter_h
+#define btrymeter_h
 
 #include "fieldmeter.h"
 
-#include <string>
 
 
 class BtryMeter : public FieldMeter {
 public:
     BtryMeter(void);
 
-    std::string resName(void) const { return "battery"; }
-    void checkevent(void);
+    virtual std::string resName(void) const override { return "battery"; }
+    virtual void checkevent(void) override;
 
-    void checkResources(const ResDB &rdb);
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     unsigned long _critColor, _lowColor, _leftColor, _chargeColor;

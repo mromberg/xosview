@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1999, 2015
+//  Copyright (c) 1999, 2015, 2018
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
@@ -18,26 +18,26 @@ SwapMeter::SwapMeter(void)
 }
 
 
-std::pair<uint64_t, uint64_t> SwapMeter::getswapinfo( void ) {
+std::pair<uint64_t, uint64_t> SwapMeter::getswapinfo(void) {
 
     std::pair<uint64_t, uint64_t> rval(0, 0);
 
-    int numswap = swapctl(SC_GETNSWP, NULL);
+    const int numswap = swapctl(SC_GETNSWP, nullptr);
     if (numswap < 0)
         logFatal << "Can not determine number of swap spaces." << std::endl;
 
     if (numswap > 0) {
-
         std::vector<swaptbl_t> swaps(numswap + 1);
-        std::vector<std::vector<char> > names(numswap + 1,
+        std::vector<std::vector<char>> names(numswap + 1,
           std::vector<char>(PATH_MAX, '\0'));
 
-        for (int i = 0; i <= numswap; i++)
+        for (int i = 0 ; i <= numswap ; i++)
             swaps[0].swt_ent[i].ste_path = names[i].data();
 
         swaps[0].swt_n = numswap + 1;
-        int stcount = swapctl(SC_LIST, swaps.data());
-        if ( stcount < 0)
+
+        const int stcount = swapctl(SC_LIST, swaps.data());
+        if (stcount < 0)
             logFatal << "Can not get list of swap spaces." << std::endl;
 
         // This is as wierd as it looks.  The

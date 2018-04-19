@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2016
+//  Copyright (c) 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -10,7 +10,7 @@
 
 #include <map>
 #include <vector>
-#include <iostream>
+#include <iosfwd>
 
 
 
@@ -43,9 +43,8 @@ template <class X>
 std::map<size_t, uint64_t> IntrStats::getCounts(const std::vector<X> &v) const {
     std::map<size_t, uint64_t> rval;
 
-    std::map<size_t, size_t>::const_iterator it;
-    for (it = _irqMap.begin() ; it != _irqMap.end() ; ++it)
-        rval[it->first] = v[it->second];
+    for (const auto &irq : _irqMap)
+        rval[irq.first] = v[irq.second];
 
     return rval;
 }

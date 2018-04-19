@@ -18,16 +18,15 @@
 class BtryMeter : public FieldMeter {
 public:
     BtryMeter(void);
-    ~BtryMeter(void);
 
-    virtual std::string resName(void) const { return "battery"; }
-    void checkevent(void);
-    void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override { return "battery"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     unsigned long _leftColor, _usedColor, _chargeColor, _fullColor,
         _lowColor, _critColor, _noneColor;
-    unsigned int  _oldState;
+    unsigned int _oldState;
 
     void getstats(void);
 };

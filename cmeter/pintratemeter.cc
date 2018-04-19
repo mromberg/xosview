@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2017
+//  Copyright (c) 2015, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -20,14 +20,14 @@ PrcIrqRateMeter::PrcIrqRateMeter(void)
 
 
 float PrcIrqRateMeter::getIrqRate(void) {
-    _timer.stop();
-    double etime = _timer.report();
+    timerStop();
+    const double etime = etimeSecs();
 
     float rval = 0.0;
     if (etime >= 0.001) {
-        uint64_t count = getIntCount();
+        const uint64_t count = getIntCount();
         if (count >= _last)
-            rval = (float)(count - _last) / etime;
+            rval = static_cast<float>(count - _last) / etime;
 
         logDebug << "(count, time, rate): "
                  << count - _last << ", " << etime << ", " << rval
@@ -56,7 +56,7 @@ uint64_t PrcIrqRateMeter::getIntCount(void) {
                 if (ifs.fail())
                     logFatal << "failed parsing: " << STATFNAME
                              << std::endl;
-                _timer.start();
+                timerStart();
                 return count;
             }
             ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -64,6 +64,6 @@ uint64_t PrcIrqRateMeter::getIntCount(void) {
     }
 
     logProblem << "failed to find intr line in: " << STATFNAME << std::endl;
-    _timer.start();                _timer.start();
+    timerStart();
     return 0;
 }

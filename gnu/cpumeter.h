@@ -1,36 +1,35 @@
 //
-//  Copyright (c) 1994, 1995, 2004, 2006, 2015
+//  Copyright (c) 1994, 1995, 2004, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef CPUMETER_H
-#define CPUMETER_H
+#ifndef cpumeter_h
+#define cpumeter_h
 
 #include "fieldmetergraph.h"
 
+
+
 class CPUMeter : public FieldMeterGraph {
 public:
-    CPUMeter(unsigned int cpu=0);
-    ~CPUMeter(void);
+    CPUMeter(size_t cpu=0);
 
-    std::string resName(void) const { return "cpu"; }
-    void checkevent(void);
-
-    void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override { return "cpu"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
     static size_t countCPUs(void);
     static std::string cpuStr(size_t num);
 
-protected:
+private:
+    size_t _cpu;
     size_t _lineNum;
     std::vector<unsigned long long> _oldStats;
-    unsigned int _cpu;
 
     void getcputime(void);
-    size_t findLine(void);
+    size_t findLine(void) const;
     void getStats(std::vector<unsigned long long> &stats) const;
-private:
 };
 
 #endif

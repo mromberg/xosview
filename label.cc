@@ -10,6 +10,7 @@
 #include "strutil.h"
 
 
+
 Label::Label(int x, int y, Anchor anchor)
     : _color(0), _x(x), _y(y), _anchor(anchor) {
 }
@@ -24,8 +25,8 @@ void Label::clearOld(X11Graphics &g) const {
     // Default SW anchor
     int x = _x;
     int y = _y - g.textHeight();
-    int width = g.textWidth(_current);
-    int height = g.textHeight();
+    const int width = g.textWidth(_current);
+    const int height = g.textHeight();
 
     switch (_anchor) {
     case BLSE:
@@ -43,8 +44,6 @@ void Label::clearOld(X11Graphics &g) const {
         logBug << "Unknown anchor: " << _anchor << std::endl;
     };
 
-//    g.setFG("red");
-//    g.drawFilledRectangle(x, y, width, height);
     g.clear(std::max(x - 1, 0), y, width, std::max(height - 1, 1));
 }
 
@@ -97,7 +96,7 @@ MCLabel::MCLabel(int x, int y, const std::string &text,
 void MCLabel::drawText(X11Graphics &g, int x, int y,
   const std::string &txt) const {
 
-    std::vector<std::string> labelv(util::split(txt, _delim));
+    auto labelv = util::split(txt, _delim);
 
     for (size_t i = 0 ; i < labelv.size() ; i++) {
         if (i != 0) {

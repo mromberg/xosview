@@ -45,6 +45,7 @@ private:
 };
 
 
+
 class MCLabel : public Label {
 public:
     MCLabel(int x, int y, Anchor anchor=SW);
@@ -57,7 +58,7 @@ public:
 
 protected:
     virtual void drawText(X11Graphics &g, int x, int y,
-      const std::string &txt) const;
+      const std::string &txt) const override;
 
 private:
     std::string _delim;

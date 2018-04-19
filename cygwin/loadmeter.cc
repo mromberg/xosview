@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2008, 2015
+//  Copyright (c) 1994, 1995, 2006, 2008, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -10,7 +10,7 @@
 #include <cmath>
 
 
-LoadMeter::LoadMeter( void )
+LoadMeter::LoadMeter(void)
     : ComLoadMeter(), _cpus(CPUMeter::countCPUs()),
       _sampRate(5), _loadAvg(0.0) {
 
@@ -25,25 +25,25 @@ LoadMeter::LoadMeter( void )
 
 void LoadMeter::checkResources(const ResDB &rdb) {
     ComLoadMeter::checkResources(rdb);
-    _sampRate = util::stof(rdb.getResource("loadPriority"))
-        / util::stof(rdb.getResource("samplesPerSec"));
+    _sampRate = std::stof(rdb.getResource("loadPriority"))
+        / std::stof(rdb.getResource("samplesPerSec"));
 }
 
 
 float LoadMeter::getLoad(void) {
     _query.query();
 
-    double usedCPU = _query.counters()[0].doubleVal();
-    long queueLen = _query.counters()[1].longVal();
+    const double usedCPU = _query.counters()[0].doubleVal();
+    const long queueLen = _query.counters()[1].longVal();
 
     // rough guess since winders does not have this
-    float load = queueLen + usedCPU / 100.0 * _cpus;
+    const float load = queueLen + usedCPU / 100.0 * _cpus;
 
     // calculate the exponential moving average
-    _loadAvg = load + exp(-1.0 * _sampRate / 60.0) * (_loadAvg - load);
+    _loadAvg = load + std::exp(-1.0 * _sampRate / 60.0) * (_loadAvg - load);
 
-    logDebug << "cpu: " << usedCPU << ", queue: " << queueLen << std::endl;
-    logDebug << "load: " << load << ", AVG: " << _loadAvg << std::endl;
+    logDebug << "cpu: " << usedCPU << ", queue: " << queueLen << std::endl
+             << "load: " << load << ", AVG: " << _loadAvg << std::endl;
 
     return _loadAvg;
 }

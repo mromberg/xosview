@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -17,6 +17,7 @@ static const char * const VMSTATFILE = "/proc/vmstat";
 static const char * const STATFILE = "/proc/stat";
 
 
+
 PrcPageMeter::PrcPageMeter(bool useVMStat)
     : ComPageMeter(), _vmstat(useVMStat && util::fs::isfile(VMSTATFILE)),
       _last(getPageCount()), _pageSize(sysconf(_SC_PAGESIZE)) {
@@ -24,9 +25,9 @@ PrcPageMeter::PrcPageMeter(bool useVMStat)
 
 
 std::pair<float, float> PrcPageMeter::getPageRate(void) {
-    _timer.stop();
-    double etime = _timer.report();
-    std::pair<uint64_t, uint64_t> counts(getPageCount());
+    timerStop();
+    const double etime = etimeSecs();
+    const auto counts = getPageCount();
 
     std::pair<float, float> rval((counts.first - _last.first) * _pageSize,
       (counts.second - _last.second) * _pageSize);
@@ -101,6 +102,6 @@ std::pair<uint64_t, uint64_t> PrcPageMeter::getVMStatPageCount(void) {
     if (!ifs || !foundIn || !foundOut)
         logFatal << "failed to parse " << VMSTATFILE << std::endl;
 
-    _timer.start();
+    timerStart();
     return rval;
 }

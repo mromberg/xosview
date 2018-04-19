@@ -13,18 +13,14 @@
 
 CPUMeter::CPUMeter(kstat_ctl_t *kc, int cpuid)
     : FieldMeterGraph(CPU_STATES, cpuStr(cpuid), "USER/SYS/WAIT/IDLE"),
-      cputime_(2, std::vector<float>(CPU_STATES, 0.0)), cpuindex_(0),
+      _cputime(2, std::vector<float>(CPU_STATES, 0.0)), _cpuindex(0),
       _cpustats(KStatList::getList(kc, KStatList::CPU_STAT)),
-      _aggregate(cpuid < 0), _kc(kc), _ksp(0) {
+      _aggregate(cpuid < 0), _kc(kc), _ksp(nullptr) {
 
     if (!_aggregate)
-        for (unsigned int i = 0; i < _cpustats->count(); i++)
-            if ((*_cpustats)[i]->ks_instance == cpuid)
-                _ksp = (*_cpustats)[i];
-}
-
-
-CPUMeter::~CPUMeter(void){
+        for (size_t i = 0 ; i < _cpustats->count() ; i++)
+            if (cpustats()[i]->ks_instance == cpuid)
+                _ksp = cpustats()[i];
 }
 
 
@@ -50,33 +46,33 @@ void CPUMeter::getcputime(void) {
 
     if (_aggregate) {
         _cpustats->update(_kc);
-        cputime_[cpuindex_].assign(CPU_STATES, 0.0);
-        for (unsigned int i = 0; i < _cpustats->count(); i++) {
-            if (kstat_read(_kc, (*_cpustats)[i], &cs) == -1)
+        _cputime[_cpuindex].assign(CPU_STATES, 0.0);
+        for (size_t i = 0 ; i < _cpustats->count() ; i++) {
+            if (kstat_read(_kc, cpustats()[i], &cs) == -1)
                 logFatal << "kstat_read() failed." << std::endl;
 
-            cputime_[cpuindex_][0] += cs.cpu_sysinfo.cpu[CPU_USER];
-            cputime_[cpuindex_][1] += cs.cpu_sysinfo.cpu[CPU_KERNEL];
-            cputime_[cpuindex_][2] += cs.cpu_sysinfo.cpu[CPU_WAIT];
-            cputime_[cpuindex_][3] += cs.cpu_sysinfo.cpu[CPU_IDLE];
+            _cputime[_cpuindex][0] += cs.cpu_sysinfo.cpu[CPU_USER];
+            _cputime[_cpuindex][1] += cs.cpu_sysinfo.cpu[CPU_KERNEL];
+            _cputime[_cpuindex][2] += cs.cpu_sysinfo.cpu[CPU_WAIT];
+            _cputime[_cpuindex][3] += cs.cpu_sysinfo.cpu[CPU_IDLE];
         }
     }
     else {
         if (kstat_read(_kc, _ksp, &cs) == -1)
             logFatal << "kstat_read() failed." << std::endl;
 
-        cputime_[cpuindex_][0] = cs.cpu_sysinfo.cpu[CPU_USER];
-        cputime_[cpuindex_][1] = cs.cpu_sysinfo.cpu[CPU_KERNEL];
-        cputime_[cpuindex_][2] = cs.cpu_sysinfo.cpu[CPU_WAIT];
-        cputime_[cpuindex_][3] = cs.cpu_sysinfo.cpu[CPU_IDLE];
+        _cputime[_cpuindex][0] = cs.cpu_sysinfo.cpu[CPU_USER];
+        _cputime[_cpuindex][1] = cs.cpu_sysinfo.cpu[CPU_KERNEL];
+        _cputime[_cpuindex][2] = cs.cpu_sysinfo.cpu[CPU_WAIT];
+        _cputime[_cpuindex][3] = cs.cpu_sysinfo.cpu[CPU_IDLE];
     }
 
-    int oldindex = (cpuindex_ + 1) % 2;
-    for (int i = 0 ; i < CPU_STATES ; i++) {
-        _fields[i] = cputime_[cpuindex_][i] - cputime_[oldindex][i];
+    const size_t oldindex = (_cpuindex + 1) % 2;
+    for (size_t i = 0 ; i < CPU_STATES ; i++) {
+        _fields[i] = _cputime[_cpuindex][i] - _cputime[oldindex][i];
         _total += _fields[i];
     }
-    cpuindex_ = (cpuindex_ + 1) % 2;
+    _cpuindex = (_cpuindex + 1) % 2;
 
     if (_total)
         setUsed(_total - _fields[3], _total);
@@ -87,5 +83,5 @@ std::string CPUMeter::cpuStr(int num) {
     if (num < 0)
         return "CPU";
 
-    return std::string("CPU" + util::repr(num));
+    return "CPU" + std::to_string(num);
 }

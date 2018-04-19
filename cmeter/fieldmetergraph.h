@@ -14,6 +14,8 @@
 
 #include "fieldmeterdecay.h"
 
+#include <memory>
+
 class X11Pixmap;
 
 
@@ -21,23 +23,20 @@ class FieldMeterGraph : public FieldMeterDecay {
 public:
     FieldMeterGraph(size_t numfields, const std::string &title="",
       const std::string &legend="");
-
     virtual ~FieldMeterGraph(void);
 
-    // virtual from Meter
-    virtual void checkResources(const ResDB &rdb);
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
-    virtual void drawfields(X11Graphics &g, bool mandatory=false);
+    virtual void drawfields(X11Graphics &g, bool mandatory=false) override;
 
 private:
     bool _useGraph;
-    int _graphNumCols;
-    int _graphPos;
+    size_t _graphNumCols, _graphPos;
     std::vector<float> _heightField;
-    X11Pixmap *_pmap;  // backbuffer
+    std::unique_ptr<X11Pixmap> _pmap;  // backbuffer
 
-    void setNumCols(int n);
+    void setNumCols(size_t n);
     void drawBars(X11Graphics &g);
     void drawBar(X11Graphics &g, int i) const;
     void checkBackBuffer(X11Graphics &g);

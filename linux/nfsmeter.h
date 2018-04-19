@@ -2,66 +2,51 @@
 //
 //  This file may be distributed under terms of the GPL
 //
-#ifndef NFSMETER_H
-#define NFSMETER_H
+#ifndef nfsmeter_h
+#define nfsmeter_h
 
 #include "fieldmetergraph.h"
-#include "timer.h"
 
-class Host;
+
 
 class NFSMeter : public FieldMeterGraph {
 public:
-    NFSMeter(
-        const std::string &name,
-        int   nfields,
-        const std::string &files,
-        const std::string &statfile);
-    ~NFSMeter( void );
+    NFSMeter(const std::string &name, size_t nfields,
+      const std::string &files, const std::string &statfile);
 
-    std::string name( void ) const { return _statname; }
-    std::string resName( void ) const { return "NFSStat"; }
-    void checkResources(const ResDB &rdb);
-    void starttimer(void) { return _timer.start(); };
-    void stoptimer(void) { return _timer.stop(); };
-    double usecs(void) { return _timer.report_usecs(); };
+    virtual std::string name(void) const override { return _statname; }
+    virtual std::string resName(void) const override { return "NFSStat"; }
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
     std::string _statname;
     std::string _statfile;
-
-private:
-    Timer _timer;
 };
+
 
 
 class NFSStats : public NFSMeter {
 public:
     NFSStats(void);
-    ~NFSStats(void);
 
-    void checkevent( void );
-
-    void checkResources(const ResDB &rdb);
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     unsigned long _lastcalls, _lastretrns, _lastauthrefresh;
 };
 
 
+
 class NFSDStats : public NFSMeter {
 public:
     NFSDStats(void);
-    ~NFSDStats(void);
 
-    void checkevent( void );
-
-    void checkResources(const ResDB &rdb);
-
-protected:
-    float _maxpackets;
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
+    float _maxpackets;
     unsigned long _lastTcp, _lastUdp, _lastNetCnt, _lastBad;
 };
 

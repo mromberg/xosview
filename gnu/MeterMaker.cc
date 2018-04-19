@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2015
+//  Copyright (c) 1994, 1995, 2002, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //  2007 by Samuel Thibault ( samuel.thibault@ens-lyon.org )
 //
@@ -10,78 +10,50 @@
 #include "cpumeter.h"
 #include "memmeter.h"
 #include "pswapmeter.h"
-#include "pagemeter.h"
+#include "ppagemeter.h"
 #include "loadmeter.h"
 #include "cfsmeter.h"
 #include "example.h"  // The example meter
 
 
-MeterMaker::MeterMaker() {
-}
 
+ComMeterMaker::mlist MeterMaker::makeMeters(const ResDB &rdb) {
 
-std::vector<Meter *>  MeterMaker::makeMeters(const ResDB &rdb) {
+    mlist meters;
 
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        _meters.push_back(new ExampleMeter());
+        meters.push_back(std::make_unique<ExampleMeter>());
 
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new LoadMeter());
+        meters.push_back(std::make_unique<LoadMeter>());
 
     if (rdb.isResourceTrue("cpu"))
-        cpuFactory(rdb);
+        cpuFactory(rdb, meters);
 
     if (rdb.isResourceTrue("mem"))
-        _meters.push_back(new MemMeter());
+        meters.push_back(std::make_unique<MemMeter>());
 
     if (rdb.isResourceTrue("filesys"))
-        util::concat(_meters, ComFSMeterFactory().make(rdb));
+        util::concat(meters, ComFSMeterFactory().make(rdb));
 
     if (rdb.isResourceTrue("swap"))
-        _meters.push_back(new PrcSwapMeter());
+        meters.push_back(std::make_unique<PrcSwapMeter>());
 
     if (rdb.isResourceTrue("page"))
-        _meters.push_back(new PageMeter());
+        meters.push_back(std::make_unique<PrcPageMeter>(false));
 
-    return _meters;
+    return meters;
 }
 
 
-void MeterMaker::cpuFactory(const ResDB &rdb) {
+void MeterMaker::cpuFactory(const ResDB &rdb, mlist &meters) const {
     size_t start = 0, end = 0;
-    getRange(rdb, "cpuFormat", CPUMeter::countCPUs(), start, end);
+    getRange(rdb.getResource("cpuFormat"), CPUMeter::countCPUs(), start, end);
 
     logDebug << "start=" << start << ", end=" << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
-        _meters.push_back(new CPUMeter(i));
-}
-
-void MeterMaker::getRange(const ResDB &rdb, const std::string &resource,
-  size_t cpuCount, size_t &start, size_t &end) const {
-
-    // check the *Format resource if multi-procesor system
-    start = end = 0;
-
-    if (cpuCount > 1) {
-        std::string format(rdb.getResource(resource));
-        logDebug << resource << ": " << format << std::endl;
-        if (format == "single") // single meter for all cpus
-            end = 0;
-        else if (format == "all"){ // seperate but no cumulative
-            start = 1;
-            end = cpuCount;
-        }
-        else if (format == "both") // seperate + cumulative
-            end = cpuCount;
-        else if (format == "auto") // if(cpuCount==1) single else both
-            end = cpuCount;
-        else {
-            logProblem << "Unknown " << resource << ": " << format << ".  "
-                       << "Using auto" << std::endl;
-            end = cpuCount;
-        }
-    }
+        meters.push_back(std::make_unique<CPUMeter>(i));
 }

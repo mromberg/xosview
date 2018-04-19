@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016, 2017
+//  Copyright (c) 2015, 2016, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -15,22 +15,23 @@
 
 namespace util {
 
-CLOpts::CLOpts(int argc, const char * const *argv) {
-    for (int i = 0 ; i < argc ; i++)
-        _argv.push_back(argv[i]);
+CLOpts::CLOpts(int argc, const char * const *argv)
+    : _argv(&argv[0], &argv[argc]) {
 }
 
 
 void CLOpts::add(const std::string &name, const std::string &shortOpt,
   const std::string &longOpt, const std::string &desc) {
-    _opts.push_back(CLOpt(name, shortOpt, longOpt, desc));
+    _opts.emplace_back(name, shortOpt, longOpt, desc);
 }
+
 
 void CLOpts::add(const std::string &name, const std::string &shortOpt,
   const std::string &longOpt, const std::string &value,
   const std::string &desc) {
-    _opts.push_back(CLOpt(name, shortOpt, longOpt, desc, true, value));
+    _opts.emplace_back(name, shortOpt, longOpt, desc, true, value);
 }
+
 
 std::string CLOpts::pname(void) const {
     std::string rval(_argv[0]);
@@ -42,44 +43,45 @@ std::string CLOpts::pname(void) const {
     return rval;
 }
 
+
 std::string CLOpts::useage(void) const {
     std::ostringstream os;
 
     os << "Usage: " << pname() << " [options]\n\n";
 
     os << "Options:\n";
-    for (size_t i = 0 ; i < _opts.size() ; i++)
-        os << _opts[i].usage() << "\n";
+    for (const auto &opt : _opts)
+        os << opt.usage() << "\n";
 
     return os.str();
 }
+
 
 void CLOpts::parse(void) {
     if (_argv.empty())
         return;
 
-    std::vector<std::string>::const_iterator argp = _argv.begin() + 1;
-    while (argp < _argv.end()) {
+    auto argp = _argv.cbegin() + 1;
+    while (argp < _argv.cend()) {
         bool skipTwo = false;
         std::string arg(*argp);
         bool found = false;
-        for (size_t i = 0 ; i < _opts.size() ; i++) {
-            if (_opts[i].match(arg)) {
+        for (auto &opt : _opts) {
+            if (opt.match(arg)) {
                 found = true;
-                if (!_opts[i].isValue())
-                    _opts[i].setValue();
+                if (!opt.isValue())
+                    opt.setValue();
                 else {
-                    if (argp + 1 >= _argv.end()) {
+                    if (argp + 1 >= _argv.cend()) {
                         fail("missing value for option: " + arg);
                     }
                     else {
                         std::string next(*(argp + 1));
-                        for (size_t j = 0 ; j < _opts.size() ; j++) {
-                            if (_opts[j].match(next)) {
+                        for (const auto &o : _opts) {
+                            if (o.match(next))
                                 fail("missing value for option: " + arg);
-                            }
                         }
-                        _opts[i].setValue(next);
+                        opt.setValue(next);
                         // after checking the rest skip over the value
                         skipTwo = true;
                     }
@@ -97,6 +99,7 @@ void CLOpts::parse(void) {
     }
 }
 
+
 void CLOpts::fail(const std::string &msg) const {
     std::cerr << "ERROR: " << msg << "\n\n" << useage() << std::endl;
     exit(1);
@@ -109,6 +112,7 @@ CLOpt::CLOpt(const std::string &name, const std::string &shortOpt,
     : _name(name), _shortOpt(shortOpt), _longOpt(longOpt), _desc(desc),
       _isValue(isValue), _valDesc(valDesc) {
 }
+
 
 std::string CLOpt::usage(void) const {
     std::ostringstream os;
@@ -123,6 +127,7 @@ std::string CLOpt::usage(void) const {
 
     return rval + formatedDesc(30);
 }
+
 
 std::string CLOpt::formatedDesc(size_t offset) const {
     // Format the description so that it starts on column offset
@@ -162,8 +167,7 @@ void CLOpt::eraseFrom(const std::string &opt,
     if (missing())
         return;
 
-    std::vector<std::string>::iterator it = std::find(argv.begin(),
-      argv.end(), opt);
+    auto it = std::find(argv.begin(), argv.end(), opt);
 
     if (it == argv.end())
         return;
@@ -185,9 +189,9 @@ void CLOpt::eraseFrom(std::vector<std::string> &argv) const {
 
 std::ostream &CLOpt::printOn(std::ostream &os) const {
     os << "[" << name() << ": " << _shortOpt << " [";
-    for (size_t i = 0 ; i < _values.size() ; i++) {
-        os << _values[i];
-        if (i + 1 != _values.size())
+    for (auto it = _values.cbegin() ; it != _values.cend() ; ++it) {
+        os << *it;
+        if ((it + 1) != _values.cend())
             os << ",";
     }
     os << "]]";
@@ -195,17 +199,18 @@ std::ostream &CLOpt::printOn(std::ostream &os) const {
     return os;
 }
 
+
 std::ostream &CLOpts::printOn(std::ostream &os) const {
     os << "opts: [\n";
-    for (size_t i = 0 ; i < _opts.size() ; i++) {
-        os << "\t" << _opts[i];
-        if (i + 1 < _opts.size())
+    for (auto it = _opts.cbegin() ; it != _opts.cend() ; ++it) {
+        os << "\t" << *it;
+        if ((it + 1) != _opts.cend())
             os << ",\n";
     }
     os << "\nargs: [";
-    for (size_t i = 0 ; i < _args.size() ; i++) {
-        os << _args[i];
-        if (i + 1 < _args.size())
+    for (auto it = _args.cbegin() ; it != _args.cend() ; ++it) {
+        os << *it;
+        if ((it + 1) != _args.cend())
             os << ",";
     }
     os << "]";
@@ -213,56 +218,62 @@ std::ostream &CLOpts::printOn(std::ostream &os) const {
     return os;
 }
 
+
 const std::vector<std::string> &CLOpts::values(const std::string &name) const {
     static std::vector<std::string> rval;
-    for (size_t i = 0 ; i < _opts.size() ; i++)
-        if (name == _opts[i].name())
-            return _opts[i].values();
+    for (const auto &opt : _opts)
+        if (name == opt.name())
+            return opt.values();
 
     return rval;
 }
+
 
 const std::string &CLOpts::value(const std::string &name) const {
     static const std::string rval;
-    for (size_t i = 0 ; i < _opts.size() ; i++)
-        if (name == _opts[i].name())
-            return _opts[i].value();
+    for (const auto &opt : _opts)
+        if (name == opt.name())
+            return opt.value();
 
     return rval;
 }
 
+
 const std::string &CLOpts::value(const std::string &name,
   const std::string &defaultVal) const {
-    for (size_t i = 0 ; i < _opts.size() ; i++)
-        if (_opts[i].name() == name) {
-            if (_opts[i].missing())
+    for (const auto &opt : _opts)
+        if (opt.name() == name) {
+            if (opt.missing())
                 return defaultVal;
-            return _opts[i].value();
+            return opt.value();
         }
 
     return defaultVal;
 }
 
+
 bool CLOpts::isTrue(const std::string &name) const {
-    for (size_t i = 0 ; i < _opts.size() ; i++)
-        if (_opts[i].name() == name) {
-            return _opts[i].isTrue();
-        }
+    for (const auto &opt : _opts)
+        if (opt.name() == name)
+            return opt.isTrue();
 
     return false;
 }
 
+
 bool CLOpts::missing(const std::string &name) const {
-    for (size_t i = 0 ; i < _opts.size() ; i++)
-        if (_opts[i].name() == name)
-            return _opts[i].missing();
+    for (const auto &opt : _opts)
+        if (opt.name() == name)
+            return opt.missing();
+
     return true;
 }
 
+
 const std::string &CLOpt::value(void) const {
     static const std::string rval;
-    if (_values.size() > 0)
-        return _values[_values.size()-1];  // last one wins
+    if (!_values.empty())
+        return _values.back();  // last one wins
     if (!isValue()) { // boolean opts default
         static const std::string False("False");
         return False;
@@ -271,11 +282,13 @@ const std::string &CLOpt::value(void) const {
     return rval;
 }
 
+
 bool CLOpt::isTrue(void) const {
     if (isValue()) // make something up
         return !missing();
 
     return !(value() == "False");
 }
+
 
 } // end namespace util

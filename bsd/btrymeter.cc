@@ -12,15 +12,11 @@
 #include "kernel.h"
 
 
-BtryMeter::BtryMeter( void )
-    : FieldMeter( 2, "BTRY", "CHRG/USED" ),
+BtryMeter::BtryMeter(void)
+    : FieldMeter(2, "BTRY", "CHRG/USED"),
       _leftColor(0), _usedColor(0), _chargeColor(0), _fullColor(0),
       _lowColor(0), _critColor(0), _noneColor(0),
       _oldState(256) {
-}
-
-
-BtryMeter::~BtryMeter( void ) {
 }
 
 
@@ -40,15 +36,14 @@ void BtryMeter::checkResources(const ResDB &rdb) {
 }
 
 
-void BtryMeter::checkevent( void ) {
+void BtryMeter::checkevent(void) {
     getstats();
 }
 
 
-void BtryMeter::getstats( void ) {
+void BtryMeter::getstats(void) {
     int remaining;
     unsigned int state;
-
     BSDGetBatteryInfo(remaining, state);
 
     if (state != _oldState) {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  Initial port performed by Greg Onufer (exodus@cheers.bungi.com)
 //
 //  This file may be distributed under terms of the GPL
@@ -15,8 +15,8 @@ KStatList::KStatList(kstat_ctl_t *kcp, module m)
 
 
 void KStatList::getstats(kstat_ctl_t *kcp) {
-    for (kstat_t *ksp = kcp->kc_chain; ksp != NULL; ksp = ksp->ks_next) {
-        std::string ks_name(ksp->ks_name, 0, 8);
+    for (kstat_t *ksp = kcp->kc_chain ; ksp != nullptr ; ksp = ksp->ks_next) {
+        const std::string ks_name(ksp->ks_name, 0, 8);
         if (_m == CPU_STAT && ks_name == "cpu_stat")
             _stats.push_back(ksp);
         if (_m == CPU_INFO && ks_name == "cpu_info")
@@ -30,8 +30,8 @@ void KStatList::getstats(kstat_ctl_t *kcp) {
             _stats.push_back(ksp);
         if (_m == NETS && ksp->ks_type == KSTAT_TYPE_NAMED &&
           std::string(ksp->ks_class, 0, 3) == "net" &&
-          ( std::string(ksp->ks_module, 0, 4) == "link" ||
-            std::string(ksp->ks_module, 0, 2) == "lo" ))
+          (std::string(ksp->ks_module, 0, 4) == "link"
+            || std::string(ksp->ks_module, 0, 2) == "lo"))
             _stats.push_back(ksp);
     }
 }
@@ -55,7 +55,7 @@ KStatList *KStatList::getList(kstat_ctl_t *kcp, module m) {
         static KStatList nets(kcp, m);
         return &nets;
     default:
-        return NULL;
+        return nullptr;
     }
 }
 

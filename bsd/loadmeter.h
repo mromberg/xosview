@@ -26,8 +26,8 @@ public:
     LoadMeter(void);
 
 protected:
-    virtual float getLoad(void);
-    virtual uint64_t getCPUSpeed(void);
+    virtual float getLoad(void) override;
+    virtual uint64_t getCPUSpeed(void) override;
 };
 
 

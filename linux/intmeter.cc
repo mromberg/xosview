@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015, 2016, 2017
+//  Copyright (c) 1994, 1995, 2006, 2015, 2016, 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
 #include "intmeter.h"
 #include "scache.h"
+#include "strutil.h"
 
 #include <fstream>
 #include <limits>
@@ -26,7 +27,7 @@ std::string IntMeter::makeTitle(size_t cpu) const {
     // set the CPU in the title
     std::ostringstream os;
     os << "INT";
-    if (cpu != 0) {
+    if (cpu > 0) {
         os << "(";
         os << cpu - 1 << ")";
     }
@@ -45,7 +46,10 @@ std::map<size_t, uint64_t> IntMeter::getStats(void) {
 }
 
 
-std::vector<std::map<size_t, uint64_t> > IntMeter::readStats(void) const {
+const std::vector<std::map<size_t, uint64_t>> &IntMeter::readStats(void) const {
+
+    static std::vector<std::map<size_t, uint64_t>> rval;
+
     std::ifstream ifs(INTFILE);
     if (!ifs)
         logFatal << "could not open: " << INTFILE << std::endl;
@@ -55,8 +59,16 @@ std::vector<std::map<size_t, uint64_t> > IntMeter::readStats(void) const {
     std::string ln;
     std::getline(ifs, ln);
 
-    // size it one larger for the cummulative stats.
-    std::vector<std::map<size_t, uint64_t> > rval(util::split(ln).size() + 1);
+    if (rval.empty()) {
+        // size it one larger for the cummulative stats.
+        rval.resize(util::split(ln).size() + 1);
+    }
+    else {
+        // avoid the calls to malloc by just zeroing last values.
+        for (auto &m : rval)
+            for (auto &p : m)
+                p.second = 0;
+    }
 
     // Each line is label: count0 count1 ... description.
     // Put the counts for labels that are numbers into the map for that cpu.

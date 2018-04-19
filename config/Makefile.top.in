@@ -16,30 +16,25 @@ include Makefile.config
 # build these only if Xft is found (probably will be)
 XFT_OBJS = xftfont.o xftgraphics.o
 
-OBJS = \
-xwin.o \
-x11graphics.o \
-x11font.o \
-x11pixmap.o \
-xsc.o \
-Xrm.o \
-rdb.o \
-defaultstring.o \
-label.o \
-scache.o \
-meter.o \
-fieldmeter.o \
-sensorfieldmeter.o \
-fieldmeterdecay.o \
-fieldmetergraph.o \
-bitfieldmeter.o \
-bitmeter.o \
-clopt.o \
-xosview.o \
-strutil.o \
-fsutil.o \
-log.o \
-@XFT_OBJS@ \
+OBJS =\
+xwin.o\
+x11graphics.o\
+x11font.o\
+x11pixmap.o\
+xsc.o\
+Xrm.o\
+rdb.o\
+timer.o\
+defaultstring.o\
+label.o\
+scache.o\
+clopt.o\
+xosview.o\
+strutil.o\
+fsutil.o\
+glob.o\
+log.o\
+@XFT_OBJS@\
 main.o
 
 # Build these lists from the object files.
@@ -70,7 +65,7 @@ defaultstring.cc: Xdefaults defresources.awk
 ##  CXX_BUILD_FLAGS is here 'cause gcc (and other compilers)
 ## can optimize at link time (using profiler data etc).
 xosview: $(OBJS) $(TOP)/@host_dir@/libmeter.a $(TOP)/cmeter/libcmeter.a
-	$(CXX) $(CXX_BUILD_FLAGS) -o xosview $(OBJS) $(LDFLAGS) $(LIBS)
+	$(CXX) -o xosview $(OBJS) $(LDFLAGS) $(LIBS)
 
 clean:
 	@echo "***  Cleaning..."
@@ -102,12 +97,9 @@ headercheck:
           | sort - | uniq | cut -d " " -f2 - | cut -d "<" -f2 - \
           | cut -d ">" -f1 -
 
-checksource:
-	$(TOP)/chk-src.sh
-
 PKG_NAME = @PACKAGE_TARNAME@-@PACKAGE_VERSION@
 
-distrib: checksource
+distrib:
 	git archive --prefix=stage/ master | tar xf -
 	cd stage && ./autogen.sh
 	rm -rf stage/config/autom4te.cache

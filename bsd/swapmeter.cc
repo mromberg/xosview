@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2015, 2016, 2017
+//  Copyright (c) 1994, 1995, 2015, 2016, 2017, 2018
 //  by Mike Romberg ( romberg@fsl.noaa.gov )
 //
 //  NetBSD port:
@@ -24,12 +24,12 @@
 #endif
 
 
-SwapMeter::SwapMeter( void )
+SwapMeter::SwapMeter(void)
     : ComSwapMeter() {
 }
 
 
-std::pair<uint64_t, uint64_t> SwapMeter::getswapinfo( void ) {
+std::pair<uint64_t, uint64_t> SwapMeter::getswapinfo(void) {
     uint64_t total = 0, used = 0;
 
     getSwapInfo(total, used);
@@ -39,20 +39,19 @@ std::pair<uint64_t, uint64_t> SwapMeter::getswapinfo( void ) {
 
 
 #if defined(XOSVIEW_DFBSD)
-void SwapMeter::getSwapInfo(uint64_t &total, uint64_t &used) {
+void SwapMeter::getSwapInfo(uint64_t &total, uint64_t &used) const {
     static SysCtl swsize_sc("vm.swap_size");
     static SysCtl swanon_sc("vm.swap_anon_use");
     static SysCtl swcache_sc("vm.swap_cache_use");
 
-    size_t pagesize = getpagesize();
+    const size_t pagesize = getpagesize();
     uint64_t ssize = 0;
-    uint64_t anon = 0;
-    uint64_t cache = 0;
-
     if (!swsize_sc.get(ssize))
         logFatal << "sysctl(" << swsize_sc.id() << ") failed." << std::endl;
+    uint64_t anon = 0;
     if (!swanon_sc.get(anon))
         logFatal << "sysctl(" << swanon_sc.id() << ") failed." << std::endl;
+    uint64_t cache = 0;
     if (!swcache_sc.get(cache))
         logFatal << "sysctl(" << swcache_sc.id() << ") failed." << std::endl;
 
@@ -63,7 +62,7 @@ void SwapMeter::getSwapInfo(uint64_t &total, uint64_t &used) {
 
 
 #if defined(XOSVIEW_FREEBSD)
-void SwapMeter::getSwapInfo(uint64_t &total, uint64_t &used) {
+void SwapMeter::getSwapInfo(uint64_t &total, uint64_t &used) const {
 
     static SysCtl nswaps_sc("vm.nswapdev");
     static SysCtl swapinfo_sc("vm.swap_info");
@@ -106,18 +105,17 @@ void SwapMeter::getSwapInfo(uint64_t &total, uint64_t &used) {
 
 
 #if defined(XOSVIEW_NETBSD) || defined(XOSVIEW_OPENBSD)
-void SwapMeter::getSwapInfo(uint64_t &total, uint64_t &used) {
+void SwapMeter::getSwapInfo(uint64_t &total, uint64_t &used) const {
     //  This code is based on a patch sent in by Scott Stevens
     //  (s.k.stevens@ic.ac.uk, at the time).
-    int rnswap, nswap = swapctl(SWAP_NSWAP, 0, 0);
     total = used = 0;
 
+    const int nswap = swapctl(SWAP_NSWAP, 0, 0);
     if (nswap < 1)  // no swap devices on
         return;
 
     std::vector<struct swapent> sep(nswap);
-
-    rnswap = swapctl(SWAP_STATS, (void *)sep.data(), nswap);
+    const int rnswap = swapctl(SWAP_STATS, sep.data(), sep.size());
     if (rnswap < 0)
         logFatal << "BSDGetSwapInfo(): getting SWAP_STATS failed" << std::endl;
     if (nswap != rnswap)
@@ -127,9 +125,9 @@ void SwapMeter::getSwapInfo(uint64_t &total, uint64_t &used) {
 
     // block size is that of underlying device, *usually* 512 bytes
     const int bsize = 512;
-    for (size_t i = 0 ; i < (size_t)rnswap ; i++) {
-        total += (uint64_t)sep[i].se_nblks * bsize;
-        used += (uint64_t)sep[i].se_inuse * bsize;
+    for (size_t i = 0 ; i < static_cast<size_t>(rnswap) ; i++) {
+        total += static_cast<uint64_t>(sep[i].se_nblks) * bsize;
+        used += static_cast<uint64_t>(sep[i].se_inuse) * bsize;
     }
 }
 #endif

@@ -50,6 +50,7 @@ private:
       std::vector<std::string> &argv) const;
 };
 
+
 class CLOpts {
 public:
     CLOpts(int argc, const char * const *argv);
@@ -87,14 +88,14 @@ private:
     std::string pname(void) const;
 };
 
+
+
 inline std::ostream &operator<<(std::ostream &os, const CLOpt &c) {
-    c.printOn(os);
-    return os;
+    return c.printOn(os);
 }
 
 inline std::ostream &operator<<(std::ostream &os, const CLOpts &c) {
-    c.printOn(os);
-    return os;
+    return c.printOn(os);
 }
 
 } // end namespace util

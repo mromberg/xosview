@@ -14,22 +14,23 @@ include ../Makefile.config
 # File lists
 #-------------------------------------------------------------------------
 
-OBJS = \
-btrymeter.o \
-cpumeter.o \
-diskmeter.o \
-intmeter.o \
-intratemeter.o \
-intrstats.o \
-kernel.o \
-loadmeter.o \
-memmeter.o \
-netmeter.o \
-pagemeter.o \
-swapmeter.o \
-fsmeter.o \
-sensor.o \
-coretemp.o \
+OBJS =\
+btrymeter.o\
+cpumeter.o\
+diskmeter.o\
+intmeter.o\
+intratemeter.o\
+intrstats.o\
+kernel.o\
+loadmeter.o\
+memmeter.o\
+netmeter.o\
+pagemeter.o\
+swapmeter.o\
+fsmeter.o\
+sensor.o\
+coretemp.o\
+sctl.o\
 MeterMaker.o
 
 

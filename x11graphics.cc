@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -10,6 +10,8 @@
 #include "x11font.h"
 #ifdef HAVE_XFT
 #include "xftgraphics.h"
+#else
+class XftGraphics {};
 #endif
 
 #include <iomanip>
@@ -21,19 +23,19 @@ std::vector<Pixmap>	X11Graphics::_stipples;
 X11Graphics::X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
   Colormap cmap, unsigned long bgPixVal)
     : _dsp(dsp), _drawable(d), _isWindow(isWindow), _cmap(cmap),
-      _gc(0), _depth(0),
-      _fgPixel(0), _bgPixel(bgPixVal), _bgPixmap(0),
-      _width(0), _height(0), _font(0),
-      _xftg(0), _visual(v), _doStippling(false) {
+      _gc(0), _depth(0), _fgPixel(0), _bgPixel(bgPixVal),
+      _width(0), _height(0),
 #if HAVE_XFT
-    _xftg = new XftGraphics(_dsp, v, _drawable, _isWindow, _cmap, _bgPixel);
-    _font = &_xftg->font();
+      _xftg(std::make_unique<XftGraphics>(_dsp, v, _drawable, _isWindow,
+          _cmap, _bgPixel)),
 #else
-    _font = new X11Font(_dsp);
+      _x11font(std::make_unique<X11Font>(_dsp)),
 #endif
+      _visual(v), _doStippling(false) {
+
     refCount()++;
     updateInfo();
-    _gc = XCreateGC(_dsp, _drawable, 0, NULL);
+    _gc = XCreateGC(_dsp, _drawable, 0, nullptr);
     // FIXME Turn this back on and fix fieldmetergraph's copyArea
     XSetGraphicsExposures(_dsp, _gc, False);
     setFont("fixed");
@@ -45,14 +47,6 @@ X11Graphics::X11Graphics(Display *dsp, Visual *v, Drawable d, bool isWindow,
 
 X11Graphics::~X11Graphics(void) {
     logDebug << "~X11Graphics(): " << refCount() << std::endl;
-
-#ifdef HAVE_XFT
-    delete _xftg;
-#else
-    delete _font;
-#endif
-
-    delete _bgPixmap;
 
     // The refCount is used to free global cached stipples
     refCount()--;
@@ -118,8 +112,7 @@ unsigned long X11Graphics::allocColor(Display *d, Colormap c,
 
 
 void X11Graphics::setBG(const X11Pixmap &pmap) {
-    delete _bgPixmap;
-    _bgPixmap = new X11Pixmap(pmap);
+    _bgPixmap = std::make_unique<X11Pixmap>(pmap);
 }
 
 
@@ -225,16 +218,15 @@ Pixmap X11Graphics::createPixmap(const std::string &data,
 }
 
 void X11Graphics::setFont(const std::string &name) {
-    _font->setFont(name);
+    font()->setFont(name);
 
 #ifndef HAVE_XFT
     XGCValues gcv;
-    X11Font *fnt = dynamic_cast<X11Font *>(_font);
-    if (!fnt) {
+    if (!_x11font) {
         logBug << "Font is not a core X11 font object." << std::endl;
     }
     else {
-        gcv.font = fnt->id();
+        gcv.font = _x11font->id();
         XChangeGC(_dsp, _gc, GCFont, &gcv);
     }
 #endif
@@ -256,7 +248,7 @@ void X11Graphics::drawString(int x, int y, const std::string &str) {
 
 
 unsigned int X11Graphics::maxCharWidth(void) {
-    return _font->maxCharWidth();
+    return font()->maxCharWidth();
 }
 
 
@@ -273,9 +265,18 @@ void X11Graphics::resize(unsigned int width, unsigned int height) {
 }
 
 
-X11Pixmap *X11Graphics::newX11Pixmap(unsigned int width, unsigned int height) {
+XOSVFont *X11Graphics::font(void) const {
+#if HAVE_XFT
+    return &_xftg->font();
+#else
+    return _x11font.get();
+#endif
+}
+
+std::unique_ptr<X11Pixmap> X11Graphics::newX11Pixmap(unsigned int width,
+  unsigned int height) {
     logAssert(_isWindow) << "Drawable is not a window." << std::endl;
 
-    return new X11Pixmap(_dsp, _visual, _drawable, _cmap, _bgPixel,
-      width, height, _depth);
+    return std::make_unique<X11Pixmap>(_dsp, _visual, _drawable, _cmap,
+      _bgPixel, width, height, _depth);
 }

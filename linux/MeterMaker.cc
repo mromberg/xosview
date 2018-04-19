@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -28,96 +28,102 @@
 #include <iomanip>
 
 
-std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
+ComMeterMaker::mlist MeterMaker::makeMeters(const ResDB &rdb) {
+
+    mlist meters;
 
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        _meters.push_back(new ExampleMeter());
+        meters.push_back(std::make_unique<ExampleMeter>());
 
     // Standard meters (usually added, but users could turn them off)
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new PrcLoadMeter());
+        meters.push_back(std::make_unique<PrcLoadMeter>());
 
     if (rdb.isResourceTrue("cpu"))
-        cpuFactory(rdb);
+        cpuFactory(rdb, meters);
 
     if (rdb.isResourceTrue("mem"))
-        _meters.push_back(new MemMeter());
+        meters.push_back(std::make_unique<MemMeter>());
 
     if (rdb.isResourceTrue("disk"))
-        _meters.push_back(new PrcDiskMeter());
+        meters.push_back(std::make_unique<PrcDiskMeter>());
 
-    if (rdb.isResourceTrue("RAID")){
-        std::vector<std::string> devices(RAIDMeter::devices(rdb));
-        for (size_t i = 0 ; i < devices.size() ; i ++)
-            _meters.push_back(new RAIDMeter(devices[i]));
+    if (rdb.isResourceTrue("RAID")) {
+        for (const auto &device : RAIDMeter::devices(rdb))
+            meters.push_back(std::make_unique<RAIDMeter>(device));
     }
 
     if (rdb.isResourceTrue("filesys"))
-        util::concat(_meters, ComFSMeterFactory().make(rdb));
+        util::concat(meters, ComFSMeterFactory().make(rdb));
 
     if (rdb.isResourceTrue("swap"))
-        _meters.push_back(new SwapMeter());
+        meters.push_back(std::make_unique<SwapMeter>());
 
     if (rdb.isResourceTrue("page"))
-        _meters.push_back(new PrcPageMeter());
+        meters.push_back(std::make_unique<PrcPageMeter>());
 
     if (rdb.isResourceTrue("wlink"))
-        _meters.push_back(new WLinkMeter());
+        meters.push_back(std::make_unique<WLinkMeter>());
 
     if (rdb.isResourceTrue("net"))
-        _meters.push_back(new PrcNetMeter());
+        meters.push_back(std::make_unique<PrcNetMeter>());
 
     if (rdb.isResourceTrue("NFSDStats"))
-        _meters.push_back(new NFSDStats());
+        meters.push_back(std::make_unique<NFSDStats>());
 
     if (rdb.isResourceTrue("NFSStats"))
-        _meters.push_back(new NFSStats());
+        meters.push_back(std::make_unique<NFSStats>());
 
     // serial factory checks all resources.
-    serialFactory(rdb);
+    serialFactory(rdb, meters);
 
     if (rdb.isResourceTrue("irqrate"))
-        _meters.push_back(new PrcIrqRateMeter());
+        meters.push_back(std::make_unique<PrcIrqRateMeter>());
 
     if (rdb.isResourceTrue("interrupts"))
-        intFactory(rdb);
+        intFactory(rdb, meters);
 
     if (rdb.isResourceTrue("battery"))
-        _meters.push_back(new BtryMeter());
+        meters.push_back(std::make_unique<BtryMeter>());
 
     if (rdb.isResourceTrue("tzone"))
-        tzoneFactory();
+        tzoneFactory(meters);
 
     if (rdb.isResourceTrue("lmstemp"))
-        lmsTempFactory(rdb);
+        lmsTempFactory(rdb, meters);
 
-    return _meters;
+    return meters;
 }
 
 
-void MeterMaker::cpuFactory(const ResDB &rdb) {
+void MeterMaker::cpuFactory(const ResDB &rdb,
+  std::vector<std::unique_ptr<Meter>> &meters) const {
+
     size_t start = 0, end = 0;
     getRange(rdb.getResource("cpuFormat"), CPUMeter::countCPUs(), start, end);
 
     logDebug << "start=" << start << ", end=" << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
-        _meters.push_back(new CPUMeter(i));
+        meters.push_back(std::make_unique<CPUMeter>(i));
 }
 
 
-void MeterMaker::serialFactory(const ResDB &rdb) {
+void MeterMaker::serialFactory(const ResDB &rdb, mlist  &meters) const {
 // these architectures have no ioperm()
-#if defined (__arm__) || defined(__mc68000__) || defined(__powerpc__) || defined(__sparc__) || defined(__s390__) || defined(__s390x__)
+#if defined(__arm__) || defined(__mc68000__) ||   \
+    defined(__powerpc__) || defined(__sparc__) || \
+    defined(__s390__) || defined(__s390x__)
 #else
-    for (int i = 0 ; i < SerialMeter::numDevices() ; i++) {
-        bool ok ;  unsigned long val ;
-        std::string res = SerialMeter::getResourceName(
-            (SerialMeter::Device)i);
-        if ( !(ok = rdb.isResourceTrue(res)) ) {
+    for (size_t i = 0 ; i < SerialMeter::numDevices() ; i++) {
+        const std::string res = SerialMeter::getResourceName(
+            static_cast<SerialMeter::Device>(i));
+        bool ok;
+        if (!(ok = rdb.isResourceTrue(res))) {
             std::istringstream is(rdb.getResource(res));
+            unsigned long val;
             is >> std::setbase(0) >> val;
             if (!is)
                 ok = false;
@@ -125,48 +131,49 @@ void MeterMaker::serialFactory(const ResDB &rdb) {
                 ok = val & 0xFFFF;
         }
 
-        if ( ok )
-            _meters.push_back(new SerialMeter((SerialMeter::Device)i));
+        if (ok)
+            meters.push_back(std::make_unique<SerialMeter>(
+                  static_cast<SerialMeter::Device>(i)));
     }
 #endif
 }
 
 
-void MeterMaker::intFactory(const ResDB &rdb) {
+void MeterMaker::intFactory(const ResDB &rdb, mlist &meters) const {
+    const size_t cpuCount = CPUMeter::countCPUs();
     size_t start = 0, end = 0;
-    size_t cpuCount = CPUMeter::countCPUs();
     getRange(rdb.getResource("intFormat"), cpuCount, start, end);
 
     logDebug << "int range: " << start << ", " << end << std::endl;
 
     for (size_t i = start ; i <= end ; i++)
-        _meters.push_back(new IntMeter(i));
+        meters.push_back(std::make_unique<IntMeter>(i));
 }
 
 
-void MeterMaker::lmsTempFactory(const ResDB &rdb) {
-    std::string caption = "ACT/HIGH/"
+void MeterMaker::lmsTempFactory(const ResDB &rdb, mlist &meters) const {
+    const std::string caption = "ACT/HIGH/"
         + rdb.getResourceOrUseDefault("lmstempHighest", "100");
     for (int i = 0 ; ; i++) {
-        std::ostringstream s;
-        s << "lmstemp" << i;
-        std::string res = rdb.getResourceOrUseDefault(s.str(), "<nil>");
+        const std::string istr = std::to_string(i);
+        const std::string res = rdb.getResourceOrUseDefault("lmstemp" + istr,
+          "<nil>");
         if(res == "<nil>")
             break;
-        std::ostringstream s2;
-        s2 << "lmstempLabel" << i;
-        std::string lab = rdb.getResourceOrUseDefault(s2.str(), "TMP");
-        _meters.push_back(new LmsTemp(res, lab, caption));
+
+        std::string lab = rdb.getResourceOrUseDefault("lmstempLabel" + istr,
+          "TMP");
+        meters.push_back(std::make_unique<LmsTemp>(res, lab, caption));
     }
 }
 
 
-void MeterMaker::tzoneFactory(void) {
-    size_t nzones = TZoneMeter::count();
+void MeterMaker::tzoneFactory(mlist &meters) const {
+    const size_t nzones = TZoneMeter::count();
 
     if (!nzones)
         logProblem << "tzone enabled but no thermal zones found.\n";
 
     for (size_t i = 0 ; i < nzones ; i++)
-        _meters.push_back(new TZoneMeter(i));
+        meters.push_back(std::make_unique<TZoneMeter>(i));
 }

@@ -8,7 +8,6 @@
 #define x11font_h
 
 #include "font.h"
-#include "log.h"
 
 #include <X11/Xlib.h>
 
@@ -19,17 +18,17 @@ public:
     X11Font(Display *dsp, const std::string &name);
     virtual ~X11Font(void);
 
-    bool good(void) const { return _font; }
+    virtual bool good(void) const override { return _font; }
 
-    virtual const std::string &name(void) const { return _name; }
+    virtual const std::string &name(void) const override { return _name; }
     Font id(void) const;
 
-    virtual bool setFont(const std::string &name);
+    virtual bool setFont(const std::string &name) override;
 
-    virtual unsigned int textWidth(const std::string &str);
-    virtual unsigned int textHeight(void) const;
-    virtual int textAscent(void) const;
-    virtual int textDescent(void) const;
+    virtual unsigned int textWidth(const std::string &str) override;
+    virtual unsigned int textHeight(void) const override;
+    virtual int textAscent(void) const override;
+    virtual int textDescent(void) const override;
 
 private:
     Display *_dsp;
@@ -37,28 +36,9 @@ private:
     XFontStruct *_font;
 };
 
-inline Font X11Font::id(void) const {
-    logAssert(good()) << "can't use an uninitialized font." << std::endl;
-    return _font->fid;
-}
 
-inline unsigned int X11Font::textWidth(const std::string &str) {
-    logAssert(good()) << "can't use an uninitialized font." << std::endl;
-    return XTextWidth(_font, str.c_str(), str.size());
-}
-
-inline int X11Font::textAscent(void) const {
-    logAssert(good()) << "can't use an uninitialized font." << std::endl;
-    return _font->ascent;
-}
-
-inline int X11Font::textDescent(void) const {
-    logAssert(good()) << "can't use an uninitialized font." << std::endl;
-    return _font->descent;
-}
 
 inline unsigned int X11Font::textHeight(void) const {
-    logAssert(good()) << "can't use an uninitialized font." << std::endl;
     return textAscent() + textDescent();
 }
 

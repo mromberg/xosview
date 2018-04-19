@@ -10,11 +10,13 @@
 #include "font.h"
 
 #include <vector>
+#include <memory>
 
 #include <X11/Xlib.h>
 
 class X11Pixmap;
 class XftGraphics;
+class X11Font;
 
 
 class X11Graphics {
@@ -70,19 +72,16 @@ public:
     void copyArea(int x, int y, unsigned int width, unsigned int height,
       int dest_x, int dest_y);
 
-    X11Pixmap *newX11Pixmap(unsigned int width, unsigned int height);
+    std::unique_ptr<X11Pixmap> newX11Pixmap(unsigned int width,
+      unsigned int height);
 
     //------------------------------------------------------------
     // Depricated interface
     //------------------------------------------------------------
-    void setForeground(unsigned long pixVal) { setFG(pixVal); }
-    void setBackground(unsigned long pixVal) { setBG(pixVal); }
     void setStippleMode(bool mode) { _doStippling = mode; }
-    void setStipple(Pixmap stipple);
     void setStippleN(unsigned int n) { setStipple(_stipples[n]); }
-    Pixmap createPixmap(const std::string &data,
-      unsigned int w, unsigned int h);
     //---End Depricated-------------------------------------------
+
 private:
     Display *_dsp;
     Drawable _drawable;
@@ -92,13 +91,14 @@ private:
     unsigned int _depth;
     unsigned long _fgPixel;
     unsigned long _bgPixel;
-    X11Pixmap *_bgPixmap;
+    std::unique_ptr<X11Pixmap> _bgPixmap;
     unsigned int _width;
     unsigned int _height;
-    XOSVFont *_font;
-    XftGraphics *_xftg;
+    std::unique_ptr<XftGraphics> _xftg;
+    std::unique_ptr<X11Font> _x11font;
     Visual *_visual;
 
+    XOSVFont *font(void) const;
     void updateInfo(void); // update _width, _height, _depth
 
     //------------------------------------------------------------
@@ -107,6 +107,9 @@ private:
     bool _doStippling;
     void initStipples(void);
     void releaseStipples(void);
+    Pixmap createPixmap(const std::string &data,
+      unsigned int w, unsigned int h);
+    void setStipple(Pixmap stipple);
     static std::vector<Pixmap>	_stipples;	//  Array of Stipple masks.
     static size_t &refCount(void);
     //---End Depricated-------------------------------------------
@@ -153,15 +156,15 @@ inline void X11Graphics::lineWidth(unsigned int width) {
 }
 
 inline unsigned int X11Graphics::textWidth(const std::string &str) {
-    return _font->textWidth(str);
+    return font()->textWidth(str);
 }
 
 inline int X11Graphics::textAscent(void) const {
-    return _font->textAscent();
+    return font()->textAscent();
 }
 
 inline int X11Graphics::textDescent(void) const {
-    return _font->textDescent();
+    return font()->textDescent();
 }
 
 inline unsigned int X11Graphics::textHeight(void) const {

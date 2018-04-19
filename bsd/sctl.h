@@ -7,44 +7,29 @@
 #ifndef sctl_h
 #define sctl_h
 
-#include "strutil.h"
-
-#include <iostream>
 #include <string>
 #include <vector>
 
+// included here so clients don't have to.
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
 
+
 class SysCtl {
 public:
-    SysCtl(void) {}
-    SysCtl(const std::vector<int> &mib) : _mib(mib) {}
-    SysCtl(const int *mib, size_t mibsize) : _mib(mib, mib + mibsize) {}
+    SysCtl(void);
+    SysCtl(const std::vector<int> &mib);
+    SysCtl(std::initializer_list<int> l);
+    SysCtl(const int *mib, size_t mibsize);
 #if !defined(XOSVIEW_OPENBSD)
-    SysCtl(const std::string &id) : _id(id) { init(); }
+    SysCtl(const std::string &id);
 #endif
 
     const std::string &id(void) const { return _id; }
 
-    bool get(void *dst, size_t dsize) const {
-        if (sysctl(_mib.data(), _mib.size(), dst, &dsize, NULL, 0) < 0)
-            {
-            logDebug << "sysctl(" << id() << ") failed: "
-                     << util::strerror() << std::endl;
-            return false;
-            }
-
-        return true;
-    }
-
-    bool getsize(size_t &size) const {
-        if (sysctl(_mib.data(), _mib.size(), NULL, &size, NULL, 0) < 0)
-            return false;
-
-        return true;
-    }
+    bool get(void *dst, size_t dsize) const;
+    bool getsize(size_t &size) const;
 
     template <class X>
     bool get(X &x) const {
@@ -64,20 +49,9 @@ private:
     std::string _id;
     std::vector<int> _mib;
 
-    void init(void) {
 #if !defined(XOSVIEW_OPENBSD)
-        size_t sizep = 0;
-        if (sysctlnametomib(_id.c_str(), NULL, &sizep) < 0) {
-            std::cerr << "sysctlnametomib(" << _id << ") failed." << std::endl;
-        }
-
-        _mib.resize(sizep);
-        sizep = _mib.size();
-        if (sysctlnametomib(_id.c_str(), _mib.data(), &sizep) < 0) {
-            std::cerr << "sysctlnametomib(" << _id << ") failed." << std::endl;
-        }
+    void init(void);
 #endif
-    }
 };
 
 

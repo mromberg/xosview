@@ -1,9 +1,9 @@
-#ifndef XOSVKERNEL_H
-#define XOSVKERNEL_H
+#ifndef kernel_h
+#define kernel_h
 
 //
 //  NetBSD port:
-//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016
+//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016, 2018
 //  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -20,24 +20,24 @@
 
 
 #if defined(__i386__) || defined(__x86_64)
-unsigned int BSDGetCPUTemperature(std::vector<float> &temps,
+extern size_t BSDGetCPUTemperature(std::vector<float> &temps,
   std::vector<float> &tjmax);
 
-inline unsigned int BSDGetCPUTemperature(std::vector<float> &temps) {
+inline size_t BSDGetCPUTemperature(std::vector<float> &temps) {
     std::vector<float> notUsed;
     return BSDGetCPUTemperature(temps, notUsed);
 }
 
-inline unsigned int BSDGetCPUTemperature(void) {
+inline size_t BSDGetCPUTemperature(void) {
     std::vector<float> notUsed1, notUsed2;
     return BSDGetCPUTemperature(notUsed1, notUsed2);
 }
 #endif
 
-void BSDGetSensor(const std::string &name, const std::string &valname,
+extern void BSDGetSensor(const std::string &name, const std::string &valname,
   float &value, std::string &unit);
 
-bool BSDHasBattery();
+extern bool BSDHasBattery(void);
 
 enum BatteryState {
     XOSVIEW_BATT_NONE        = 0,
@@ -48,7 +48,7 @@ enum BatteryState {
     XOSVIEW_BATT_CRITICAL    = (1u << 4)
 };
 
-void BSDGetBatteryInfo(int &remaining, unsigned int &state);
+extern void BSDGetBatteryInfo(int &remaining, unsigned int &state);
 
 
 #endif

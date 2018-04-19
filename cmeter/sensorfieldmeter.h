@@ -16,8 +16,6 @@ class SensorFieldMeter : public FieldMeter {
 public:
     SensorFieldMeter(const std::string &title="", const std::string &legend="");
 
-    virtual ~SensorFieldMeter(void);
-
 protected:
     double _high, _low;
     bool _hasHigh, _hasLow;

@@ -14,28 +14,27 @@
 #include "example.h"  // The example meter
 
 
-MeterMaker::MeterMaker(void) {
-}
 
+ComMeterMaker::mlist MeterMaker::makeMeters(const ResDB &rdb) {
 
-std::vector<Meter *> MeterMaker::makeMeters(const ResDB &rdb) {
+    mlist meters;
 
     // Add the example meter.  Normally you would use
     // isResourceTrue.  But example resources are not in Xdefalts
     if (rdb.getResourceOrUseDefault("example", "False") == "True")
-        _meters.push_back(new ExampleMeter());
+        meters.push_back(std::make_unique<ExampleMeter>());
 
     if (rdb.isResourceTrue("load"))
-        _meters.push_back(new PrcLoadMeter());
+        meters.push_back(std::make_unique<PrcLoadMeter>());
 
     if (rdb.isResourceTrue("cpu"))
-        _meters.push_back(new CPUMeter());
+        meters.push_back(std::make_unique<CPUMeter>());
 
     if (rdb.isResourceTrue("mem"))
-        _meters.push_back(new MemMeter());
+        meters.push_back(std::make_unique<MemMeter>());
 
     if (rdb.isResourceTrue("filesys"))
-        util::concat(_meters, FSMeterFactory().make(rdb));
+        util::concat(meters, FSMeterFactory().make(rdb));
 
-    return _meters;
+    return meters;
 }

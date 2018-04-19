@@ -11,13 +11,9 @@
 
 ComFSMeter::ComFSMeter(const std::string &path)
     : FieldMeterGraph(2, "FS", "USED/FREE"),
-      _bgColor(0), _umountColor(0), _path(path){
+      _bgColor(0), _umountColor(0), _path(path) {
 
     legend(_path + ":FREE", ":");
-}
-
-
-ComFSMeter::~ComFSMeter(void) {
 }
 
 
@@ -32,20 +28,21 @@ void ComFSMeter::checkResources(const ResDB &rdb) {
 }
 
 
-void ComFSMeter::checkevent( void ) {
+void ComFSMeter::checkevent(void) {
     _total = 1.0;
 
     if (isMount(_path)) {
         setBGColor(_bgColor);
 
-        // free, total (for root)
-        std::pair<uint64_t, uint64_t> fsSize = util::fs::getSpace(_path, true);
+        // (free, total) (for root)
+        const auto fsSize = util::fs::getSpace(_path, true);
 
         logDebug << _path << ":\t" << fsSize << std::endl;
 
-        _fields[0] = (float)(fsSize.second - fsSize.first)
-            / (float)fsSize.second;
-        _fields[1] = (float)fsSize.first / (float)fsSize.second;
+        _fields[0] = static_cast<float>(fsSize.second - fsSize.first)
+            / static_cast<float>(fsSize.second);
+        _fields[1] = static_cast<float>(fsSize.first)
+            / static_cast<float>(fsSize.second);
         setUsed(fsSize.second - fsSize.first, fsSize.second);
     }
     else {

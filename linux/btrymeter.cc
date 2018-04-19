@@ -7,49 +7,48 @@
 
 #include "btrymeter.h"
 #include "fsutil.h"
+#include "strutil.h"
 
-#include <fstream>
-#include <iostream>
 #include <iomanip>
-#include <sstream>
-#include <algorithm>
 #include <cmath>
 
 
-static const char LEGEND[] = "CAP/USED";
-static const char SYSDIRNAME[] = "/sys/class/power_supply/";
+static const char * const LEGEND = "CAP/USED";
+static const char * const SYSDIRNAME = "/sys/class/power_supply/";
 
-BtryMeter::BtryMeter( void )
-    : FieldMeter( 2, "BTRY", LEGEND), _stype(NONE),
+
+
+BtryMeter::BtryMeter(void)
+    : FieldMeter(2, "BTRY", LEGEND),
+      _stype(statType()),
       _critColor(0), _lowColor(0), _leftColor(0),
-      _chargeColor(0), _fullColor(0), _noneColor(0) {
+      _chargeColor(0), _fullColor(0), _noneColor(0),
+      // Depricated APM and ACPI members beyond this point
+      apm_battery_state(0xFF), old_apm_battery_state(0xFF),
+      acpi_charge_state(-2), old_acpi_charge_state(-2) {
 
-    _stype = statType();
     logDebug << "Battery state type: " << _stype << std::endl;
-
-    // Depricated APM and ACPI members beyond this point
-    old_apm_battery_state = apm_battery_state = 0xFF;
-    old_acpi_charge_state = acpi_charge_state = -2;
 }
 
-BtryMeter::~BtryMeter( void ){
-}
 
-BtryMeter::StatType BtryMeter::statType(void) {
+BtryMeter::StatType BtryMeter::statType(void) const {
     // In order of preference
-    if ( has_sys() )
+    if (has_sys())
         return SYS;
-    if ( has_acpi() ) {
+    if (has_acpi()) {
         logEvent << "Using depricated ACPI battery support." << std::endl;
         return ACPI;
     }
-    if ( has_apm() ) {
+    if (has_apm()) {
         logEvent << "Using depricated APM battery support." << std::endl;
 	return APM;
     }
 
+    logProblem << "Failed to detect sys, acpi or apm battery support."
+               << std::endl;
     return NONE;
 }
+
 
 void BtryMeter::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
@@ -61,11 +60,12 @@ void BtryMeter::checkResources(const ResDB &rdb) {
     _fullColor = rdb.getColor("batteryFullColor");
     _noneColor = rdb.getColor("batteryNoneColor");
 
-    setfieldcolor( 0, _leftColor);
-    setfieldcolor( 1, rdb.getColor( "batteryUsedColor" ) );
+    setfieldcolor(0, _leftColor);
+    setfieldcolor(1, rdb.getColor( "batteryUsedColor"));
 }
 
-void BtryMeter::checkevent( void ){
+
+void BtryMeter::checkevent(void) {
 
     if (!getpwrinfo()) {
         // getting the power info failed (for some reason)
@@ -78,7 +78,7 @@ void BtryMeter::checkevent( void ){
 }
 
 
-bool BtryMeter::getpwrinfo( void ){
+bool BtryMeter::getpwrinfo(void) {
     // Just dispatch the call to the flavor of the day
     // battery driver.
     switch (_stype) {
@@ -95,10 +95,11 @@ bool BtryMeter::getpwrinfo( void ){
     return false;
 }
 
+
 //----------------------------------------------------------
 // **SYS methods
 //----------------------------------------------------------
-bool BtryMeter::has_sys(void) {
+bool BtryMeter::has_sys(void) const {
     // If the directory is there we assume
     // the new sysfs way is supported.
     // There still may or may not be a battery
@@ -115,9 +116,9 @@ bool BtryMeter::getcapacity(const std::string &batDir,
     // Apparently the star can be a bit of a drama queen and sometimes
     // does not make an appearance.  Check for her backup files
     // charge_full and charge_now.
-    std::string capFile = batDir + "capacity";
-    std::string cfFile = batDir + "charge_full";
-    std::string cnFile = batDir + "charge_now";
+    const std::string capFile = batDir + "capacity";
+    const std::string cfFile = batDir + "charge_full";
+    const std::string cnFile = batDir + "charge_now";
     if (util::fs::isfile(capFile)) {
         if (!util::fs::readFirst(capFile, capacity)) {
             logProblem << "error reading : " << capFile << std::endl;
@@ -153,8 +154,8 @@ bool BtryMeter::getcapacity(const std::string &batDir,
 // present: 0/1
 bool BtryMeter::getsysinfo(void) {
 
-    std::string batDir = getBatDir();
-    if (batDir == "") // have sys but no bat dirs
+    const std::string batDir = getBatDir();
+    if (batDir.empty()) // have sys but no bat dirs
         return false;
 
     unsigned int capacity = 0;
@@ -169,7 +170,7 @@ bool BtryMeter::getsysinfo(void) {
     // The hours left looks off when charging and nearing full charge
     std::string timeLeft;
     if (status == "Discharging") {
-        float hl = getHoursLeft(batDir);
+        const float hl = getHoursLeft(batDir);
         timeLeft = timeStr(hl);
     }
 
@@ -186,21 +187,22 @@ bool BtryMeter::getsysinfo(void) {
     // I just makde these numbers up.  Perhaps
     // another resource?
     if (capacity <= 10)
-        setfieldcolor( 0, _critColor );
+        setfieldcolor(0, _critColor);
     else if (capacity <= 35)
-        setfieldcolor( 0, _lowColor );
+        setfieldcolor(0, _lowColor);
     else
-        setfieldcolor( 0, _leftColor );
+        setfieldcolor(0, _leftColor);
 
     setUsed(_fields[0], _total);
 
-    std::string newLegend(std::string(std::string("CAP ") + timeLeft
-        + "(" + status + ")/USED"));
+    const std::string newLegend(std::string("CAP ") + timeLeft
+      + "(" + status + ")/USED");
 
     legend(newLegend);
 
     return true;
 }
+
 
 // Apparently the following is the current state of the documentation
 // for the new /sys/ way of getting this info.  You have to get lucky
@@ -222,34 +224,39 @@ bool BtryMeter::getsysinfo(void) {
 //
 float BtryMeter::getHoursLeft(const std::string &batDir) const {
 
-    std::vector<std::string> dir = util::fs::listdir(batDir);
+    const auto dir = util::fs::listdir(batDir);
 
-    if (std::find(dir.begin(), dir.end(), "energy_now") != dir.end()) {
+    if (util::find<std::string>(dir, "energy_now")) {
+        const std::string fname = batDir + "energy_now";
         unsigned long long energy_now;
-        if (!util::fs::readFirst(batDir + "energy_now", energy_now)) {
-            logProblem << "error reading: " << batDir + "energy_now\n";
+        if (!util::fs::readFirst(fname, energy_now)) {
+            logProblem << "error reading: " << fname << std::endl;
             return 0.0;
         }
-        if (std::find(dir.begin(), dir.end(), "power_now") != dir.end()) {
+        if (util::find<std::string>(dir, "power_now")) {
             // remaining time (energy_now/power_now)
+            const std::string fname = batDir + "power_now";
             unsigned long long power_now;
-            if (!util::fs::readFirst(batDir + "power_now", power_now)) {
-                logProblem << "error reading: " << batDir + "power_now\n";
+            if (!util::fs::readFirst(fname, power_now)) {
+                logProblem << "error reading: " << fname << std::endl;
                 return 0.0;
             }
-            return (double)energy_now / (double)power_now;
+            return static_cast<double>(energy_now)
+                / static_cast<double>(power_now);
         }
         else {
             // remaining time is (energy_now/current_now)
+            const std::string fname = batDir + "current_now";
             unsigned long long current_now;
-            if (!util::fs::readFirst(batDir + "current_now", current_now)) {
-                logProblem << "error reading: " << batDir + "current_now\n";
+            if (!util::fs::readFirst(fname, current_now)) {
+                logProblem << "error reading: " << fname << std::endl;
                 return 0.0;
             }
-            return (double)energy_now / (double)current_now;
+            return static_cast<double>(energy_now)
+                / static_cast<double>(current_now);
         }
     }
-    else if (std::find(dir.begin(), dir.end(), "charge_now") != dir.end()) {
+    else if (util::find<std::string>(dir, "charge_now")) {
         // remaining time is charge_now/current_now
         unsigned long long charge_now, current_now;
 
@@ -270,38 +277,34 @@ float BtryMeter::getHoursLeft(const std::string &batDir) const {
 }
 
 
-std::string BtryMeter::timeStr(float &hours) const {
+std::string BtryMeter::timeStr(float hours) const {
     float intHours = 0;
-    float fracHours = modff(hours, &intHours);
+    const float fracHours = std::modf(hours, &intHours);
 
     std::ostringstream mins;
     mins << std::setfill('0') << std::setw(2)
-         << (unsigned int)(fracHours * 60);
+         << static_cast<unsigned int>(fracHours * 60);
 
-    std::string rval = util::repr(intHours) + ":" + mins.str();
-
-    return rval;
+    return std::to_string(intHours) + ":" + mins.str();
 }
 
 
 std::string BtryMeter::getBatDir(void) const {
-
     // create a list of all the BAT* subdirs
+    const auto dir = util::fs::listdir(SYSDIRNAME);
     std::vector<std::string> bats;
-    std::vector<std::string> dir = util::fs::listdir(SYSDIRNAME);
-    for (size_t i = 0 ; i < dir.size() ; i++)
-        if (dir[i].substr(0, 3) == "BAT")
-            bats.push_back(dir[i]);
+    std::copy_if(dir.cbegin(), dir.cend(), std::back_inserter(bats),
+      [](const auto &fn){ return fn.substr(0, 3) == "BAT"; });
     std::sort(bats.begin(), bats.end());
 
-    if (bats.size() == 0) // No batteries found
+    if (bats.empty()) // No batteries found
         return "";
 
     if (bats.size() > 1)
         logEvent << "Multiple batteries found: " << bats << std::endl
-                 << "Only using: " << bats[0] << " for now" << std::endl;
+                 << "Only using: " << bats.front() << " for now" << std::endl;
 
-    return std::string(SYSDIRNAME) + bats[0] + "/";
+    return std::string(SYSDIRNAME) + bats.front() + "/";
 }
 
 
@@ -312,10 +315,10 @@ std::string BtryMeter::getBatDir(void) const {
 // Depricated APM and ACPI members beyond this point
 //--------------------------------------------------
 // **APM
-static const char APMFILENAME[] = "/proc/apm";
+static const char * const APMFILENAME = "/proc/apm";
 
 // determine if /proc/apm exists and is readable
-bool BtryMeter::has_apm( void ){
+bool BtryMeter::has_apm(void) const {
 
     if (!util::fs::isfile(APMFILENAME)) {
         logDebug << "no APM file" << std::endl;
@@ -336,70 +339,69 @@ bool BtryMeter::has_apm( void ){
     return true;
 }
 
-bool BtryMeter::getapminfo( void ){
-    std::ifstream loadinfo( APMFILENAME );
 
-/* just a tiny note here about APM states:
-   See: arch/i386/kernel/apm.c apm_get_info()
+bool BtryMeter::getapminfo(void) {
+    // just a tiny note here about APM states:
+    // See: arch/i386/kernel/apm.c apm_get_info()
 
-           Arguments, with symbols from linux/apm_bios.h.  Information is
-           from the Get Power Status (0x0a) call unless otherwise noted.
+    // Arguments, with symbols from linux/apm_bios.h.  Information is
+    //     from the Get Power Status (0x0a) call unless otherwise noted.
+    //
+    //        0) Linux driver version (this will change if format changes)
+    //        1) APM BIOS Version.  Usually 1.0, 1.1 or 1.2.
+    //        2) APM flags from APM Installation Check (0x00):
+    //           bit 0: APM_16_BIT_SUPPORT
+    //           bit 1: APM_32_BIT_SUPPORT
+    //           bit 2: APM_IDLE_SLOWS_CLOCK
+    //           bit 3: APM_BIOS_DISABLED
+    //           bit 4: APM_BIOS_DISENGAGED
+    //        3) AC line status
+    //           0x00: Off-line
+    //           0x01: On-line
+    //           0x02: On backup power (BIOS >= 1.1 only)
+    //           0xff: Unknown
+    //        4) Battery status
+    //           0x00: High
+    //           0x01: Low
+    //           0x02: Critical
+    //           0x03: Charging
+    //           0x04: Selected battery not present (BIOS >= 1.2 only)
+    //           0xff: Unknown
+    //        5) Battery flag
+    //           bit 0: High
+    //           bit 1: Low
+    //           bit 2: Critical
+    //           bit 3: Charging
+    //           bit 7: No system battery
+    //           0xff: Unknown
+    //        6) Remaining battery life (percentage of charge):
+    //           0-100: valid
+    //           -1: Unknown
+    //        7) Remaining battery life (time units):
+    //           Number of remaining minutes or seconds
+    //           -1: Unknown
+    //        8) min = minutes; sec = seconds
 
-           0) Linux driver version (this will change if format changes)
-           1) APM BIOS Version.  Usually 1.0, 1.1 or 1.2.
-           2) APM flags from APM Installation Check (0x00):
-              bit 0: APM_16_BIT_SUPPORT
-              bit 1: APM_32_BIT_SUPPORT
-              bit 2: APM_IDLE_SLOWS_CLOCK
-              bit 3: APM_BIOS_DISABLED
-              bit 4: APM_BIOS_DISENGAGED
-           3) AC line status
-              0x00: Off-line
-              0x01: On-line
-              0x02: On backup power (BIOS >= 1.1 only)
-              0xff: Unknown
-           4) Battery status
-              0x00: High
-              0x01: Low
-              0x02: Critical
-              0x03: Charging
-              0x04: Selected battery not present (BIOS >= 1.2 only)
-              0xff: Unknown
-           5) Battery flag
-              bit 0: High
-              bit 1: Low
-              bit 2: Critical
-              bit 3: Charging
-              bit 7: No system battery
-              0xff: Unknown
-           6) Remaining battery life (percentage of charge):
-              0-100: valid
-              -1: Unknown
-           7) Remaining battery life (time units):
-              Number of remaining minutes or seconds
-              -1: Unknown
-           8) min = minutes; sec = seconds
-*/
+    std::ifstream loadinfo(APMFILENAME);
 
-    if ( !loadinfo.good() ){
+    if (!loadinfo.good()) {
         logDebug << "Can not open file : " <<  APMFILENAME << std::endl;
         return false;
     }
 
-    int battery_status=0xff; // assume unknown as default
+    int battery_status = 0xff; // assume unknown as default
     std::string buff;
 
     loadinfo >> buff >> buff >> buff >> buff >> std::hex
              >> battery_status >> buff >> _fields[0];
 
-
-    // XOSDEBUG("apm battery_status is: %d\n",battery_status);
+    logDebug << "apm battery_status is: " << battery_status << std::endl;
 
     // save previous state
     // if there was no state-change - the gui won't do full redraw
 
-    old_apm_battery_state=apm_battery_state;
-    apm_battery_state=battery_status;
+    old_apm_battery_state = apm_battery_state;
+    apm_battery_state = battery_status;
 
     // If the battery status is reported as a negative number, it means we are
     // running on AC power and no battery status is available - Report it as
@@ -409,64 +411,54 @@ bool BtryMeter::getapminfo( void ){
 
     _total = 100;
 
-    if ( apm_battery_state != 0xFF ) {
-
+    if (apm_battery_state != 0xFF)
         _fields[1] = _total - _fields[0];
-
-    } else { // prevent setting it to '-1' if no batt
-
-	_fields[0] = 0; _fields[1] = _total;
+    else { // prevent setting it to '-1' if no batt
+	_fields[0] = 0;
+        _fields[1] = _total;
     }
 
-    setUsed (_fields[0], _total);
+    setUsed(_fields[0], _total);
 
-    /* if the APM state changed - we need to update the colors,
-       AND force a legend redraw - otherwise not ...
-       ... and the apm-state won't change if we don't have APM
-    */
-    if ( old_apm_battery_state != apm_battery_state ) {
-
+    // if the APM state changed - we need to update the colors,
+    // AND force a legend redraw - otherwise not ...
+    // ... and the apm-state won't change if we don't have APM.
+    if (old_apm_battery_state != apm_battery_state) {
         std::string newLegend;
-	/* so let's eval the apm_battery_state in some more detail: */
+	// so let's eval the apm_battery_state in some more detail.
 
-	switch ( apm_battery_state ) {
-
-	case 0: /* high (e.g. over 25% on my box) */
+	switch (apm_battery_state) {
+	case 0: // high (e.g. over 25% on my box).
             logDebug << "battery_status HIGH" << std::endl;
-            setfieldcolor( 0, _leftColor );
+            setfieldcolor(0, _leftColor);
             newLegend = "High CAP/USED";
             break;
-
-	case 1: /* low  ( e.g. under 25% on my box ) */
+	case 1: // low  ( e.g. under 25% on my box ).
             logDebug << "battery_status LOW" << std::endl;
-            setfieldcolor( 0, _lowColor );
+            setfieldcolor(0, _lowColor);
             newLegend = "LOW avail/used";
             break;
-
-	case 2: /* critical ( less than  5% on my box ) */
+	case 2: // critical ( less than  5% on my box ).
             logDebug << "battery_status CRITICAL" << std::endl;
-            setfieldcolor( 0, _critColor );
+            setfieldcolor(0, _critColor);
             newLegend = "Crit LOW/Used";
             break;
-
-	case 3: /* Charging */
+	case 3: // Charging.
             logDebug << "battery_status CHARGING" << std::endl;
-            setfieldcolor( 0, _chargeColor );
+            setfieldcolor(0, _chargeColor);
             newLegend = "AC/Charging";
             break;
-
-	case 4: /* selected batt not present */
-		/* no idea how this state ever could happen with APM */
+	case 4: // selected batt not present.
+		// no idea how this state ever could happen with APM.
             logDebug << "battery_status not present" << std::endl;
-            setfieldcolor( 0, _noneColor );
+            setfieldcolor(0, _noneColor);
             newLegend = "Not Present/N.A.";
             break;
-
-	case 255: /* unknown - do nothing - maybe not APM */
+	case 255: // unknown - do nothing - maybe not APM.
             // on my system this state comes if you pull both batteries
-            // ( while on AC of course :-)) )
+            // ( while on AC of course :-)) ).
             logDebug << "apm battery_state not known" << std::endl;
-            setfieldcolor( 0, _noneColor );
+            setfieldcolor(0, _noneColor);
             newLegend = "Unknown/N.A.";
             break;
 	}
@@ -477,12 +469,14 @@ bool BtryMeter::getapminfo( void ){
     return true;
 }
 
+
 // **ACPI
-static const char ACPIBATTERYDIR[] = "/proc/acpi/battery";
+static const char * const ACPIBATTERYDIR = "/proc/acpi/battery";
+
 
 // determine if /proc/acpi/battery exists and is a DIR
 // (XXX: too lazy -  no tests for actual readability is done)
-bool BtryMeter::has_acpi( void ){
+bool BtryMeter::has_acpi(void) const {
 
     if (!util::fs::isdir(ACPIBATTERYDIR)) {
         logDebug << "has_acpi(): stat failed: " << ACPIBATTERYDIR
@@ -493,14 +487,14 @@ bool BtryMeter::has_acpi( void ){
 
     // declare ACPI as usable
     return true;
-
 }
+
 
 // ACPI provides a lot of info,
 // but munging it into something usefull is ugly
 // esp. as you can have more than one battery ...
 
-bool BtryMeter::getacpiinfo( void ){
+bool BtryMeter::getacpiinfo(void) {
 
     if (!util::fs::isdir(ACPIBATTERYDIR)) {
         logDebug << "ACPI: Cannot open directory : " <<  ACPIBATTERYDIR
@@ -511,43 +505,37 @@ bool BtryMeter::getacpiinfo( void ){
     bool found = false; // whether we found at least ONE battery
 
     // reset all sums
-    acpi_sum_cap=0;
-    acpi_sum_remain=0;
-    acpi_sum_rate=0;
-    acpi_sum_alarm=0;
+    acpi_sum_cap = 0;
+    acpi_sum_remain = 0;
+    acpi_sum_rate = 0;
+    acpi_sum_alarm = 0;
 
-    // save old state
-    old_acpi_charge_state=acpi_charge_state;
+    old_acpi_charge_state = acpi_charge_state; // save old state
+    acpi_charge_state = 0; // assume charged
 
-    acpi_charge_state=0; // assume charged
+    const std::string abs_battery_dir = ACPIBATTERYDIR;
+    for (const auto &fn : util::fs::listdir(abs_battery_dir)) {
+        const std::string abs_battery_name = abs_battery_dir + "/" + fn;
 
-    std::string abs_battery_dir = ACPIBATTERYDIR;
-    std::vector<std::string> dir = util::fs::listdir(ACPIBATTERYDIR);
-    for (size_t di = 0 ; di < dir.size(); di++) {
-        std::string abs_battery_name = abs_battery_dir + "/" + dir[di];
-
-        logDebug << "ACPI Batt: " <<  dir[di] << std::endl;
+        logDebug << "ACPI Batt: " << fn << std::endl;
 
         // still can happen that it's not present:
-        if ( battery_present( abs_battery_name + "/info" ) ) {
+        if (battery_present(abs_battery_name + "/info")) {
             // ok, worth to parse out all the fields
-            if ( parse_battery( abs_battery_name ) ) {
+            if (parse_battery(abs_battery_name)) {
+		// sum up, clip values to get realistic on
+		// full-charged batteries.
+		if (battery.remaining_capacity >= battery.last_full_capacity)
+                    battery.remaining_capacity = battery.last_full_capacity;
 
-		// sum up:
-
-		// clip values to get realistic on full-charged batteries
-
-		if ( battery.remaining_capacity >= battery.last_full_capacity)
-                    battery.remaining_capacity=battery.last_full_capacity;
-
-		acpi_sum_cap   +=battery.last_full_capacity;
-		acpi_sum_remain+=battery.remaining_capacity;
-		acpi_sum_rate  +=battery.present_rate;
-		acpi_sum_alarm +=battery.alarm;
+		acpi_sum_cap += battery.last_full_capacity;
+		acpi_sum_remain += battery.remaining_capacity;
+		acpi_sum_rate += battery.present_rate;
+		acpi_sum_alarm += battery.alarm;
 
 		// sum up charge state ...
 		// works only w. signed formats
-		acpi_charge_state|=battery.charging_state;
+		acpi_charge_state |= battery.charging_state;
 
                 found = true; // found at least one
             }
@@ -560,60 +548,60 @@ bool BtryMeter::getacpiinfo( void ){
     // XOSDEBUG("acpi: total max=%d, remain=%d\n",acpi_sum_cap,acpi_sum_remain);
 
     // below alarm ?
-    if ( acpi_sum_alarm >= acpi_sum_remain )
-        acpi_charge_state=-2;
+    if (acpi_sum_alarm >= acpi_sum_remain)
+        acpi_charge_state = -2;
 
     // if NONE of the batts is present:
-    if ( found ) {
-        _fields[0] = (float)acpi_sum_remain/(float)acpi_sum_cap*100.0;
+    if (found) {
+        _fields[0] = static_cast<float>(acpi_sum_remain)
+            / static_cast<float>(acpi_sum_cap * 100.0);
     } else {
         // none of the batts is present
         // (just pull out both while on AC)
         _fields[0] = 0;
-        acpi_charge_state=-3;
+        acpi_charge_state = -3;
     }
 
     _fields[1] = _total - _fields[0];
 
-    setUsed (_fields[0], _total);
+    setUsed(_fields[0], _total);
 
-    /* if the ACPI state changed - we need to update the colors,
-       AND force a legend redraw - otherwise not ...
-       ... and the acpi-state won't change if we don't have acpi
-    */
+    // if the ACPI state changed - we need to update the colors,
+    // AND force a legend redraw - otherwise not ...
+    // ... and the acpi-state won't change if we don't have acpi.
 
-    if ( old_acpi_charge_state != acpi_charge_state ) {
+    if (old_acpi_charge_state != acpi_charge_state) {
         logDebug << "ACPI: charge_state: "
                  << "old=" << old_acpi_charge_state << ", "
                  << "now=" << acpi_charge_state << std::endl;
 
         std::string newLegend;
-	/* so let's eval the apm_battery_state in some more detail: */
+	// so let's eval the apm_battery_state in some more detail.
 
-	switch ( acpi_charge_state ) {
+	switch (acpi_charge_state) {
 	case 0:  // charged
             logDebug << "battery_status CHARGED" << std::endl;
-            setfieldcolor( 0, _fullColor );
+            setfieldcolor(0, _fullColor);
             newLegend = "CHARGED/FULL";
             break;
 	case -1: // discharging
             logDebug << "battery_status DISCHARGING" << std::endl;
-            setfieldcolor( 0, _leftColor );
+            setfieldcolor(0, _leftColor);
             newLegend = "CAP/USED";
             break;
 	case -2: // discharging - below alarm
             logDebug << "battery_status ALARM DISCHARGING" << std::endl;
-            setfieldcolor( 0, _critColor );
+            setfieldcolor(0, _critColor);
             newLegend = "LOW/ALARM";
             break;
 	case -3: // not present
             logDebug << "battery_status NOT PRESENT" << std::endl;
-            setfieldcolor( 0, _noneColor );
+            setfieldcolor(0, _noneColor);
             newLegend = "NONE/NONE";
             break;
 	case 1:  // charging
             logDebug << "battery_status CHARGING" << std::endl;
-            setfieldcolor( 0, _chargeColor );
+            setfieldcolor(0, _chargeColor);
             newLegend = "AC/Charging";
             break;
 	}
@@ -624,121 +612,109 @@ bool BtryMeter::getacpiinfo( void ){
     return true;
 }
 
+
 // present yes/no can change anytime !
 // by adding/removing a battery
-bool BtryMeter::battery_present(const std::string& filename) {
-    std::ifstream loadinfo( filename.c_str() );
+bool BtryMeter::battery_present(const std::string& filename) const {
 
-    std::string argname;
-    std::string argval;
+    std::ifstream loadinfo(filename);
 
-    while ( !loadinfo.eof() ) {
-
-	argname.clear(); argval.clear();
+    while (!loadinfo.eof()) {
+        std::string argname;
+        std::string argval;
 	loadinfo >> argname >> argval;
 
-	//XOSDEBUG("batt ?: a=\"%s\" v=\"%s\"\n",argname.c_str(),argval.c_str() );
-	if ( argname == "present:" )
-            if ( argval == "yes" )
-		return true;
+        logDebug << "batt ?: a=" << argname << " v=" << argval << std::endl;
+
+	if (argname == "present:" && argval == "yes")
+            return true;
     }
+
     logDebug << "batt " << filename << " not present" << std::endl;
     return false;
 }
 
+
 bool BtryMeter::parse_battery(const std::string& dirname) {
     // actually there are THREE files to check:
     // 'alarm', 'info' and 'state'
+    parse_alarm(dirname);
+    parse_info(dirname);
 
-    std::string filename;
-    std::ifstream loadinfo;
-    std::istringstream inp_strm;
-    std::string inp_line;
+    std::ifstream loadinfo(dirname + "/state");
 
-    std::string argname;
-    std::string argval;
-
-    filename = dirname + "/alarm";
-    loadinfo.open(filename.c_str() );
-    while ( loadinfo.good() ) {
-	std::getline(loadinfo,inp_line);
-	inp_strm.str(inp_line.c_str() );
-	argname.clear(); argval.clear();
-	inp_strm >> argname >> argval;
-	//XOSDEBUG("alarm: a=\"%s\" v=\"%s\"\n",
-        //    argname.c_str(),argval.c_str() );
-
-	if ( argname == "alarm:" ) {
-            battery.alarm = util::stoi(argval);
-            break;
-	}
-    }
-    loadinfo.close(); loadinfo.clear();
-
-    filename = dirname + "/info";
-    loadinfo.open(filename.c_str() );
-    while ( loadinfo.good() ) {
-
-	argname.clear();
-	std::getline(loadinfo,argname,':');
-
-	argval.clear();
-	std::getline(loadinfo,argval);
-
-	//XOSDEBUG("info: a=\"%s\" v=\"%s\"\n",argname.c_str(),argval.c_str() );
-
-	if ( argname == "design capacity" ) {
-            battery.design_capacity=util::stoi(argval);
-	}
-	if ( argname == "last full capacity" ) {
-            battery.last_full_capacity=util::stoi(argval);
-	}
-	if ( argname == "last full capacity" ) {
-            battery.last_full_capacity=util::stoi(argval);
-	}
-
-    }
-    loadinfo.close(); loadinfo.clear(); // clear eof-bit
-
-    filename = dirname + "/state";
-    loadinfo.open(filename.c_str() );
-    while ( loadinfo.good() ) {
-
+    while (loadinfo.good()) {
 	// argname can contain spaces
-	argname.clear();
-	std::getline(loadinfo,argname,':');
+        std::string argname, argval;
+	std::getline(loadinfo,argname, ':');
 
 	// argval should NOT contain blanks
-	inp_line.clear();
-	std::getline(loadinfo,inp_line);
-	inp_strm.clear(); inp_strm.seekg(0);
-	inp_strm.str(inp_line.c_str() );
+        std::string inp_line;
+	std::getline(loadinfo, inp_line);
+        std::istringstream inp_strm(inp_line);
 
-	argval.clear();
 	inp_strm >> argval; // this ignores leading spaces
 
-	//XOSDEBUG("state: a=\"%s\" v=\"%s\"\n",argname.c_str(),argval.c_str() );
+        logDebug << "state: a=" << argname << " v=" << argval << std::endl;
 
-	if ( argname == "charging state" ) {
-            if ( argval == "charged" )
+	if (argname == "charging state") {
+            if (argval == "charged")
                 battery.charging_state=0;
-            if ( argval == "discharging" )
+            else if (argval == "discharging")
                 battery.charging_state=-1;
-            if ( argval == "charging" )
+            else if (argval == "charging")
                 battery.charging_state=1;
 	}
-
-	if ( argname == "last full capacity" ) {
-            battery.last_full_capacity=util::stoi(argval);
-	}
-	if ( argname == "last full capacity" ) {
-            battery.last_full_capacity=util::stoi(argval);
-	}
-	if ( argname == "remaining capacity" ) {
-            battery.remaining_capacity=util::stoi(argval);
-	}
-
+	else if (argname == "last full capacity")
+            battery.last_full_capacity = std::stoi(argval);
+	else if (argname == "last full capacity")
+            battery.last_full_capacity = std::stoi(argval);
+	else if (argname == "remaining capacity")
+            battery.remaining_capacity = std::stoi(argval);
     }
 
     return true;
+}
+
+
+void BtryMeter::parse_alarm(const std::string &dirname) {
+
+    std::ifstream loadinfo(dirname + "/alarm");
+
+    while (loadinfo.good()) {
+        std::string inp_line;
+	std::getline(loadinfo, inp_line);
+	std::istringstream inp_strm(inp_line);
+        std::string argname, argval;
+
+	inp_strm >> argname >> argval;
+
+        logDebug << "alarm: a=" << argname << " v=" << argval << std::endl;
+
+	if (argname == "alarm:") {
+            battery.alarm = std::stoi(argval);
+            break;
+	}
+    }
+}
+
+
+void BtryMeter::parse_info(const std::string &dirname) {
+
+    std::ifstream loadinfo(dirname + "/info");
+
+    while (loadinfo.good()) {
+        std::string argname, argval;
+	std::getline(loadinfo,argname, ':');
+	std::getline(loadinfo,argval);
+
+        logDebug << "info: a=" << argname << " v=" << argval << std::endl;
+
+	if (argname == "design capacity")
+            battery.design_capacity = std::stoi(argval);
+	else if (argname == "last full capacity")
+            battery.last_full_capacity = std::stoi(argval);
+	else if (argname == "last full capacity")
+            battery.last_full_capacity = std::stoi(argval);
+    }
 }

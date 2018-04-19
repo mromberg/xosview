@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2016
+//  Copyright (c) 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -46,12 +46,9 @@ std::ostream &IntrStats::printOn(std::ostream &os) const {
 
 #if defined(XOSVIEW_OPENBSD)
 void IntrStats::scan(void) {
-    const int mib_nint[] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
-    static SysCtl nintr_sc(mib_nint, 3);
-    const int mib_intc[] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_CNT, 0 };
-    static SysCtl intrcnt_sc(mib_intc, 4);
-    //const int mib_intn[] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NAME, 0 };
-    //static SysCtl intrnam_sc(mib_intn, 4);
+    static SysCtl nintr_sc = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NUM };
+    static SysCtl intrcnt_sc = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_CNT, 0 };
+    //static SysCtl intrnam_sc = {CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_NAME, 0};
 
     int nintr = 0;
     if (!nintr_sc.get(nintr))
@@ -72,19 +69,18 @@ void IntrStats::scan(void) {
 
 #if defined(XOSVIEW_OPENBSD)
 std::map<size_t, uint64_t> IntrStats::readCounts(void) const {
-    const int mib_intc[] = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_CNT, 0 };
-    static SysCtl intrcnt_sc(mib_intc, 4);
+
+    static SysCtl intrcnt_sc = { CTL_KERN, KERN_INTRCNT, KERN_INTRCNT_CNT, 0 };
 
     std::map<size_t, uint64_t> rval;
 
-    std::map<size_t, size_t>::const_iterator it;
-    for (it = _irqMap.begin() ; it != _irqMap.end() ; ++it) {
-        intrcnt_sc.mib()[3] = it->second;
+    for (const auto &irq : _irqMap) {
+        intrcnt_sc.mib()[3] = irq.second;
         uint64_t count = 0;
         if (!intrcnt_sc.get(count))
             logFatal << "sysctl(" << intrcnt_sc.id() << ") failed."
                      << std::endl;
-        rval[it->first] = count;
+        rval[irq.first] = count;
     }
 
     return rval;
@@ -92,13 +88,13 @@ std::map<size_t, uint64_t> IntrStats::readCounts(void) const {
 #endif
 
 
-// Note: combine scan() and counts() using lambdas when C++11 support
-//       can be assumed to be widely supported.
 #if defined(XOSVIEW_NETBSD)
-void IntrStats::scan(void) {
-    const int Mib[] = { CTL_KERN, KERN_EVCNT, EVCNT_TYPE_INTR,
-                        KERN_EVCNT_COUNT_ANY };
-    static SysCtl evcnt_sc(Mib, sizeof(Mib) / sizeof(int));
+namespace /* {anonymous} */ {
+template <class F>
+static void ScanTable(const F &func) {
+    static SysCtl evcnt_sc = {
+        CTL_KERN, KERN_EVCNT, EVCNT_TYPE_INTR, KERN_EVCNT_COUNT_ANY
+    };
 
     size_t evsize = 0;
     if (!evcnt_sc.getsize(evsize))
@@ -108,71 +104,58 @@ void IntrStats::scan(void) {
     if (!evcnt_sc.get(buf))
         logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
 
-    const struct evcnt_sysctl *evs =
-        reinterpret_cast<const struct evcnt_sysctl *>(buf.data());
-    const struct evcnt_sysctl *evsend =
-        reinterpret_cast<const struct evcnt_sysctl *>(buf.data() + buf.size());
+    auto evs = reinterpret_cast<const struct evcnt_sysctl *>(buf.data());
+    auto evsend = reinterpret_cast<const struct evcnt_sysctl *>(buf.data()
+      + buf.size());
 
     size_t i = 0;
     while (evs->ev_len && evs < evsend &&
       reinterpret_cast<const struct evcnt_sysctl *>(
-          (char *)evs + evs->ev_len * 8) < evsend ) {
+          reinterpret_cast<const char *>(evs) + evs->ev_len * 8) < evsend ) {
 
-        // ------- lambda -----
-        // extract the "pin" number from the name.
-        std::string name(evs->ev_strings + evs->ev_grouplen + 1);
-        size_t nbr = 0;
-        std::string dummy;
+        // DO STUFF
+        func(evs, i);
+
+        evs = reinterpret_cast<const struct evcnt_sysctl *>(
+            reinterpret_cast<const char *>(evs) + 8 * evs->ev_len);
+
+        i++;
+    }
+}
+
+} // namespace {anonymous}
+#endif
+
+
+#if defined(XOSVIEW_NETBSD)
+void IntrStats::scan(void) {
+
+    auto lam = [this](const struct evcnt_sysctl *evs, int i) {
+        const std::string name(evs->ev_strings + evs->ev_grouplen + 1);
         std::istringstream is(name);
+        std::string dummy;
+        size_t nbr = 0;
         is >> dummy >> nbr;
 
         if (is)
             _irqMap[nbr] = i;
-        // ------- lambda -----
-
-        evs = reinterpret_cast<const struct evcnt_sysctl *>((const char *)evs
-          + 8 * evs->ev_len);
-        i++;
-    }
+    };
+    ScanTable(lam);
 }
 #endif
 
 
 #if defined(XOSVIEW_NETBSD)
 std::map<size_t, uint64_t> IntrStats::readCounts(void) const {
-    const int Mib[] = { CTL_KERN, KERN_EVCNT, EVCNT_TYPE_INTR,
-                        KERN_EVCNT_COUNT_ANY };
-    static SysCtl evcnt_sc(Mib, sizeof(Mib) / sizeof(int));
-
-    size_t evsize = 0;
-    if (!evcnt_sc.getsize(evsize))
-        logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
-
-    std::vector<char> buf(evsize, 0);
-    if (!evcnt_sc.get(buf))
-        logFatal << "sysctl(" << evcnt_sc.id() << ") failed." << std::endl;
-
-    const struct evcnt_sysctl *evs =
-        reinterpret_cast<const struct evcnt_sysctl *>(buf.data());
-    const struct evcnt_sysctl *evsend =
-        reinterpret_cast<const struct evcnt_sysctl *>(buf.data() + buf.size());
 
     std::map<size_t, uint64_t> rval;
-    size_t i = 0;
-    while (evs->ev_len && evs < evsend &&
-      reinterpret_cast<const struct evcnt_sysctl *>(
-          (char *)evs + evs->ev_len * 8) < evsend ) {
 
-        // ------- lambda -----
-        std::map<size_t, size_t>::const_iterator it = _irqMap.find(i);
+    auto lam = [this, &rval](const struct evcnt_sysctl *evs, int i) {
+        auto it = _irqMap.find(i);
         if (it != _irqMap.end())
             rval[i] = evs->ev_count;
-        // ------- lambda -----
-
-        evs = reinterpret_cast<const struct evcnt_sysctl *>((const char *)evs
-          + 8 * evs->ev_len);
-        i++;
-    }
+    };
+    ScanTable(lam);
 
     return rval;
 }
@@ -196,7 +179,7 @@ void IntrStats::scan(void) {
     while (offset < nbuf.size()) {
         // unused ints are named irqn where
         // 0<=n<=255, used ones have device name
-        std::string tstr(nbuf.data() + offset);
+        const std::string tstr(nbuf.data() + offset);
         if (tstr.substr(0, 3) != "irq")
             _irqMap[i] = i;
 

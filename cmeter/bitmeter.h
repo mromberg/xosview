@@ -16,12 +16,9 @@ public:
     BitMeter(const std::string &title="", const std::string &legend="",
       size_t numBits=1);
 
-    virtual ~BitMeter(void);
-
-    // virtual from Meter
-    virtual void draw(X11Graphics &g);
-    virtual void drawIfNeeded(X11Graphics &g);
-    virtual void checkResources(const ResDB &rdb);
+    virtual void draw(X11Graphics &g) override;
+    virtual void drawIfNeeded(X11Graphics &g) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
     std::vector<bool> _bits;

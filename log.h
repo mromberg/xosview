@@ -87,7 +87,6 @@
 #include "configxosv.h"
 
 #include <iostream>
-#include <cstdlib>
 #ifdef XOSVDEBUG
 #include <vector>
 #include <utility>
@@ -100,11 +99,10 @@ namespace util {
 // be filled first.  We can then flush it and exit.
 class Fatal {
 public:
-    void operator <<=(std::ostream &os) {
-        os.flush();
-        exit(1);
-    }
+    void operator <<=(std::ostream &os);
 };
+
+
 
 // manipulator/object "thing" to save the state
 // of a stream and restore it.  Inserted
@@ -113,7 +111,7 @@ public:
 // kludge would not be necessary.
 class ssave {
 public:
-    ssave(void) : _os(0), _state(0) {}
+    ssave(void) : _os(nullptr), _state(0) {}
     ~ssave(void) { if (_os) _os->copyfmt(_state); }
     void sets(std::ostream &os) const {
         // operator<<(ostream, ssave) explodes if ssave is not const.
@@ -127,10 +125,14 @@ private:
                        // to set the stream to default always
 };
 
-inline std::ostream &operator<<(std::ostream &os, const ssave &fs){
+
+
+inline std::ostream &operator<<(std::ostream &os, const ssave &fs) {
     fs.sets(os);
     return os;
 }
+
+
 
 #ifdef XOSVDEBUG
 class Log {
@@ -192,10 +194,47 @@ private:
 // condition : Expression that if false
 //             sinks message to logFatal
 // ------------------------------------
-#define logAssert(condition)                                \
-    if (XOSVLOGIT && (!(condition)))                        \
-        util::Fatal()<<= std::cerr << "ASSERT ("            \
-                     << #condition << ") false: "           \
-                     << __FILE__ << ":" << __LINE__ << ": "
+#define logAssert(condition)                                 \
+    if (XOSVLOGIT && (!(condition)))                         \
+        util::Fatal() <<= std::cerr << "ASSERT ("            \
+                      << #condition << ") false: "           \
+                      << __FILE__ << ":" << __LINE__ << ": "
+
+
+namespace util {
+
+//-----------------------------------------------------
+// RAII style wrapper around a callable.
+// Logs any exception thrown by f().
+// ex: ExcLog([](){ std::map<int,int>().at(1); });
+// > BUG: foo.cc:123: Uncaught exception: map::at
+//-----------------------------------------------------
+class ExcLog {
+public:
+    template <class Func>
+    ExcLog(const Func &f) : _threw(true) {
+        try {
+            f();
+            _threw = false;
+        }
+        catch (const std::exception &e) {
+            logBug << "Uncaught exception: " << e.what() << std::endl;
+        }
+        catch (...) {
+            logBug << "Uncaught unknown exception." << std::endl;
+        }
+    }
+
+    bool threw(void) const { return _threw; }
+
+    // terminate_handler that logs exceptions.  Use with std::set_terminate().
+    [[noreturn]] static void terminate_cb(void) noexcept;
+
+private:
+    bool _threw;
+};
+
+
+} // namespace util
 
 #endif

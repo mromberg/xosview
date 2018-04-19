@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2006, 2015
+//  Copyright (c) 1994, 1995, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -18,24 +18,21 @@
 
 
 
-std::pair<uint64_t, uint64_t> SwapMeter::getswapinfo( void ){
+std::pair<uint64_t, uint64_t> SwapMeter::getswapinfo(void) {
 
 #ifdef USESYSCALLS
     struct sysinfo sinfo;
-    int unit;
 
 #if defined(GNULIBC) || defined(__GLIBC__)
     sysinfo(&sinfo);
 #else
-    syscall( SYS_sysinfo, &sinfo );
+    syscall(SYS_sysinfo, &sinfo);
 #endif
 
-    unit = (sinfo.mem_unit ? sinfo.mem_unit : 1);
+    const int unit = sinfo.mem_unit ? sinfo.mem_unit : 1;
 
-    std::pair<uint64_t, uint64_t> rval(sinfo.totalswap * unit,
+    return std::pair<uint64_t, uint64_t>(sinfo.totalswap * unit,
       sinfo.freeswap * unit);
-
-    return rval;
 #else
     return PrcSwapMeter::getswapinfo();
 #endif

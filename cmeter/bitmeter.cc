@@ -14,38 +14,32 @@ BitMeter::BitMeter(const std::string &title, const std::string &legend,
 }
 
 
-BitMeter::~BitMeter( void ){
-}
-
-
-void BitMeter::setNumBits(size_t n){
+void BitMeter::setNumBits(size_t n) {
     _bits.resize(n);
-
-    for ( unsigned int i = 0 ; i < numBits() ; i++ )
-        _bits[i] = false;
+    std::fill(_bits.begin(), _bits.end(), false);
 }
 
 
-void BitMeter::checkResources(const ResDB &rdb){
+void BitMeter::checkResources(const ResDB &rdb) {
     Meter::checkResources(rdb);
     _dbits.borderColor(fgColor());
 }
 
 
-void BitMeter::drawIfNeeded(X11Graphics &g){
+void BitMeter::drawIfNeeded(X11Graphics &g) {
     _dbits.draw(_bits, g, x(), y(), width(), height());
 }
 
 
-void BitMeter::draw(X11Graphics &g){
+void BitMeter::draw(X11Graphics &g) {
     _dbits.draw(_bits, g, x(), y(), width(), height(), true);
     drawLabels(g);
 }
 
 
-void BitMeter::setBits(size_t startbit, unsigned char values){
+void BitMeter::setBits(size_t startbit, unsigned char values) {
     unsigned char mask = 1;
-    for (size_t i = startbit ; i < startbit + 8 ; i++){
+    for (size_t i = startbit ; i < startbit + 8 ; i++) {
         _bits[i] = values & mask;
         mask = mask << 1;
     }

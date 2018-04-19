@@ -5,25 +5,27 @@
 //  This file may be distributed under terms of the GPL
 //
 #include "xosview.h"
+#include "Xrm.h"
 #include "meter.h"
 #include "clopt.h"
 #include "MeterMaker.h"
-#include "strutil.h"
 #include "fsutil.h"
+#include "strutil.h"
 #include "x11font.h"
 #include "xsc.h"
 #include "scache.h"
 #include "x11graphics.h"
+#include "log.h"
 #ifdef HAVE_XFT
 #include "xftfont.h"
 #endif
 
-#include <algorithm>
+#include <array>
+#ifdef HAVE_THREAD_SLEEP
+#include <thread>  // for std::this_thread::sleep_for() only.
+#endif
 
-#include <sys/time.h>  //
-#include <sys/types.h> // All three for select()
-#include <unistd.h>    //
-
+#include <unistd.h>
 
 
 static const char * const VersionString = "xosview version: " PACKAGE_VERSION;
@@ -32,24 +34,17 @@ static const char * const NAME = "xosview@";
 
 
 XOSView::XOSView(void)
-    : XWin(), _xrm(0),
+    : XWin(),
       _caption(false), _legend(false), _usedlabels(false),
       _xoff(0), _yoff(0),
       _hmargin(0), _vmargin(0), _vspacing(0),
       _sleeptime(1), _usleeptime(1000),
-      _isvisible(false), _ispartiallyvisible(false), _sampleRate(10),
-      _doFullDraw(true), _xsc(0) {
+      _isvisible(false), _sampleRate(10),
+      _doFullDraw(true) {
 }
 
 
-XOSView::~XOSView( void ){
-    logDebug << "deleting " << _meters.size() << " meters..." << std::endl;
-    for (size_t i = 0 ; i < _meters.size() ; i++)
-        delete _meters[i];
-    _meters.resize(0);
-    delete _xrm;
-    delete _xsc;
-}
+XOSView::~XOSView(void) = default;
 
 
 void XOSView::run(int argc, const char * const *argv) {
@@ -82,7 +77,7 @@ void XOSView::loop(void) {
     drawv.reserve(_meters.size());
     bool firstPass = true;  // checkevent and draw all meters on first pass.
 
-    while( !done() ){
+    while(!done()) {
         // reset draw related vars.
         drawv.clear();
         _doFullDraw = false;
@@ -100,11 +95,11 @@ void XOSView::loop(void) {
             break; // XEvents or ICE/SM can set this.
         }
 
-        if (_isvisible){
-            for (size_t i = 0 ; i < _meters.size() ; i++) {
-                if (_meters[i]->requestevent() || firstPass) {
-                    _meters[i]->checkevent();
-                    drawv.push_back(_meters[i]);
+        if (_isvisible) {
+            for (const auto &meter : _meters) {
+                if (meter->requestevent() || firstPass) {
+                    meter->checkevent();
+                    drawv.push_back(meter.get());
                 }
             }
             if (firstPass)
@@ -129,7 +124,7 @@ void XOSView::createMeters(void) {
     MeterMaker mm;
     _meters = mm.makeMeters(resdb());
 
-    if (_meters.size() == 0)
+    if (_meters.empty())
         logProblem << "No meters were enabled." << std::endl;
 
     dolegends(); // set global properties based on our resource
@@ -137,120 +132,103 @@ void XOSView::createMeters(void) {
 
 
 //-----------------------------------------------------------------
-// ** Events
+// Events
 //-----------------------------------------------------------------
 
 void XOSView::setEvents(void) {
     XWin::setEvents();
 
-    addEvent( ConfigureNotify, this,
-      (EventCallBack)&XOSView::configureEvent );
-    addEvent( Expose, this, (EventCallBack)&XOSView::exposeEvent );
-    addEvent( KeyPress, this, (EventCallBack)&XOSView::keyPressEvent );
-    addEvent( VisibilityNotify, this,
-      (EventCallBack)&XOSView::visibilityEvent );
-    addEvent( UnmapNotify, this, (EventCallBack)&XOSView::unmapEvent );
+    // (the this->METHOD() thing is a gcc bug workaround.
+    addEvent(ConfigureNotify, [this](auto e){ this->configureEvent(e); });
+    addEvent(Expose, [this](auto e){ this->exposeEvent(e); });
+    addEvent(KeyPress, [this](auto e){ this->keyPressEvent(e); });
+    addEvent(VisibilityNotify, [this](auto e){ this->visibilityEvent(e); });
+    addEvent(UnmapNotify, [this](auto e){ this->unmapEvent(e); });
 }
 
 
-void XOSView::keyPressEvent( XKeyEvent &event ){
+void XOSView::keyPressEvent(const XEvent &e) {
     char c = 0;
     KeySym key;
 
-    XLookupString( &event, &c, 1, &key, NULL );
+    XLookupString(const_cast<XKeyEvent *>(&e.xkey), &c, 1, &key, nullptr);
 
-    if ( (c == 'q') || (c == 'Q') )
+    if ((c == 'q') || (c == 'Q'))
         done(true);
 }
 
 
-void XOSView::exposeEvent( XExposeEvent &event ) {
-    logDebug << "XOSView::exposeEvent(): count=" << event.count << std::endl;
+void XOSView::exposeEvent(const XEvent &e) {
+    logDebug << "XOSView::exposeEvent(): count=" << e.xexpose.count
+             << std::endl;
     _isvisible = true;
-    if ( event.count == 0 )
+    if (e.xexpose.count == 0)
         scheduleDraw(true);
 }
 
 
-void XOSView::configureEvent( XEvent &e ) {
-    unsigned int ew = e.xconfigure.width;
-    unsigned int eh = e.xconfigure.height;
+void XOSView::configureEvent(const XEvent &e) {
+
+    const unsigned int ew = e.xconfigure.width;
+    const unsigned int eh = e.xconfigure.height;
     logDebug << "configure event: " << ew << '/' << eh << std::endl;
+
     if ((g().width() != ew) || (g().height() != eh)) {
         logDebug << "XOSView::configureEvent(): set sizes..." << std::endl;
         g().resize(ew, eh);
         resize();
-        //draw();
     }
 }
 
 
-void XOSView::visibilityEvent( XVisibilityEvent &event ){
-    _ispartiallyvisible = false;
-    if (event.state == VisibilityPartiallyObscured){
-        _ispartiallyvisible = true;
-    }
+void XOSView::visibilityEvent(const XEvent &e) {
 
-    if (event.state == VisibilityFullyObscured){
-        _isvisible = false;
-    }
-    else {
-        _isvisible = true;
-    }
-    logDebug << "Got visibility event; " << _ispartiallyvisible
-             << " and " << _isvisible << std::endl;
+    _isvisible = e.xvisibility.state != VisibilityFullyObscured;
+
+    logDebug << "Got visibility event: " << _isvisible << std::endl;
 }
 
 
-void XOSView::unmapEvent( XUnmapEvent & ){
+void XOSView::unmapEvent(const XEvent &) {
     _isvisible = false;
 }
 
 
 void XOSView::drawIfNeeded(std::vector<Meter *> &mtrs) {
-    if (isAtLeastPartiallyVisible()) {
-        for (size_t i = 0 ; i < mtrs.size() ; i++)
-            mtrs[i]->drawIfNeeded(g());
-    }
+    if (_isvisible)
+        for (auto &mtr : mtrs)
+            mtr->drawIfNeeded(g());
 }
 
 
-void XOSView::draw ( void ) {
-    if (isAtLeastPartiallyVisible()) {
+void XOSView::draw(void) {
+    if (_isvisible) {
         logDebug << "Doing full clear/draw." << std::endl;
         g().clear();
 
-        for (size_t i = 0 ; i < _meters.size() ; i++)
-            _meters[i]->draw(g());
+        for (auto &meter : _meters)
+            meter->draw(g());
     }
     else {
-        logDebug << "********** FIXME ************\n";
-        logDebug << "DRAW CALLED WHILE NOT VISIBLE\n";
-        logDebug << "*****************************\n";
+        logDebug << "********** FIXME ************\n"
+                 << "DRAW CALLED WHILE NOT VISIBLE\n"
+                 << "*****************************" << std::endl;;
     }
-}
-
-
-void XOSView::usleep_via_select( unsigned long usec ){
-    struct timeval time;
-
-    time.tv_sec = (int)(usec / 1000000);
-    time.tv_usec = usec - time.tv_sec * 1000000;
-
-    select( 0, 0, 0, 0, &time );
 }
 
 
 void XOSView::slumber(void) const {
-#ifdef HAVE_USLEEP
-        /*  First, sleep for the proper integral number of seconds --
-         *  usleep only deals with times less than 1 sec.  */
-        if (_sleeptime)
-            sleep((unsigned int)_sleeptime);
-        if (_usleeptime)
-            usleep( (unsigned int)_usleeptime);
+#ifdef HAVE_THREAD_SLEEP
+    std::this_thread::sleep_for(std::chrono::microseconds(_usleeptime));
+#elif defined(HAVE_USLEEP)
+    //  First, sleep for the proper integral number of seconds --
+    //  usleep only deals with times less than 1 sec.
+    if (_sleeptime)
+        sleep(static_cast<unsigned int>(_sleeptime));
+    if (_usleeptime)
+        usleep(static_cast<unsigned int>(_usleeptime));
 #else
-        usleep_via_select ( usleeptime_ );
+#error "Missing all supported sleep methods."
 #endif
 }
 
@@ -258,12 +236,11 @@ void XOSView::slumber(void) const {
 void XOSView::openSession(const std::vector<std::string> &argv) {
     // Try to contact an X11R6 session manager...
     // sessionID (if it exists will be the old ID from the cmdline.
-    _xsc = new XSessionClient(argv, "--smid",
+    _xsc = std::make_unique<XSessionClient>(argv, "--smid",
       resdb().getResourceOrUseDefault("sessionID", ""));
-    if (_xsc->init()) {
+    if (_xsc->init())
         logDebug << "session ID: " << _xsc->sessionID()
                  << std::endl;
-    }
 
     // Set the sessionID in the resdb in case we have a new one.
     _xrm->putResource("." + instanceName() + "*sessionID",
@@ -272,7 +249,7 @@ void XOSView::openSession(const std::vector<std::string> &argv) {
 
 
 //-----------------------------------------------------------------
-// ** Configure
+// Configure
 //-----------------------------------------------------------------
 
 void XOSView::loadConfiguration(std::vector<std::string> &argv) {
@@ -298,7 +275,8 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
     //...............................................
     // X resources
     //...............................................
-    _xrm = new Xrm(PACKAGE_CLASSNAME, clopts.value("name", "xosview"));
+    _xrm = std::make_unique<Xrm>(PACKAGE_CLASSNAME,
+      clopts.value("name", "xosview"));
 
     //  Open the Display and load the X resources
     setDisplayName(clopts.value("displayName", ""));
@@ -306,46 +284,38 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
     _xrm->loadResources(display());
 
     // Now load any resouce files specified on the command line
-    const std::vector<std::string> &cfiles = clopts.values("configFile");
-    for (size_t i = 0 ; i < cfiles.size() ; i++)
-        if (!_xrm->loadResources(cfiles[i])) {
-            logProblem << "Could not read file: " << cfiles[i]
-                       << std::endl;
-        }
-
+    for (const auto &cfile : clopts.values("configFile"))
+        if (!_xrm->loadResources(cfile))
+            logProblem << "Could not read file: " << cfile << std::endl;
 
     // load all of the command line options into the
     // resouce database.  First the ones speced by -xrm
-    const std::vector<std::string> &xrml = clopts.values("xrm");
-    for (size_t i = 0 ; i < xrml.size() ; i++) {
-        _xrm->putResource(xrml[i]);
-        logDebug << "ADD: " << xrml[i] << std::endl;
+    for (const auto &xrm : clopts.values("xrm")) {
+        _xrm->putResource(xrm);
+        logDebug << "ADD: " << xrm << std::endl;
     }
     // And then those from -o
-    const std::vector<std::string> &ol = clopts.values("xosvxrm");
-    for (size_t i = 0 ; i < ol.size() ; i++) {
-        std::string res(instanceName() + "*" + ol[i]);
+    for (const auto &o : clopts.values("xosvxrm")) {
+        const std::string res(instanceName() + "*" + o);
         _xrm->putResource(res);
         logDebug << "ADD: " << res << std::endl;
     }
 
     // Now all the rest that are set by the user.
     // defaults dealt with by getResourceOrUseDefault()
-    const std::vector<util::CLOpt> &opts = clopts.opts();
-    for (size_t i = 0 ; i < opts.size() ; i++) {
-        if (opts[i].name() != "xrm"
-          && opts[i].name() != "xosvxrm"
-          && !opts[i].missing()) {
-            std::string rname("." + instanceName() + "*" +opts[i].name());
-            _xrm->putResource(rname, opts[i].value());
+    for (const auto &opt : clopts.opts()) {
+        if (!opt.missing() && opt.name() != "xrm"
+          && opt.name() != "xosvxrm") {
+            const std::string rname("." + instanceName() + "*" + opt.name());
+            _xrm->putResource(rname, opt.value());
             logDebug << "ADD: "
-                     << rname << " : " << opts[i].value()
+                     << rname << " : " << opt.value()
                      << std::endl;
 
 #if defined(HAVE_LIB_SM)
             // Take the old session ID opt out of argv.
-            if (opts[i].name() == "sessionID")
-                opts[i].eraseFrom(argv);
+            if (opt.name() == "sessionID")
+                opt.eraseFrom(argv);
 #endif
         }
     }
@@ -371,9 +341,9 @@ void XOSView::loadConfiguration(std::vector<std::string> &argv) {
 void XOSView::checkResources(void) {
     setSleepTime();
 
-    _hmargin  = util::stoi(resdb().getResource("horizontalMargin"));
-    _vmargin  = util::stoi(resdb().getResource("verticalMargin"));
-    _vspacing = util::stoi(resdb().getResource("verticalSpacing"));
+    _hmargin  = std::stoi(resdb().getResource("horizontalMargin"));
+    _vmargin  = std::stoi(resdb().getResource("verticalMargin"));
+    _vspacing = std::stoi(resdb().getResource("verticalSpacing"));
     _hmargin  = std::max(0, _hmargin);
     _vmargin  = std::max(0, _vmargin);
     _vspacing = std::max(1, _vspacing);
@@ -382,40 +352,32 @@ void XOSView::checkResources(void) {
     _yoff = 0;
     appName("xosview");
     _isvisible = false;
-    _ispartiallyvisible = false;
-
-    //  Set 'off' value.  This is not necessarily a default value --
-    //    the value in the defaultXResourceString is the default value.
-    _usedlabels = _legend = _caption = false;
 
     // use captions
-    if ( resdb().isResourceTrue("captions") )
-        _caption = true;
+    _caption = resdb().isResourceTrue("captions");
 
     // use labels
-    if ( resdb().isResourceTrue("labels") )
-        _legend = true;
+    _legend = resdb().isResourceTrue("labels");
 
     // use "free" labels
-    if ( resdb().isResourceTrue("usedlabels") )
-        _usedlabels = true;
+    _usedlabels = resdb().isResourceTrue("usedlabels");
 }
 
 
-void XOSView::checkMeterResources( void ){
-    for (size_t i = 0 ; i < _meters.size() ; i++)
-        _meters[i]->checkResources(resdb());
+void XOSView::checkMeterResources(void) {
+    for (auto &meter : _meters)
+        meter->checkResources(resdb());
 }
 
 
-int XOSView::newypos( void ){
+int XOSView::newypos(void) {
     return 15 + 25 * _meters.size();
 }
 
 
-int XOSView::findx(XOSVFont &font){
-    if ( _legend ){
-        if ( !_usedlabels )
+int XOSView::findx(XOSVFont &font) {
+    if (_legend) {
+        if (!_usedlabels)
             return font.maxCharWidth() * 24;
         else
             return font.maxCharWidth() * 24
@@ -445,14 +407,14 @@ void XOSView::figureSize(void) {
     if (!font)
         logFatal << "Could not load font: " << fname << std::endl;
 
-    if ( _legend ){
-        if ( !_usedlabels )
+    if (_legend) {
+        if (!_usedlabels)
             _xoff = font.textWidth("INT(9) ");
         else
             _xoff = font.textWidth("SWAP 99%%");
 
         // The +6/+3 accounts for slop in the font drawing/clearing code.
-        _yoff = _caption ? (font.textHeight() + 6): 6;
+        _yoff = _caption ? (font.textHeight() + 6) : 6;
     }
     else
         _yoff = 3;
@@ -462,9 +424,9 @@ void XOSView::figureSize(void) {
         firsttime = false;
         width(findx(font));
         height(findy());
-        logDebug << "number of meters: " << _meters.size() << std::endl;
-        logDebug << "text height: " << font.textHeight() << std::endl;
-        logDebug << "Width/Height set to: " << width() << '/' << height()
+        logDebug << "number of meters: " << _meters.size() << std::endl
+                 << "text height: " << font.textHeight() << std::endl
+                 << "Width/Height set to: " << width() << '/' << height()
                  << std::endl;
     }
 }
@@ -476,67 +438,60 @@ std::string XOSView::versionStr(void) const {
 
 
 void XOSView::setSleepTime(void) {
-    _sampleRate = util::stof(resdb().getResource("samplesPerSec"));
+    _sampleRate = std::stof(resdb().getResource("samplesPerSec"));
     if (!_sampleRate)
         _sampleRate = 10;
 
     _usleeptime = (unsigned long) (1000000/_sampleRate);
     if (_usleeptime >= 1000000) {
-        /*  The syscall usleep() only takes times less than 1 sec, so
-         *  split into a sleep time and a usleep time if needed.  */
+        //  The syscall usleep() only takes times less than 1 sec, so
+        //  split into a sleep time and a usleep time if needed.
         _sleeptime = _usleeptime / 1000000;
         _usleeptime = _usleeptime % 1000000;
     }
-    else {
+    else
         _sleeptime = 0;
-    }
 }
 
 
-void XOSView::dolegends( void ){
+void XOSView::dolegends(void) {
     logDebug << "caption, legend, usedlabels: "
              << _caption << "," << _legend << "," << _usedlabels
              << std::endl;
-    for (size_t i = 0 ; i < _meters.size() ; i++) {
-        _meters[i]->docaptions(_caption);
-        _meters[i]->dolegends(_legend);
-        _meters[i]->dousedlegends(_usedlabels);
+    for (auto &meter : _meters) {
+        meter->docaptions(_caption);
+        meter->dolegends(_legend);
+        meter->dousedlegends(_usedlabels);
     }
 }
 
 
-std::string XOSView::winname( void ){
-    char host[100];
+std::string XOSView::winname(void) {
+    std::array<char, 256> host;
     std::string hname("unknown");
-    if (gethostname( host, 99 )) {
+    if (gethostname(host.data(), host.size())) {
         logProblem << "gethostname() failed" << std::endl;
     }
     else {
-        host[99] = '\0';  //POSIX.1-2001 says truncated names not terminated
-        hname = std::string(host);
+        host.back() = '\0';  //POSIX.1-2001 says truncated names not terminated.
+        hname = std::string(host.data());
     }
-    std::string name = std::string(NAME) + hname;
-    return resdb().getResourceOrUseDefault("title", name);
+
+    return resdb().getResourceOrUseDefault("title", NAME + hname);
 }
 
 
 void  XOSView::resize(void) {
-    //-----------------------------------
     // Width
-    //-----------------------------------
-    unsigned int rightmargin = _hmargin;
-    unsigned int xpad = _xoff + rightmargin; // reserved for padding.
-    xpad = xpad > width() ? width() : xpad;  // clamp to width().
+    const unsigned int rightmargin = _hmargin;
+    const unsigned int xpad = std::min(_xoff + rightmargin, width());
+    const int newwidth = std::max(static_cast<int>(width() - xpad), 2);
 
-    int newwidth = width() - xpad;
-    newwidth = (newwidth >= 2) ? newwidth : 2; // clamp to 2.
-
-    //-----------------------------------
     // Height
-    //-----------------------------------
     const size_t nmeters = std::max(_meters.size(), (size_t)1);  // don't / by 0
     const int minmh = 2 + _yoff + _vspacing;
-    const int mh = std::max((int)((height() - _vmargin * 2) / nmeters), minmh);
+    const int mh = std::max(static_cast<int>((height() - _vmargin * 2)
+        / nmeters), minmh);
     const int newheight = std::max(mh - _yoff - _vspacing, 2);
 
     logDebug << "-- meter height --\n"
@@ -556,8 +511,22 @@ void  XOSView::resize(void) {
 }
 
 
-void XOSView::setCommandLineArgs(util::CLOpts &o) {
+ResDB &XOSView::resdb(void) const {
+    return *_xrm;
+}
 
+
+std::string XOSView::className(void) const {
+    return _xrm->className();
+}
+
+
+std::string XOSView::instanceName(void) const {
+    return _xrm->instanceName();
+}
+
+
+void XOSView::setCommandLineArgs(util::CLOpts &o) {
     //------------------------------------------------------
     // Define ALL of the command line options here.
     //

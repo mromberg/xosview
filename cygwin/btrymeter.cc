@@ -13,6 +13,7 @@ BtryMeter::BtryMeter(void)
     : FieldMeter(2, "BTRY", "CAP/USED") {
 }
 
+
 void BtryMeter::checkResources(const ResDB &rdb) {
     FieldMeter::checkResources(rdb);
 
@@ -27,7 +28,8 @@ void BtryMeter::checkResources(const ResDB &rdb) {
     setfieldcolor(1, rdb.getColor( "batteryUsedColor"));
 }
 
-void BtryMeter::checkevent(void){
+
+void BtryMeter::checkevent(void) {
 
     SYSTEM_POWER_STATUS sps;
     if (!GetSystemPowerStatus(&sps)) {
@@ -39,16 +41,16 @@ void BtryMeter::checkevent(void){
         return;
     }
 
-    int batlife = sps.BatteryLifePercent;
-    unsigned acstatus = sps.ACLineStatus; // 0/1 off/on line, 255 unknown
-    bool high = sps.BatteryFlag & 1;
-    bool low = sps.BatteryFlag & 2;
-    bool crit = sps.BatteryFlag & 4;
-    bool charging = sps.BatteryFlag & 8;
-    bool nobat = sps.BatteryFlag & 128;
-    bool unknownbat = sps.BatteryFlag & 255;
-    //bool batsaver = sps.SystemStatusFlag; if bat saver is on.
-    int batlifetime = sps.BatteryFullLifeTime; // -1 if on AC or unknown
+    const int batlife = sps.BatteryLifePercent;
+    const unsigned acstatus = sps.ACLineStatus; // 0/1 off/on line, 255 unknown
+    const bool high = sps.BatteryFlag & 1;
+    const bool low = sps.BatteryFlag & 2;
+    const bool crit = sps.BatteryFlag & 4;
+    const bool charging = sps.BatteryFlag & 8;
+    const bool nobat = sps.BatteryFlag & 128;
+    const bool unknownbat = sps.BatteryFlag & 255;
+    //const bool batsaver = sps.SystemStatusFlag; if bat saver is on.
+    const int batlifetime = sps.BatteryFullLifeTime; // -1 if on AC or unknown
     logDebug << "Batlife   : " << batlife << "%\n"
              << "AC status : " << acstatus << "\n"
              << "high      : " << high << "\n"
@@ -85,9 +87,8 @@ void BtryMeter::setLegend(bool crit, bool low, bool acstatus,
     else
         status = charging ? "charging" : "discharging";
 
-    std::string timeLeft = "unknown";
-    if (batlifetime != -1)
-        timeLeft = util::repr(batlifetime / 3600.0) + " hr";
+    const std::string timeLeft = (batlifetime == -1) ? "unknown"
+        : std::to_string(batlifetime / 3600.0) + " hr";
 
     legend(std::string("CAP ") + timeLeft + " (" + status + ")/USED");
 }

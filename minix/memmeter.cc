@@ -8,35 +8,30 @@
 #include "memmeter.h"
 
 #include <fstream>
-#include <sstream>
 #include <iomanip>
 
 
 static const char * const MEMFILENAME = "/proc/meminfo";
 
 
-MemMeter::MemMeter( void )
-    : FieldMeterGraph( 3, "MEM", "USED/CACHE/FREE" ) {
-}
-
-
-MemMeter::~MemMeter( void ){
+MemMeter::MemMeter(void)
+    : FieldMeterGraph(3, "MEM", "USED/CACHE/FREE") {
 }
 
 
 void MemMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getColor( "memUsedColor" ) );
-    setfieldcolor( 1, rdb.getColor( "memCacheColor" ) );
-    setfieldcolor( 2, rdb.getColor( "memFreeColor" ) );
+    setfieldcolor(0, rdb.getColor("memUsedColor"));
+    setfieldcolor(1, rdb.getColor("memCacheColor"));
+    setfieldcolor(2, rdb.getColor("memFreeColor"));
 }
 
 
-void MemMeter::checkevent( void ){
+void MemMeter::checkevent(void) {
     getmeminfo();
 
-    const float TOMEG = 1.0/1024.0/1024.0;
+    const float TOMEG = 1.0f / static_cast<float>(1ULL << 20);
     logDebug << std::setprecision(1) << std::fixed
              << "t " << _total * TOMEG << " "
              << "used "    << _fields[0] * TOMEG << " "
@@ -45,6 +40,7 @@ void MemMeter::checkevent( void ){
              << std::endl;
 }
 
+
 //---------------------------------------------------------------------
 // from 3.4.0/minix/fs/procfs/root.c
 //buf_printf("%u %lu %lu %lu %lu\n", vsi.vsi_pagesize, vsi.vsi_total,
@@ -52,8 +48,7 @@ void MemMeter::checkevent( void ){
 //
 // It is not clear to me what vsi_largest means.
 //---------------------------------------------------------------------
-
-void MemMeter::getmeminfo( void ){
+void MemMeter::getmeminfo(void) {
     std::ifstream ifs(MEMFILENAME);
 
     if (!ifs)
@@ -67,7 +62,7 @@ void MemMeter::getmeminfo( void ){
     if (!ifs)
         logFatal << "Could not parse: " << MEMFILENAME << std::endl;
 
-    unsigned long used = total - cached - free;
+    const unsigned long used = total - cached - free;
 
     logDebug << "psize: " << psize << ", "
              << "total: " << total << ", "
@@ -77,10 +72,10 @@ void MemMeter::getmeminfo( void ){
              << "sum: " << used + cached + free
              << std::endl;
 
-    _total = (float)total * (float)psize;
-    _fields[0] = (float)used * (float)psize;
-    _fields[1] = (float)cached * (float)psize;
-    _fields[2] = (float)free * (float)psize;
+    _total = static_cast<float>(total) * static_cast<float>(psize);
+    _fields[0] = static_cast<float>(used) * static_cast<float>(psize);
+    _fields[1] = static_cast<float>(cached) * static_cast<float>(psize);
+    _fields[2] = static_cast<float>(free) * static_cast<float>(psize);
 
     if (_total)
         FieldMeterDecay::setUsed(_total - _fields[2], _total);

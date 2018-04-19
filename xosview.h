@@ -8,15 +8,16 @@
 #define xosview_h
 
 #include "xwin.h"
-#include "Xrm.h"
 
-#include <string>
-
+#include <memory>
 
 class Meter;
 class XOSVFont;
 class XSessionClient;
+class ResDB;
+class Xrm;
 namespace util { class CLOpts; }
+
 
 
 class XOSView : private XWin {
@@ -27,28 +28,23 @@ public:
     void run(int argc, const char * const *argv);
 
 protected:
-    virtual ResDB &resdb(void) { return *_xrm; }
-    virtual void setEvents(void);
+    virtual ResDB &resdb(void) const override;
+    virtual void setEvents(void) override;
 
 private:
-    Xrm *_xrm;
+    std::unique_ptr<Xrm> _xrm;
     bool _caption, _legend, _usedlabels;
     int _xoff, _yoff;
     int _hmargin, _vmargin, _vspacing;
     unsigned long _sleeptime, _usleeptime;
     bool _isvisible;
-    bool _ispartiallyvisible;
-    std::vector<Meter *> _meters;
+    std::vector<std::unique_ptr<Meter>> _meters;
     double _sampleRate;   // samples/sec
     bool _doFullDraw;     // schedule full clear/draw
-    XSessionClient *_xsc; // session management client.
+    std::unique_ptr<XSessionClient> _xsc; // session management client.
 
-    double sampleRate(void) const { return _sampleRate; } // samples/sec max
     std::string winname(void);
-    int xoff(void) const { return _xoff; }
     int newypos(void);
-    bool isFullyVisible() const { return _isvisible && !_ispartiallyvisible; }
-    bool isAtLeastPartiallyVisible() const { return _isvisible; }
     std::string versionStr(void) const;
     void loop(void);
     void loadConfiguration(std::vector<std::string> &argv);
@@ -56,8 +52,8 @@ private:
     void setCommandLineArgs(util::CLOpts &o);
     void draw(void);
     void drawIfNeeded(std::vector<Meter *> &mtrs);
-    std::string className(void) { return _xrm->className(); }
-    std::string instanceName(void) { return _xrm->instanceName(); }
+    std::string className(void) const;
+    std::string instanceName(void) const;
     void resize(void);
     void checkMeterResources(void);
     void figureSize(void);
@@ -67,14 +63,13 @@ private:
     void checkResources(void);
     void createMeters(void);
     void dolegends(void);
-    void configureEvent(XEvent &event);
-    void exposeEvent(XExposeEvent &event);
-    void keyPressEvent(XKeyEvent &event);
-    void visibilityEvent(XVisibilityEvent &event);
-    void unmapEvent(XUnmapEvent &event);
     void scheduleDraw(bool full) { _doFullDraw = full; }
     void slumber(void) const;
-    void usleep_via_select(unsigned long usec);
+    void configureEvent(const XEvent &event);
+    void exposeEvent(const XEvent &event);
+    void keyPressEvent(const XEvent &event);
+    void visibilityEvent(const XEvent &event);
+    void unmapEvent(const XEvent &event);
 };
 
 #endif

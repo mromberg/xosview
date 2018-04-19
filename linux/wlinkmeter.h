@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 
-#ifndef WLINKMETER_H
-#define WLINKMETER_H
+#ifndef wlinkmeter_h
+#define wlinkmeter_h
 
 #include "fieldmetergraph.h"
 
@@ -12,11 +12,10 @@
 class WLinkMeter : public FieldMeterGraph {
 public:
     WLinkMeter(void);
-    virtual ~WLinkMeter(void);
 
-    virtual std::string resName( void ) const { return "wlink"; }
-    virtual void checkevent( void );
-    virtual void checkResources(const ResDB &rdb);
+    virtual std::string resName( void ) const override { return "wlink"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     unsigned long _goodColor;

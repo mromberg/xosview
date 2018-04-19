@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1994, 1995, 2002, 2006, 2015
+//  Copyright (c) 1994, 1995, 2002, 2006, 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -12,21 +12,18 @@
 
 
 
-
-
 NetMeter::NetMeter(void)
     : ComNetMeter(), _inIndex(0) {
 
-    std::vector<std::string> adapters = WinHardware::getAdapters();
+    const auto adapters = WinHardware::getAdapters();
     logDebug << "network adapters: " << adapters << std::endl;
 
-    add(adapters,
-      PerfQuery::expand("\\Network Interface(*)\\Bytes Received/sec"));
+    add(adapters, PerfQuery::expand(
+        "\\Network Interface(*)\\Bytes Received/sec"));
 
     _inIndex = _query.counters().size();
 
-    add(adapters,
-      PerfQuery::expand("\\Network Interface(*)\\Bytes Sent/sec"));
+    add(adapters, PerfQuery::expand("\\Network Interface(*)\\Bytes Sent/sec"));
 
     _query.query();
 }
@@ -45,30 +42,20 @@ std::pair<float, float> NetMeter::getRates(void) {
 }
 
 
-struct AlphaEqual {
-    bool operator()(const TCHAR &a, const TCHAR &b) {
-        if (!std::isalpha(a) && !std::isalpha(b))
-            return true;
-        if (a == b)
-            return true;
-        return false;
-    }
-};
-
-
 void NetMeter::add(const std::vector<std::string> &adapters,
   const std::vector<std::string> &plist) {
 
-    for (size_t i = 0 ; i < plist.size() ; i++) {
-        std::string iname = PerfQuery::parse(plist[i])["iname"];
-        for (size_t j = 0 ; j < adapters.size() ; j++)
-            if (std::equal(iname.begin(), iname.end(), adapters[j].begin(),
-                AlphaEqual())) {
-                if (!_query.add(plist[i])) {
-                    logProblem << "failed to add: " << plist[i] << std::endl;
+    for (const auto &p : plist) {
+        const std::string iname = PerfQuery::parse(p)["iname"];
+        for (const auto &adapter : adapters)
+            if (std::equal(iname.begin(), iname.end(), adapter.begin(),
+                [](TCHAR a, TCHAR b){ return (!std::isalpha(a)
+                      && !std::isalpha(b)) ? true : a == b; })) {
+                if (!_query.add(p)) {
+                    logProblem << "failed to add: " << p << std::endl;
                 }
                 else {
-                    logDebug << "Add: " << plist[i] << std::endl;
+                    logDebug << "Add: " << p << std::endl;
                 }
                 break;
             }

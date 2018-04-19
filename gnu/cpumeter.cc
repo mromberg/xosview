@@ -30,59 +30,55 @@
 //             (10) Time spent running a niced guest (virtual CPU for guest
 //                  operating systems under the control of the Linux kernel).
 
-
 #include "cpumeter.h"
 
 #include <fstream>
-#include <stdlib.h>
-#include <string>
-#include <sstream>
-#include <limits>
+
 
 static const char * const STATFILENAME = "/proc/stat";
+static const char * const LEGEND = "USR/NI/SYS/IO/I/SI/ST/GST/NGST/IDL";
 static const size_t MAX_PROCSTAT_LENGTH = 4096;
 
 
-CPUMeter::CPUMeter(unsigned int cpu)
-    : FieldMeterGraph( 10, util::toupper(CPUMeter::cpuStr(cpu)),
-      "USR/NI/SYS/IO/I/SI/ST/GST/NGST/IDL"), _cpu(cpu) {
-    _oldStats.resize(numfields());
-    _lineNum = findLine();
+CPUMeter::CPUMeter(size_t cpu)
+    : FieldMeterGraph(10, util::toupper(CPUMeter::cpuStr(cpu)), LEGEND),
+      _cpu(cpu), _lineNum(findLine()), _oldStats(numfields()) {
+    logDebug << "CPUMeter::CPUMeter(" << cpu << ")" << std::endl;
     getStats(_oldStats);
 }
 
-CPUMeter::~CPUMeter( void ){
-}
 
 void CPUMeter::checkResources(const ResDB &rdb){
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getColor( "cpuUserColor" ) );
-    setfieldcolor( 1, rdb.getColor( "cpuNiceColor" ) );
-    setfieldcolor( 2, rdb.getColor( "cpuSystemColor" ) );
-    setfieldcolor( 3, rdb.getColor( "cpuWaitColor" ) );
-    setfieldcolor( 4, rdb.getColor( "cpuInterruptColor" ) );
-    setfieldcolor( 5, rdb.getColor( "cpuSoftIntColor" ) );
-    setfieldcolor( 6, rdb.getColor( "cpuStolenColor" ) );
-    setfieldcolor( 7, rdb.getColor( "cpuGuestColor" ) );
-    setfieldcolor( 8, rdb.getColor( "cpuNiceGuestColor" ) );
-    setfieldcolor( 9, rdb.getColor( "cpuFreeColor" ) );
+    setfieldcolor(0, rdb.getColor( "cpuUserColor"));
+    setfieldcolor(1, rdb.getColor( "cpuNiceColor"));
+    setfieldcolor(2, rdb.getColor( "cpuSystemColor"));
+    setfieldcolor(3, rdb.getColor( "cpuWaitColor"));
+    setfieldcolor(4, rdb.getColor( "cpuInterruptColor"));
+    setfieldcolor(5, rdb.getColor( "cpuSoftIntColor"));
+    setfieldcolor(6, rdb.getColor( "cpuStolenColor"));
+    setfieldcolor(7, rdb.getColor( "cpuGuestColor"));
+    setfieldcolor(8, rdb.getColor( "cpuNiceGuestColor"));
+    setfieldcolor(9, rdb.getColor( "cpuFreeColor"));
 }
 
-void CPUMeter::checkevent( void ){
+
+void CPUMeter::checkevent(void) {
     getcputime();
 }
 
-void CPUMeter::getcputime( void ){
+
+void CPUMeter::getcputime(void) {
     std::vector<unsigned long long> cstats(numfields(), 0);
     getStats(cstats);
 
     _total = 0;
-    float used = 0;          // for setUsed
-    unsigned int sindex = 0; // index into cstats
-    float idle = 0;          // temp storage for idle field
+    size_t sindex = 0; // index into cstats
+    float used = 0;    // for setUsed
+    float idle = 0;    // temp storage for idle field
 
-    for (unsigned int i = 0 ; i < numfields() - 1; i++) {
+    for (size_t i = 0 ; i + 1 < numfields() ; i++) {
         if (sindex == 3) { // idle field
             idle = cstats[sindex] - _oldStats[sindex]; // save for later
             _total += idle;
@@ -103,17 +99,17 @@ void CPUMeter::getcputime( void ){
     if (_total == 0.0)
         _total = 1.0;
     used = used / _total;
-    for (size_t i = 0 ; i < numfields() ; i++)
-        _fields[i] = _fields[i] / _total;
+    for (auto &field : _fields)
+        field /= _total;
     _total = 1.0;
 
     setUsed(used, _total);
 }
 
-size_t CPUMeter::findLine(void) {
-    std::ifstream stats(STATFILENAME);
 
-    if ( !stats )
+size_t CPUMeter::findLine(void) const {
+    std::ifstream stats(STATFILENAME);
+    if (!stats)
         logFatal << "Can not open file : " << STATFILENAME << std::endl;
 
     std::string cpuID(CPUMeter::cpuStr(_cpu));
@@ -135,19 +131,20 @@ size_t CPUMeter::findLine(void) {
     return 0;
 }
 
+
 // Checks for the SMP kernel patch by forissier@isia.cma.fr.
 // http://www-isia.cma.fr/~forissie/smp_kernel_patch/
 // If it finds that this patch has been applied to the current kernel
 // then returns the number of cpus that are on this machine.
-size_t CPUMeter::countCPUs(void){
+size_t CPUMeter::countCPUs(void) {
     static size_t cpuCount = 0;
     static bool first = true;
 
     if (first) {
         first = false;
-        std::ifstream stats( STATFILENAME );
+        std::ifstream stats(STATFILENAME);
 
-        if ( !stats )
+        if (!stats)
             logFatal << "Can not open file : " << STATFILENAME << std::endl;
 
         std::string buf;
@@ -159,19 +156,21 @@ size_t CPUMeter::countCPUs(void){
     return cpuCount;
 }
 
-std::string CPUMeter::cpuStr(size_t num){
+
+std::string CPUMeter::cpuStr(size_t num) {
     if (num == 0)  // The cumulative meter
         return "cpu";
-    return std::string("cpu") + util::repr(num-1);
+    return std::string("cpu") + util::repr(num - 1);
 }
 
-void CPUMeter::getStats(std::vector<unsigned long long> &v) const {
-    std::ifstream stats( STATFILENAME );
-    if ( !stats )
+
+void CPUMeter::getStats(std::vector<unsigned long long> &statv) const {
+    std::ifstream stats(STATFILENAME);
+    if (!stats)
         logFatal << "Can not open file : " << STATFILENAME << std::endl;
 
     // read until we are at the right line.
-    for (unsigned int i = 0 ; i < _lineNum ; i++) {
+    for (size_t i = 0 ; i < _lineNum ; i++) {
         if (stats.eof())
             break;
         stats.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -181,8 +180,8 @@ void CPUMeter::getStats(std::vector<unsigned long long> &v) const {
     std::string tmp; // The cpuID
     stats >> tmp;
 
-    for (size_t i = 0 ; i < v.size() ; i++) {
-        stats >> v[i];
+    for (size_t i = 0 ; i < statv.size() ; i++) {
+        stats >> statv[i];
         if (stats.fail()) {
             // kernels up to 2.5.41 (not including) have usr/ni/sys/idle
             // Die if we don't have all of these

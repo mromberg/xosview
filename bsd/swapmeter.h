@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016
+//  Copyright (c) 1995, 1996, 1997-2002, 2015, 2016, 2018
 //  by Brian Grayson (bgrayson@netbsd.org)
 //
 //  This file was written by Brian Grayson for the NetBSD and xosview
@@ -11,8 +11,8 @@
 //    authors for a copy.
 //
 
-#ifndef SWAPMETER_H
-#define SWAPMETER_H
+#ifndef swapmeter_h
+#define swapmeter_h
 
 #include "cswapmeter.h"
 
@@ -20,13 +20,13 @@
 
 class SwapMeter : public ComSwapMeter {
 public:
-    SwapMeter( void );
+    SwapMeter(void);
 
 protected:
-    virtual std::pair<uint64_t, uint64_t> getswapinfo( void );
+    virtual std::pair<uint64_t, uint64_t> getswapinfo(void) override;
 
 private:
-    static void getSwapInfo(uint64_t &total, uint64_t &used);
+    void getSwapInfo(uint64_t &total, uint64_t &used) const;
 };
 
 

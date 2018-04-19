@@ -1,12 +1,10 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
 #include "fsmeter.h"
-
-#include <cerrno>
 
 #include <sys/types.h>
 #include <sys/statvfs.h>
@@ -30,9 +28,9 @@ bool FSMeter::isMount(const std::string &path) {
     struct statfs *mntbufp;
 #endif
 
-    int n = getmntinfo(&mntbufp, XOS_NO_WAIT);
+    const int n = getmntinfo(&mntbufp, XOS_NO_WAIT);
     if (n == 0) {
-        logProblem << "getmntinfo() failed: " << util::strerror(errno)
+        logProblem << "getmntinfo() failed: " << util::strerror()
                    << std::endl;
         return false;
     }
@@ -58,9 +56,9 @@ std::vector<std::string> FSMeterFactory::getAuto(void) {
     struct statfs *mntbufp;
 #endif
 
-    int n = getmntinfo(&mntbufp, XOS_NO_WAIT);
+    const int n = getmntinfo(&mntbufp, XOS_NO_WAIT);
     if (n == 0) {
-        logProblem << "getmntinfo() failed: " << util::strerror(errno)
+        logProblem << "getmntinfo() failed: " << util::strerror()
                    << std::endl;
         return rval;
     }
@@ -68,7 +66,7 @@ std::vector<std::string> FSMeterFactory::getAuto(void) {
     for (int i = 0 ; i < n ; i++) {
         if (mntbufp[i].f_mntfromname[0] == '/'
           && mntbufp[i].f_mntonname[0] == '/')
-            rval.push_back(mntbufp[i].f_mntonname);
+            rval.emplace_back(mntbufp[i].f_mntonname);
 
         logDebug << mntbufp[i].f_mntfromname << " -> "
                  << mntbufp[i].f_mntonname << std::endl;

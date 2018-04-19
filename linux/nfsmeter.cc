@@ -8,83 +8,59 @@
 //  This file may be distributed under terms of the GPL
 //
 
-
 #include "nfsmeter.h"
 
 #include <fstream>
-#include <cerrno>
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
-
-#include <unistd.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#if defined(GNULIBC) || defined(__GLIBC__)
-#include <net/if.h>
-#else
-#include <linux/if.h>
-#endif
-#include <netinet/in.h>
 
 
 static const char * const NFSSVCSTAT = "/proc/net/rpc/nfsd";
 static const char * const NFSCLTSTAT = "/proc/net/rpc/nfs";
 
 
-NFSMeter::NFSMeter(const std::string &name, int nfields,
+NFSMeter::NFSMeter(const std::string &name, size_t nfields,
   const std::string &fields, const std::string &statfile)
-    : FieldMeterGraph( nfields, name, fields ),
+    : FieldMeterGraph(nfields, name, fields),
       _statname(name), _statfile(statfile) {
 }
 
 
-NFSMeter::~NFSMeter( void ){
-}
-
-
-void NFSMeter::checkResources(const ResDB &rdb){
+void NFSMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 }
 
+
 NFSDStats::NFSDStats(void)
-    : NFSMeter("NFSD", 4, "BAD/UDP/TCP/IDLE", NFSSVCSTAT ){
-    starttimer();
+    : NFSMeter("NFSD", 4, "BAD/UDP/TCP/IDLE", NFSSVCSTAT) {
+    timerStart();
 }
 
 
-NFSDStats::~NFSDStats( void ) {
-}
-
-
-void NFSDStats::checkResources(const ResDB &rdb){
+void NFSDStats::checkResources(const ResDB &rdb) {
     NFSMeter::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getColor( "NFSDStatBadCallsColor" ) );
-    setfieldcolor( 1, rdb.getColor( "NFSDStatUDPColor" ) );
-    setfieldcolor( 2, rdb.getColor( "NFSDStatTCPColor" ) );
-    setfieldcolor( 3, rdb.getColor( "NFSDStatIdleColor" ) );
+    setfieldcolor(0, rdb.getColor( "NFSDStatBadCallsColor"));
+    setfieldcolor(1, rdb.getColor( "NFSDStatUDPColor"));
+    setfieldcolor(2, rdb.getColor( "NFSDStatTCPColor"));
+    setfieldcolor(3, rdb.getColor( "NFSDStatIdleColor"));
 }
 
 
 void NFSDStats::checkevent(void) {
-    std::string buf, name;
-    unsigned long netcnt, netudpcnt, nettcpcnt, nettcpconn;
-    unsigned long calls, badcalls;
-    int found;
 
-    std::ifstream ifs(_statfile.c_str());
+    std::ifstream ifs(_statfile);
 
-    if (!ifs) {
+    if (!ifs)
         return;
-    }
 
-    _fields[0] = _fields[1] = _fields[2] = 0;  // network activity
-    stoptimer();
+    std::fill(_fields.begin(), _fields.end(), 0); // network activity
+    timerStop();
 
-    name[0] = '\0';
-    found = 0;
+    std::string name;
+    unsigned long netcnt = 0, netudpcnt = 0, nettcpcnt = 0, nettcpconn = 0;
+    unsigned long calls = 0, badcalls = 0;
+    size_t found = 0;
     while (!ifs.eof() && found != 2) {
+        std::string buf;
         std::getline(ifs, buf);
         if (buf.substr(0, 3) == "net") {
             std::istringstream iss(buf);
@@ -98,15 +74,13 @@ void NFSDStats::checkevent(void) {
         }
     }
 
-    float t = 1000000.0 / usecs();
-
+    float t = 1000000.0 / etimeUsecs();
     if (t < 0)
         t = 0.1;
 
     _maxpackets = std::max(netcnt, calls) - _lastNetCnt;
-    if (_maxpackets == 0) {
+    if (_maxpackets == 0)
         _maxpackets = netcnt;
-    }
     else {
         _fields[0] = (badcalls - _lastBad) * t;
         _fields[1] = (netudpcnt - _lastUdp) * t;
@@ -124,7 +98,7 @@ void NFSDStats::checkevent(void) {
     if (_total)
         setUsed(_fields[0] + _fields[1] + _fields[2], _total);
 
-    starttimer();
+    timerStart();
 
     _lastNetCnt = std::max(netcnt, calls);
     _lastTcp = nettcpcnt;
@@ -134,40 +108,34 @@ void NFSDStats::checkevent(void) {
 
 
 NFSStats::NFSStats(void)
-    : NFSMeter("NFS", 4, "RETRY/AUTH/CALL/IDLE", NFSCLTSTAT ){
-    starttimer();
+    : NFSMeter("NFS", 4, "RETRY/AUTH/CALL/IDLE", NFSCLTSTAT) {
+    timerStart();
 }
 
 
-NFSStats::~NFSStats( void ) {
-}
-
-
-void NFSStats::checkResources(const ResDB &rdb){
+void NFSStats::checkResources(const ResDB &rdb) {
     NFSMeter::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getColor( "NFSStatReTransColor" ) );
-    setfieldcolor( 1, rdb.getColor( "NFSStatAuthRefrshColor" ) );
-    setfieldcolor( 2, rdb.getColor( "NFSStatCallsColor" ) );
-    setfieldcolor( 3, rdb.getColor( "NFSStatIdleColor" ) );
+    setfieldcolor( 0, rdb.getColor("NFSStatReTransColor"));
+    setfieldcolor( 1, rdb.getColor("NFSStatAuthRefrshColor"));
+    setfieldcolor( 2, rdb.getColor("NFSStatCallsColor"));
+    setfieldcolor( 3, rdb.getColor("NFSStatIdleColor"));
 }
 
 
 void NFSStats::checkevent(void) {
-    std::string buf, name;
-    unsigned long calls = 0, retrns = 0, authrefresh = 0, _maxpackets = 0;
 
-    std::ifstream ifs(_statfile.c_str());
-
-    if (!ifs) {
+    std::ifstream ifs(_statfile);
+    if (!ifs)
         return;
-    }
 
-    _fields[0] = _fields[1] = _fields[2] = 0;
-    stoptimer();
+    std::fill(_fields.begin(), _fields.end(), 0);
+    timerStop();
 
-    name[0] = '\0';
+    std::string name;
+    unsigned long calls = 0, retrns = 0, authrefresh = 0, _maxpackets = 0;
     while (!ifs.eof()) {
+        std::string buf;
         std::getline(ifs, buf);
         if (buf.substr(0, 3) != "rpc")
             continue;
@@ -176,15 +144,13 @@ void NFSStats::checkevent(void) {
         break;
     }
 
-    float t = 1000000.0 / usecs();
-
+    float t = 1000000.0 / etimeUsecs();
     if (t < 0)
         t = 0.1;
 
     _maxpackets = calls - _lastcalls;
-    if (_maxpackets == 0) {
+    if (_maxpackets == 0)
         _maxpackets = calls;
-    }
     else {
         _fields[2] = (calls - _lastcalls) * t;
         _fields[1] = (authrefresh - _lastauthrefresh) * t;
@@ -202,7 +168,7 @@ void NFSStats::checkevent(void) {
     if (_total)
         setUsed(_fields[0] + _fields[1] + _fields[2], _total);
 
-    starttimer();
+    timerStart();
 
     _lastcalls = calls;
     _lastretrns = retrns;

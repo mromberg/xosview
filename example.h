@@ -20,9 +20,9 @@ public:
 
     // virtual methods called by our parents
     // when we should take action (more below)
-    virtual std::string resName( void ) const;
-    virtual void checkevent( void );
-    virtual void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override;
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     // Everything specific to our meter goes here
@@ -73,10 +73,12 @@ inline ExampleMeter::ExampleMeter(void)
     readWarpCoreTemp();
 }
 
+
 // Usual dtor stuff.  If you dynamically allocated
 // things destroy them here.  Etc...
 inline ExampleMeter::~ExampleMeter(void) {
 }
+
 
 // Called when the rest of the system is ready
 // for you to check any resources.  It is now
@@ -105,9 +107,9 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
     // at the parent meter class for more details.
 
     // First our own private values.
-    _testMaximum = util::stoi(rdb.getResourceOrUseDefault(
+    _testMaximum = std::stoi(rdb.getResourceOrUseDefault(
           "exampleTestMax", "500"));
-    _designMaximum = util::stoi(rdb.getResourceOrUseDefault(
+    _designMaximum = std::stoi(rdb.getResourceOrUseDefault(
           "exampleDesignMax", "550"));
 
     // set the color with a string (requires a lookup)
@@ -120,6 +122,7 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
     _alarmColor = rdb.getColor("warpAlarmColor", "red");
     setfieldcolor(0, _normColor);
 }
+
 
 // Called when we have scheduled our data collection
 // time.  The xosview clock ticks 10 times /sec and
@@ -161,11 +164,13 @@ inline void ExampleMeter::checkevent( void ) {
     setUsed(percentVal, _total);
 }
 
+
 // What is your name?  This is the prefix for resource names
 // that will be used by the parent classes.  For example "wcorePriority"
 inline std::string ExampleMeter::resName( void ) const {
     return "wcore";
 }
+
 
 inline void ExampleMeter::readWarpCoreTemp(void) {
     // Here is where you would collect real data

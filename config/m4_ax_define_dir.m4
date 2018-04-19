@@ -18,7 +18,7 @@ dnl @author Alexandre Oliva
 dnl @version 2006-10-13
 dnl @license AllPermissive
 
-AC_DEFUN([AC_DEFINE_DIR], [
+AC_DEFUN([AX_DEFINE_DIR], [
   prefix_NONE=
   exec_prefix_NONE=
   test "x$prefix" = xNONE && prefix_NONE=yes && prefix=$ac_default_prefix

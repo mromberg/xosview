@@ -24,11 +24,10 @@
 class MemMeter : public FieldMeterGraph {
 public:
     MemMeter(void);
-    ~MemMeter(void);
 
-    virtual std::string resName(void) const { return "mem"; }
-    void checkevent( void );
-    void checkResources(const ResDB &rdb);
+    virtual std::string resName(void) const override { return "mem"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     std::vector<uint64_t> _meminfo;
@@ -36,7 +35,7 @@ private:
     void getmeminfo(void);
 
     // layout: { active, inactive, wired, cached, free }
-    static void getMemStats(std::vector<uint64_t> &meminfo);
+    void getMemStats(std::vector<uint64_t> &meminfo) const;
 };
 
 

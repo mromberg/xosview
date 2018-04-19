@@ -25,14 +25,14 @@ public:
     PageMeter(void);
 
 protected:
-    virtual std::pair<float, float> getPageRate(void);
+    virtual std::pair<float, float> getPageRate(void) override;
 
 private:
     const size_t _psize;
     std::vector<uint64_t> _previnfo;
 
     // layout: { pages_in, pages_out }
-    static void getPageStats(std::vector<uint64_t> &pageinfo);
+    void getPageStats(std::vector<uint64_t> &pageinfo) const;
 };
 
 

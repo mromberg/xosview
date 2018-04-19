@@ -5,7 +5,6 @@
 #include "wlinkmeter.h"
 
 #include <fstream>
-#include <limits>
 
 
 static const char * const WIRELESSFNAME = "/proc/net/wireless";
@@ -21,36 +20,27 @@ WLinkMeter::WLinkMeter(void)
 }
 
 
-WLinkMeter::~WLinkMeter(void) {
-}
-
-
 void WLinkMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
     _goodColor = rdb.getColor("wlinkGoodColor");
     _poorColor = rdb.getColor("wlinkPoorColor");
-    _poorValue = util::stoi(rdb.getResource("wlinkPoorValue"));
+    _poorValue = std::stoi(rdb.getResource("wlinkPoorValue"));
     setfieldcolor(0, _goodColor);
     setfieldcolor(1, rdb.getColor("wlinkBackground"));
 }
 
 
-void WLinkMeter::checkevent( void ) {
+void WLinkMeter::checkevent(void) {
 
     int link = getLink();
 
-    if (link < 0)
-        link = 0;
-    if (link > 70)
-        link = 70;
+    // clamp the range.
+    link = std::max(link, 0);
+    link = std::min(link, 70);
 
-    if (link < _poorValue)
-        setfieldcolor(0, _poorColor);
-    else
-        setfieldcolor(0, _goodColor);
-
+    setfieldcolor(0, (link < _poorValue) ? _poorColor : _goodColor);
     _total = 70.0;
     _fields[0] = link;
     _fields[1] = _total - link;
@@ -68,15 +58,13 @@ int WLinkMeter::getLink(void) const {
     ifs.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
     std::string buf;
-    int rval;
     ifs >> buf;
-
     if (!ifs)     // again it may just not be there
         return -1;
 
     // ok we got a device line.  log any errors beyone this point.
+    int rval;
     ifs >> buf >> rval;;
-
     if (!ifs)
         logFatal << "could not parse: " << WIRELESSFNAME << std::endl;
 

@@ -22,7 +22,7 @@ public:
     IrqRateMeter(void);
 
 protected:
-    virtual float getIrqRate(void);
+    virtual float getIrqRate(void) override;
 
 private:
     std::map<size_t, uint64_t> _lastirqs;

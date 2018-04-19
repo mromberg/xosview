@@ -9,25 +9,21 @@
 
 
 
-ComSwapMeter::ComSwapMeter( void )
-: FieldMeterGraph( 2, "SWAP", "USED/FREE" ){
+ComSwapMeter::ComSwapMeter(void)
+    : FieldMeterGraph(2, "SWAP", "USED/FREE") {
 }
 
 
-ComSwapMeter::~ComSwapMeter( void ){
-}
-
-
-void ComSwapMeter::checkResources(const ResDB &rdb){
+void ComSwapMeter::checkResources(const ResDB &rdb) {
     FieldMeterGraph::checkResources(rdb);
 
-    setfieldcolor( 0, rdb.getColor( "swapUsedColor" ) );
-    setfieldcolor( 1, rdb.getColor( "swapFreeColor" ) );
+    setfieldcolor(0, rdb.getColor( "swapUsedColor"));
+    setfieldcolor(1, rdb.getColor( "swapFreeColor"));
 }
 
 
-void ComSwapMeter::checkevent( void ){
-    std::pair<uint64_t, uint64_t> swinfo = getswapinfo();
+void ComSwapMeter::checkevent(void) {
+    const auto swinfo = getswapinfo();
     _total = swinfo.first;
     _fields[0] = _total - swinfo.second;
     _fields[1] = swinfo.second;

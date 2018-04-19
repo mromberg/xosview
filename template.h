@@ -12,9 +12,9 @@ public:
     ExampleMeter(void);
     virtual ~ExampleMeter(void);
 
-    virtual std::string resName( void ) const { return "wcore"; }
-    virtual void checkevent( void );
-    virtual void checkResources(const ResDB &rdb);
+    virtual std::string resName( void ) const override { return "wcore"; }
+    virtual void checkevent(void) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 private:
     unsigned long long _warpCoreTemp;   // current value
@@ -45,9 +45,9 @@ inline void ExampleMeter::checkResources(const ResDB &rdb) {
 
     FieldMeterGraph::checkResources(rdb);
 
-    _testMaximum = util::stoi(rdb.getResourceOrUseDefault(
+    _testMaximum = std::stoi(rdb.getResourceOrUseDefault(
           "exampleTestMax", "500"));
-    _designMaximum = util::stoi(rdb.getResourceOrUseDefault(
+    _designMaximum = std::stoi(rdb.getResourceOrUseDefault(
           "exampleDesignMax", "550"));
 
     setfieldcolor(1, rdb.getColor("warpBG", "blue"));

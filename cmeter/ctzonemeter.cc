@@ -7,14 +7,10 @@
 
 
 ComTZoneMeter::ComTZoneMeter(size_t zoneNum)
-    : FieldMeterGraph(2, "TZ" + util::repr(zoneNum),
+    : FieldMeterGraph(2, "TZ" + std::to_string(zoneNum),
       "DEG C/USED"), _peak(100.0),
       _hotTrip(70), _critTrip(84),
       _normColor(0), _hotColor(0), _critColor(0) {
-}
-
-
-ComTZoneMeter::~ComTZoneMeter(void) {
 }
 
 
@@ -30,16 +26,16 @@ void ComTZoneMeter::checkResources(const ResDB &rdb) {
     setfieldcolor(0, _normColor);
     setfieldcolor(1, rdb.getColor("tzoneBackground"));
 
-    _peak = util::stof(rdb.getResource("tzonePeak"));
-    _hotTrip = util::stof(rdb.getResource("tzoneHotTrip"));
-    _critTrip = util::stof(rdb.getResource("tzoneCritTrip"));
+    _peak = std::stof(rdb.getResource("tzonePeak"));
+    _hotTrip = std::stof(rdb.getResource("tzoneHotTrip"));
+    _critTrip = std::stof(rdb.getResource("tzoneCritTrip"));
 }
 
 
-void ComTZoneMeter::checkevent( void ) {
+void ComTZoneMeter::checkevent(void) {
 
     // Read the temperature.
-    float ctemp = getTemp();
+    const float ctemp = getTemp();
 
     // set the fields
     _total = _peak;

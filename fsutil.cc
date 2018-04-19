@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015, 2016
+//  Copyright (c) 2015, 2016, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -10,12 +10,10 @@
 #include "log.h"
 
 #include <fstream>
-#include <sstream>
-#include <cerrno>
 
-#include <sys/stat.h>
 #include <dirent.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <sys/statvfs.h>
 
 
@@ -30,23 +28,26 @@ std::vector<std::string> fs::listdir(const std::string &path) {
                << util::strerror(errno) << std::endl;
     }
     else {
-        struct dirent *de = 0;
+        struct dirent *de = nullptr;
         errno = 0; // EOF readdir() does not change and returns NULL too
-        while ((de = readdir(d)) != NULL) {
-            std::string name(de->d_name);
+        while ((de = readdir(d)) != nullptr) {
+            const std::string name(de->d_name);
             if (name != "." && name != "..")
                 rval.push_back(name);
             errno = 0;
         }
         if (errno != 0) {
             logBug << "readdir(" << path << ") failed: "
-                   << util::strerror(errno) << std::endl;
+                   << util::strerror() << std::endl;
         }
-        closedir(d);
+        if (closedir(d) != 0)
+            logBug << "closedir(" << path << ") failed: "
+                   << util::strerror() << std::endl;
     }
 
     return rval;
 }
+
 
 bool fs::isdir(const std::string &path) {
     struct stat sb;
@@ -56,6 +57,7 @@ bool fs::isdir(const std::string &path) {
     return false;
 }
 
+
 bool fs::isfile(const std::string &path) {
     struct stat sb;
     if (stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode))
@@ -63,6 +65,7 @@ bool fs::isfile(const std::string &path) {
 
     return false;
 }
+
 
 bool fs::isexec(const std::string &path) {
     struct stat sb;
@@ -76,8 +79,9 @@ bool fs::isexec(const std::string &path) {
     return false;
 }
 
+
 bool fs::readAll(const std::string &file, std::string &str) {
-    str = "";
+    str.clear();
     std::ifstream ifs(file.c_str());
     if (!ifs)
         return false;
@@ -122,27 +126,25 @@ std::string fs::cwd(void) {
     return result;
 }
 
+
 std::string fs::normpath(const std::string &path) {
-    std::vector<std::string> comps = util::split(path, "/");
+    auto comps = util::split(path, "/");
 
     // remember if this is an absolute path for later
     // when we collapase ".."
-    bool isabspath = false;
-    if (comps.size() && comps[0] == "")
-        isabspath = true;
+    const bool isabspath = (!comps.empty() && comps[0].empty()) ? true : false;
 
     // First, remove all "" entries (which result from //)
     // and any "." entries.
     std::vector<std::string> filtered;
-    for (size_t i = 0 ; i < comps.size() ; i++)
-        if (comps[i] != "" && comps[i] != ".")
-            filtered.push_back(comps[i]);
+    std::copy_if(comps.cbegin(), comps.cend(), std::back_inserter(filtered),
+      [](const auto &comp) { return !comp.empty() && comp != "."; });
 
     // Now collapse the ".." items.
-    comps.resize(0);
-    for (size_t i = 0 ; i < filtered.size() ; i++) {
-        if (filtered[i] != "..")
-            comps.push_back(filtered[i]);
+    comps.clear();
+    for (const auto &f : filtered) {
+        if (f != "..")
+            comps.push_back(f);
         else {
             // maybe collapse it
             if (comps.empty()) {
@@ -150,7 +152,7 @@ std::string fs::normpath(const std::string &path) {
                 // If we don't know for sure we are at / (isabspath)
                 // then keep the "..".  We don't use cwd() here.
                 if (!isabspath)
-                    comps.push_back(filtered[i]);
+                    comps.push_back(f);
 
             }
             else {
@@ -170,6 +172,7 @@ std::string fs::normpath(const std::string &path) {
     return rval;
 }
 
+
 std::string fs::abspath(const std::string &path) {
     if (path.size()) {
         if (path[0] == '/')
@@ -183,6 +186,7 @@ std::string fs::abspath(const std::string &path) {
     return path;
 }
 
+
 std::string fs::findCommand(const std::string &command, bool log) {
     // Atempt to guess the prefix from argv0, CWD and PATH
 
@@ -192,12 +196,11 @@ std::string fs::findCommand(const std::string &command, bool log) {
         return canonpath(command);
 
     // Check on PATH
-    if (command.size()) {
-        char *p = getenv("PATH");
-        if (p) {
-            std::vector<std::string> path = util::split(p, ":");
-            for (size_t i = 0 ; i < path.size() ; i++) {
-                std::string fname(path[i] + '/' + command);
+    if (!command.empty()) {
+        const char *penv = getenv("PATH");
+        if (penv) {
+            for (const auto &p : util::split(penv, ":")) {
+                const std::string fname(p + '/' + command);
                 if (fs::isexec(fname))
                     return canonpath(fname);
             }
@@ -216,7 +219,7 @@ size_t fs::fnameMax(const std::string &path) {
 
     if (statvfs(path.c_str(), &stat) != 0) {
         logProblem << "statvfs(" << path << ") failed." << std::endl;
-        long rval = pathconf(path.c_str(),_PC_PATH_MAX);
+        const long rval = pathconf(path.c_str(),_PC_PATH_MAX);
         if (rval == -1) {
             logProblem << "pathconf() failed too.  returning SWAG...\n";
             return 4096;
@@ -250,5 +253,6 @@ std::pair<uint64_t, uint64_t> fs::getSpace(
 
     return std::make_pair(free * frsize, total * frsize);
 }
+
 
 } // end namespace util

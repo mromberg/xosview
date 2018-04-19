@@ -1,5 +1,6 @@
 //
-//  Copyright (c) 1999, 2006, 2015, 2016, 2018 Thomas Waldmann (ThomasWaldmann@gmx.de)
+//  Copyright (c) 1999, 2006, 2015, 2016, 2018
+//  Thomas Waldmann (ThomasWaldmann@gmx.de)
 //  based on work of Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -17,12 +18,9 @@ public:
       const std::string &title="", const std::string &bitlegend="",
       const std::string &fieldlegend="");
 
-    virtual ~BitFieldMeter(void);
-
-    // virtual from Meter
-    virtual void draw(X11Graphics &g);
-    virtual void drawIfNeeded(X11Graphics &g);
-    virtual void checkResources(const ResDB &rdb);
+    virtual void draw(X11Graphics &g) override;
+    virtual void drawIfNeeded(X11Graphics &g) override;
+    virtual void checkResources(const ResDB &rdb) override;
 
 protected:
     std::vector<unsigned char> _bits;

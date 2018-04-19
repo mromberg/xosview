@@ -24,13 +24,13 @@ public:
     DiskMeter(void);
 
 protected:
-    virtual std::pair<double, double> getRate(void);
+    virtual std::pair<double, double> getRate(void) override;
 
 private:
     uint64_t prevreads_, prevwrites_;
 
-    static void getDiskXFerBytes(uint64_t &rbytes,
-      uint64_t &wbytes);
+    void getDiskXFerBytes(uint64_t &rbytes,
+      uint64_t &wbytes) const;
 };
 
 

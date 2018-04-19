@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2015
+//  Copyright (c) 2015, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
@@ -14,9 +14,9 @@ static const char * const MEMFILENAME = "/proc/meminfo";
 
 
 
-std::pair<uint64_t, uint64_t> PrcSwapMeter::getswapinfo( void ) {
-    std::ifstream meminfo( MEMFILENAME );
-    if ( !meminfo )
+std::pair<uint64_t, uint64_t> PrcSwapMeter::getswapinfo(void) {
+    std::ifstream meminfo(MEMFILENAME);
+    if (!meminfo)
         logFatal << "Cannot open file : " << MEMFILENAME << std::endl;
 
     std::pair<uint64_t, uint64_t> rval(0, 0);
@@ -24,7 +24,7 @@ std::pair<uint64_t, uint64_t> PrcSwapMeter::getswapinfo( void ) {
     // Get the info from the "standard" meminfo file.
     std::string buf;
     bool foundTotal = false, foundFree = false;
-    while (!meminfo.eof()){
+    while (!meminfo.eof()) {
         meminfo >> buf;
 
         if (buf == "SwapTotal:") {

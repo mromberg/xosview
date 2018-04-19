@@ -1,10 +1,11 @@
 //
-//  Copyright (c) 2017
+//  Copyright (c) 2017, 2018
 //  by Mike Romberg ( mike-romberg@comcast.net )
 //
 //  This file may be distributed under terms of the GPL
 //
 #include "cintmeter.h"
+#include "strutil.h"
 
 
 static const size_t ResIRQ = 15; // reserved irqs (always show 0 - ResIRQ bits)
@@ -15,17 +16,18 @@ ComIntMeter::ComIntMeter(const std::string &title)
     : BitMeter(title, "") {
 }
 
-void ComIntMeter::checkevent(void) {
-    const std::map<size_t, uint64_t> newc = getStats();
-    std::map<size_t, uint64_t>::const_iterator itn = newc.begin();
-    std::map<size_t, uint64_t>::iterator itl = _last.begin();
 
-    while (itn != newc.end() && itl != _last.end()) {
+void ComIntMeter::checkevent(void) {
+    const auto newc = getStats();
+    auto itn = newc.cbegin();
+    auto itl = _last.begin();
+
+    while (itn != newc.cend() && itl != _last.end()) {
         if (itn->first != itl->first) {
             _last = newc;
             break;
         }
-        std::map<size_t, size_t>::const_iterator itim = _imap.find(itn->first);
+        auto itim = _imap.find(itn->first);
         if (itim == _imap.end())
             break;  // maybe also initUI()?
         _bits[itim->second] = itn->second != itl->second;
@@ -56,10 +58,9 @@ void ComIntMeter::initIMap(void) {
         _imap[i] = i;
 
     size_t next = ResIRQ + 1;
-    std::map<size_t, uint64_t>::const_iterator it;
-    for (it = _last.begin() ; it != _last.end() ; ++it) {
-        if (it->first > ResIRQ)
-            _imap[it->first] = next++;
+    for (const auto &last : _last) {
+        if (last.first > ResIRQ)
+            _imap[last.first] = next++;
     }
 }
 
@@ -69,8 +70,7 @@ void ComIntMeter::initUI(void) {
     initIMap();
 
     // parent handles the bit display
-    const size_t nbits = _imap.empty() ? 1 : _imap.size();
-    setNumBits(nbits);
+    setNumBits(_imap.empty() ? 1 : _imap.size());
 
     // set the legend
     legend(makeLegend());
@@ -83,12 +83,11 @@ std::string ComIntMeter::makeLegend(void) const {
     ostr << "IRQS: (";
     size_t last = -1;
     bool inrange = false;
-    std::map<size_t, size_t>::const_iterator it;
-    for (it = _imap.begin() ; it != _imap.end() ; ++it) {
+    for (const auto &i : _imap) {
         if (last == static_cast<size_t>(-1))
-            ostr << it->first;
+            ostr << i.first;
         else {
-            if (it->first == last + 1) {
+            if (i.first == last + 1) {
                 if (!inrange) {
                     inrange = true;
                     ostr << "-";
@@ -99,10 +98,10 @@ std::string ComIntMeter::makeLegend(void) const {
                     inrange = false;
                     ostr << last;
                 }
-                ostr << "," << it->first;
+                ostr << "," << i.first;
             }
         }
-        last = it->first;
+        last = i.first;
     }
     if (inrange)
         ostr << last;

@@ -8,13 +8,9 @@
 
 
 
-ComIrqRateMeter::ComIrqRateMeter( void )
-    : FieldMeterGraph( 2, "IRQR", "IRQs per sec/IDLE" ),
+ComIrqRateMeter::ComIrqRateMeter(void)
+    : FieldMeterGraph(2, "IRQR", "IRQs per sec/IDLE"),
       _peak(1000) {
-}
-
-
-ComIrqRateMeter::~ComIrqRateMeter( void ) {
 }
 
 
@@ -23,12 +19,12 @@ void ComIrqRateMeter::checkResources(const ResDB &rdb) {
     setfieldcolor(0, rdb.getColor("irqrateUsedColor"));
     setfieldcolor(1, rdb.getColor("irqrateIdleColor"));
 
-    _peak = util::stof(rdb.getResource("irqratePeak"));
+    _peak = std::stof(rdb.getResource("irqratePeak"));
     _total = _peak;
 }
 
 
-void ComIrqRateMeter::checkevent( void ){
+void ComIrqRateMeter::checkevent(void) {
 
     float rate = getIrqRate();
 

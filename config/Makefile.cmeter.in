@@ -13,22 +13,30 @@ include ../Makefile.config
 #-------------------------------------------------------------------------
 # File lists
 #-------------------------------------------------------------------------
-OBJS = \
-cswapmeter.o \
-pswapmeter.o \
-cloadmeter.o \
-ploadmeter.o \
-cintratemeter.o \
-pintratemeter.o \
-cfsmeter.o \
-cnetmeter.o \
-pnetmeter.o \
-cpagemeter.o \
-ppagemeter.o \
-ctzonemeter.o \
-cdiskmeter.o \
-pdiskmeter.o \
-cintmeter.o \
+OBJS =\
+meter.o\
+fieldmeter.o\
+fieldmeterdecay.o\
+fieldmetergraph.o\
+bitmeter.o\
+bitfieldmeter.o\
+sensorfieldmeter.o\
+cswapmeter.o\
+pswapmeter.o\
+cloadmeter.o\
+ploadmeter.o\
+pmemmeter.o\
+cintratemeter.o\
+pintratemeter.o\
+cfsmeter.o\
+cnetmeter.o\
+pnetmeter.o\
+cpagemeter.o\
+ppagemeter.o\
+ctzonemeter.o\
+cdiskmeter.o\
+pdiskmeter.o\
+cintmeter.o\
 cmetermaker.o
 
 
