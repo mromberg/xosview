@@ -24,7 +24,7 @@ void ComIntMeter::checkevent(void) {
 
     while (itn != newc.cend() && itl != _last.end()) {
         if (itn->first != itl->first) {
-            _last = newc;
+            _last = std::move(newc);
             break;
         }
         auto itim = _imap.find(itn->first);
