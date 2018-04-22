@@ -155,12 +155,6 @@ void X11Graphics::setFG(const std::string &color) {
 }
 
 
-void X11Graphics::setFG(unsigned long pixVal) {
-    _fgPixel = pixVal;
-    XSetForeground(_dsp, _gc, _fgPixel);
-}
-
-
 void X11Graphics::setBG(const std::string &color) {
     unsigned long pv = 0;
 

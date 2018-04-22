@@ -171,4 +171,11 @@ inline unsigned int X11Graphics::textHeight(void) const {
     return textAscent() + textDescent();
 }
 
+
+inline void X11Graphics::setFG(unsigned long pixVal) {
+    _fgPixel = pixVal;
+    XSetForeground(_dsp, _gc, _fgPixel);
+}
+
+
 #endif
