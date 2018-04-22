@@ -8,6 +8,7 @@
 #define scache_h
 
 #include <cstdint>
+#include <utility>
 
 
 
@@ -32,6 +33,11 @@ public:
 
     void set(const X &x) {
         _cache = x;
+        validate();
+    }
+
+    void set(X &&x) {
+        _cache = std::move(x);
         validate();
     }
 
