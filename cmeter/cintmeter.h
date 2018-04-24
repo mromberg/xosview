@@ -20,7 +20,7 @@ public:
 protected:
     ComIntMeter(const std::string &title);
 
-    virtual std::map<size_t, uint64_t> getStats(void) = 0;
+    virtual const std::map<size_t, uint64_t> &getStats(void) = 0;
 
 private:
     std::map<size_t, uint64_t> _last; // counts from last event.

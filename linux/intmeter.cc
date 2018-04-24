@@ -36,7 +36,7 @@ std::string IntMeter::makeTitle(size_t cpu) const {
 }
 
 
-std::map<size_t, uint64_t> IntMeter::getStats(void) {
+const std::map<size_t, uint64_t> &IntMeter::getStats(void) {
 
     static StatCache<std::vector<std::map<size_t, uint64_t> > > sc;
     if (!sc.valid())

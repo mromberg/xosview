@@ -18,13 +18,13 @@ ComIntMeter::ComIntMeter(const std::string &title)
 
 
 void ComIntMeter::checkevent(void) {
-    const auto newc = getStats();
+    const auto &newc = getStats();
     auto itn = newc.cbegin();
     auto itl = _last.begin();
 
     while (itn != newc.cend() && itl != _last.end()) {
         if (itn->first != itl->first) {
-            _last = std::move(newc);
+            _last = newc;
             break;
         }
         auto itim = _imap.find(itn->first);

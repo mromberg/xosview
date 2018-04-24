@@ -16,7 +16,7 @@ public:
     IntMeter(void);
 
 protected:
-    virtual std::map<size_t, uint64_t> getStats(void) override;
+    virtual const std::map<size_t, uint64_t> &getStats(void) override;
 
 private:
     IntrStats _istats;

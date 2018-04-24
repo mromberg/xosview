@@ -16,7 +16,7 @@ public:
     IntMeter(size_t cpu=0);
 
 protected:
-    virtual std::map<size_t, uint64_t> getStats(void) override;
+    virtual const std::map<size_t, uint64_t> &getStats(void) override;
 
 private:
     size_t _cpu;                      // which cpu are we displaying.
