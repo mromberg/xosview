@@ -1,3 +1,13 @@
+Changes since xosview-2.2.3
+  - Use some C++14 features to cleanup code.  Xosview now requires
+    a c++14 compiler (all supported platforms now have one).
+
+  - performance related improvements.
+
+  - rework configure script.
+
+  - All platforms now use usleep or C++11 thread sleep.
+
 Changes since xosview-2.2.2
 
   - Adjust default window size.
